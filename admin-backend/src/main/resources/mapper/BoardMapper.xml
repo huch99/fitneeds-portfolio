@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.project.app.board.mapper.BoardMapper">
+    <select id="selectAllBoards" resultType="BoardDto">
+		SELECT
+		ID,
+		ROWNUM AS NO,
+		TITLE,
+		CONTENT,
+		AUTHOR,
+		CREATE_DATE,
+		UPDATE_DATE,
+		DELETE_DATE,
+		END_DATE,
+		VIEW_COUNT,
+		CATEGORY
+		FROM APP_BOARD
+    </select>
+    
+    <select id="selectBoardById" parameterType="Long" resultType="BoardDto">
+		SELECT
+		ID,
+		TITLE,
+		CONTENT,
+		AUTHOR,
+		CREATE_DATE,
+		UPDATE_DATE,
+		DELETE_DATE,
+		END_DATE,
+		VIEW_COUNT,
+		CATEGORY
+		FROM APP_BOARD
+		WHERE ID = #{id}
+    </select>
+    
+    <insert id="insertBoard" parameterType="BoardDto">
+	    <selectKey keyProperty="id" resultType="long" order="BEFORE">
+        	SELECT "ADMIN"."ISEQ$$_117555".nextval AS ID FROM DUAL
+    	</selectKey>
+       	INSERT INTO APP_BOARD(ID, TITLE, CONTENT, AUTHOR, CREATE_DATE, UPDATE_DATE)
+    	VALUES (#{id}, #{title}, #{content}, #{author}, SYSDATE, SYSDATE)
+    </insert>
+    
+    <update id="updateBoard" parameterType="BoardDto">
+    	UPDATE APP_BOARD
+    	SET 
+    		TITLE = #{title},
+    		CONTENT = #{content},
+    		AUTHOR = #{author}
+		WHERE ID = #{id}    		
+    </update>
+    
+    <delete id="deleteBoardById" parameterType="Long">
+    	DELETE FROM APP_BOARD
+    	WHERE ID = #{id}
+    </delete>
+    
+</mapper>

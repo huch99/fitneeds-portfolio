@@ -50,6 +50,7 @@ function App() {
             <Route path="/portfolio/item" element={<PortfolioItem />} />
             <Route path="/mypage" element={<MyPage />} />
             <Route path="/mypage/usage-status" element={<UsageStatus />} />
+            <Route path="*" element={<div>404 Not Found</div>} />
           </Routes>
         </Layout>
       </Router>
