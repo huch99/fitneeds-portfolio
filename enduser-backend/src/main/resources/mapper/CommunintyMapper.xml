@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.project.app.community.mapper.CommunityPostMapper">
+
+    <!-- USER 커뮤니티 글 등록 -->
+    <insert id="insertCommunityPost"
+            parameterType="com.project.app.community.dto.CommunityPostDto"
+            useGeneratedKeys="true"
+            keyProperty="postId">
+
+        INSERT INTO community_post
+        (
+            post_type,
+            category,
+            title,
+            content,
+            writer_id,
+            writer_type,
+            branch_id,
+            views,
+            is_visible,
+            sport_type,
+            recruit_max,
+            recruit_datetime,
+            recruit_end_date,
+            display_start,
+            display_end,
+            created_at,
+            updated_at
+        )
+        VALUES
+        (
+            #{postType},
+            #{category},
+            #{title},
+            #{content},
+            #{writerId},
+            #{writerType},
+            #{branchId},
+            0,
+            TRUE,
+            #{sportType},
+            #{recruitMax},
+            #{recruitDatetime},
+            #{recruitEndDate},
+            #{displayStart},
+            #{displayEnd},
+            NOW(),
+            NOW()
+        )
+
+    </insert>
+
+</mapper>

@@ -14,6 +14,10 @@ const AdminLayout = ({ children }) => {
     { name: '이용권 거래', path: '/trades' },
     { name: '이용권 관리', path: '/tickets' },
     { name: '센터 관리', path: '/centers' },
+    { name: '커뮤니티 관리', path: '/community' },
+    { name: 'FAQ 관리', path: '/AdminFaqPage' },
+    { name: '공지사항 관리', path: '/notice' },
+    
   ];
 
   return (

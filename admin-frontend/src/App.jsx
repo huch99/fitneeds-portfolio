@@ -6,6 +6,11 @@ import AdminLayout from './components/AdminLayout';
 import AdminTicketPage from './pages/AdminTicketPage';
 import AdminReservationPage from './pages/AdminReservationPage';
 import AdminTradePage from './pages/AdminTradePage';
+import AdminFaqPage from './pages/FAQ/AdminFaqPage';
+import AdminCommunityPage from './pages/Community/AdminCommunityPage';
+import AdminCommunityDetailPage from './pages/Community/AdminCommunityDetail';
+import AdminNoticePage from './pages/Notice/AdminNoticePage';
+
 // 아직 없는 파일은 import 에러가 날 수 있으니 주석 처리하거나 빈 파일 생성 필요
 // import AdminDashboardPage from './pages/AdminDashboardPage'; 
 // import AdminMemberPage from './pages/AdminMemberPage';
@@ -43,6 +48,15 @@ function App() {
           <Route path="/trades" element={<AdminTradePage />} />
           <Route path="/reservations" element={<AdminReservationPage />} />
           <Route path="/tickets" element={<AdminTicketPage />} />
+
+          {/* FAQ */}
+          <Route path="/AdminFaqPage" element={<AdminFaqPage />} />
+          {/*  커뮤니티 */}
+          <Route path="/community" element={<AdminCommunityPage />} />
+          <Route path="/community/detail/:id" element={<AdminCommunityDetailPage />} />
+          {/* 공지사항 */}
+          <Route path="/notice" element={<AdminNoticePage />} />
+
         </Route>
       </Routes>
     </Router>
