@@ -5,6 +5,8 @@ import com.project.app.community.mapper.CommunityPostMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 public class CommunityPostService {
 
@@ -27,5 +29,16 @@ public class CommunityPostService {
         dto.setViews(0);                // 조회수 0부터
 
         communityPostMapper.insertCommunityPost(dto);
+    }
+
+    /**
+     * USER 커뮤니티 글 목록 조회
+     * - COMMUNITY 타입
+     * - 노출(is_visible = true)만
+     * - 최신순
+     */
+    @Transactional(readOnly = true)
+    public List<CommunityPostDto> getVisibleCommunityPostList() {
+        return communityPostMapper.selectVisibleCommunityPostList();
     }
 }

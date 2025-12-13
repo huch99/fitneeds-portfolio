@@ -5,6 +5,8 @@ import com.project.app.community.service.CommunityPostService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/user/community")
 public class CommunityPostController {
@@ -24,5 +26,17 @@ public class CommunityPostController {
     ) {
         communityPostService.createCommunityPost(communityPostDto);
         return ResponseEntity.ok().build();
+    }
+
+    /**
+     * USER 커뮤니티 글 목록 조회
+     * - COMMUNITY 타입만
+     * - 노출(is_visible = true)인 글만
+     * - 최신순
+     */
+    @GetMapping
+    public ResponseEntity<List<CommunityPostDto>> getCommunityPostList() {
+        List<CommunityPostDto> list = communityPostService.getVisibleCommunityPostList();
+        return ResponseEntity.ok(list);
     }
 }

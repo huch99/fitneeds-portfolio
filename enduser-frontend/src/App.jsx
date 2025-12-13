@@ -4,6 +4,8 @@ import { HelmetProvider } from 'react-helmet-async';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import './styles/common.css';
+import CommunityUser from './pages/Community/CommunityUser';
+
 
 // Components
 import Layout from './components/Layout';
@@ -51,6 +53,8 @@ function App() {
             <Route path="/mypage" element={<MyPage />} />
             <Route path="/mypage/usage-status" element={<UsageStatus />} />
             <Route path="*" element={<div>404 Not Found</div>} />
+
+            <Route path="/community" element={<CommunityUser />} />
           </Routes>
         </Layout>
       </Router>
