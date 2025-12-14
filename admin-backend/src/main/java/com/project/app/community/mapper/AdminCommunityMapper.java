@@ -10,19 +10,49 @@ import java.util.List;
 public interface AdminCommunityMapper {
 
     /**
-     * ADMIN 커뮤니티 글 목록 조회
-     * - post_visible 상관없이 전체 조회
+     * ADMIN 커뮤니티 목록 조회
+     * - 검색
+     * - 카테고리
+     * - 노출 여부
+     * - 정렬
+     * - 페이징
+     * - 댓글 수 포함
      */
-    List<CommunityPostDto> selectCommunityPostList();
+    List<CommunityPostDto> selectCommunityPostList(
+            @Param("category") String category,
+            @Param("keyword") String keyword,
+            @Param("visible") Integer visible,
+            @Param("orderType") String orderType,
+            @Param("limit") int limit,
+            @Param("offset") int offset
+    );
+
+    /**
+     * ADMIN 커뮤니티 전체 건수 (페이징용)
+     */
+    int selectCommunityPostCount(
+            @Param("category") String category,
+            @Param("keyword") String keyword,
+            @Param("visible") Integer visible
+    );
+
+    /**
+     * ADMIN 커뮤니티 게시글 상세 조회
+     */
+    CommunityPostDto selectCommunityPostDetail(
+            @Param("postId") Long postId
+    );
 
     /**
      * ADMIN 커뮤니티 글 숨김 / 보이기
-     *
-     * @param postId 게시글 ID
-     * @param postVisible true = 보이기, false = 숨기기
      */
-    void updatePostVisible(@Param("postId") Long postId,
-                           @Param("postVisible") Boolean postVisible);
-    
+    void updatePostVisible(
+            @Param("postId") Long postId,
+            @Param("postVisible") Boolean postVisible
+    );
+
+    /**
+     * ADMIN 커뮤니티 글 삭제
+     */
     void deleteCommunityPost(@Param("postId") Long postId);
 }

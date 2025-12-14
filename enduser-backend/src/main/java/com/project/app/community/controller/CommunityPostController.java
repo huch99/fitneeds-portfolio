@@ -17,9 +17,6 @@ public class CommunityPostController {
         this.communityPostService = communityPostService;
     }
 
-    /**
-     * USER 커뮤니티 글 등록
-     */
     @PostMapping
     public ResponseEntity<Void> createCommunityPost(
             @RequestBody CommunityPostDto communityPostDto
@@ -28,15 +25,10 @@ public class CommunityPostController {
         return ResponseEntity.ok().build();
     }
 
-    /**
-     * USER 커뮤니티 글 목록 조회
-     * - COMMUNITY 타입만
-     * - 노출(is_visible = true)인 글만
-     * - 최신순
-     */
     @GetMapping
     public ResponseEntity<List<CommunityPostDto>> getCommunityPostList() {
-        List<CommunityPostDto> list = communityPostService.getVisibleCommunityPostList();
-        return ResponseEntity.ok(list);
+        return ResponseEntity.ok(
+                communityPostService.getVisibleCommunityPostList()
+        );
     }
 }

@@ -19,13 +19,11 @@ function Navigation() {
 
   // Handle scroll to change header style - only on home page
   useEffect(() => {
-    // On other pages, always show yellow background
     if (location.pathname !== '/') {
       setIsScrolled(true);
       return;
     }
 
-    // On home page, start transparent and change on scroll
     setIsScrolled(false);
 
     const handleScroll = () => {
@@ -91,6 +89,12 @@ function Navigation() {
             <li className="nav-menu-item">
               <Link className="nav-menu-link" to="/mypage">나의 운동</Link>
             </li>
+
+            {/* ✅ 여기 딱 한 줄만 추가 */}
+            <li className="nav-menu-item">
+              <Link className="nav-menu-link" to="/community">커뮤니티</Link>
+            </li>
+
             <li
               className="nav-menu-item nav-dropdown"
               ref={blogDropdownRef}
@@ -125,5 +129,3 @@ function Navigation() {
 }
 
 export default Navigation;
-
-

@@ -16,11 +16,12 @@ public class CommunityPostDto {
     private String writerType;    // MEMBER / STAFF
 
     // ===== 지점 =====
-    private Long branchId;        // 공지사항용 (USER 커뮤니티는 null 가능)
+    private Long branchId;
 
     // ===== 조회/상태 =====
     private Integer views;
     private Boolean isVisible;
+    private Boolean postVisible;   // ✅ 반드시 필요
 
     // ===== 모집글 전용 =====
     private String sportType;
@@ -40,147 +41,60 @@ public class CommunityPostDto {
        Getter / Setter
      ======================= */
 
-    public Long getPostId() {
-        return postId;
-    }
+    public Long getPostId() { return postId; }
+    public void setPostId(Long postId) { this.postId = postId; }
 
-    public void setPostId(Long postId) {
-        this.postId = postId;
-    }
+    public String getPostType() { return postType; }
+    public void setPostType(String postType) { this.postType = postType; }
 
-    public String getPostType() {
-        return postType;
-    }
+    public String getCategory() { return category; }
+    public void setCategory(String category) { this.category = category; }
 
-    public void setPostType(String postType) {
-        this.postType = postType;
-    }
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
 
-    public String getCategory() {
-        return category;
-    }
+    public String getContent() { return content; }
+    public void setContent(String content) { this.content = content; }
 
-    public void setCategory(String category) {
-        this.category = category;
-    }
+    public Long getWriterId() { return writerId; }
+    public void setWriterId(Long writerId) { this.writerId = writerId; }
 
-    public String getTitle() {
-        return title;
-    }
+    public String getWriterType() { return writerType; }
+    public void setWriterType(String writerType) { this.writerType = writerType; }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+    public Long getBranchId() { return branchId; }
+    public void setBranchId(Long branchId) { this.branchId = branchId; }
 
-    public String getContent() {
-        return content;
-    }
+    public Integer getViews() { return views; }
+    public void setViews(Integer views) { this.views = views; }
 
-    public void setContent(String content) {
-        this.content = content;
-    }
+    public Boolean getIsVisible() { return isVisible; }
+    public void setIsVisible(Boolean isVisible) { this.isVisible = isVisible; }
 
-    public Long getWriterId() {
-        return writerId;
-    }
+    public Boolean getPostVisible() { return postVisible; }
+    public void setPostVisible(Boolean postVisible) { this.postVisible = postVisible; }
 
-    public void setWriterId(Long writerId) {
-        this.writerId = writerId;
-    }
+    public String getSportType() { return sportType; }
+    public void setSportType(String sportType) { this.sportType = sportType; }
 
-    public String getWriterType() {
-        return writerType;
-    }
+    public Integer getRecruitMax() { return recruitMax; }
+    public void setRecruitMax(Integer recruitMax) { this.recruitMax = recruitMax; }
 
-    public void setWriterType(String writerType) {
-        this.writerType = writerType;
-    }
+    public LocalDateTime getRecruitDatetime() { return recruitDatetime; }
+    public void setRecruitDatetime(LocalDateTime recruitDatetime) { this.recruitDatetime = recruitDatetime; }
 
-    public Long getBranchId() {
-        return branchId;
-    }
+    public LocalDateTime getRecruitEndDate() { return recruitEndDate; }
+    public void setRecruitEndDate(LocalDateTime recruitEndDate) { this.recruitEndDate = recruitEndDate; }
 
-    public void setBranchId(Long branchId) {
-        this.branchId = branchId;
-    }
+    public LocalDateTime getDisplayStart() { return displayStart; }
+    public void setDisplayStart(LocalDateTime displayStart) { this.displayStart = displayStart; }
 
-    public Integer getViews() {
-        return views;
-    }
+    public LocalDateTime getDisplayEnd() { return displayEnd; }
+    public void setDisplayEnd(LocalDateTime displayEnd) { this.displayEnd = displayEnd; }
 
-    public void setViews(Integer views) {
-        this.views = views;
-    }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 
-    public Boolean getIsVisible() {
-        return isVisible;
-    }
-
-    public void setIsVisible(Boolean isVisible) {
-        this.isVisible = isVisible;
-    }
-
-    public String getSportType() {
-        return sportType;
-    }
-
-    public void setSportType(String sportType) {
-        this.sportType = sportType;
-    }
-
-    public Integer getRecruitMax() {
-        return recruitMax;
-    }
-
-    public void setRecruitMax(Integer recruitMax) {
-        this.recruitMax = recruitMax;
-    }
-
-    public LocalDateTime getRecruitDatetime() {
-        return recruitDatetime;
-    }
-
-    public void setRecruitDatetime(LocalDateTime recruitDatetime) {
-        this.recruitDatetime = recruitDatetime;
-    }
-
-    public LocalDateTime getRecruitEndDate() {
-        return recruitEndDate;
-    }
-
-    public void setRecruitEndDate(LocalDateTime recruitEndDate) {
-        this.recruitEndDate = recruitEndDate;
-    }
-
-    public LocalDateTime getDisplayStart() {
-        return displayStart;
-    }
-
-    public void setDisplayStart(LocalDateTime displayStart) {
-        this.displayStart = displayStart;
-    }
-
-    public LocalDateTime getDisplayEnd() {
-        return displayEnd;
-    }
-
-    public void setDisplayEnd(LocalDateTime displayEnd) {
-        this.displayEnd = displayEnd;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
 }

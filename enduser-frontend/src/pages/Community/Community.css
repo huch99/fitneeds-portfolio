@@ -1,0 +1,197 @@
+/* =========================
+   공통 레이아웃
+========================= */
+.community-container {
+  padding: 30px;
+}
+
+.community-title {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.community-subtitle {
+  color: #777;
+  margin-bottom: 20px;
+}
+
+/* =========================
+   상단 버튼 영역
+========================= */
+.community-top-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.community-top-buttons button {
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: none;
+  background-color: #ffd84d;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.community-top-buttons button:hover {
+  background-color: #ffcc00;
+}
+
+/* =========================
+   필터 & 검색 영역
+========================= */
+.community-filter {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.community-filter select {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  background-color: #ffd84d;
+  font-weight: 600;
+}
+
+.community-filter input {
+  flex: 1;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  background-color: #fffdf2;
+}
+
+.community-filter button {
+  padding: 6px 16px;
+  border-radius: 6px;
+  border: none;
+  background-color: #ffd84d;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.community-filter button:hover {
+  background-color: #ffcc00;
+}
+
+/* =========================
+   테이블
+========================= */
+.community-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.community-table th {
+  background-color: #f3f3f3;
+  padding: 10px;
+  font-size: 14px;
+  border-bottom: 1px solid #ddd;
+}
+
+.community-table td {
+  padding: 12px 10px;
+  font-size: 14px;
+  border-bottom: 1px solid #eee;
+  text-align: center;
+}
+
+/* 제목 링크 */
+.community-title-link {
+  cursor: pointer;
+  color: #333;
+  font-weight: 600;
+}
+
+.community-title-link:hover {
+  text-decoration: underline;
+}
+
+/* =========================
+   카테고리 뱃지 (핵심)
+========================= */
+.category-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* 모집 */
+.category-recruit {
+  background-color: #fff3c4;
+  color: #ff9800;
+}
+
+/* 정보공유 */
+.category-info {
+  background-color: #e7f1ff;
+  color: #1976d2;
+}
+
+/* 후기 */
+.category-review {
+  background-color: #f3e5f5;
+  color: #8e24aa;
+}
+
+/* 자유 */
+.category-free {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+/* =========================
+   하단 영역
+========================= */
+.community-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.community-count {
+  font-size: 14px;
+  color: #666;
+}
+
+/* 페이지네이션 */
+.community-pagination {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.community-pagination button {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  background-color: white;
+  cursor: pointer;
+}
+
+.community-pagination button.active {
+  background-color: #ffd84d;
+  border: none;
+  font-weight: 700;
+}
+
+/* 글쓰기 버튼 */
+.community-write-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  background-color: #ffd84d;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.community-write-btn:hover {
+  background-color: #ffcc00;
+}

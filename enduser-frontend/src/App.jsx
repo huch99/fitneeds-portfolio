@@ -5,6 +5,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import './styles/common.css';
 import CommunityUser from './pages/Community/CommunityUser';
+import CommunityUserDetail from './pages/Community/CommunityUserDetail';
 
 
 // Components
@@ -55,6 +56,8 @@ function App() {
             <Route path="*" element={<div>404 Not Found</div>} />
 
             <Route path="/community" element={<CommunityUser />} />
+            <Route path="/community/:postId" element={<CommunityUserDetail />} />
+
           </Routes>
         </Layout>
       </Router>

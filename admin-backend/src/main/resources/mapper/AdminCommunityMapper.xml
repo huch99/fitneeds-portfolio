@@ -1,25 +1,99 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.project.app.community.mapper.AdminCommunityMapper">
 
-    <select id="selectCommunityPostList" resultType="com.project.app.community.dto.CommunityPostDto">
-        SELECT *
-        FROM community_post
-        ORDER BY post_id DESC
-    </select>
+  <!-- ✅ ADMIN 커뮤니티 목록 (검색 + 필터 + 정렬 + 댓글수 + 페이징) -->
+  <select id="selectCommunityPostList"
+          resultType="com.project.app.community.dto.CommunityPostDto">
 
-    <update id="updatePostVisible">
-        UPDATE community_post
-        SET post_visible = #{postVisible}, updated_at = NOW()
-        WHERE post_id = #{postId}
-    </update>
+    SELECT
+      p.*,
+      COUNT(c.comment_id) AS commentCount
+    FROM community_post p
+    LEFT JOIN community_comment c
+      ON p.post_id = c.post_id
+     AND c.comment_visible = 1
 
-	<delete id="deleteCommunityPost">
+    <where>
+      <if test="category != null and category != ''">
+        AND p.category = #{category}
+      </if>
+
+      <if test="keyword != null and keyword != ''">
+        AND p.title LIKE CONCAT('%', #{keyword}, '%')
+      </if>
+
+      <if test="visible != null">
+        AND p.post_visible = #{visible}
+      </if>
+    </where>
+
+    GROUP BY p.post_id
+
+    <choose>
+      <when test="orderType == 'views'">
+        ORDER BY p.views DESC
+      </when>
+      <when test="orderType == 'comments'">
+        ORDER BY commentCount DESC
+      </when>
+      <otherwise>
+        ORDER BY p.post_id DESC
+      </otherwise>
+    </choose>
+
+    <!-- ✅ 페이징 -->
+    LIMIT #{limit} OFFSET #{offset}
+
+  </select>
+
+  <!-- ✅ ADMIN 커뮤니티 전체 건수 (페이징용 COUNT) -->
+  <select id="selectCommunityPostCount" resultType="int">
+    SELECT COUNT(DISTINCT p.post_id)
+    FROM community_post p
+    LEFT JOIN community_comment c
+      ON p.post_id = c.post_id
+     AND c.comment_visible = 1
+
+    <where>
+      <if test="category != null and category != ''">
+        AND p.category = #{category}
+      </if>
+
+      <if test="keyword != null and keyword != ''">
+        AND p.title LIKE CONCAT('%', #{keyword}, '%')
+      </if>
+
+      <if test="visible != null">
+        AND p.post_visible = #{visible}
+      </if>
+    </where>
+  </select>
+
+  <!-- ✅ ADMIN 커뮤니티 게시글 상세 조회 -->
+  <select id="selectCommunityPostDetail"
+          resultType="com.project.app.community.dto.CommunityPostDto">
+    SELECT
+      p.*
+    FROM community_post p
+    WHERE p.post_id = #{postId}
+  </select>
+
+  <!-- ✅ 숨김 / 보이기 -->
+  <update id="updatePostVisible">
+    UPDATE community_post
+    SET post_visible = #{postVisible},
+        updated_at = NOW()
+    WHERE post_id = #{postId}
+  </update>
+
+  <!-- ✅ 삭제 -->
+  <delete id="deleteCommunityPost">
     DELETE FROM community_post
     WHERE post_id = #{postId}
-	</delete>
+  </delete>
 
 </mapper>

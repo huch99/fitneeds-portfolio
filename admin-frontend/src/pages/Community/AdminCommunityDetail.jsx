@@ -1,42 +1,111 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 function AdminCommunityDetailPage() {
-  const { id } = useParams();
+  const { id } = useParams(); // postId
   const navigate = useNavigate();
 
-  // 게시글 Mock 데이터
-  const post = {
-    id,
-    category: '모집',
-    title: '주말 풋살 팀원 추가 모집합니다',
-    writer: '송민수',
-    date: '2024-03-19',
-    views: 214,
-    content: '주말 오전 10시에 함께 풋살 하실 분을 모집합니다!'
-  };
+  // 게시글
+  const [post, setPost] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
-  // 댓글 Mock 데이터
-  const [comments, setComments] = useState([
-    { id: 1, writer: 'user01', content: '참여하고 싶어요!', date: '2024-03-19', visible: true },
-    { id: 2, writer: 'user99', content: '위치가 어디인가요?', date: '2024-03-19', visible: true },
-    { id: 3, writer: 'toxicUser', content: '이딴 글 올리지마라', date: '2024-03-20', visible: false }
-  ]);
+  // 댓글
+  const [comments, setComments] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const pageSize = 10;
 
-  // 숨김 토글
-  const toggleVisible = (commentId) => {
-    setComments(
-      comments.map((c) =>
-        c.id === commentId ? { ...c, visible: !c.visible } : c
-      )
+  /* =========================
+     게시글 상세 조회
+  ========================= */
+  useEffect(() => {
+    const fetchPostDetail = async () => {
+      try {
+        const response = await axios.get(`/api/admin/community/${id}`);
+        setPost(response.data);
+      } catch (err) {
+        console.error(err);
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPostDetail();
+  }, [id]);
+
+  /* =========================
+     ADMIN 댓글 목록 조회 (페이징)
+  ========================= */
+/* =========================
+   ADMIN 댓글 목록 조회 (페이징)
+========================= */
+/* =========================
+   ADMIN 댓글 목록 조회 (페이징)
+========================= */
+const fetchComments = async (page = 1) => {
+  try {
+    const response = await axios.get(
+      `/api/admin/community/comments/${id}?page=${page}`
     );
+
+    setComments(response.data.list);          // 댓글 리스트
+    setTotalCount(response.data.totalCount); // 🔥 이게 핵심
+    setCurrentPage(page);
+  } catch (err) {
+    console.error('댓글 조회 실패', err);
+  }
+};
+
+
+useEffect(() => {
+  fetchComments();
+}, [id]);
+
+
+  /* =========================
+     댓글 숨김 / 보이기
+  ========================= */
+  const toggleVisible = async (commentId, currentVisible) => {
+    const nextVisible = currentVisible === 1 ? 0 : 1;
+
+    try {
+      await axios.put(
+        `/api/admin/community/comments/${commentId}/visible`,
+        null,
+        {
+          params: { commentVisible: nextVisible }
+        }
+      );
+      fetchComments(currentPage);
+    } catch (err) {
+      console.error('댓글 숨김/보이기 실패', err);
+    }
   };
 
-  // 삭제 기능
-  const deleteComment = (commentId) => {
-    if (!window.confirm("정말 삭제하시겠습니까?")) return;
-    setComments(comments.filter(c => c.id !== commentId));
+  /* =========================
+     댓글 삭제
+  ========================= */
+  const deleteComment = async (commentId) => {
+    if (!window.confirm('정말 삭제하시겠습니까?')) return;
+
+    try {
+      await axios.delete(`/api/admin/community/comments/${commentId}`);
+      fetchComments(currentPage);
+    } catch (err) {
+      console.error('댓글 삭제 실패', err);
+    }
   };
+
+  /* =========================
+     페이징 계산
+  ========================= */
+  const totalPages = Math.ceil(totalCount / pageSize);
+
+  if (loading) return <div>로딩 중...</div>;
+  if (error || !post) return <div>게시글을 불러오지 못했습니다.</div>;
 
   return (
     <>
@@ -48,8 +117,8 @@ function AdminCommunityDetailPage() {
 
       <div style={{ marginBottom: '20px', color: '#777' }}>
         <div>카테고리: {post.category}</div>
-        <div>작성자: {post.writer}</div>
-        <div>작성일: {post.date}</div>
+        <div>작성자: {post.writer_id}</div>
+        <div>작성일: {post.created_at}</div>
         <div>조회수: {post.views}</div>
       </div>
 
@@ -57,7 +126,7 @@ function AdminCommunityDetailPage() {
         {post.content}
       </div>
 
-      <h3>댓글 ({comments.length})</h3>
+      <h3>댓글 ({totalCount})</h3>
 
       <table className="admin-table">
         <thead>
@@ -73,20 +142,30 @@ function AdminCommunityDetailPage() {
 
         <tbody>
           {comments.map((c) => (
-            <tr key={c.id} style={{ opacity: c.visible ? 1 : 0.4 }}>
-              <td>{c.id}</td>
-              <td>{c.writer}</td>
+            <tr
+              key={c.commentId}
+              style={{ opacity: c.commentVisible === 1 ? 1 : 0.4 }}
+            >
+              <td>{c.commentId}</td>
+              <td>{c.writerId}</td>
               <td>{c.content}</td>
-              <td>{c.date}</td>
+              <td>{c.createdAt}</td>
 
               <td>
-                <button onClick={() => toggleVisible(c.id)}>
-                  {c.visible ? "숨김" : "보이기"}
+                <button
+                  onClick={() =>
+                    toggleVisible(c.commentId, c.commentVisible)
+                  }
+                >
+                  {c.commentVisible === 1 ? '숨김' : '보이기'}
                 </button>
               </td>
 
               <td>
-                <button style={{ color: 'red' }} onClick={() => deleteComment(c.id)}>
+                <button
+                  style={{ color: 'red' }}
+                  onClick={() => deleteComment(c.commentId)}
+                >
                   삭제
                 </button>
               </td>
@@ -94,6 +173,22 @@ function AdminCommunityDetailPage() {
           ))}
         </tbody>
       </table>
+
+      {/* 페이징 버튼 */}
+      <div style={{ marginTop: '20px', textAlign: 'center' }}>
+        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+          <button
+            key={page}
+            onClick={() => fetchComments(page)}
+            style={{
+              margin: '0 5px',
+              fontWeight: page === currentPage ? 'bold' : 'normal'
+            }}
+          >
+            {page}
+          </button>
+        ))}
+      </div>
     </>
   );
 }
