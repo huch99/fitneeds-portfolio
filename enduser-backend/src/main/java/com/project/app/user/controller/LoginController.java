@@ -83,7 +83,7 @@ public class LoginController {
 		
 		// 3. 사용자 권한 정보 설정
 		List<String> roles = new ArrayList<>();
-		roles.add(user.getAuth()); // USER, ADMIN 등
+		roles.add(user.getRole()); // USER, ADMIN 등
 
 		// 4. JWT 토큰 생성 (사용자 아이디와 권한 정보 포함)
 		String token = jwtTokenProvider.createToken(user.getUserId(), roles);
@@ -93,8 +93,9 @@ public class LoginController {
 		response.put("token", token); // 클라이언트에서 저장하여 사용할 토큰
 		response.put("user", LoginResponseDto.builder()
 				.userId(user.getUserId())
+				.email(user.getEmail())
 				.userName(user.getUserName())
-				.auth(user.getAuth())
+				.role(user.getRole())
 				.success(true)
 				.message("로그인 성공")
 				.build());

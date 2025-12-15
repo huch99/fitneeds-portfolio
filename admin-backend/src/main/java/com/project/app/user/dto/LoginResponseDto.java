@@ -8,12 +8,12 @@ import lombok.NoArgsConstructor;
 @Data                   // getter, setter, equals, hashCode, toString 자동 생성
 @NoArgsConstructor      // 파라미터 없는 기본 생성자
 @AllArgsConstructor     // 모든 필드를 파라미터로 받는 생성자
-@Builder                // 빌더 패턴 구현
+@Builder      
 public class LoginResponseDto {
     private String userId;
     private String email;
     private String userName;
-    private String auth;
+    private String role;
     private boolean success;
     private String message;
 }

@@ -74,7 +74,7 @@ public class LoginController {
 	public ResponseEntity<?> login(@RequestBody LoginRequestDto loginRequestDto) {
 		// 1. 데이터베이스에서 사용자 조회
 		User user = userService.findByUserId(loginRequestDto.getUserId())
-				.orElseThrow(() -> new IllegalArgumentException("가입되지 않은 아이디입니다."));
+				.orElseThrow(() -> new IllegalArgumentException("가입되지 않은 이메일입니다."));
 		
 		// 2. 비밀번호 확인 (입력한 평문 비밀번호와 DB의 암호화된 비밀번호 비교)
 		if (!passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword())) {
@@ -83,7 +83,7 @@ public class LoginController {
 		
 		// 3. 사용자 권한 정보 설정
 		List<String> roles = new ArrayList<>();
-		roles.add(user.getAuth()); // USER, ADMIN 등
+		roles.add(user.getRole()); // USER, ADMIN 등
 
 		// 4. JWT 토큰 생성 (사용자 아이디와 권한 정보 포함)
 		String token = jwtTokenProvider.createToken(user.getUserId(), roles);
@@ -94,7 +94,7 @@ public class LoginController {
 		response.put("user", LoginResponseDto.builder()
 				.userId(user.getUserId())
 				.userName(user.getUserName())
-				.auth(user.getAuth())
+				.role(user.getRole())
 				.success(true)
 				.message("로그인 성공")
 				.build());

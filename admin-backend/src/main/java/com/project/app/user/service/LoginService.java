@@ -22,13 +22,13 @@ public class LoginService {
                 .map(user -> LoginResponseDto.builder()
                         .userId(user.getUserId())
                         .userName(user.getUserName())
-                        .auth(user.getAuth())
+                        .role(user.getRole())
                         .success(true)
                         .message("로그인 성공")
                         .build())
                 .orElse(LoginResponseDto.builder()
                         .success(false)
-                        .message("아이디 또는 비밀번호가 일치하지 않습니다.")
+                        .message("이메일 또는 비밀번호가 일치하지 않습니다.")
                         .build());
     }
 }

@@ -37,7 +37,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         // Spring Security의 User.builder().roles()는 "ROLE_" 접두사를 자동으로 붙여주지만,
         // List<GrantedAuthority>를 직접 만들 때는 수동으로 "ROLE_"를 붙여주는 것이 좋습니다.
         // 영남님의 Auth 필드가 "ADMIN", "USER" 같은 스트링으로 저장된다고 가정
-        GrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + user.getAuth());
+        GrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + user.getRole());
 
 
         // Spring Security에서 사용하는 UserDetails 객체로 변환하여 반환
