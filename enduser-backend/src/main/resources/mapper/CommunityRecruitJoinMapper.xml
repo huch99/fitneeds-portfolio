@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.project.app.community.mapper.CommunityRecruitJoinMapper">
+
+  <!-- =========================
+       참여 신청 중복 체크
+       post_id + user_id 기준
+  ========================= -->
+  <select id="countByPostIdAndUserId" resultType="int">
+    SELECT COUNT(*)
+    FROM community_recruit_join
+    WHERE post_id = #{postId}
+      AND user_id = #{userId}
+  </select>
+
+  <!-- =========================
+       참여 신청 INSERT
+  ========================= -->
+  <insert id="insertRecruitJoin">
+    INSERT INTO community_recruit_join (
+      post_id,
+      user_id,
+      join_type
+    ) VALUES (
+      #{postId},
+      #{userId},
+      'JOIN'
+    )
+  </insert>
+
+  <!-- =========================
+       참여 신청자 목록 조회
+       (작성자용 / 다음 단계 대비)
+  ========================= -->
+  <select id="selectJoinUsersByPostId" resultType="string">
+    SELECT user_id
+    FROM community_recruit_join
+    WHERE post_id = #{postId}
+    ORDER BY join_id ASC
+  </select>
+
+</mapper>

@@ -79,9 +79,10 @@ function AdminCommunityPage() {
       <div style={{ marginBottom: '16px', display: 'flex', gap: '8px' }}>
         <select value={category} onChange={(e) => setCategory(e.target.value)}>
           <option value="">카테고리 전체</option>
-          <option value="자유">자유</option>
           <option value="모집">모집</option>
+          <option value="자유">자유</option>
           <option value="후기">후기</option>
+          <option value="정보공유">정보공유</option>
         </select>
 
         <select value={visibleFilter} onChange={(e) => setVisibleFilter(e.target.value)}>
@@ -111,6 +112,7 @@ function AdminCommunityPage() {
         <thead>
           <tr>
             <th>ID</th>
+            <th>카테고리</th>
             <th>제목</th>
             <th>작성자</th>
             <th>조회수</th>
@@ -123,8 +125,8 @@ function AdminCommunityPage() {
           {posts.map((p) => (
             <tr key={p.postId} style={{ opacity: p.postVisible ? 1 : 0.4 }}>
               <td>{p.postId}</td>
+              <td>{p.category || '-'}</td>
 
-              {/* ✅ 제목 클릭 → 상세 페이지 이동 (Link 방식) */}
               <td>
                 <Link
                   to={`/community/detail/${p.postId}`}

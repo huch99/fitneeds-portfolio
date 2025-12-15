@@ -18,6 +18,9 @@
      AND c.comment_visible = 1
 
     <where>
+      <!-- ✅ 커뮤니티 글만 조회 -->
+      AND p.post_type = 'COMMUNITY'
+
       <if test="category != null and category != ''">
         AND p.category = #{category}
       </if>
@@ -59,6 +62,9 @@
      AND c.comment_visible = 1
 
     <where>
+      <!-- ✅ 커뮤니티 글만 카운트 -->
+      AND p.post_type = 'COMMUNITY'
+
       <if test="category != null and category != ''">
         AND p.category = #{category}
       </if>
@@ -80,6 +86,7 @@
       p.*
     FROM community_post p
     WHERE p.post_id = #{postId}
+      AND p.post_type = 'COMMUNITY'
   </select>
 
   <!-- ✅ 숨김 / 보이기 -->
@@ -88,12 +95,14 @@
     SET post_visible = #{postVisible},
         updated_at = NOW()
     WHERE post_id = #{postId}
+      AND post_type = 'COMMUNITY'
   </update>
 
   <!-- ✅ 삭제 -->
   <delete id="deleteCommunityPost">
     DELETE FROM community_post
     WHERE post_id = #{postId}
+      AND post_type = 'COMMUNITY'
   </delete>
 
 </mapper>

@@ -1,100 +1,214 @@
 package com.project.app.community.dto;
 
-import java.time.LocalDateTime;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import java.time.LocalDate;
+import java.util.Date;
 
 public class CommunityPostDto {
 
-    // ===== 공통 =====
     private Long postId;
-    private String postType;      // COMMUNITY / NOTICE / FAQ
-    private String category;      // 자유 / 모집
+    private String postType;
+    private String category;
     private String title;
     private String content;
 
-    // ===== 작성자 =====
-    private Long writerId;        // MEMBER.MBR_ID
-    private String writerType;    // MEMBER / STAFF
+    /** 🔥 작성자 ID (PL 기준: String으로 통일) */
+    private String writerId;
 
-    // ===== 지점 =====
+    private String writerType;
     private Long branchId;
-
-    // ===== 조회/상태 =====
     private Integer views;
-    private Boolean isVisible;
-    private Boolean postVisible;   // ✅ 반드시 필요
+    private Date createdAt;
+    private Date updatedAt;
 
-    // ===== 모집글 전용 =====
+    // 모집 관련
     private String sportType;
     private Integer recruitMax;
-    private LocalDateTime recruitDatetime;
-    private LocalDateTime recruitEndDate;
 
-    // ===== 공지 노출 =====
-    private LocalDateTime displayStart;
-    private LocalDateTime displayEnd;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDate recruitEndDate;
 
-    // ===== 시간 =====
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    /** ⭐ 모집 상태 (DB 없음, Service 계산값) */
+    private String recruitStatus;
 
-    /* =======================
-       Getter / Setter
-     ======================= */
+    private Date displayStart;
+    private Date displayEnd;
+    private Boolean postVisible;
+    private Boolean isVisible;
+    private String attachmentPath;
 
-    public Long getPostId() { return postId; }
-    public void setPostId(Long postId) { this.postId = postId; }
+    /** 🔥 추가: 로그인 사용자 기준 작성자 여부 (DB 컬럼 아님) */
+    private Boolean isWriter;
 
-    public String getPostType() { return postType; }
-    public void setPostType(String postType) { this.postType = postType; }
+    /* ===== getter / setter ===== */
 
-    public String getCategory() { return category; }
-    public void setCategory(String category) { this.category = category; }
+    public Long getPostId() {
+        return postId;
+    }
 
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
+    public void setPostId(Long postId) {
+        this.postId = postId;
+    }
 
-    public String getContent() { return content; }
-    public void setContent(String content) { this.content = content; }
+    public String getPostType() {
+        return postType;
+    }
 
-    public Long getWriterId() { return writerId; }
-    public void setWriterId(Long writerId) { this.writerId = writerId; }
+    public void setPostType(String postType) {
+        this.postType = postType;
+    }
 
-    public String getWriterType() { return writerType; }
-    public void setWriterType(String writerType) { this.writerType = writerType; }
+    public String getCategory() {
+        return category;
+    }
 
-    public Long getBranchId() { return branchId; }
-    public void setBranchId(Long branchId) { this.branchId = branchId; }
+    public void setCategory(String category) {
+        this.category = category;
+    }
 
-    public Integer getViews() { return views; }
-    public void setViews(Integer views) { this.views = views; }
+    public String getTitle() {
+        return title;
+    }
 
-    public Boolean getIsVisible() { return isVisible; }
-    public void setIsVisible(Boolean isVisible) { this.isVisible = isVisible; }
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-    public Boolean getPostVisible() { return postVisible; }
-    public void setPostVisible(Boolean postVisible) { this.postVisible = postVisible; }
+    public String getContent() {
+        return content;
+    }
 
-    public String getSportType() { return sportType; }
-    public void setSportType(String sportType) { this.sportType = sportType; }
+    public void setContent(String content) {
+        this.content = content;
+    }
 
-    public Integer getRecruitMax() { return recruitMax; }
-    public void setRecruitMax(Integer recruitMax) { this.recruitMax = recruitMax; }
+    /** 🔥 writerId : String */
+    public String getWriterId() {
+        return writerId;
+    }
 
-    public LocalDateTime getRecruitDatetime() { return recruitDatetime; }
-    public void setRecruitDatetime(LocalDateTime recruitDatetime) { this.recruitDatetime = recruitDatetime; }
+    public void setWriterId(String writerId) {
+        this.writerId = writerId;
+    }
 
-    public LocalDateTime getRecruitEndDate() { return recruitEndDate; }
-    public void setRecruitEndDate(LocalDateTime recruitEndDate) { this.recruitEndDate = recruitEndDate; }
+    public String getWriterType() {
+        return writerType;
+    }
 
-    public LocalDateTime getDisplayStart() { return displayStart; }
-    public void setDisplayStart(LocalDateTime displayStart) { this.displayStart = displayStart; }
+    public void setWriterType(String writerType) {
+        this.writerType = writerType;
+    }
 
-    public LocalDateTime getDisplayEnd() { return displayEnd; }
-    public void setDisplayEnd(LocalDateTime displayEnd) { this.displayEnd = displayEnd; }
+    public Long getBranchId() {
+        return branchId;
+    }
 
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public void setBranchId(Long branchId) {
+        this.branchId = branchId;
+    }
 
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+    public Integer getViews() {
+        return views;
+    }
+
+    public void setViews(Integer views) {
+        this.views = views;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public String getSportType() {
+        return sportType;
+    }
+
+    public void setSportType(String sportType) {
+        this.sportType = sportType;
+    }
+
+    public Integer getRecruitMax() {
+        return recruitMax;
+    }
+
+    public void setRecruitMax(Integer recruitMax) {
+        this.recruitMax = recruitMax;
+    }
+
+    public LocalDate getRecruitEndDate() {
+        return recruitEndDate;
+    }
+
+    public void setRecruitEndDate(LocalDate recruitEndDate) {
+        this.recruitEndDate = recruitEndDate;
+    }
+
+    public String getRecruitStatus() {
+        return recruitStatus;
+    }
+
+    public void setRecruitStatus(String recruitStatus) {
+        this.recruitStatus = recruitStatus;
+    }
+
+    public Date getDisplayStart() {
+        return displayStart;
+    }
+
+    public void setDisplayStart(Date displayStart) {
+        this.displayStart = displayStart;
+    }
+
+    public Date getDisplayEnd() {
+        return displayEnd;
+    }
+
+    public void setDisplayEnd(Date displayEnd) {
+        this.displayEnd = displayEnd;
+    }
+
+    public Boolean getPostVisible() {
+        return postVisible;
+    }
+
+    public void setPostVisible(Boolean postVisible) {
+        this.postVisible = postVisible;
+    }
+
+    public Boolean getIsVisible() {
+        return isVisible;
+    }
+
+    public void setIsVisible(Boolean isVisible) {
+        this.isVisible = isVisible;
+    }
+
+    public String getAttachmentPath() {
+        return attachmentPath;
+    }
+
+    public void setAttachmentPath(String attachmentPath) {
+        this.attachmentPath = attachmentPath;
+    }
+
+    public Boolean getIsWriter() {
+        return isWriter;
+    }
+
+    public void setIsWriter(Boolean isWriter) {
+        this.isWriter = isWriter;
+    }
 }

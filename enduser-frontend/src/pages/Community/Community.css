@@ -195,3 +195,26 @@
 .community-write-btn:hover {
   background-color: #ffcc00;
 }
+
+.recruit-status-badge {
+  margin-left: 6px;
+  padding: 2px 6px;
+  font-size: 11px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.recruit-open {
+  background: #e6f7ec;
+  color: #1e8e3e;
+}
+
+.recruit-closed {
+  background: #f1f1f1;
+  color: #888;
+}
+
+.community-post-content {
+  white-space: pre-line; /* 🔥 엔터 줄바꿈 반영 */
+  line-height: 1.6;
+}

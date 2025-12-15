@@ -4,8 +4,6 @@ import { HelmetProvider } from 'react-helmet-async';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import './styles/common.css';
-import CommunityUser from './pages/Community/CommunityUser';
-import CommunityUserDetail from './pages/Community/CommunityUserDetail';
 
 
 // Components
@@ -23,6 +21,10 @@ import PortfolioOverview from './pages/PortfolioOverview/PortfolioOverview';
 import PortfolioItem from './pages/PortfolioItem/PortfolioItem';
 import MyPage from './pages/MyPage/MyPage';
 import UsageStatus from './pages/UsageStatus/UsageStatus';
+import CommunityUser from './pages/Community/CommunityUser';
+import CommunityUserDetail from './pages/Community/CommunityUserDetail';
+import CommunityUserWrite from './pages/Community/CommunityUserWrite';
+
 
 function App() {
   useEffect(() => {
@@ -57,6 +59,8 @@ function App() {
 
             <Route path="/community" element={<CommunityUser />} />
             <Route path="/community/:postId" element={<CommunityUserDetail />} />
+            <Route path="/community/write" element={<CommunityUserWrite />} />
+
 
           </Routes>
         </Layout>

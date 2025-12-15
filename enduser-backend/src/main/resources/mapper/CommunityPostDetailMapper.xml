@@ -5,7 +5,10 @@
 
 <mapper namespace="com.project.app.community.mapper.CommunityPostDetailMapper">
 
-  <!-- 커뮤니티 게시글 상세 조회 (USER) -->
+  <!-- =========================
+       커뮤니티 게시글 상세 조회 (USER)
+       🔥 writerId String 기준 통일
+  ========================= -->
   <select id="selectVisiblePostDetail"
           resultType="com.project.app.community.dto.CommunityPostDto">
     SELECT
@@ -14,24 +17,39 @@
       category,
       title,
       content,
-      writer_id,
+
+      -- 🔥 핵심 수정: 작성자 ID를 String으로 변환
+      CAST(writer_id AS CHAR) AS writer_id,
+
       writer_type,
       branch_id,
       views,
       created_at,
-      updated_at
+      updated_at,
+
+      -- 모집 관련
+      sport_type       AS sportType,
+      recruit_max      AS recruitMax,
+      recruit_end_date AS recruitEndDate
+
     FROM community_post
     WHERE post_id = #{postId}
       AND post_visible = 1
   </select>
 
-  <!-- 커뮤니티 댓글 목록 조회 (USER) -->
+  <!-- =========================
+       커뮤니티 댓글 목록 조회 (USER)
+       🔥 댓글 작성자 ID도 String 기준
+  ========================= -->
   <select id="selectVisibleCommentsByPostId"
           resultType="com.project.app.community.dto.CommunityCommentDto">
     SELECT
       comment_id     AS commentId,
       post_id        AS postId,
-      writer_id      AS writerId,
+
+      -- 🔥 핵심 수정
+      CAST(writer_id AS CHAR) AS writerId,
+
       writer_type    AS writerType,
       content,
       created_at     AS createdAt
@@ -41,7 +59,9 @@
     ORDER BY comment_id ASC
   </select>
 
-  <!-- 커뮤니티 댓글 작성 (USER) -->
+  <!-- =========================
+       커뮤니티 댓글 작성 (USER)
+  ========================= -->
   <insert id="insertComment">
     INSERT INTO community_comment (
       post_id,

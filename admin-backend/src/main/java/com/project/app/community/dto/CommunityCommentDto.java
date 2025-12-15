@@ -6,11 +6,30 @@ public class CommunityCommentDto {
 
     private Long commentId;
     private Long postId;
-    private Long writerId;
+
+    /**
+     * 작성자 식별자
+     * - USER  : userId (ex: user1, user23)
+     * - STAFF : staffId (ex: staff3, admin1)
+     */
+    private String writerId;
+
+    /**
+     * 작성자 타입
+     * - USER
+     * - STAFF
+     */
     private String writerType;
+
     private String content;
     private LocalDateTime createdAt;
-    private Integer commentVisible; // 1: 보임, 0: 숨김
+
+    /**
+     * 댓글 노출 여부
+     * 1 : 노출
+     * 0 : 숨김
+     */
+    private Integer commentVisible;
 
     public Long getCommentId() {
         return commentId;
@@ -28,11 +47,11 @@ public class CommunityCommentDto {
         this.postId = postId;
     }
 
-    public Long getWriterId() {
+    public String getWriterId() {
         return writerId;
     }
 
-    public void setWriterId(Long writerId) {
+    public void setWriterId(String writerId) {
         this.writerId = writerId;
     }
 

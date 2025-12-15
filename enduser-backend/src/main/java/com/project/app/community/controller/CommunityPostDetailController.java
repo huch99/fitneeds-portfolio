@@ -23,9 +23,10 @@ public class CommunityPostDetailController {
      */
     @GetMapping("/{postId}")
     public CommunityPostDto getPostDetail(
-            @PathVariable("postId") Long postId
+            @PathVariable("postId") Long postId,
+            @RequestParam(value = "userId", required = false) String userId
     ) {
-        return service.getVisiblePostDetail(postId);
+        return service.getVisiblePostDetail(postId, userId);
     }
 
     /**
@@ -46,6 +47,7 @@ public class CommunityPostDetailController {
             @PathVariable("postId") Long postId,
             @RequestBody CommunityCommentDto commentDto
     ) {
+        commentDto.setWriterType("USER");
         service.createComment(postId, commentDto);
         return ResponseEntity.ok().build();
     }

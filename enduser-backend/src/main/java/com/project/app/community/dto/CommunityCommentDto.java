@@ -6,7 +6,10 @@ public class CommunityCommentDto {
 
     private Long commentId;
     private Long postId;
-    private Long writerId;
+
+    // 🔴 핵심 수정: Long → String
+    private String writerId;
+
     private String writerType;
     private String content;
     private LocalDateTime createdAt;
@@ -29,11 +32,11 @@ public class CommunityCommentDto {
         this.postId = postId;
     }
 
-    public Long getWriterId() {
+    public String getWriterId() {
         return writerId;
     }
 
-    public void setWriterId(Long writerId) {
+    public void setWriterId(String writerId) {
         this.writerId = writerId;
     }
 

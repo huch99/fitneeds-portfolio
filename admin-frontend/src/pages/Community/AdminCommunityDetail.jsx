@@ -39,31 +39,23 @@ function AdminCommunityDetailPage() {
   /* =========================
      ADMIN 댓글 목록 조회 (페이징)
   ========================= */
-/* =========================
-   ADMIN 댓글 목록 조회 (페이징)
-========================= */
-/* =========================
-   ADMIN 댓글 목록 조회 (페이징)
-========================= */
-const fetchComments = async (page = 1) => {
-  try {
-    const response = await axios.get(
-      `/api/admin/community/comments/${id}?page=${page}`
-    );
+  const fetchComments = async (page = 1) => {
+    try {
+      const response = await axios.get(
+        `/api/admin/community/comments/${id}?page=${page}`
+      );
 
-    setComments(response.data.list);          // 댓글 리스트
-    setTotalCount(response.data.totalCount); // 🔥 이게 핵심
-    setCurrentPage(page);
-  } catch (err) {
-    console.error('댓글 조회 실패', err);
-  }
-};
+      setComments(response.data.list);
+      setTotalCount(response.data.totalCount);
+      setCurrentPage(page);
+    } catch (err) {
+      console.error('댓글 조회 실패', err);
+    }
+  };
 
-
-useEffect(() => {
-  fetchComments();
-}, [id]);
-
+  useEffect(() => {
+    fetchComments();
+  }, [id]);
 
   /* =========================
      댓글 숨김 / 보이기
@@ -100,6 +92,19 @@ useEffect(() => {
   };
 
   /* =========================
+     작성자 표시용 함수 (🔥 핵심)
+  ========================= */
+  const renderWriter = (writerType, writerId) => {
+    if (writerType === 'USER') {
+      return `회원 (${writerId})`;
+    }
+    if (writerType === 'STAFF') {
+      return `관리자 (${writerId})`;
+    }
+    return writerId || '-';
+  };
+
+  /* =========================
      페이징 계산
   ========================= */
   const totalPages = Math.ceil(totalCount / pageSize);
@@ -117,8 +122,8 @@ useEffect(() => {
 
       <div style={{ marginBottom: '20px', color: '#777' }}>
         <div>카테고리: {post.category}</div>
-        <div>작성자: {post.writer_id}</div>
-        <div>작성일: {post.created_at}</div>
+        <div>작성자: {post.writerId}</div>
+        <div>작성일: {post.createdAt}</div>
         <div>조회수: {post.views}</div>
       </div>
 
@@ -147,7 +152,7 @@ useEffect(() => {
               style={{ opacity: c.commentVisible === 1 ? 1 : 0.4 }}
             >
               <td>{c.commentId}</td>
-              <td>{c.writerId}</td>
+              <td>{renderWriter(c.writerType, c.writerId)}</td>
               <td>{c.content}</td>
               <td>{c.createdAt}</td>
 

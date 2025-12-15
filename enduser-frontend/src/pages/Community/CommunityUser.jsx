@@ -45,8 +45,7 @@ function CommunityUser() {
       result = result.filter(
         (post) =>
           post.title?.toLowerCase().includes(lowerKeyword) ||
-          post.content?.toLowerCase().includes(lowerKeyword) ||
-          post.writerName?.toLowerCase().includes(lowerKeyword)
+          post.content?.toLowerCase().includes(lowerKeyword)
       );
     }
 
@@ -68,7 +67,25 @@ function CommunityUser() {
     }
   };
 
-  if (loading) return <div className="community-container">로딩 중...</div>;
+  const getRecruitStatusBadge = (post) => {
+    if (post.category !== '모집' || !post.recruitStatus) return null;
+
+    return (
+      <span
+        className={`recruit-status-badge ${
+          post.recruitStatus === '모집중'
+            ? 'recruit-open'
+            : 'recruit-closed'
+        }`}
+      >
+        {post.recruitStatus}
+      </span>
+    );
+  };
+
+  if (loading) {
+    return <div className="community-container">로딩 중...</div>;
+  }
 
   return (
     <div className="community-container">
@@ -77,14 +94,12 @@ function CommunityUser() {
         정보 공유 / 팀원 모집 커뮤니티
       </p>
 
-      {/* 상단 버튼 */}
       <div className="community-top-buttons">
-        <button>전체 목록</button>
-        <button>내가 쓴 글</button>
-        <button>내가 참여한 모집</button>
+        <button onClick={() => fetchPosts()}>전체 목록</button>
+        <button disabled>내가 쓴 글</button>
+        <button disabled>내가 참여한 모집</button>
       </div>
 
-      {/* 필터 & 검색 */}
       <div className="community-filter">
         <select
           value={category}
@@ -99,7 +114,7 @@ function CommunityUser() {
 
         <input
           type="text"
-          placeholder="제목, 내용, 작성자 검색"
+          placeholder="제목, 내용 검색"
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
         />
@@ -107,7 +122,6 @@ function CommunityUser() {
         <button onClick={handleSearch}>검색</button>
       </div>
 
-      {/* 리스트 테이블 */}
       <table className="community-table">
         <thead>
           <tr>
@@ -133,8 +147,9 @@ function CommunityUser() {
                 onClick={() => navigate(`/community/${post.postId}`)}
               >
                 {post.title}
+                {getRecruitStatusBadge(post)}
               </td>
-              <td>{post.writerName || '-'}</td>
+              <td>{post.writerId || '-'}</td>
               <td>{post.createdAt?.substring(0, 10)}</td>
               <td>{post.views}</td>
             </tr>
@@ -142,21 +157,23 @@ function CommunityUser() {
         </tbody>
       </table>
 
-      {/* 하단 영역 */}
       <div className="community-bottom">
         <div className="community-count">
           총 {filteredPosts.length}건
         </div>
 
         <div className="community-pagination">
-          <button>{'<'}</button>
+          <button disabled>{'<'}</button>
           <button className="active">1</button>
-          <button>2</button>
-          <button>3</button>
-          <button>{'>'}</button>
+          <button disabled>{'>'}</button>
         </div>
 
-        <button className="community-write-btn">글쓰기</button>
+        <button
+          className="community-write-btn"
+          onClick={() => navigate('/community/write')}
+        >
+          글쓰기
+        </button>
       </div>
     </div>
   );
