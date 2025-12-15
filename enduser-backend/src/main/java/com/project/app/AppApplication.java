@@ -61,7 +61,7 @@ public class AppApplication {
 				userRepository.save(testUser);
 				System.out.println("[테스트 계정 생성] 아이디: user1, 비밀번호: user1");
 			}
-			
+
 			if (!userRepository.existsByUserId("user2")) {
 				User testUser = new User();
 				testUser.setUserId("user2");
@@ -97,6 +97,24 @@ public class AppApplication {
 				userRepository.save(adminUser);
 				System.out.println("[테스트 계정 생성] 아이디: admin, 비밀번호: admin");
 			}
+
+			// 관리자 계정 생성 (아이디: admin, 비밀번호: admin)
+			if (!userRepository.existsByUserId("fitneeds")) {
+				User adminUser = new User();
+				adminUser.setUserId("fitneeds");
+				adminUser.setEmail("fitneeds@naver.com");
+				adminUser.setUserName("fitneeds");
+				adminUser.setPassword(passwordEncoder.encode("fullstack2025"));
+				adminUser.setRole("ADMIN"); // 관리자 권한
+				adminUser.setCashPoint(0);
+				adminUser.setGradePoint(0);
+				adminUser.setPhoneNumber("01099991234");
+				adminUser.setAgreeAt(LocalDateTime.now());
+				adminUser.setIsActive(true);
+				userRepository.save(adminUser);
+				System.out.println("[테스트 계정 생성] 아이디: fitneeds, 비밀번호: fullstack2025");
+			}
+
 		};
 	}
 
