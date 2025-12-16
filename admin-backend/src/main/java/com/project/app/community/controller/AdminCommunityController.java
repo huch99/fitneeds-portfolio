@@ -2,10 +2,10 @@ package com.project.app.community.controller;
 
 import com.project.app.community.dto.CommunityPostDto;
 import com.project.app.community.service.AdminCommunityService;
+import com.project.app.community.service.AdminCommunityService.AdminPagedResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -33,21 +33,21 @@ public class AdminCommunityController {
             @RequestParam(name = "orderType", required = false) String orderType,
             @RequestParam(name = "page", defaultValue = "1") int page
     ) {
-        List<CommunityPostDto> list =
-                adminCommunityService.getCommunityPostList(
-                        category, keyword, visible, orderType, page
-                );
-
-        int totalCount =
-                adminCommunityService.getCommunityPostCount(
-                        category, keyword, visible
+        AdminPagedResult<CommunityPostDto> pagedResult =
+                adminCommunityService.getCommunityPostPaged(
+                        category,
+                        keyword,
+                        visible,
+                        orderType,
+                        page
                 );
 
         Map<String, Object> result = new HashMap<>();
-        result.put("list", list);
-        result.put("totalCount", totalCount);
-        result.put("page", page);
+        result.put("list", pagedResult.getList());
+        result.put("totalCount", pagedResult.getTotalCount());
+        result.put("page", pagedResult.getCurrentPage());
         result.put("pageSize", 10);
+        result.put("totalPages", pagedResult.getTotalPages());
 
         return result;
     }

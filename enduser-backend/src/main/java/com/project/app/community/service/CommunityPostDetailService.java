@@ -20,11 +20,15 @@ public class CommunityPostDetailService {
 
     /**
      * 게시글 상세 조회 (USER)
+     * - 🔥 상세 진입 시 조회수 +1 (중복 허용)
      * - 모집 글인 경우 모집 상태(recruitStatus) 자동 계산
-     * - 🔥 로그인 사용자 기준 작성자 여부 계산
+     * - 로그인 사용자 기준 작성자 여부 계산
      */
-    @Transactional(readOnly = true)
+    @Transactional
     public CommunityPostDto getVisiblePostDetail(Long postId, String loginUserId) {
+
+        // 🔥 조회수 증가 (USER 전용)
+        mapper.increaseViewCount(postId);
 
         CommunityPostDto post = mapper.selectVisiblePostDetail(postId);
 
@@ -45,10 +49,10 @@ public class CommunityPostDetailService {
             }
         }
 
-        // 🔥 작성자 여부 판단 (핵심)
+        // 🔥 작성자 여부 판단
         if (loginUserId != null && post.getWriterId() != null) {
             post.setIsWriter(
-                loginUserId.equals(String.valueOf(post.getWriterId()))
+                    loginUserId.equals(String.valueOf(post.getWriterId()))
             );
         } else {
             post.setIsWriter(false);

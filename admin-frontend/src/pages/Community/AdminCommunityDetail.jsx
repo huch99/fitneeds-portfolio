@@ -127,9 +127,18 @@ function AdminCommunityDetailPage() {
         <div>조회수: {post.views}</div>
       </div>
 
-      <div style={{ padding: '15px', background: '#f8f8f8', marginBottom: '30px' }}>
+      <div
+        style={{
+          padding: '15px',
+          background: '#f8f8f8',
+          marginBottom: '30px',
+          whiteSpace: 'pre-line',   // 🔥 엔터 줄바꿈
+          lineHeight: 1.6
+        }}
+      >
         {post.content}
       </div>
+
 
       <h3>댓글 ({totalCount})</h3>
 
@@ -153,7 +162,15 @@ function AdminCommunityDetailPage() {
             >
               <td>{c.commentId}</td>
               <td>{renderWriter(c.writerType, c.writerId)}</td>
-              <td>{c.content}</td>
+              <td
+                style={{
+                  whiteSpace: 'pre-line',   // 🔥 엔터 줄바꿈
+                  lineHeight: 1.5
+                }}
+              >
+                {c.content}
+              </td>
+
               <td>{c.createdAt}</td>
 
               <td>

@@ -13,7 +13,7 @@ public class CommunityPostDto {
     private String title;
     private String content;
 
-    /** 🔥 작성자 ID (PL 기준: String으로 통일) */
+    /** 작성자 ID */
     private String writerId;
 
     private String writerType;
@@ -26,10 +26,13 @@ public class CommunityPostDto {
     private String sportType;
     private Integer recruitMax;
 
+    /** 🔥 현재 참여자 수 (JOIN 결과, DB 컬럼 아님) */
+    private Long recruitCount;
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate recruitEndDate;
 
-    /** ⭐ 모집 상태 (DB 없음, Service 계산값) */
+    /** 🔥 모집 상태 (Service 계산값) */
     private String recruitStatus;
 
     private Date displayStart;
@@ -38,7 +41,7 @@ public class CommunityPostDto {
     private Boolean isVisible;
     private String attachmentPath;
 
-    /** 🔥 추가: 로그인 사용자 기준 작성자 여부 (DB 컬럼 아님) */
+    /** 로그인 사용자 기준 작성자 여부 */
     private Boolean isWriter;
 
     /* ===== getter / setter ===== */
@@ -83,7 +86,6 @@ public class CommunityPostDto {
         this.content = content;
     }
 
-    /** 🔥 writerId : String */
     public String getWriterId() {
         return writerId;
     }
@@ -147,6 +149,15 @@ public class CommunityPostDto {
     public void setRecruitMax(Integer recruitMax) {
         this.recruitMax = recruitMax;
     }
+
+    public Long getRecruitCount() {
+        return recruitCount;
+    }
+
+    public void setRecruitCount(Long recruitCount) {
+        this.recruitCount = recruitCount;
+    }
+
 
     public LocalDate getRecruitEndDate() {
         return recruitEndDate;

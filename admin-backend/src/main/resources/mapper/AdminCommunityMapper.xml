@@ -5,7 +5,10 @@
 
 <mapper namespace="com.project.app.community.mapper.AdminCommunityMapper">
 
-  <!-- ✅ ADMIN 커뮤니티 목록 (검색 + 필터 + 정렬 + 댓글수 + 페이징) -->
+  <!-- ✅ ADMIN 커뮤니티 목록 (검색 + 정렬 + 댓글수 + 페이징)
+       - 기본: 숨김글 포함 전체 조회
+       - post_visible은 상태값으로만 사용 (필터 아님)
+  -->
   <select id="selectCommunityPostList"
           resultType="com.project.app.community.dto.CommunityPostDto">
 
@@ -18,7 +21,6 @@
      AND c.comment_visible = 1
 
     <where>
-      <!-- ✅ 커뮤니티 글만 조회 -->
       AND p.post_type = 'COMMUNITY'
 
       <if test="category != null and category != ''">
@@ -29,6 +31,7 @@
         AND p.title LIKE CONCAT('%', #{keyword}, '%')
       </if>
 
+      <!-- 🔹 확장용 필터 (기본 ADMIN 목록에서는 사용하지 않음) -->
       <if test="visible != null">
         AND p.post_visible = #{visible}
       </if>
@@ -44,16 +47,15 @@
         ORDER BY commentCount DESC
       </when>
       <otherwise>
-        ORDER BY p.post_id DESC
+        ORDER BY p.created_at DESC
       </otherwise>
     </choose>
 
-    <!-- ✅ 페이징 -->
     LIMIT #{limit} OFFSET #{offset}
 
   </select>
 
-  <!-- ✅ ADMIN 커뮤니티 전체 건수 (페이징용 COUNT) -->
+  <!-- ✅ ADMIN 커뮤니티 전체 건수 (페이징용) -->
   <select id="selectCommunityPostCount" resultType="int">
     SELECT COUNT(DISTINCT p.post_id)
     FROM community_post p
@@ -62,7 +64,6 @@
      AND c.comment_visible = 1
 
     <where>
-      <!-- ✅ 커뮤니티 글만 카운트 -->
       AND p.post_type = 'COMMUNITY'
 
       <if test="category != null and category != ''">
@@ -73,6 +74,7 @@
         AND p.title LIKE CONCAT('%', #{keyword}, '%')
       </if>
 
+      <!-- 🔹 확장용 필터 -->
       <if test="visible != null">
         AND p.post_visible = #{visible}
       </if>
@@ -82,8 +84,7 @@
   <!-- ✅ ADMIN 커뮤니티 게시글 상세 조회 -->
   <select id="selectCommunityPostDetail"
           resultType="com.project.app.community.dto.CommunityPostDto">
-    SELECT
-      p.*
+    SELECT p.*
     FROM community_post p
     WHERE p.post_id = #{postId}
       AND p.post_type = 'COMMUNITY'

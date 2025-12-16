@@ -1,10 +1,12 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import "./CommunityWrite.css";
 
 function CommunityUserWrite() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const editPostId = searchParams.get("edit"); // 🔥 수정 모드 판단
 
   const [category, setCategory] = useState("자유");
   const [title, setTitle] = useState("");
@@ -14,10 +16,9 @@ function CommunityUserWrite() {
   const [sportType, setSportType] = useState("");
   const [recruitMax, setRecruitMax] = useState(2);
   const [recruitEndDate, setRecruitEndDate] = useState("");
-  const [guide, setGuide] = useState("");
 
   /* =========================
-     모집 종료일 선택 제한
+     날짜 제한
   ========================= */
   const today = new Date();
   const minDate = today.toISOString().split("T")[0];
@@ -26,6 +27,35 @@ function CommunityUserWrite() {
   maxDateObj.setDate(today.getDate() + 30);
   const maxDate = maxDateObj.toISOString().split("T")[0];
 
+  /* =========================
+     🔥 수정 모드: 기존 글 조회
+  ========================= */
+  useEffect(() => {
+    if (!editPostId) return;
+
+    const fetchPost = async () => {
+      try {
+        const res = await axios.get(`/api/user/community/${editPostId}`);
+        const post = res.data;
+
+        setCategory(post.category);
+        setTitle(post.title);
+        setContent(post.content);
+        setSportType(post.sportType || "");
+        setRecruitMax(post.recruitMax || 2);
+        setRecruitEndDate(post.recruitEndDate || "");
+      } catch (e) {
+        alert("게시글 정보를 불러오지 못했습니다.");
+        navigate(-1);
+      }
+    };
+
+    fetchPost();
+  }, [editPostId, navigate]);
+
+  /* =========================
+     등록 / 수정 처리
+  ========================= */
   const submitPost = async () => {
     if (!title || !content) {
       alert("제목과 내용을 입력해주세요.");
@@ -38,38 +68,44 @@ function CommunityUserWrite() {
     }
 
     const loginUserId = localStorage.getItem("userId");
-
     if (!loginUserId) {
       alert("로그인이 필요합니다.");
       return;
     }
 
+    const payload = {
+      category,
+      title,
+      content,
+      writerId: loginUserId,
+      sportType: category === "모집" ? sportType : null,
+      recruitMax: category === "모집" ? recruitMax : null,
+      recruitEndDate: category === "모집" ? recruitEndDate : null,
+    };
+
     try {
-      await axios.post("/api/user/community", {
-        postType: "COMMUNITY",
-        category,
-        title,
-        content,
-
-        // 🔥 핵심 수정: 작성자 ID 전달
-        writerId: loginUserId,
-
-        // 모집 전용
-        sportType: category === "모집" ? sportType : null,
-        recruitMax: category === "모집" ? recruitMax : null,
-        recruitEndDate: category === "모집" ? recruitEndDate : null
-      });
-
-      alert("등록되었습니다.");
-      navigate("/community");
+      if (editPostId) {
+        // ✏️ 수정
+        await axios.put(
+          `/api/user/community/${editPostId}?userId=${loginUserId}`,
+          payload
+        );
+        alert("수정되었습니다.");
+        navigate(`/community/${editPostId}`);
+      } else {
+        // 🆕 신규 등록
+        await axios.post("/api/user/community", payload);
+        alert("등록되었습니다.");
+        navigate("/community");
+      }
     } catch (e) {
-      alert("글 등록 실패");
+      alert(editPostId ? "글 수정 실패" : "글 등록 실패");
     }
   };
 
   return (
     <div className="write-container">
-      <h2 className="write-title">글쓰기</h2>
+      <h2 className="write-title">{editPostId ? "글 수정" : "글쓰기"}</h2>
       <p className="write-desc">
         커뮤니티에 글을 작성합니다. 모집 선택 시 추가 항목이 나타납니다.
       </p>
@@ -129,9 +165,7 @@ function CommunityUserWrite() {
               <div>
                 <button
                   type="button"
-                  onClick={() =>
-                    setRecruitMax((prev) => Math.max(1, prev - 1))
-                  }
+                  onClick={() => setRecruitMax((prev) => Math.max(1, prev - 1))}
                 >
                   -
                 </button>
@@ -154,26 +188,15 @@ function CommunityUserWrite() {
                 max={maxDate}
                 onChange={(e) => setRecruitEndDate(e.target.value)}
               />
-              <p className="recruit-help">
-                ※ 모집 시작일은 게시글 등록 시점으로 자동 설정되며,
-                종료일은 최대 30일까지만 선택할 수 있습니다.
-              </p>
             </div>
           </div>
-
-          <textarea
-            rows={3}
-            placeholder="참여 시 유의사항, 준비물 등을 적어주세요."
-            value={guide}
-            onChange={(e) => setGuide(e.target.value)}
-          />
         </div>
       )}
 
       <div className="write-actions">
         <button onClick={() => navigate(-1)}>목록으로</button>
         <button className="submit-btn" onClick={submitPost}>
-          등록하기
+          {editPostId ? "수정하기" : "등록하기"}
         </button>
       </div>
     </div>

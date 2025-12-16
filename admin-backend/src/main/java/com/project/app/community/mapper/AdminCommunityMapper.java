@@ -11,12 +11,13 @@ public interface AdminCommunityMapper {
 
     /**
      * ADMIN 커뮤니티 목록 조회
-     * - 검색
-     * - 카테고리
-     * - 노출 여부
-     * - 정렬
-     * - 페이징
+     * - 검색 (keyword)
+     * - 카테고리 (category)
+     * - 정렬 (orderType)
+     * - 페이징 (limit / offset)
      * - 댓글 수 포함
+     * - 기본: 숨김글 포함 전체 조회
+     * - visible: 선택적 관리자 필터 (기본 사용 안 함)
      */
     List<CommunityPostDto> selectCommunityPostList(
             @Param("category") String category,
@@ -29,6 +30,7 @@ public interface AdminCommunityMapper {
 
     /**
      * ADMIN 커뮤니티 전체 건수 (페이징용)
+     * - visible: 선택적 관리자 필터
      */
     int selectCommunityPostCount(
             @Param("category") String category,
@@ -54,5 +56,7 @@ public interface AdminCommunityMapper {
     /**
      * ADMIN 커뮤니티 글 삭제
      */
-    void deleteCommunityPost(@Param("postId") Long postId);
+    void deleteCommunityPost(
+            @Param("postId") Long postId
+    );
 }

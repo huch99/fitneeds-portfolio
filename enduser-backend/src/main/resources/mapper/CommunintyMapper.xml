@@ -5,7 +5,9 @@
 
 <mapper namespace="com.project.app.community.mapper.CommunityPostMapper">
 
-    <!-- USER 커뮤니티 글 등록 -->
+    <!-- =========================
+         USER 커뮤니티 글 등록
+         ========================= -->
     <insert id="insertCommunityPost"
             parameterType="com.project.app.community.dto.CommunityPostDto"
             useGeneratedKeys="true"
@@ -53,63 +55,182 @@
         )
     </insert>
 
-    <!-- USER 커뮤니티 글 목록 조회 -->
+    <!-- =========================
+         USER 커뮤니티 전체 글 목록 조회
+         (기존 유지)
+         ========================= -->
     <select id="selectVisibleCommunityPostList"
             resultType="com.project.app.community.dto.CommunityPostDto">
 
         SELECT
-            post_id          AS postId,
-            post_type        AS postType,
-            category,
-            title,
-            content,
-            writer_id        AS writerId,
-            writer_type      AS writerType,
-            branch_id        AS branchId,
-            views,
-            is_visible       AS isVisible,
-            post_visible     AS postVisible,
-            sport_type       AS sportType,
-            recruit_max      AS recruitMax,
-            recruit_end_date AS recruitEndDate,
-            display_start    AS displayStart,
-            display_end      AS displayEnd,
-            created_at       AS createdAt,
-            updated_at       AS updatedAt
+            cp.post_id          AS postId,
+            cp.post_type        AS postType,
+            cp.category,
+            cp.title,
+            cp.content,
+            cp.writer_id        AS writerId,
+            cp.writer_type      AS writerType,
+            cp.branch_id        AS branchId,
+            cp.views,
+            cp.is_visible       AS isVisible,
+            cp.post_visible     AS postVisible,
+            cp.sport_type       AS sportType,
+            cp.recruit_max      AS recruitMax,
+            cp.recruit_end_date AS recruitEndDate,
+            cp.display_start    AS displayStart,
+            cp.display_end      AS displayEnd,
+            cp.created_at       AS createdAt,
+            cp.updated_at       AS updatedAt,
+
+            COUNT(crj.join_id)  AS recruitCount
+
+        FROM community_post cp
+        LEFT JOIN community_recruit_join crj
+               ON crj.post_id = cp.post_id
+
+        WHERE cp.post_type = 'COMMUNITY'
+          AND cp.is_visible = 1
+          AND cp.post_visible = 1
+
+        GROUP BY cp.post_id
+        ORDER BY cp.created_at DESC
+    </select>
+
+    <!-- =========================
+         ✅ USER 커뮤니티 전체 글 목록 조회 (페이징)
+         ========================= -->
+    <select id="selectVisibleCommunityPostListPaged"
+            parameterType="map"
+            resultType="com.project.app.community.dto.CommunityPostDto">
+
+        SELECT
+            cp.post_id          AS postId,
+            cp.post_type        AS postType,
+            cp.category,
+            cp.title,
+            cp.content,
+            cp.writer_id        AS writerId,
+            cp.writer_type      AS writerType,
+            cp.branch_id        AS branchId,
+            cp.views,
+            cp.is_visible       AS isVisible,
+            cp.post_visible     AS postVisible,
+            cp.sport_type       AS sportType,
+            cp.recruit_max      AS recruitMax,
+            cp.recruit_end_date AS recruitEndDate,
+            cp.display_start    AS displayStart,
+            cp.display_end      AS displayEnd,
+            cp.created_at       AS createdAt,
+            cp.updated_at       AS updatedAt,
+
+            COUNT(crj.join_id)  AS recruitCount
+
+        FROM (
+            SELECT post_id
+            FROM community_post
+            WHERE post_type = 'COMMUNITY'
+              AND is_visible = 1
+              AND post_visible = 1
+            ORDER BY created_at DESC
+            LIMIT #{size} OFFSET #{offset}
+        ) ids
+        JOIN community_post cp
+          ON cp.post_id = ids.post_id
+        LEFT JOIN community_recruit_join crj
+               ON crj.post_id = cp.post_id
+
+        GROUP BY cp.post_id
+        ORDER BY cp.created_at DESC
+    </select>
+
+    <!-- =========================
+         ✅ USER 커뮤니티 전체 글 개수 조회 (페이징용)
+         ========================= -->
+    <select id="selectVisibleCommunityPostCount" resultType="int">
+        SELECT COUNT(*)
         FROM community_post
         WHERE post_type = 'COMMUNITY'
           AND is_visible = 1
           AND post_visible = 1
-        ORDER BY created_at DESC
     </select>
 
-    <!-- USER 커뮤니티 상세 조회 -->
+    <!-- =========================
+         🔥 내가 쓴 글 목록 조회
+         ========================= -->
+    <select id="selectMyCommunityPostList"
+        parameterType="string"
+        resultType="com.project.app.community.dto.CommunityPostDto">
+
+    SELECT
+        cp.post_id          AS postId,
+        cp.post_type        AS postType,
+        cp.category,
+        cp.title,
+        cp.content,
+        cp.writer_id        AS writerId,
+        cp.writer_type      AS writerType,
+        cp.views,
+        cp.is_visible       AS isVisible,
+        cp.post_visible     AS postVisible,
+        cp.sport_type       AS sportType,
+        cp.recruit_max      AS recruitMax,
+        cp.recruit_end_date AS recruitEndDate,
+        cp.created_at       AS createdAt,
+        cp.updated_at       AS updatedAt,
+        COUNT(crj.join_id)  AS recruitCount
+
+    FROM community_post cp
+    LEFT JOIN community_recruit_join crj
+           ON crj.post_id = cp.post_id
+
+    WHERE cp.writer_id = #{userId}
+      AND cp.post_type = 'COMMUNITY'
+      AND cp.post_visible = 1
+
+    GROUP BY cp.post_id
+    ORDER BY cp.created_at DESC
+
+</select>
+
+
+    <!-- =========================
+         USER 커뮤니티 상세 조회
+         ========================= -->
     <select id="selectCommunityPostDetail"
             parameterType="long"
             resultType="com.project.app.community.dto.CommunityPostDto">
+        ...
+    </select>
 
-        SELECT
-            post_id          AS postId,
-            post_type        AS postType,
-            category,
-            title,
-            content,
-            writer_id        AS writerId,
-            writer_type      AS writerType,
-            branch_id        AS branchId,
-            views,
-            is_visible       AS isVisible,
-            post_visible     AS postVisible,
-            sport_type       AS sportType,
-            recruit_max      AS recruitMax,
-            recruit_end_date AS recruitEndDate,
-            display_start    AS displayStart,
-            display_end      AS displayEnd,
-            created_at       AS createdAt,
-            updated_at       AS updatedAt
-        FROM community_post
+    <!-- =========================
+         🔒 작성자 본인 여부 체크
+         ========================= -->
+    <select id="countByPostIdAndWriterId" resultType="int">
+        ...
+    </select>
+
+    <!-- =========================
+         ✏️ 내가 쓴 글 수정
+         ========================= -->
+    <update id="updateCommunityPost">
+        ...
+    </update>
+
+    <!-- =========================
+         🗑 내가 쓴 글 삭제 (소프트 삭제)
+         ========================= -->
+    <update id="deleteCommunityPost">
+        ...
+    </update>
+
+    <!-- =========================
+         🔥 조회수 증가 (USER 상세 진입 시)
+         ========================= -->
+    <update id="increaseViews" parameterType="long">
+        UPDATE community_post
+        SET views = views + 1
         WHERE post_id = #{postId}
           AND post_visible = 1
-    </select>
+    </update>
 
 </mapper>

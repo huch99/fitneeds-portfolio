@@ -3,45 +3,49 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './Community.css';
 
-function CommunityUser() {
+function CommunityMyPostList() {
   const navigate = useNavigate();
 
   const [posts, setPosts] = useState([]);
   const [filteredPosts, setFilteredPosts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // 🔥 페이징 상태
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-
   // UI 상태
   const [category, setCategory] = useState('전체');
   const [keyword, setKeyword] = useState('');
 
-  const fetchPosts = async (pageNumber = 1) => {
-    setLoading(true);
-    try {
-      const res = await axios.get('/api/user/community', {
-        params: { page: pageNumber },
-      });
+  const loginUserId = localStorage.getItem('userId');
 
-      setPosts(res.data.list);
-      setFilteredPosts(res.data.list);
-      setTotalPages(res.data.totalPages);
-      setPage(res.data.currentPage);
+  /* =========================
+     내가 쓴 글 목록 조회
+  ========================= */
+  const fetchMyPosts = async () => {
+    if (!loginUserId) {
+      alert('로그인이 필요합니다.');
+      navigate('/community');
+      return;
+    }
+
+    try {
+      const res = await axios.get(
+        '/api/user/community/my-posts',
+        { params: { userId: loginUserId } }
+      );
+      setPosts(res.data);
+      setFilteredPosts(res.data);
     } catch (e) {
-      alert('커뮤니티 목록 조회 실패');
+      alert('내가 쓴 글 조회 실패');
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchPosts(1);
+    fetchMyPosts();
   }, []);
 
   /* =========================
-     검색 / 필터 적용
+     검색 / 필터
   ========================= */
   const handleSearch = () => {
     let result = [...posts];
@@ -78,21 +82,22 @@ function CommunityUser() {
   };
 
   const getRecruitStatusBadge = (post) => {
-    if (post.category !== '모집') return null;
-    if (!post.recruitStatus) return null;
+  if (post.category !== '모집') return null;
+  if (!post.recruitStatus) return null;
 
-    const isClosed = post.recruitStatus === '모집종료';
+  const isClosed = post.recruitStatus === '모집종료';
 
-    return (
-      <span
-        className={`recruit-status-badge ${
-          isClosed ? 'recruit-closed' : 'recruit-open'
-        }`}
-      >
-        {post.recruitStatus}
-      </span>
-    );
-  };
+  return (
+    <span
+      className={`recruit-status-badge ${
+        isClosed ? 'recruit-closed' : 'recruit-open'
+      }`}
+    >
+      {post.recruitStatus}
+    </span>
+  );
+};
+
 
   if (loading) {
     return <div className="community-container">로딩 중...</div>;
@@ -100,18 +105,14 @@ function CommunityUser() {
 
   return (
     <div className="community-container">
-      <h2 className="community-title">FITNEEDS 커뮤니티</h2>
+      <h2 className="community-title">내가 쓴 글</h2>
       <p className="community-subtitle">
-        정보 공유 / 팀원 모집 커뮤니티
+        내가 작성한 커뮤니티 글 목록입니다
       </p>
 
       <div className="community-top-buttons">
-        <button onClick={() => fetchPosts(1)}>전체 목록</button>
-
-        <button onClick={() => navigate('/community/my-posts')}>
-          내가 쓴 글
-        </button>
-
+        <button onClick={() => navigate('/community')}>전체 목록</button>
+        <button className="active">내가 쓴 글</button>
         <button onClick={() => navigate('/community/my-recruits')}>
           내가 참여한 모집
         </button>
@@ -145,66 +146,44 @@ function CommunityUser() {
             <th>번호</th>
             <th>카테고리</th>
             <th>제목</th>
-            <th>작성자</th>
             <th>작성일</th>
             <th>조회</th>
           </tr>
         </thead>
         <tbody>
-          {filteredPosts.map((post) => (
-            <tr key={post.postId}>
-              <td>{post.postId}</td>
-              <td>
-                <span className={getCategoryClass(post.category)}>
-                  {post.category || '-'}
-                </span>
+          {filteredPosts.length === 0 ? (
+            <tr>
+              <td colSpan="5" style={{ textAlign: 'center', padding: '20px' }}>
+                작성한 글이 없습니다.
               </td>
-              <td
-                className="community-title-link"
-                onClick={() => navigate(`/community/${post.postId}`)}
-              >
-                {post.title}
-                {getRecruitStatusBadge(post)}
-              </td>
-              <td>{post.writerId || '-'}</td>
-              <td>{post.createdAt?.substring(0, 10)}</td>
-              <td>{post.views}</td>
             </tr>
-          ))}
+          ) : (
+            filteredPosts.map((post) => (
+              <tr key={post.postId}>
+                <td>{post.postId}</td>
+                <td>
+                  <span className={getCategoryClass(post.category)}>
+                    {post.category}
+                  </span>
+                </td>
+                <td
+                  className="community-title-link"
+                  onClick={() => navigate(`/community/${post.postId}`)}
+                >
+                  {post.title}
+                  {getRecruitStatusBadge(post)}
+                </td>
+                <td>{post.createdAt?.substring(0, 10)}</td>
+                <td>{post.views}</td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
 
       <div className="community-bottom">
         <div className="community-count">
           총 {filteredPosts.length}건
-        </div>
-
-        <div className="community-pagination">
-          <button
-            disabled={page === 1}
-            onClick={() => fetchPosts(page - 1)}
-          >
-            {'<'}
-          </button>
-
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-            (p) => (
-              <button
-                key={p}
-                className={p === page ? 'active' : ''}
-                onClick={() => fetchPosts(p)}
-              >
-                {p}
-              </button>
-            )
-          )}
-
-          <button
-            disabled={page === totalPages}
-            onClick={() => fetchPosts(page + 1)}
-          >
-            {'>'}
-          </button>
         </div>
 
         <button
@@ -218,4 +197,4 @@ function CommunityUser() {
   );
 }
 
-export default CommunityUser;
+export default CommunityMyPostList;

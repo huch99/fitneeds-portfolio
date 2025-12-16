@@ -18,13 +18,7 @@ public class AdminCommunityService {
     }
 
     /**
-     * ADMIN 커뮤니티 목록 조회 (페이징)
-     *
-     * @param category 카테고리
-     * @param keyword  검색어
-     * @param visible  노출 여부 (1: 보이기, 0: 숨김, null: 전체)
-     * @param orderType 정렬 기준 (views / comments / null)
-     * @param page 페이지 번호 (1부터 시작)
+     * ADMIN 커뮤니티 목록 조회 (기존 유지)
      */
     public List<CommunityPostDto> getCommunityPostList(
             String category,
@@ -46,7 +40,7 @@ public class AdminCommunityService {
     }
 
     /**
-     * ADMIN 커뮤니티 전체 개수 (페이징용)
+     * ADMIN 커뮤니티 전체 개수 (기존 유지)
      */
     public int getCommunityPostCount(
             String category,
@@ -57,6 +51,46 @@ public class AdminCommunityService {
                 category,
                 keyword,
                 visible
+        );
+    }
+
+    /**
+     * ✅ ADMIN 커뮤니티 목록 조회 (페이징 전용)
+     * - 기본: 숨김글 포함
+     */
+    public AdminPagedResult<CommunityPostDto> getCommunityPostPaged(
+            String category,
+            String keyword,
+            Integer visible,
+            String orderType,
+            int page
+    ) {
+        int offset = (page - 1) * PAGE_SIZE;
+
+        List<CommunityPostDto> list =
+                adminCommunityMapper.selectCommunityPostList(
+                        category,
+                        keyword,
+                        visible,
+                        orderType,
+                        PAGE_SIZE,
+                        offset
+                );
+
+        int totalCount =
+                adminCommunityMapper.selectCommunityPostCount(
+                        category,
+                        keyword,
+                        visible
+                );
+
+        int totalPages = (int) Math.ceil((double) totalCount / PAGE_SIZE);
+
+        return new AdminPagedResult<>(
+                list,
+                page,
+                totalPages,
+                totalCount
         );
     }
 
@@ -79,5 +113,39 @@ public class AdminCommunityService {
      */
     public void deleteCommunityPost(Long postId) {
         adminCommunityMapper.deleteCommunityPost(postId);
+    }
+
+    /**
+     * ✅ ADMIN 전용 페이징 결과 클래스
+     * - import 문제 방지용
+     */
+    public static class AdminPagedResult<T> {
+        private List<T> list;
+        private int currentPage;
+        private int totalPages;
+        private int totalCount;
+
+        public AdminPagedResult(List<T> list, int currentPage, int totalPages, int totalCount) {
+            this.list = list;
+            this.currentPage = currentPage;
+            this.totalPages = totalPages;
+            this.totalCount = totalCount;
+        }
+
+        public List<T> getList() {
+            return list;
+        }
+
+        public int getCurrentPage() {
+            return currentPage;
+        }
+
+        public int getTotalPages() {
+            return totalPages;
+        }
+
+        public int getTotalCount() {
+            return totalCount;
+        }
     }
 }

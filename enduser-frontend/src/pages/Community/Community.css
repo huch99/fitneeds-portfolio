@@ -218,3 +218,180 @@
   white-space: pre-line; /* 🔥 엔터 줄바꿈 반영 */
   line-height: 1.6;
 }
+
+/* =========================
+   글/댓글 액션 버튼 (수정/삭제)
+========================= */
+.community-action-btn {
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: none;
+  background-color: #ffd84d;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-left: 6px;
+}
+
+.community-action-btn:hover {
+  background-color: #ffcc00;
+}
+
+/* 삭제 버튼은 톤만 살짝 다운 */
+.community-action-btn.delete {
+  background-color: #f1f1f1;
+  color: #666;
+}
+
+.community-action-btn.delete:hover {
+  background-color: #e0e0e0;
+}
+
+/* =========================
+   댓글 작성 영역
+========================= */
+.comment-write-box {
+  margin-top: 20px;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fffdf2;
+}
+
+.comment-textarea {
+  width: 100%;
+  min-height: 80px;
+  resize: vertical;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  line-height: 1.5;
+  box-sizing: border-box;
+}
+
+.comment-textarea:focus {
+  outline: none;
+  border-color: #ffd84d;
+  background-color: #ffffff;
+}
+
+/* 댓글 작성 버튼 */
+.comment-submit-btn {
+  margin-top: 10px;
+  padding: 8px 18px;
+  border-radius: 8px;
+  border: none;
+  background-color: #ffd84d;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.comment-submit-btn:hover {
+  background-color: #ffcc00;
+}
+
+/* =========================
+   모집 참여자 목록 (작성자용)
+========================= */
+.recruit-join-box {
+  margin-top: 30px;
+  padding: 16px;
+  border-radius: 10px;
+  background-color: #fffdf2;
+  border: 1px solid #ffe082;
+}
+
+.recruit-join-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.recruit-join-header h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.recruit-join-count {
+  font-size: 13px;
+  font-weight: 700;
+  color: #ff9800;
+  background: #fff3c4;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.recruit-empty-text {
+  font-size: 13px;
+  color: #999;
+  margin: 10px 0 0;
+}
+
+.recruit-join-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.recruit-join-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  margin-bottom: 6px;
+  border-radius: 6px;
+  background: white;
+  border: 1px solid #f0f0f0;
+  font-size: 14px;
+}
+
+.recruit-join-item:last-child {
+  margin-bottom: 0;
+}
+
+.recruit-user-icon {
+  font-size: 16px;
+}
+
+.recruit-user-id {
+  font-weight: 600;
+  color: #333;
+}
+
+/* =========================
+   모집 참여 버튼
+========================= */
+.recruit-apply-btn {
+  margin-top: 12px;
+  padding: 8px 18px;
+  border-radius: 8px;
+  border: none;
+  background-color: #ffd84d; /* community-action-btn 톤 */
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.recruit-apply-btn:hover {
+  background-color: #ffcc00;
+}
+
+/* 참여 취소 (삭제/취소 톤 재사용) */
+.recruit-cancel-btn {
+  margin-top: 12px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background-color: #f1f1f1;
+  font-size: 13px;
+  font-weight: 600;
+  color: #666;
+  cursor: pointer;
+}
+
+.recruit-cancel-btn:hover {
+  background-color: #e0e0e0;
+}

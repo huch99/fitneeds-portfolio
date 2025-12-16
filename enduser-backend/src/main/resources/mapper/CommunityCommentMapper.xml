@@ -29,4 +29,39 @@
 
     </select>
 
+    <!-- =========================
+         🔒 댓글 작성자 본인 여부 체크
+         ========================= -->
+    <select id="countByCommentIdAndWriterId"
+            resultType="int">
+        SELECT COUNT(*)
+        FROM community_comment
+        WHERE comment_id = #{commentId}
+          AND writer_id = #{writerId}
+          AND comment_visible = 1
+    </select>
+
+    <!-- =========================
+         ✏️ 댓글 수정 (본인만)
+         ========================= -->
+   <update id="updateCommentContent">
+  UPDATE community_comment
+  SET
+    content = #{content}
+  WHERE comment_id = #{commentId}
+    AND writer_id = #{writerId}
+    AND comment_visible = 1
+</update>
+
+
+	<!-- =========================
+         🗑 댓글 삭제 (본인만)
+         ========================= -->
+    <delete id="deleteCommentByWriter">
+        DELETE
+        FROM community_comment
+        WHERE comment_id = #{commentId}
+          AND writer_id = #{writerId}
+    </delete>
+
 </mapper>

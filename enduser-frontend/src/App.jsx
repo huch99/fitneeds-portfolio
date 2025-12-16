@@ -24,6 +24,9 @@ import UsageStatus from './pages/UsageStatus/UsageStatus';
 import CommunityUser from './pages/Community/CommunityUser';
 import CommunityUserDetail from './pages/Community/CommunityUserDetail';
 import CommunityUserWrite from './pages/Community/CommunityUserWrite';
+import CommunityMyRecruitList from './pages/Community/CommunityMyRecruitList';
+import CommunityMyPostList from './pages/Community/CommunityMyPostList';
+
 
 
 function App() {
@@ -60,6 +63,8 @@ function App() {
             <Route path="/community" element={<CommunityUser />} />
             <Route path="/community/:postId" element={<CommunityUserDetail />} />
             <Route path="/community/write" element={<CommunityUserWrite />} />
+            <Route path="/community/my-recruits" element={<CommunityMyRecruitList />}/>
+            <Route path="/community/my-posts" element={<CommunityMyPostList />} />
 
 
           </Routes>

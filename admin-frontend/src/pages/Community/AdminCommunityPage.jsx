@@ -2,8 +2,6 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 
-const PAGE_SIZE = 10;
-
 function AdminCommunityPage() {
   const [posts, setPosts] = useState([]);
 
@@ -16,10 +14,11 @@ function AdminCommunityPage() {
   // 📄 페이징 상태
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
 
   useEffect(() => {
     fetchPosts();
-  }, [currentPage]);
+  }, [currentPage, category, keyword, visibleFilter, orderType]);
 
   const fetchPosts = async () => {
     try {
@@ -35,6 +34,7 @@ function AdminCommunityPage() {
 
       setPosts(res.data.list || []);
       setTotalCount(res.data.totalCount || 0);
+      setTotalPages(res.data.totalPages || 0);
     } catch (e) {
       alert('커뮤니티 목록 조회 실패');
     }
@@ -42,7 +42,6 @@ function AdminCommunityPage() {
 
   const handleSearch = () => {
     setCurrentPage(1);
-    fetchPosts();
   };
 
   const toggleVisible = async (postId, postVisible) => {
@@ -68,8 +67,6 @@ function AdminCommunityPage() {
       alert('삭제 실패');
     }
   };
-
-  const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
   return (
     <div>
@@ -180,7 +177,7 @@ function AdminCommunityPage() {
         ))}
 
         <button
-          disabled={currentPage === totalPages}
+          disabled={currentPage === totalPages || totalPages === 0}
           onClick={() => setCurrentPage(currentPage + 1)}
         >
           다음
