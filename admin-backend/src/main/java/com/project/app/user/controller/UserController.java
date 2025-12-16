@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.project.app.config.security.JwtTokenProvider;
 import com.project.app.user.dto.UserRequestDto;
-import com.project.app.user.entity.User;
 import com.project.app.user.service.UserService;
 
 import lombok.extern.slf4j.Slf4j;
