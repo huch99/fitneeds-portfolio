@@ -26,7 +26,7 @@ function AdminReservationPage() {
 
     // 검색 필터 State
     // 초기값을 ''(빈 문자열)로 설정 -> 처음엔 "전체 날짜" 조회
-    const [searchDate, setSearchDate] = useState(''); 
+    const [searchDate, setSearchDate] = useState('');
     const [selectedBranch, setSelectedBranch] = useState(''); // '' -> "전체 지점"
 
     // --- 초기화 (Lifecycle) ---
@@ -40,7 +40,7 @@ function AdminReservationPage() {
         try {
             // 파라미터 동적 구성
             const params = {};
-            
+
             // 1. 날짜가 비어있지 않을 때만 파라미터 추가
             if (searchDate) {
                 params.date = searchDate;
@@ -55,7 +55,7 @@ function AdminReservationPage() {
 
             // GET /api/admin/schedules
             const response = await axios.get('/api/admin/schedules', { params });
-            
+
             setSchedules(response.data);
             console.log("응답 데이터:", response.data);
 
@@ -80,17 +80,17 @@ function AdminReservationPage() {
     return (
         <div className="container" style={{ padding: '20px' }}>
             <h1>[관리자] 예약 현황 관리</h1>
-            
+
             <div className="content-box" style={{ background: '#fff', padding: '20px', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
-                
+
                 {/* 검색 필터 영역 */}
                 <div style={{ marginBottom: '20px', padding: '15px', background: '#f8f9fa', borderRadius: '5px', display: 'flex', alignItems: 'center', gap: '15px', flexWrap: 'wrap' }}>
-                    
+
                     {/* 지점 선택 */}
                     <div>
                         <label style={{ fontWeight: 'bold', marginRight: '5px' }}>🏢 지점:</label>
-                        <select 
-                            value={selectedBranch} 
+                        <select
+                            value={selectedBranch}
                             onChange={(e) => setSelectedBranch(e.target.value)}
                             style={{ padding: '6px', borderRadius: '4px', border: '1px solid #ccc' }}
                         >
@@ -104,9 +104,9 @@ function AdminReservationPage() {
                     {/* 날짜 선택 */}
                     <div>
                         <label style={{ fontWeight: 'bold', marginRight: '5px' }}>📅 날짜:</label>
-                        <input 
-                            type="date" 
-                            value={searchDate} 
+                        <input
+                            type="date"
+                            value={searchDate}
                             onChange={(e) => setSearchDate(e.target.value)}
                             style={{ padding: '5px', border: '1px solid #ccc', borderRadius: '4px' }}
                         />
@@ -114,13 +114,13 @@ function AdminReservationPage() {
 
                     {/* 버튼 그룹 */}
                     <div style={{ marginLeft: 'auto' }}>
-                        <button 
+                        <button
                             onClick={handleReset}
                             style={{ padding: '8px 16px', marginRight: '10px', background: '#95a5a6', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
                         >
                             조건 초기화
                         </button>
-                        <button 
+                        <button
                             onClick={handleSearch}
                             style={{ padding: '8px 16px', background: '#2c3e50', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
                         >
@@ -155,36 +155,36 @@ function AdminReservationPage() {
                                 schedules.map((item, index) => {
                                     // 상태 뱃지 정보 가져오기
                                     const statusInfo = STATUS_MAP[item.status] || { label: item.status, color: '#333' };
-                                    
+
                                     return (
                                         <tr key={item.scheduleId || index} style={{ borderBottom: '1px solid #eee', height: '50px' }}>
                                             <td>{item.scheduleId}</td>
-                                            
+
                                             {/* [핵심 수정] 백엔드가 보내준 String 그대로 출력 */}
                                             <td style={{ fontWeight: 'bold', color: '#333' }}>
                                                 {/* startTime: "2025-12-10 10:00" */}
-                                                {item.startTime} 
-                                                
+                                                {item.startTime}
+
                                                 {/* endTime: "11:00" */}
                                                 {item.endTime ? ` ~ ${item.endTime}` : ''}
                                             </td>
 
                                             <td>{item.branchName}</td>
-                                            
+
                                             <td>
                                                 <div style={{ fontWeight: 'bold' }}>{item.programName}</div>
                                                 <div style={{ fontSize: '12px', color: '#888' }}>({item.instructorName})</div>
                                             </td>
-                                            
+
                                             <td>
                                                 <span style={{ fontWeight: 'bold', color: item.currentCount >= item.maxCount ? '#e74c3c' : '#2ecc71' }}>
                                                     {item.currentCount}
-                                                </span> 
+                                                </span>
                                                 / {item.maxCount}
                                             </td>
-                                            
+
                                             <td>
-                                                <span style={{ 
+                                                <span style={{
                                                     backgroundColor: statusInfo.color,
                                                     color: 'white',
                                                     padding: '4px 10px',

@@ -9,5 +9,8 @@ public interface UserService {
 	
 	User createUser(UserRequestDto userRequestDto);
 	boolean existsByUserId(String userId);
+	boolean existsByEmail(String email);
 	Optional<User> findByUserId(String userId);
+	Optional<User> getUserByEmailAdmin(String email);
+	Optional<User> getUserByEmail(String email);
 }

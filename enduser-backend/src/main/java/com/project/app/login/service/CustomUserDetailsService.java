@@ -1,4 +1,4 @@
-package com.project.app.user.service;
+package com.project.app.login.service;
 
 import java.util.Collections;
 

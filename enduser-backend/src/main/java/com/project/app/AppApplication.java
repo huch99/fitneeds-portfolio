@@ -9,9 +9,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.client.RestTemplate;
 
+import com.project.app.config.util.UserIdGenerator;
 import com.project.app.user.entity.User;
 import com.project.app.user.repository.UserRepository;
-
 /**
  * Spring Boot 애플리케이션의 시작점 (메인 클래스)
  * 
@@ -42,11 +42,12 @@ public class AppApplication {
 	 */
 	@Bean
 	public CommandLineRunner createTestUser(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+		UserIdGenerator generator = new UserIdGenerator();
 		return args -> {
 			// 일반 사용자 계정 생성 (아이디: user, 비밀번호: user)
 			if (!userRepository.existsByUserId("user1")) {
 				User testUser = new User();
-				testUser.setUserId("user1");
+				testUser.setUserId(generator.generateUniqueUserId());
 				testUser.setEmail("user1@naver.com");
 				testUser.setUserName("User1");
 //				testUser.setUserName("일반");
@@ -64,7 +65,7 @@ public class AppApplication {
 
 			if (!userRepository.existsByUserId("user2")) {
 				User testUser = new User();
-				testUser.setUserId("user2");
+				testUser.setUserId(generator.generateUniqueUserId());
 				testUser.setEmail("user2@naver.com");
 				testUser.setUserName("User2");
 //				testUser.setUserName("일반");
@@ -83,7 +84,7 @@ public class AppApplication {
 			// 관리자 계정 생성 (아이디: admin, 비밀번호: admin)
 			if (!userRepository.existsByUserId("admin")) {
 				User adminUser = new User();
-				adminUser.setUserId("admin");
+				adminUser.setUserId(generator.generateUniqueUserId());
 				adminUser.setEmail("admin@naver.com");
 				adminUser.setUserName("Admin");
 //				adminUser.setUserName("관리자");
@@ -101,8 +102,8 @@ public class AppApplication {
 			// 관리자 계정 생성 (아이디: admin, 비밀번호: admin)
 			if (!userRepository.existsByUserId("fitneeds")) {
 				User adminUser = new User();
-				adminUser.setUserId("fitneeds");
-				adminUser.setEmail("fitneeds@naver.com");
+				adminUser.setUserId(generator.generateUniqueUserId());
+				adminUser.setEmail("fitneeds@fitneeds.com");
 				adminUser.setUserName("fitneeds");
 				adminUser.setPassword(passwordEncoder.encode("fullstack2025"));
 				adminUser.setRole("ADMIN"); // 관리자 권한

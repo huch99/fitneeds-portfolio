@@ -1,4 +1,4 @@
-package com.project.app.user.dto; // 패키지 변경
+package com.project.app.login.dto; // 패키지 변경
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

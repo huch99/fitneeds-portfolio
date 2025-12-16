@@ -1,10 +1,10 @@
-package com.project.app.user.service;
+package com.project.app.login.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.project.app.user.dto.LoginRequestDto;
-import com.project.app.user.dto.LoginResponseDto;
+import com.project.app.login.dto.LoginRequestDto;
+import com.project.app.login.dto.LoginResponseDto;
 import com.project.app.user.repository.UserRepository;
 
 import lombok.extern.slf4j.Slf4j;

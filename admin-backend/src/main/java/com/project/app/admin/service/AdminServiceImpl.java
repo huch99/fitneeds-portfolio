@@ -1,25 +1,25 @@
-package com.project.app.user.service;
+package com.project.app.admin.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.project.app.admin.repository.AdminRepository;
 import com.project.app.user.dto.UserRequestDto;
-import com.project.app.user.entity.User;
-import com.project.app.user.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-public class UserServiceImpl implements UserService{
-	private final UserRepository userRepository;
+public class AdminServiceImpl implements AdminService {
+	private final AdminRepository adminRepository;
 	private final PasswordEncoder passwordEncoder;
-	
-	public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-		this.userRepository = userRepository;
+
+	public UserServiceImpl(AdminRepository adminRepository, PasswordEncoder passwordEncoder) {
+		this.adminRepository = adminRepository;
 		this.passwordEncoder = passwordEncoder;
 	}
 
@@ -35,24 +35,29 @@ public class UserServiceImpl implements UserService{
 
 	// 아이디 존재 유무조회
 	public boolean existsByUserId(String userId) {
-		return userRepository.existsByUserId(userId);
-	}
-	
-	// email 존재 유무조회
-	public boolean existsByEmail(String email) {
-		return userRepository.existsByEmail(email);
+		return adminRepository.existsByUserId(userId);
 	}
 
-    // 아이디로 사용자 조회
-    public Optional<User> findByUserId(String userId) {
-        return userRepository.findByUserId(userId);
-    }
-    
-    public Optional<User> getUserByEmailAdmin(String email) {
-		return userRepository.getUserByEmailAndRole(email, "ADMIN");
+	// email 존재 유무조회
+	public boolean existsByEmail(String email) {
+		return adminRepository.existsByEmail(email);
+	}
+
+	// 아이디로 사용자 조회
+	public Optional<Admin> findByUserId(String userId) {
+		return adminRepository.findByUserId(userId);
+	}
+
+	public List<Admin> getAllUsers() {
+		return adminRepository.findAll();
+	}
+
+	public Optional<Admin> getUserByEmailAdmin(String email) {
+		return adminRepository.getUserByEmailAndRole(email, "ADMIN");
 	}
 	
-	public Optional<User> getUserByEmail(String email) {
-        return userRepository.getUserByEmail(email);
+	public Optional<Admin> getUserByEmail(String email) {
+        return adminRepository.getUserByEmail(email);
     }
+
 }

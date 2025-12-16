@@ -1,10 +1,11 @@
-package com.project.app.user.controller;
+package com.project.app.login.controller;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,10 +14,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.project.app.config.security.JwtTokenProvider;
-import com.project.app.user.dto.LoginRequestDto;
-import com.project.app.user.dto.LoginResponseDto;
+import com.project.app.login.dto.LoginRequestDto;
+import com.project.app.login.dto.LoginResponseDto;
+import com.project.app.login.service.LoginService;
 import com.project.app.user.entity.User;
-import com.project.app.user.service.LoginService;
 import com.project.app.user.service.UserService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -53,7 +54,7 @@ public class LoginController {
 	 * 
 	 * 요청 본문 예시:
 	 * {
-	 *   "userId": "user",
+	 *   "email": "user@user.com",
 	 *   "password": "user"
 	 * }
 	 * 
@@ -61,8 +62,8 @@ public class LoginController {
 	 * {
 	 *   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
 	 *   "user": {
-	 *     "id": 1,
-	 *     "userId": "user",
+	 *     "userId": "eyJhbGciOiJIUzI1NiIsInR5cCI6",
+	 *     "email": "user@user.com",
 	 *     "userName": "일반",
 	 *     "auth": "USER",
 	 *     "success": true,
@@ -73,12 +74,30 @@ public class LoginController {
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody LoginRequestDto loginRequestDto) {
 		// 1. 데이터베이스에서 사용자 조회
-		User user = userService.findByUserId(loginRequestDto.getUserId())
-				.orElseThrow(() -> new IllegalArgumentException("가입되지 않은 이메일입니다."));
+		User user = userService.getUserByEmail(loginRequestDto.getEmail())
+				.orElse(null); // 사용자가 없으면 null 반환
+
+        if (user == null) {
+            log.warn("Login failed: User not found for email {}", loginRequestDto.getEmail());
+            // 401 Unauthorized (인증 실패) 또는 400 Bad Request (잘못된 요청)으로 응답
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                LoginResponseDto.builder()
+                    .success(false)
+                    .message("가입되지 않은 이메일 입니다.")
+                    .build()
+            );
+        }
 		
 		// 2. 비밀번호 확인 (입력한 평문 비밀번호와 DB의 암호화된 비밀번호 비교)
 		if (!passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword())) {
-			throw new IllegalArgumentException("잘못된 비밀번호입니다.");
+		    log.warn("Login failed: Incorrect password for user {}", user.getUserId());
+			// 401 Unauthorized (인증 실패)으로 응답
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                LoginResponseDto.builder()
+                    .success(false)
+                    .message("잘못된 비밀번호입니다.")
+                    .build()
+            );
 		}
 		
 		// 3. 사용자 권한 정보 설정
@@ -93,6 +112,7 @@ public class LoginController {
 		response.put("token", token); // 클라이언트에서 저장하여 사용할 토큰
 		response.put("user", LoginResponseDto.builder()
 				.userId(user.getUserId())
+				.email(user.getEmail())
 				.userName(user.getUserName())
 				.role(user.getRole())
 				.success(true)

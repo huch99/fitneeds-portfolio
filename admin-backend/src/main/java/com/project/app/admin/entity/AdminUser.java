@@ -1,4 +1,4 @@
-package com.project.app.user.entity; // 패키지 변경
+package com.project.app.admin.entity; // 패키지 변경
 
 import java.time.LocalDateTime;
 
@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor // 모든 필드를 인자로 받는 생성자 (Builder 사용 시 내부적으로 활용)
 @Builder // Builder 패턴 제공
-public class User {
+public class AdminUser {
 
  // 컬럼 이름은 user_id으로 변경 (DB 관례)
  @Id
@@ -44,22 +44,11 @@ public class User {
  @Column(name = "role", nullable = false)
  private String role; //USER, ADMIN, MANAGER, ETC....
 
- @ColumnDefault("0")
- @Column(name = "cash_point", nullable = false)
- private int cashPoint;
-
- @ColumnDefault("0")
- @Column(name = "grade_point", nullable = false)
- private int gradePoint;
-
  @Column(name = "agree_at", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
  private LocalDateTime agreeAt;
 
- @ColumnDefault("true") // 1 = TRUE
+ @ColumnDefault("1") // 1 = TRUE
  @Column(name = "is_active", nullable = false)
  private Boolean isActive; // String -> Boolean 타입으로 변경
 
-
- // User(String userId, String password, String userName) 생성자 대신 @Builder 사용 권장
- // 예: User.builder().userId("test").password("1234").userName("tester").build();
 }

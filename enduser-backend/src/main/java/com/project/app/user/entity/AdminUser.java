@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor // 모든 필드를 인자로 받는 생성자 (Builder 사용 시 내부적으로 활용)
 @Builder // Builder 패턴 제공
-public class User {
+public class AdminUser {
 
  // 컬럼 이름은 user_id으로 변경 (DB 관례)
  @Id
@@ -43,14 +43,6 @@ public class User {
  @ColumnDefault("'USER'") // 문자열은 작은따옴표로 감싸야 함
  @Column(name = "role", nullable = false)
  private String role; //USER, ADMIN, MANAGER, ETC....
-
- @ColumnDefault("0")
- @Column(name = "cash_point", nullable = false)
- private int cashPoint;
-
- @ColumnDefault("0")
- @Column(name = "grade_point", nullable = false)
- private int gradePoint;
 
  @Column(name = "agree_at", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
  private LocalDateTime agreeAt;

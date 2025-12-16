@@ -9,7 +9,8 @@ const AdminLayout = ({ children }) => {
   // ✅ 변경점: 경로 간소화
   const menus = [
     { name: '대시보드', path: '/dashboard' },
-    { name: '회원 관리', path: '/members' },
+    { name: '회원 관리', path: '/users' },
+    { name: '관리자 관리', path: '/adminUsers' },
     { name: '예약 관리', path: '/reservations' },
     { name: '이용권 거래', path: '/trades' },
     { name: '이용권 관리', path: '/tickets' },

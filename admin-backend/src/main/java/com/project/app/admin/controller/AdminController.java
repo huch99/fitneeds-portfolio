@@ -1,4 +1,6 @@
-package com.project.app.user.controller;
+package com.project.app.admin.controller;
+
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.project.app.admin.service.AdminService;
 import com.project.app.config.security.JwtTokenProvider;
 import com.project.app.user.dto.UserRequestDto;
 import com.project.app.user.service.UserService;
@@ -19,25 +22,31 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @RequestMapping("/api/user")
-public class UserController {
+public class AdminController {
 
-	private final UserService userService;
+	private final AdminService adminService;
 
-	public UserController(UserService userService, JwtTokenProvider jwtTokenProvider, PasswordEncoder passwordEncoder) {
-		this.userService = userService;
+	public AdminController(UserService userService, JwtTokenProvider jwtTokenProvider, PasswordEncoder passwordEncoder) {
+		this.adminService = adminService;
 	}
 
+	@GetMapping("/all")
+	public ResponseEntity<List<Admin>> getAllUsers(){
+		List<Admin> users = adminService.getAllUsers();
+		return ResponseEntity.ok(users);
+	}
+	
 	@PostMapping("/register")
 	public ResponseEntity<?> createUser(@RequestBody UserRequestDto userRequestDto) {
 		try {
-			if (userRequestDto.getEmail() == null || userRequestDto.getPassword() == null) {
-				return ResponseEntity.badRequest().body("이메일과 비밀번호는 필수 항목 입니다.");
+			if (userRequestDto.getUserId() == null || userRequestDto.getPassword() == null) {
+				return ResponseEntity.badRequest().body("아이디와 비밀번호는 필수 항목 입니다.");
 			}
-			if (userService.existsByUserId(userRequestDto.getUserId())) {
+			if (adminService.existsByUserId(userRequestDto.getUserId())) {
 				return ResponseEntity.badRequest().body("이미 사용중인 아이디입니다.");
 			}
 
-			userService.createUser(userRequestDto);
+			adminService.createUser(userRequestDto);
 
 			return ResponseEntity.status(HttpStatus.CREATED).body(userRequestDto);
 		} catch (Exception e) {
@@ -49,9 +58,9 @@ public class UserController {
 	@GetMapping("/userinfo")
 	public ResponseEntity<?> userinfo(@PathVariable String userId) {
 		try {
-			userService.findByUserId(userId);
+			adminService.findByUserId(userId);
 
-			return ResponseEntity.ok(userService.findByUserId(userId)); // 200 OK와 사용자 정보 반환
+			return ResponseEntity.ok(adminService.findByUserId(userId)); // 200 OK와 사용자 정보 반환
 		} catch (Exception e) {
 			// 로깅 후 클라이언트에 에러 메시지 반환
 			// Logger.error("사용자 정보 조회 중 오류 발생: " + e.getMessage());

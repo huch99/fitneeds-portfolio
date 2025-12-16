@@ -1,4 +1,4 @@
-package com.project.app.user.service; // 패키지 변경
+package com.project.app.admin.service; // 패키지 변경
 
 import java.util.List;
 import java.util.Optional;
@@ -6,7 +6,7 @@ import java.util.Optional;
 import com.project.app.user.dto.UserRequestDto;
 import com.project.app.user.entity.User;
 
-public interface UserService {
+public interface AdminService {
 	
 	User createUser(UserRequestDto userRequestDto);
 	boolean existsByUserId(String userId);
