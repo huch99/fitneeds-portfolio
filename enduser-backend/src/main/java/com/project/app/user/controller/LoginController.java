@@ -27,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @RestController
-@RequestMapping(value = {"/api", "/api/auth"})
+@RequestMapping(value = {"/api/auth"})
 public class LoginController {
 
 	// 사용자 정보를 처리하는 서비스

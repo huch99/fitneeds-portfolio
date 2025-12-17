@@ -9,6 +9,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 /**
  * Spring Security 보안 설정 클래스
@@ -23,59 +28,63 @@ public class SecurityConfig {
 	 * 어떤 URL은 인증 없이 접근 가능하고, 어떤 URL은 로그인이 필요한지 정의합니다
 	 */
 	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtTokenProvider jwtTokenProvider) throws Exception {
+	public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtTokenProvider jwtTokenProvider, CorsConfigurationSource corsConfigurationSource) throws Exception {
 		http
-			// CSRF 보호 비활성화 (REST API에서는 일반적으로 비활성화)
-			.csrf(csrf -> csrf.disable())
-			
-			// URL별 접근 권한 설정
-			.authorizeHttpRequests(auth -> auth
-					// 아래 URL들은 로그인 없이 누구나 접근 가능
-					.requestMatchers(
-							// 프론트엔드 관련 경로
-							"/gov-bid-app/**",      // 공매 앱 페이지
-							"/react/**",            // React 앱 경로
-							"/",                    // 메인 페이지
-							"/index.html",          // 인덱스 페이지
-							
-							// 백엔드 API 경로
-	                        "/api/**",              // 모든 API (필요시 세부 경로로 제한 가능)
-	                        
-	                        // 정적 리소스 (CSS, JS, 이미지 등)
-	                        "/favicon.ico",         // 파비콘
-	                        "/css/**",              // CSS 파일
-	                        "/js/**",               // JavaScript 파일
-	                        "/images/**",           // 이미지 파일
-	                        "/static/**",           // static 폴더 하위 파일
-	                        "/public/**",           // public 폴더 하위 파일
-	                        "/webjars/**",          // WebJars 라이브러리
-	                        
-	                        // 기타
-	                        "/error",               // 에러 페이지
-	                        "/login",               // 로그인 페이지
-	                        
-	                        // Swagger API 문서 (개발용)
-	                        "/swagger-ui/**",       // Swagger UI 화면
-	                        "/v3/api-docs/**",      // API 명세서
-	                        "/swagger-resources/**" // Swagger 리소스
-	                        ).permitAll()
-	                        
-					// 위에 명시되지 않은 모든 요청은 로그인 필요
-					.anyRequest().authenticated()
-			)
-			
-			// JWT 인증 필터를 Spring Security 필터 체인에 추가
-			// 모든 요청이 들어올 때마다 JWT 토큰을 검사합니다
-			.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), 
-                    UsernamePasswordAuthenticationFilter.class);
-		
+				// CORS 활성화
+				.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+
+				// CSRF 보호 비활성화 (REST API에서는 일반적으로 비활성화)
+				.csrf(csrf -> csrf.disable())
+
+				// URL별 접근 권한 설정
+				.authorizeHttpRequests(auth -> auth
+						.requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
+						.requestMatchers("/api/auth/**").permitAll()
+						.requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+						.anyRequest().authenticated()
+				)
+
+				// JWT 인증 필터를 Spring Security 필터 체인에 추가
+				// 모든 요청이 들어올 때마다 JWT 토큰을 검사합니다
+				.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
+						UsernamePasswordAuthenticationFilter.class);
+
 		// 세션을 사용하지 않음 (JWT 토큰 방식이므로)
 		http.sessionManagement(session -> 
 			session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 		
 		return http.build();
 	}
-	
+
+	@Bean
+	public CorsConfigurationSource corsConfigurationSource() {
+		CorsConfiguration config = new CorsConfiguration();
+
+		// ✅ 실제 운영 도메인들만 허용
+		config.setAllowedOrigins(List.of(
+				"https://fitneeds-admin.console.co.kr",
+				"https://fitneeds.console.co.kr"
+				// 필요하면 로컬 개발용도 추가:
+				// "http://localhost:5173",
+				// "http://localhost:5174"
+		));
+
+		config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+		config.setAllowedHeaders(List.of("*"));
+
+		// JWT Authorization 헤더를 쓴다면 노출/허용해주는 게 안전
+		config.setExposedHeaders(List.of("Authorization"));
+
+		// 쿠키 기반이 아니면 보통 false 권장.
+		// (Authorization 헤더 JWT면 false로 두는 게 일반적)
+		config.setAllowCredentials(false);
+
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", config);
+		return source;
+	}
+
+
 	/**
 	 * 비밀번호 암호화 도구 등록
 	 * BCrypt 알고리즘을 사용하여 비밀번호를 안전하게 암호화합니다
