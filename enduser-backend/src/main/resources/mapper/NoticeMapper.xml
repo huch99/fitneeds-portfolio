@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.project.app.notice.mapper.NoticeMapper">
+
+    <!-- USER 공지 목록 조회 -->
+    <select id="selectNoticeList"
+            resultType="com.project.app.notice.dto.NoticeDto">
+
+        SELECT
+            post_id     AS postId,
+            title       AS title,
+            content     AS content,
+            views       AS views,
+            created_at  AS createdAt
+        FROM community_post
+        WHERE post_type = 'NOTICE'
+          AND is_visible = 1
+        ORDER BY created_at DESC
+
+    </select>
+
+    <!-- USER 공지 상세 조회 -->
+    <select id="selectNoticeDetail"
+            parameterType="long"
+            resultType="com.project.app.notice.dto.NoticeDto">
+
+        SELECT
+            post_id     AS postId,
+            title       AS title,
+            content     AS content,
+            views       AS views,
+            created_at  AS createdAt
+        FROM community_post
+        WHERE post_id = #{postId}
+          AND post_type = 'NOTICE'
+          AND is_visible = 1
+
+    </select>
+
+    <!-- 조회수 증가 (숨김/비존재 공지는 업데이트 0건 처리되도록 조건 포함) -->
+    <update id="increaseViews" parameterType="long">
+
+        UPDATE community_post
+        SET views = IFNULL(views, 0) + 1,
+            updated_at = NOW()
+        WHERE post_id = #{postId}
+          AND post_type = 'NOTICE'
+          AND is_visible = 1
+
+    </update>
+
+</mapper>

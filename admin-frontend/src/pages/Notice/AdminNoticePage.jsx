@@ -1,40 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 function AdminNoticePage() {
-  const [notices, setNotices] = useState([
-    {
-      id: 1,
-      title: "시스템 점검 안내",
-      content: "3월 20일 새벽 2시~3시에 시스템 점검이 진행됩니다.",
-      visible: true,
-      pinned: true,
-      endDate: "2025-12-31",
-      createdAt: "2025-01-05",
-      branch_id: null, // 전체 공지
-    },
-    {
-      id: 2,
-      title: "GX룸 공사 안내",
-      content: "4월부터 GX룸 공사가 진행됩니다.",
-      visible: true,
-      pinned: false,
-      endDate: "2025-06-30",
-      createdAt: "2025-02-01",
-      branch_id: 1, // 강남점 공지
-    },
-    {
-      id: 3,
-      title: "수영장 점검 안내",
-      content: "수영장은 3월 15일 점검 예정입니다.",
-      visible: false,
-      pinned: false,
-      endDate: "2025-03-15",
-      createdAt: "2025-02-10",
-      branch_id: 2, // 부산점 공지
-    },
-  ]);
+  const [notices, setNotices] = useState([]);
+  const [openId, setOpenId] = useState(null);
+  const [searchKeyword, setSearchKeyword] = useState("");
 
-  // 지점명 매핑 (Mock)
+  const [editingId, setEditingId] = useState(null);
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+
+  /* =========================
+     지점명 매핑 (Mock)
+  ========================= */
   const branchName = (id) => {
     if (id === null) return "전체";
     if (id === 1) return "강남점";
@@ -43,66 +21,97 @@ function AdminNoticePage() {
     return `지점#${id}`;
   };
 
-  const [openId, setOpenId] = useState(null);
-  const [searchKeyword, setSearchKeyword] = useState("");
+  /* =========================
+     공지 목록 조회
+  ========================= */
+  useEffect(() => {
+    fetchNotices();
+  }, []);
 
-  const [editingId, setEditingId] = useState(null);
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const fetchNotices = async () => {
+    const res = await axios.get("/api/admin/notice");
 
-  const toggleOpen = (id) => {
-    setOpenId(openId === id ? null : id);
+    const converted = res.data.map((n) => ({
+      id: n.postId,
+      title: n.title,
+      content: n.content,
+      visible: n.isVisible,
+      pinned: false,          // 상단고정은 UI 전용
+      endDate: "-",           // 아직 DB 연동 안 함
+      createdAt: n.createdAt?.split("T")[0],
+      branch_id: n.branchId,
+    }));
+
+    setNotices(converted);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    const newNotice = {
-      id: editingId || Date.now(),
-      title,
-      content,
-      visible: true,
-      pinned: false, // 새 공지는 기본적으로 고정 X
-      endDate,
-      createdAt: new Date().toISOString().split("T")[0],
-      branch_id: null, // 지금은 전체공지로 기본 저장 (지점 선택 기능은 나중에 추가)
-    };
-
-    if (editingId) {
-      setNotices(notices.map((n) => (n.id === editingId ? newNotice : n)));
-      setEditingId(null);
-    } else {
-      setNotices([...notices, newNotice]);
-    }
-
-    setTitle("");
-    setContent("");
-    setEndDate("");
+  /* =========================
+     UI 핸들러
+  ========================= */
+  const toggleOpen = (id) => {
+    setOpenId(openId === id ? null : id);
   };
 
   const editNotice = (n) => {
     setEditingId(n.id);
     setTitle(n.title);
     setContent(n.content);
-    setEndDate(n.endDate);
   };
 
-  const deleteNotice = (id) => {
-    if (window.confirm("공지사항을 삭제하시겠습니까?")) {
-      setNotices(notices.filter((n) => n.id !== id));
+  /* =========================
+     등록 / 수정
+  ========================= */
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const payload = {
+      title,
+      content,
+      branchId: null,
+    };
+
+    if (editingId) {
+      await axios.put(`/api/admin/notice/${editingId}`, payload);
+    } else {
+      await axios.post("/api/admin/notice", payload);
     }
+
+    setEditingId(null);
+    setTitle("");
+    setContent("");
+
+    fetchNotices();
   };
 
-  const toggleVisible = (id) => {
-    setNotices(
-      notices.map((n) =>
-        n.id === id ? { ...n, visible: !n.visible } : n
-      )
-    );
+  /* =========================
+     삭제 (실제 DELETE)
+  ========================= */
+  const deleteNotice = async (id) => {
+    if (!window.confirm("공지사항을 삭제하시겠습니까?")) return;
+
+    await axios.delete(`/api/admin/notice/${id}`);
+    fetchNotices();
   };
 
-  // 🔥 상단 고정 가능 여부: 전체 공지만 가능 (branch_id === null)
+  /* =========================
+     숨김 / 보이기
+  ========================= */
+  const toggleVisible = async (n) => {
+  if (!window.confirm("노출 상태를 변경하시겠습니까?")) return;
+
+  await axios.put(
+    `/api/admin/notice/${n.id}/visible`,
+    null,
+    { params: { visible: !n.visible } }
+  );
+
+  fetchNotices();
+};
+
+
+  /* =========================
+     상단 고정 (UI 전용)
+  ========================= */
   const togglePinned = (notice) => {
     if (notice.branch_id !== null) {
       alert("상단 고정은 전체 공지만 가능합니다.");
@@ -116,11 +125,13 @@ function AdminNoticePage() {
     );
   };
 
+  /* =========================
+     검색 & 정렬
+  ========================= */
   const filteredNotices = notices.filter((n) =>
     n.title.includes(searchKeyword)
   );
 
-  // 🔥 정렬: 상단 고정 → 최신순
   const sortedNotices = [...filteredNotices].sort((a, b) => {
     if (a.pinned === b.pinned) return b.id - a.id;
     return a.pinned ? -1 : 1;
@@ -146,7 +157,7 @@ function AdminNoticePage() {
         <thead>
           <tr>
             <th>번호</th>
-            <th>지점</th> {/* 🔥 지점 컬럼 */}
+            <th>지점</th>
             <th>제목</th>
             <th>종료일</th>
             <th>노출</th>
@@ -156,69 +167,81 @@ function AdminNoticePage() {
         </thead>
 
         <tbody>
-          {sortedNotices.map((n) => (
-            <React.Fragment key={n.id}>
-              <tr style={{ background: n.pinned ? "#eaf3ff" : "white" }}>
-                <td>{n.id}</td>
-                <td>{branchName(n.branch_id)}</td>
+          {sortedNotices.map((n) => {
+            const rowStyle = {
+              background: n.pinned
+                ? "#eaf3ff"
+                : !n.visible
+                ? "#f1f1f1"
+                : "white",
+              color: !n.visible ? "#999" : "#000",
+              opacity: !n.visible ? 0.4 : 1,
+            };
 
-                <td
-                  onClick={() => toggleOpen(n.id)}
-                  style={{ cursor: "pointer", fontWeight: "600" }}
-                >
-                  {n.pinned && "📌 "} {n.title}
-                </td>
+            return (
+              <React.Fragment key={n.id}>
+                <tr style={rowStyle}>
+                  <td>{n.id}</td>
+                  <td>{branchName(n.branch_id)}</td>
 
-                <td>{n.endDate}</td>
-                <td>{n.visible ? "노출" : "숨김"}</td>
-                <td>{n.pinned ? "고정" : "-"}</td>
-
-                <td>
-                  <button onClick={() => editNotice(n)}>수정</button>
-
-                  <button onClick={() => toggleVisible(n)}>
-                    {n.visible ? "숨기기" : "보이기"}
-                  </button>
-
-                  {/* 🔥 상단 고정 버튼 — 전체 공지만 허용 */}
-                  {n.branch_id === null ? (
-                    <button onClick={() => togglePinned(n)}>
-                      {n.pinned ? "해제" : "상단고정"}
-                    </button>
-                  ) : (
-                    <button disabled style={{ opacity: 0.5 }}>
-                      상단고정 불가
-                    </button>
-                  )}
-
-                  <button
-                    onClick={() => deleteNotice(n.id)}
-                    style={{ color: "red" }}
+                  <td
+                    onClick={() => n.visible && toggleOpen(n.id)}
+                    style={{
+                      cursor: n.visible ? "pointer" : "default",
+                      fontWeight: "600",
+                    }}
                   >
-                    삭제
-                  </button>
-                </td>
-              </tr>
+                    {n.pinned && "📌 "} {n.title}
+                  </td>
 
-              {/* 펼침 내용 */}
-              {openId === n.id && (
-                <tr>
-                  <td colSpan="7" style={{ background: "#f8f8f8", padding: "15px" }}>
-                    <strong>내용</strong>
-                    <div style={{ marginTop: "10px" }}>{n.content}</div>
+                  <td>{n.endDate}</td>
+                  <td>{n.visible ? "노출" : "숨김"}</td>
+                  <td>{n.pinned ? "고정" : "-"}</td>
 
-                    <div style={{ marginTop: "15px", fontSize: "13px", color: "#777" }}>
-                      작성일: {n.createdAt}
-                    </div>
+                  <td>
+                    <button onClick={() => editNotice(n)}>수정</button>
+
+                    <button onClick={() => toggleVisible(n)}>
+                      {n.visible ? "숨기기" : "보이기"}
+                    </button>
+
+                    {n.branch_id === null ? (
+                      <button onClick={() => togglePinned(n)}>
+                        {n.pinned ? "해제" : "상단고정"}
+                      </button>
+                    ) : (
+                      <button disabled style={{ opacity: 0.5 }}>
+                        상단고정 불가
+                      </button>
+                    )}
+
+                    <button
+                      onClick={() => deleteNotice(n.id)}
+                      style={{ color: "red" }}
+                    >
+                      삭제
+                    </button>
                   </td>
                 </tr>
-              )}
-            </React.Fragment>
-          ))}
+
+                {openId === n.id && (
+                  <tr>
+                    <td colSpan="7" style={{ background: "#fafafa", padding: "15px" }}>
+                      <strong>내용</strong>
+                      <div style={{ marginTop: "10px" }}>{n.content}</div>
+                      <div style={{ marginTop: "15px", fontSize: "13px", color: "#777" }}>
+                        작성일: {n.createdAt}
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              </React.Fragment>
+            );
+          })}
         </tbody>
       </table>
 
-      {/* 등록/수정 폼 */}
+      {/* 등록 / 수정 */}
       <h2 style={{ marginTop: "30px" }}>
         {editingId ? "공지 수정" : "공지 등록"}
       </h2>
@@ -256,16 +279,6 @@ function AdminNoticePage() {
               padding: "8px",
               resize: "none",
             }}
-          />
-        </div>
-
-        <div style={{ marginBottom: "20px" }}>
-          <label>게시 종료일</label>
-          <input
-            type="date"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-            style={{ padding: "6px" }}
           />
         </div>
 

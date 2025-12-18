@@ -27,6 +27,7 @@ import CommunityUserWrite from './pages/Community/CommunityUserWrite';
 import CommunityMyRecruitList from './pages/Community/CommunityMyRecruitList';
 import CommunityMyPostList from './pages/Community/CommunityMyPostList';
 
+import NoticeUserPage from "./pages/Notice/NoticeUserPage";
 
 
 function App() {
@@ -65,6 +66,8 @@ function App() {
             <Route path="/community/write" element={<CommunityUserWrite />} />
             <Route path="/community/my-recruits" element={<CommunityMyRecruitList />}/>
             <Route path="/community/my-posts" element={<CommunityMyPostList />} />
+
+            <Route path="/notice" element={<NoticeUserPage />} />
 
 
           </Routes>

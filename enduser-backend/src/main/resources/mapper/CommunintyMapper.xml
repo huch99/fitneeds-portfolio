@@ -83,6 +83,7 @@
         WHERE cp.post_type = 'COMMUNITY'
           AND cp.is_visible = 1
           AND cp.post_visible = 1
+          AND (cp.category IS NULL OR cp.category NOT IN ('개인정보동의'))
         GROUP BY cp.post_id
         ORDER BY cp.created_at DESC
     </select>
@@ -118,6 +119,7 @@
             WHERE post_type = 'COMMUNITY'
               AND is_visible = 1
               AND post_visible = 1
+              AND (category IS NULL OR category NOT IN ('개인정보동의'))
             ORDER BY created_at DESC
             LIMIT #{size} OFFSET #{offset}
         ) ids
@@ -134,6 +136,7 @@
         WHERE post_type = 'COMMUNITY'
           AND is_visible = 1
           AND post_visible = 1
+          AND (category IS NULL OR category NOT IN ('개인정보동의'))
     </select>
 
     <!-- 내가 쓴 글 -->
@@ -163,6 +166,7 @@
         WHERE cp.writer_id = #{userId}
           AND cp.post_type = 'COMMUNITY'
           AND cp.post_visible = 1
+          AND (cp.category IS NULL OR cp.category NOT IN ('개인정보동의'))
         GROUP BY cp.post_id
         ORDER BY cp.created_at DESC
     </select>
@@ -194,17 +198,18 @@
         FROM community_post
         WHERE post_id = #{postId}
           AND post_visible = 1
+          AND (category IS NULL OR category NOT IN ('개인정보동의'))
     </select>
 
     <!-- 작성자 본인 체크 -->
     <select id="countByPostIdAndWriterId" resultType="int">
-    SELECT COUNT(*)
-    FROM community_post
-    WHERE post_id = #{postId}
-      AND writer_id = #{writerId}
-      AND post_visible = 1
-</select>
-
+        SELECT COUNT(*)
+        FROM community_post
+        WHERE post_id = #{postId}
+          AND writer_id = #{writerId}
+          AND post_visible = 1
+          AND (category IS NULL OR category NOT IN ('개인정보동의'))
+    </select>
 
     <!-- 글 수정 -->
     <update id="updateCommunityPost">
@@ -220,6 +225,7 @@
             updated_at = NOW()
         WHERE post_id = #{postId}
           AND post_visible = 1
+          AND (category IS NULL OR category NOT IN ('개인정보동의'))
     </update>
 
     <!-- 글 삭제 (소프트 삭제) -->
@@ -237,6 +243,7 @@
         SET views = views + 1
         WHERE post_id = #{postId}
           AND post_visible = 1
+          AND (category IS NULL OR category NOT IN ('개인정보동의'))
     </update>
 
 </mapper>
