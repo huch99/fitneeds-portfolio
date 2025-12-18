@@ -18,16 +18,9 @@ public class CommunityPostDetailService {
         this.mapper = mapper;
     }
 
-    /**
-     * 게시글 상세 조회 (USER)
-     * - 🔥 상세 진입 시 조회수 +1 (중복 허용)
-     * - 모집 글인 경우 모집 상태(recruitStatus) 자동 계산
-     * - 로그인 사용자 기준 작성자 여부 계산
-     */
     @Transactional
     public CommunityPostDto getVisiblePostDetail(Long postId, String loginUserId) {
 
-        // 🔥 조회수 증가 (USER 전용)
         mapper.increaseViewCount(postId);
 
         CommunityPostDto post = mapper.selectVisiblePostDetail(postId);
@@ -36,7 +29,6 @@ public class CommunityPostDetailService {
             throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
         }
 
-        // 🔥 모집 상태 자동 계산
         if ("모집".equals(post.getCategory())
                 && post.getRecruitEndDate() != null) {
 
@@ -49,11 +41,9 @@ public class CommunityPostDetailService {
             }
         }
 
-        // 🔥 작성자 여부 판단
+        // 🔥 작성자 여부 판단 (USERS 기준)
         if (loginUserId != null && post.getWriterId() != null) {
-            post.setIsWriter(
-                    loginUserId.equals(String.valueOf(post.getWriterId()))
-            );
+            post.setIsWriter(loginUserId.equals(post.getWriterId()));
         } else {
             post.setIsWriter(false);
         }
@@ -61,17 +51,11 @@ public class CommunityPostDetailService {
         return post;
     }
 
-    /**
-     * 댓글 목록 조회 (USER)
-     */
     @Transactional(readOnly = true)
     public List<CommunityCommentDto> getVisibleCommentsByPostId(Long postId) {
         return mapper.selectVisibleCommentsByPostId(postId);
     }
 
-    /**
-     * 댓글 작성 (USER)
-     */
     @Transactional
     public void createComment(Long postId, CommunityCommentDto commentDto) {
         commentDto.setPostId(postId);

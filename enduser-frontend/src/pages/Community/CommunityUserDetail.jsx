@@ -149,9 +149,10 @@ function CommunityUserDetail() {
   const handleDeletePost = async () => {
     if (!window.confirm("게시글을 삭제하시겠습니까?")) return;
 
-    await axios.delete(
-      `/api/user/community/${post.postId}?userId=${loginUserId}`
-    );
+    await axios.delete(`/api/user/community/${post.postId}`, {
+  params: { userId: loginUserId }
+});
+
     navigate("/community");
   };
 

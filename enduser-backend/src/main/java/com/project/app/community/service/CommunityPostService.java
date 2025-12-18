@@ -23,7 +23,8 @@ public class CommunityPostService {
     @Transactional
     public void createCommunityPost(CommunityPostDto dto) {
 
-        dto.setWriterType("MEMBER");
+        // 🔥 MEMBER → USER 로 변경
+        dto.setWriterType("USER");
         dto.setPostType("COMMUNITY");
         dto.setIsVisible(true);
         dto.setPostVisible(true);
@@ -41,12 +42,8 @@ public class CommunityPostService {
         }
     }
 
-    /**
-     * USER 커뮤니티 전체 글 목록 조회 (기존)
-     */
     @Transactional(readOnly = true)
     public List<CommunityPostDto> getVisibleCommunityPostList() {
-
         List<CommunityPostDto> list =
                 communityPostMapper.selectVisibleCommunityPostList();
 
@@ -54,11 +51,6 @@ public class CommunityPostService {
         return list;
     }
 
-    /**
-     * =========================
-     * ✅ USER 커뮤니티 전체 글 목록 조회 (페이징)
-     * =========================
-     */
     @Transactional(readOnly = true)
     public PagedResult<CommunityPostDto> getVisibleCommunityPostListPaged(int page, int size) {
 
@@ -82,9 +74,6 @@ public class CommunityPostService {
         );
     }
 
-    /**
-     * 내가 쓴 글 목록 조회
-     */
     @Transactional(readOnly = true)
     public List<CommunityPostDto> getMyCommunityPostList(String userId) {
 
@@ -95,14 +84,9 @@ public class CommunityPostService {
         return list;
     }
 
-    /**
-     * 🔥 USER 커뮤니티 상세 조회
-     * - USER 접근 시 조회수 +1
-     */
     @Transactional
     public CommunityPostDto getCommunityPostDetail(Long postId) {
 
-        // ✅ 조회수 증가 (USER 상세 진입 시)
         communityPostMapper.increaseViews(postId);
 
         CommunityPostDto dto =
@@ -115,9 +99,6 @@ public class CommunityPostService {
         return dto;
     }
 
-    /**
-     * 내가 쓴 글 수정
-     */
     @Transactional
     public void updateCommunityPost(Long postId, String userId, CommunityPostDto dto) {
 
@@ -143,9 +124,6 @@ public class CommunityPostService {
         }
     }
 
-    /**
-     * 내가 쓴 글 삭제 (소프트 삭제)
-     */
     @Transactional
     public void deleteCommunityPost(Long postId, String userId) {
 
@@ -164,9 +142,6 @@ public class CommunityPostService {
         }
     }
 
-    /**
-     * 🔧 모집 상태 계산 로직 (기존 그대로)
-     */
     private void applyRecruitStatus(List<CommunityPostDto> list) {
 
         LocalDate today = LocalDate.now();
@@ -194,17 +169,11 @@ public class CommunityPostService {
         }
     }
 
-    /**
-     * USER 커뮤니티 목록 조회 (페이징 - 기본 size)
-     */
     @Transactional(readOnly = true)
     public PagedResult<CommunityPostDto> getVisibleCommunityPostListPaged(int page) {
         return getVisibleCommunityPostListPaged(page, 10);
     }
 
-    /**
-     * 페이징 결과 DTO
-     */
     public record PagedResult<T>(
             List<T> list,
             int totalCount,

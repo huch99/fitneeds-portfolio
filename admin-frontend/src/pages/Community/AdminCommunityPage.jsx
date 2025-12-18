@@ -80,6 +80,7 @@ function AdminCommunityPage() {
           <option value="자유">자유</option>
           <option value="후기">후기</option>
           <option value="정보공유">정보공유</option>
+          <option value="개인정보동의">개인정보동의</option>
         </select>
 
         <select value={visibleFilter} onChange={(e) => setVisibleFilter(e.target.value)}>
