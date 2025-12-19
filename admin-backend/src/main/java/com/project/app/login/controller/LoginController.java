@@ -17,8 +17,9 @@ import com.project.app.config.security.JwtTokenProvider;
 import com.project.app.login.dto.LoginRequestDto;
 import com.project.app.login.dto.LoginResponseDto;
 import com.project.app.login.service.LoginService;
-import com.project.app.user.entity.User;
 import com.project.app.user.service.UserService;
+import com.project.app.userAdmin.entity.UserAdmin;
+import com.project.app.userAdmin.service.UserAdminService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,11 +29,13 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @RestController
-@RequestMapping(value = {"/api", "/api/auth"})
+@RequestMapping(value = {"/api"})
 public class LoginController {
 
 	// 사용자 정보를 처리하는 서비스
 	private final UserService userService;
+	
+	private final UserAdminService userAdminService;
 	
 	// JWT 토큰을 생성하는 클래스
 	private final JwtTokenProvider jwtTokenProvider;
@@ -41,16 +44,17 @@ public class LoginController {
 	private PasswordEncoder passwordEncoder;
 
 	// 생성자: 필요한 의존성들을 주입받습니다
-	public LoginController(LoginService loginService, UserService userService, 
+	public LoginController(LoginService loginService, UserService userService, UserAdminService userAdminService,
 			JwtTokenProvider jwtTokenProvider, PasswordEncoder passwordEncoder) {
 		this.userService = userService;
+		this.userAdminService = userAdminService;
 		this.jwtTokenProvider = jwtTokenProvider;
 		this.passwordEncoder = passwordEncoder;
 	}
 
 	/**
 	 * 로그인 API
-	 * POST /api/login 또는 /api/auth/login
+	 * POST /api/login 또는 /api/login
 	 * 
 	 * 요청 본문 예시:
 	 * {
@@ -74,11 +78,11 @@ public class LoginController {
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody LoginRequestDto loginRequestDto) {
 		// 1. 데이터베이스에서 사용자 조회
-//		User user = userService.getUserByEmailAdmin(loginRequestDto.getEmail())
+//		User user = userService.getUserByEmail(loginRequestDto.getEmail())
 //				.orElse(null); // 사용자가 없으면 null 반환
-
-		User user = userService.getUserByEmail(loginRequestDto.getEmail())
-				.orElse(null); // 사용자가 없으면 null 반환
+		
+		UserAdmin user = userAdminService.getUserByEmailAdmin(loginRequestDto.getEmail())
+					.orElse(null); // 사용자가 없으면 null 반환
 		
         if (user == null) {
             log.warn("Login failed: User not found for email {}", loginRequestDto.getEmail());

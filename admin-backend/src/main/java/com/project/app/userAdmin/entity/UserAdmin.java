@@ -1,4 +1,4 @@
-package com.project.app.user.entity; // 패키지 변경
+package com.project.app.userAdmin.entity; // 패키지 변경
 
 import java.time.LocalDateTime;
 
@@ -14,12 +14,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "USERS") //USER는 예약어이므로 'USERS' 사용
+@Table(name = "USERS_ADMIN") //USER는 예약어이므로 'USERS' 사용
 @Data // @Getter, @Setter, @ToString, @EqualsAndHashCode, @RequiredArgsConstructor 포함
 @NoArgsConstructor
 @AllArgsConstructor // 모든 필드를 인자로 받는 생성자 (Builder 사용 시 내부적으로 활용)
 @Builder // Builder 패턴 제공
-public class AdminUser {
+public class UserAdmin {
 
  // 컬럼 이름은 user_id으로 변경 (DB 관례)
  @Id
@@ -48,7 +48,7 @@ public class AdminUser {
  private LocalDateTime agreeAt;
 
  @ColumnDefault("1") // 1 = TRUE
- @Column(name = "is_active", nullable = false)
+ @Column(name = "is_active", nullable = false, columnDefinition = "TINYINT(1)")
  private Boolean isActive; // String -> Boolean 타입으로 변경
 
 }

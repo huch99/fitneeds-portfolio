@@ -1,0 +1,18 @@
+package com.project.app.userAdmin.service; // 패키지 변경
+
+import java.util.List;
+import java.util.Optional;
+
+import com.project.app.userAdmin.dto.UserAdminRequestDto;
+import com.project.app.userAdmin.entity.UserAdmin;
+
+public interface UserAdminService {
+	
+	UserAdmin createAdminUser(UserAdminRequestDto adminRequestDto);
+	boolean existsByUserId(String userId);
+	boolean existsByEmail(String email);
+	Optional<UserAdmin> findByUserId(String userId);
+	List<UserAdmin> getAllUsers();
+	Optional<UserAdmin> getUserByEmailAdmin(String email);
+	Optional<UserAdmin> getUserByEmail(String email);
+}

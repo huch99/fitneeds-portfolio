@@ -22,7 +22,7 @@ function AdminMemberPage() {
             // 파라미터 동적 구성
             const params = {};
 
-            const response = await axios.get('/api/user/all', { params });
+            const response = await axios.get('/api/admin/all', { params });
             setSchedules(response.data);
         } catch (error) {
             alert("데이터를 불러오지 못했습니다.");
@@ -89,13 +89,13 @@ function AdminMemberPage() {
                     <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'center', fontSize: '14px' }}>
                         <thead style={{ background: '#ecf0f1', borderBottom: '2px solid #bdc3c7', color: '#2c3e50', height: '40px' }}>
                             <tr>
-                                <th>USER ID</th>
+                                {/* <th>USER ID</th> */}
                                 <th>USER NAME</th>
                                 <th>E-MAIL</th>
                                 <th>PHONE-NUMBER</th>
                                 <th>ROLE</th>
-                                <th>CASH POINT</th>
-                                <th>GRADE POINT</th>
+                                {/* <th>CASH POINT</th> */}
+                                {/* <th>GRADE POINT</th> */}
                                 <th>AGREE</th>
                                 <th>ACTIVE</th>
                             </tr>
@@ -114,14 +114,14 @@ function AdminMemberPage() {
 
                                     return (
                                         <tr key={item.userId || index} style={{ borderBottom: '1px solid #eee', height: '50px' }}>
-                                            <td>{item.userId}</td>
+                                            {/* <td>{item.userId}</td> */}
                                             <td>{item.userName}</td>
                                             <td>{item.email}</td>
                                             <td>{item.phoneNumber}</td>
                                             <td>{item.role}</td>
 
-                                            <td>{item.cashPoint}</td>
-                                            <td>{item.gradePoint}</td>
+                                            {/* <td>{item.cashPoint}</td> */}
+                                            {/* <td>{item.gradePoint}</td> */}
                                             <td>{item.agreeAt}</td>
                                             <td>
                                                 <input

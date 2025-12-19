@@ -28,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @RestController
-@RequestMapping(value = {"/api", "/api/auth"})
+@RequestMapping(value = {"/api"})
 public class LoginController {
 
 	// 사용자 정보를 처리하는 서비스
@@ -73,6 +73,58 @@ public class LoginController {
 	 */
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody LoginRequestDto loginRequestDto) {
+		// 1. 데이터베이스에서 사용자 조회
+		User user = userService.getUserByEmail(loginRequestDto.getEmail())
+				.orElse(null); // 사용자가 없으면 null 반환
+
+        if (user == null) {
+            log.warn("Login failed: User not found for email {}", loginRequestDto.getEmail());
+            // 401 Unauthorized (인증 실패) 또는 400 Bad Request (잘못된 요청)으로 응답
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                LoginResponseDto.builder()
+                    .success(false)
+                    .message("가입되지 않은 이메일 입니다.")
+                    .build()
+            );
+        }
+		
+		// 2. 비밀번호 확인 (입력한 평문 비밀번호와 DB의 암호화된 비밀번호 비교)
+		if (!passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword())) {
+		    log.warn("Login failed: Incorrect password for user {}", user.getUserId());
+			// 401 Unauthorized (인증 실패)으로 응답
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                LoginResponseDto.builder()
+                    .success(false)
+                    .message("잘못된 비밀번호입니다.")
+                    .build()
+            );
+		}
+		
+		// 3. 사용자 권한 정보 설정
+		List<String> roles = new ArrayList<>();
+		roles.add(user.getRole()); // USER, ADMIN 등
+
+		// 4. JWT 토큰 생성 (사용자 아이디와 권한 정보 포함)
+		String token = jwtTokenProvider.createToken(user.getUserId(), roles);
+
+		// 5. 응답 데이터 구성
+		Map<String, Object> response = new HashMap<>();
+		response.put("token", token); // 클라이언트에서 저장하여 사용할 토큰
+		response.put("user", LoginResponseDto.builder()
+				.userId(user.getUserId())
+				.email(user.getEmail())
+				.userName(user.getUserName())
+				.role(user.getRole())
+				.success(true)
+				.message("로그인 성공")
+				.build());
+
+		// 6. HTTP 200 OK와 함께 응답 반환
+		return ResponseEntity.ok(response);
+	}
+	
+	@PostMapping("/adminLogin")
+	public ResponseEntity<?> adminLogin(@RequestBody LoginRequestDto loginRequestDto) {
 		// 1. 데이터베이스에서 사용자 조회
 		User user = userService.getUserByEmail(loginRequestDto.getEmail())
 				.orElse(null); // 사용자가 없으면 null 반환

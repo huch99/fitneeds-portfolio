@@ -10,7 +10,7 @@ export const login = createAsyncThunk(
     'auth/login',
     async ({ userId, email, password }, { rejectWithValue }) => {
         try {
-            const response = await api.post('/auth/login', { userId, email, password });
+            const response = await api.post('/login', { userId, email, password });
             const token = response.data.token;
             const userName = response.data.user.userName || 'null'; // 백엔드에서 userName을 받아오거나 userId 사용
             const role = response.data.user.role;
