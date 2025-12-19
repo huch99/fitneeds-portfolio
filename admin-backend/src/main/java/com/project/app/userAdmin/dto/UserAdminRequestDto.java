@@ -14,7 +14,14 @@ public class UserAdminRequestDto {
 	private String email;
 	private String userName;
 	private String password;
-	private String auth;
+	private String role;
+	private String cash_point;
+	private String grade_point;
+	private String is_active;
+	private String agree_at;
+	private String phone_number;
+	private String user_id;
+	private String user_nam;
 	private boolean success;
 	private String message;
 }
