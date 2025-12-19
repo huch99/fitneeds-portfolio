@@ -50,5 +50,8 @@ public class UserAdmin {
  @ColumnDefault("1") // 1 = TRUE
  @Column(name = "is_active", nullable = false, columnDefinition = "TINYINT(1)")
  private Boolean isActive; // String -> Boolean 타입으로 변경
+ 
+ @Column(name = "brch_id")
+ private String brchId;
 
 }

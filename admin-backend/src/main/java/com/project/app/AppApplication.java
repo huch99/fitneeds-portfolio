@@ -12,7 +12,9 @@ import org.springframework.web.client.RestTemplate;
 import com.project.app.config.util.UserIdGenerator;
 import com.project.app.user.entity.User;
 import com.project.app.user.repository.UserRepository;
+import com.project.app.userAdmin.entity.Branch;
 import com.project.app.userAdmin.entity.UserAdmin;
+import com.project.app.userAdmin.repository.BranchRepository;
 import com.project.app.userAdmin.repository.UserAdminRepository;
 
 /**
@@ -45,16 +47,15 @@ public class AppApplication {
 	 */
 	@Bean
 	public CommandLineRunner createTestUser(UserAdminRepository userAdminRepository, UserRepository userRepository,
-			PasswordEncoder passwordEncoder) {
+			BranchRepository branchRepository, PasswordEncoder passwordEncoder) {
 		UserIdGenerator generator = new UserIdGenerator();
 		return args -> {
-			// 관리자 계정 생성 (아이디: admin, 비밀번호: admin)
+
 			if (!userAdminRepository.existsByUserId("admin")) {
 				UserAdmin adminUser = new UserAdmin();
 				adminUser.setUserId(generator.generateUniqueUserId());
 				adminUser.setEmail("admin@naver.com");
 				adminUser.setUserName("Admin");
-//				adminUser.setUserName("관리자");
 				adminUser.setPassword(passwordEncoder.encode("admin"));
 				adminUser.setRole("ADMIN"); // 관리자 권한
 				adminUser.setPhoneNumber("01011111234");
@@ -64,7 +65,6 @@ public class AppApplication {
 				System.out.println("[테스트 계정 생성] 아이디: admin, 비밀번호: admin");
 			}
 
-			// 관리자 계정 생성 (아이디: fitneeds, 비밀번호: fitneeds)
 			if (!userAdminRepository.existsByUserId("fitneeds")) {
 				UserAdmin adminUser = new UserAdmin();
 				adminUser.setUserId(generator.generateUniqueUserId());
@@ -85,8 +85,6 @@ public class AppApplication {
 				testUser.setUserId(generator.generateUniqueUserId());
 				testUser.setEmail("user1@naver.com");
 				testUser.setUserName("User1");
-//							testUser.setUserName("일반");
-				// 비밀번호를 암호화하여 저장 (보안을 위해 평문 저장 금지!)
 				testUser.setPassword(passwordEncoder.encode("user1"));
 				testUser.setRole("USER"); // 일반 사용자 권한
 				testUser.setCashPoint(0);
@@ -103,8 +101,6 @@ public class AppApplication {
 				testUser.setUserId(generator.generateUniqueUserId());
 				testUser.setEmail("user2@naver.com");
 				testUser.setUserName("User2");
-//							testUser.setUserName("일반");
-				// 비밀번호를 암호화하여 저장 (보안을 위해 평문 저장 금지!)
 				testUser.setPassword(passwordEncoder.encode("user2"));
 				testUser.setRole("USER"); // 일반 사용자 권한
 				testUser.setCashPoint(0);
@@ -116,13 +112,11 @@ public class AppApplication {
 				System.out.println("[테스트 계정 생성] 아이디: user2, 비밀번호: user2");
 			}
 
-			// 관리자 계정 생성 (아이디: admin, 비밀번호: admin)
 			if (!userRepository.existsByUserId("admin")) {
 				User adminUser = new User();
 				adminUser.setUserId(generator.generateUniqueUserId());
 				adminUser.setEmail("admin@naver.com");
 				adminUser.setUserName("Admin");
-//							adminUser.setUserName("관리자");
 				adminUser.setPassword(passwordEncoder.encode("admin"));
 				adminUser.setRole("ADMIN"); // 관리자 권한
 				adminUser.setCashPoint(0);
@@ -150,6 +144,26 @@ public class AppApplication {
 				userRepository.save(adminUser);
 				System.out.println("[테스트 계정 생성] 아이디: fitneeds, 비밀번호: fullstack2025");
 			}
+
+			//Branch table insert 
+			Branch branch = new Branch();
+			branch.setBrchId(generator.generateUniqueUserId());
+			branch.setBrchNm("SUWON");
+			branch.setOperYn(true);
+			branch.setRegDt(LocalDateTime.now());
+			branchRepository.save(branch);			
+
+			branch.setBrchId(generator.generateUniqueUserId());
+			branch.setBrchNm("SEOUL");
+			branch.setOperYn(true);
+			branch.setRegDt(LocalDateTime.now());
+			branchRepository.save(branch);
+			
+			branch.setBrchId(generator.generateUniqueUserId());
+			branch.setBrchNm("JEJU");
+			branch.setOperYn(true);
+			branch.setRegDt(LocalDateTime.now());
+			branchRepository.save(branch);
 
 		};
 	}
