@@ -12,31 +12,28 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Data  // @Getter, @Setter, @ToString, @EqualsAndHashCode, @RequiredArgsConstructor 포함
+@Table(name = "USER")  // ⚠️ 주의: USER는 DB 예약어이므로 위험할 수 있음
+// 권장: @Table(name = "users") - 하지만 기존 DB 스키마가 USER이므로 일단 유지
+// 변경 시 DB 마이그레이션 필요: ALTER TABLE USER RENAME TO users;
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "USER")
 public class User {
-	@Id
-    @Column(name = "userId", nullable = false, unique = true)
+
+    @Id
+    @Column(name = "userId", nullable = false, length = 50)
     private String userId;
-    
-	@Column(name = "email")
+
+    @Column(name = "email")
     private String email;
-	
+
     @Column(name = "userName", nullable = false)
     private String userName;
-    
-    @Column(nullable = false)
+
+    @Column(name = "password", nullable = false)
     private String password;
-    
-    @Column
+
+    @Column(name = "auth")
     private String auth;
-    
-    public User(String userId, String password, String userName) {
-        this.userId = userId;
-        this.password = password;
-        this.userName = userName;
-    }
 }

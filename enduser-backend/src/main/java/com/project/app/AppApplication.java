@@ -36,53 +36,38 @@ public class AppApplication {
 	}
 	
 	/**
-	 * 애플리케이션 시작 시 테스트용 사용자 계정 자동 생성
-	 * 개발/테스트 환경에서 편리하게 사용하기 위한 기능
+	 * 애플리케이션 시작 시 admin 계정 자동 생성
+	 * ⚠️ 보안 경고: admin 사용자는 평문 비밀번호를 사용합니다 (개발/테스트 목적)
 	 * 운영 환경에서는 이 메소드를 제거하거나 비활성화하세요!
 	 */
 	@Bean
-	public CommandLineRunner createTestUser(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+	public CommandLineRunner createAdminUser(UserRepository userRepository) {
 		return args -> {
-			// 일반 사용자 계정 생성 (아이디: user, 비밀번호: user)
-			if (!userRepository.existsByUserId("user1")) {
-				User testUser = new User();
-				testUser.setUserId("user1");
-				testUser.setEmail("user1@naver.com");
-				testUser.setUserName("User1");
-//				testUser.setUserName("일반");
-				// 비밀번호를 암호화하여 저장 (보안을 위해 평문 저장 금지!)
-				testUser.setPassword(passwordEncoder.encode("user1"));
-				testUser.setAuth("USER"); // 일반 사용자 권한
-				userRepository.save(testUser);
-				System.out.println("[테스트 계정 생성] 아이디: user1, 비밀번호: user1");
-			}
-			
-			if (!userRepository.existsByUserId("user2")) {
-				User testUser = new User();
-				testUser.setUserId("user2");
-				testUser.setEmail("user2@naver.com");
-				testUser.setUserName("User2");
-//				testUser.setUserName("일반");
-				// 비밀번호를 암호화하여 저장 (보안을 위해 평문 저장 금지!)
-				testUser.setPassword(passwordEncoder.encode("user2"));
-				testUser.setAuth("USER"); // 일반 사용자 권한
-				userRepository.save(testUser);
-				System.out.println("[테스트 계정 생성] 아이디: user2, 비밀번호: user2");
-			}
-
-			// 관리자 계정 생성 (아이디: admin, 비밀번호: admin)
+			// 관리자 계정 생성 (아이디: admin, 비밀번호: admin - 평문 저장)
+			// ⚠️ 중요: userId는 @GeneratedValue가 없으므로 반드시 직접 설정해야 함
 			if (!userRepository.existsByUserId("admin")) {
-				User adminUser = new User();
-				adminUser.setUserId("admin");
-				adminUser.setEmail("admin@naver.com");
-				adminUser.setUserName("Admin");
-//				adminUser.setUserName("관리자");
-				adminUser.setPassword(passwordEncoder.encode("admin"));
-				adminUser.setAuth("ADMIN"); // 관리자 권한
+				User adminUser = User.builder()
+						.userId("admin")  // ⭐ 필수: PK이므로 반드시 설정
+						.email("admin@example.com")
+						.userName("관리자")
+						.password("admin")  // ⚠️ 평문 비밀번호 저장 (개발/테스트 목적)
+						.auth("ADMIN")  // 관리자 권한
+						.build();
 				userRepository.save(adminUser);
-				System.out.println("[테스트 계정 생성] 아이디: admin, 비밀번호: admin");
+				System.out.println("========================================");
+				System.out.println("[관리자 계정 생성] 아이디: admin, 비밀번호: admin (평문)");
+				System.out.println("⚠️ 경고: 운영 환경에서는 평문 비밀번호를 사용하지 마세요!");
+				System.out.println("========================================");
+			} else {
+				// 기존 admin 사용자의 비밀번호를 평문으로 업데이트
+				userRepository.findByUserId("admin").ifPresent(admin -> {
+					if (!"admin".equals(admin.getPassword())) {
+						admin.setPassword("admin");  // 평문 비밀번호로 업데이트
+						userRepository.save(admin);
+						System.out.println("[관리자 계정 업데이트] admin 비밀번호를 평문으로 변경");
+					}
+				});
 			}
 		};
 	}
-
 }

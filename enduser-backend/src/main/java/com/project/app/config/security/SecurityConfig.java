@@ -28,7 +28,7 @@ public class SecurityConfig {
 	 * 어떤 URL은 인증 없이 접근 가능하고, 어떤 URL은 로그인이 필요한지 정의합니다
 	 */
 	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtTokenProvider jwtTokenProvider, CorsConfigurationSource corsConfigurationSource) throws Exception {
+	public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtTokenProvider jwtTokenProvider) throws Exception {
 		http
 				// CORS 활성화
 				.cors(cors -> cors.configurationSource(corsConfigurationSource()))
@@ -39,9 +39,20 @@ public class SecurityConfig {
 				// URL별 접근 권한 설정
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
-						.requestMatchers("/api/auth/**").permitAll()
+						.requestMatchers("/api/auth/**").permitAll() // 로그인 API (인증 없이 접근 가능)
+						.requestMatchers("/api/user/register").permitAll() // 회원가입 API (인증 없이 접근 가능)
 						.requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-						.anyRequest().authenticated()
+						.anyRequest().authenticated() // 나머지 모든 API는 인증 필요 (Authorization 헤더 필수)
+				)
+
+				// 인증되지 않은 요청에 대해 401 (Unauthorized) 반환
+				// 기본값은 403 (Forbidden)이지만, JWT 토큰이 없을 때는 401이 더 적절합니다
+				.exceptionHandling(exceptions -> exceptions
+						.authenticationEntryPoint((request, response, authException) -> {
+							response.setStatus(401);
+							response.setContentType("application/json;charset=UTF-8");
+							response.getWriter().write("{\"error\":\"Unauthorized\",\"message\":\"인증 토큰이 필요합니다.\"}");
+						})
 				)
 
 				// JWT 인증 필터를 Spring Security 필터 체인에 추가

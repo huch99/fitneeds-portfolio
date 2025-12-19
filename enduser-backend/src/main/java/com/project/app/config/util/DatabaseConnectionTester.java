@@ -33,10 +33,14 @@ public class DatabaseConnectionTester implements CommandLineRunner {
             System.out.println("URL: " + metaData.getURL());
             System.out.println("사용자명: " + metaData.getUserName());
             
-            // 간단한 쿼리 실행 테스트
+            // 간단한 쿼리 실행 테스트 (MariaDB/MySQL용)
             try {
-                Integer result = jdbcTemplate.queryForObject("SELECT 1 FROM DUAL", Integer.class);
+                Integer result = jdbcTemplate.queryForObject("SELECT 1", Integer.class);
                 System.out.println("쿼리 실행 결과: " + result + " (정상)");
+                
+                // 데이터베이스 이름 확인
+                String dbName = jdbcTemplate.queryForObject("SELECT DATABASE()", String.class);
+                System.out.println("현재 데이터베이스: " + dbName);
             } catch (Exception e) {
                 System.out.println("쿼리 실행 실패: " + e.getMessage());
             }

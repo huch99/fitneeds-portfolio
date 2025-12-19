@@ -46,9 +46,20 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         String method = req.getMethod();
         String auth = req.getHeader("Authorization");
 
-        // test
-
         log.info("[JWT] {} {} Authorization={}", method, uri, auth);
+
+        // URL 정규화: 특수 문자 제거 (줄바꿈 %0A 등)
+        String cleanUri = uri.replaceAll("%0A", "").replaceAll("%0a", "").trim();
+        
+        // 로그인/회원가입/에러 핸들링 경로는 토큰 검증을 건너뜀
+        // 원본 URI와 정규화된 URI 모두 확인
+        if (uri.startsWith("/api/auth/") || cleanUri.startsWith("/api/auth/") || 
+            uri.equals("/api/user/register") || cleanUri.equals("/api/user/register") ||
+            uri.equals("/error") || cleanUri.equals("/error")) {
+            log.debug("[JWT] Skipping token validation for public endpoint: {} (cleaned: {})", uri, cleanUri);
+            chain.doFilter(request, response);
+            return;
+        }
 
         String token = resolveToken(req);
 
@@ -58,13 +69,33 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
                 if (jwtTokenProvider.validateToken(token)) {
                     Authentication authentication = jwtTokenProvider.getAuthentication(token);
                     SecurityContextHolder.getContext().setAuthentication(authentication);
+                } else {
+                    // 토큰이 유효하지 않은 경우
+                    log.warn("[JWT] token validation failed: invalid token");
+                    jakarta.servlet.http.HttpServletResponse httpResponse = (jakarta.servlet.http.HttpServletResponse) response;
+                    httpResponse.setStatus(401);
+                    httpResponse.setContentType("application/json;charset=UTF-8");
+                    httpResponse.getWriter().write("{\"error\":\"Unauthorized\",\"message\":\"유효하지 않은 인증 토큰입니다.\"}");
+                    return;
                 }
             } catch (Exception e) {
                 log.warn("[JWT] token validation failed: {}", e.toString());
                 // ❗ 여기서 401로 명확히 내리는 게 좋음 (403보다 자연스러움)
-                ((jakarta.servlet.http.HttpServletResponse) response).sendError(401, "Invalid token");
+                jakarta.servlet.http.HttpServletResponse httpResponse = (jakarta.servlet.http.HttpServletResponse) response;
+                httpResponse.setStatus(401);
+                httpResponse.setContentType("application/json;charset=UTF-8");
+                httpResponse.getWriter().write("{\"error\":\"Unauthorized\",\"message\":\"인증 토큰 검증에 실패했습니다.\"}");
                 return;
             }
+        } else {
+            // 토큰이 없는 경우 - 인증이 필요한 엔드포인트이므로 401 반환
+            // (로그인/회원가입 경로는 이미 위에서 처리됨)
+            log.warn("[JWT] No token provided for protected endpoint: {}", uri);
+            jakarta.servlet.http.HttpServletResponse httpResponse = (jakarta.servlet.http.HttpServletResponse) response;
+            httpResponse.setStatus(401);
+            httpResponse.setContentType("application/json;charset=UTF-8");
+            httpResponse.getWriter().write("{\"error\":\"Unauthorized\",\"message\":\"인증 토큰이 필요합니다.\"}");
+            return;
         }
 
         chain.doFilter(request, response);
