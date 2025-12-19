@@ -8,6 +8,8 @@ public class NoticeDto {
     private String title;
     private String content;
     private Integer views;
+
+    private LocalDateTime displayEnd;   // 🔥 공지 종료 날짜
     private LocalDateTime createdAt;
 
     // ===== getter / setter =====
@@ -42,6 +44,14 @@ public class NoticeDto {
 
     public void setViews(Integer views) {
         this.views = views;
+    }
+
+    public LocalDateTime getDisplayEnd() {
+        return displayEnd;
+    }
+
+    public void setDisplayEnd(LocalDateTime displayEnd) {
+        this.displayEnd = displayEnd;
     }
 
     public LocalDateTime getCreatedAt() {

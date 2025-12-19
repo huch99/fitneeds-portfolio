@@ -17,13 +17,24 @@ public class NoticeDto {
     private String title;
     private String content;
 
-    private String writerId;
+    private String writerId;       // STAFF.STAFF_ID (BIGINT)
     private String writerType;   // STAFF
+
+    // 🔽 JOIN 결과용 (출력 전용)
+    private String writerName;   // STAFF.STAFF_NM
+    private String branchName;   // BRANCH.BRCH_NM
 
     private Long branchId;
     private Integer views;
 
-    private Boolean isVisible;   // ✅ 공지사항 숨김/보이기 전용
+    private Boolean isVisible;   // 공지사항 숨김/보이기
+
+    /**
+     * 🔥 공지 종료 날짜
+     * - NULL  : 상시 공지
+     * - 값 있음: 해당 날짜 이후 자동 숨김 대상
+     */
+    private LocalDateTime displayEnd;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

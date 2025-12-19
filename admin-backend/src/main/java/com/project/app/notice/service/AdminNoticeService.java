@@ -5,6 +5,7 @@ import com.project.app.notice.mapper.AdminNoticeMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -19,10 +20,24 @@ public class AdminNoticeService {
     /**
      * ADMIN 공지사항 목록 조회
      * - 숨김 여부 무관
-     * - post_type = NOTICE
+     * - 종료 날짜 지난 공지는 자동 숨김 처리 (if문)
      */
     public List<NoticeDto> getNoticeList() {
-        return adminNoticeMapper.selectNoticeList();
+
+        List<NoticeDto> list = adminNoticeMapper.selectNoticeList();
+        LocalDateTime now = LocalDateTime.now();
+
+        for (NoticeDto notice : list) {
+            // 🔥 종료 날짜가 있고, 현재 시간보다 과거면 자동 숨김
+            if (
+                notice.getDisplayEnd() != null
+                && notice.getDisplayEnd().isBefore(now)
+            ) {
+                notice.setIsVisible(false);
+            }
+        }
+
+        return list;
     }
 
     /**
@@ -34,30 +49,37 @@ public class AdminNoticeService {
 
     /**
      * ADMIN 공지사항 등록
+     * - displayEnd = null → 상시 공지
+     * - displayEnd != null → 종료 날짜 있는 공지
      */
     @Transactional
     public void createNotice(NoticeDto dto) {
 
-        // 공지사항 고정 정책
+        // 고정 정책
         dto.setPostType("NOTICE");
         dto.setWriterType("STAFF");
         dto.setViews(0);
-        dto.setIsVisible(true);   // notice에서는 이것만 사용
-     // 🔥 반드시 필요 (ADMIN 공지 작성자)
-        dto.setWriterType("STAFF");
-     // 🔥 임시 관리자 ID (팀 merge 전까지)
-        dto.setWriterId("1L");
+        dto.setIsVisible(true);
+
+        // 🔥 임시 관리자 ID (권한 연동 전)
+        dto.setWriterId("1");
+
         // 필수값 검증
         if (dto.getTitle() == null || dto.getTitle().trim().isEmpty()
                 || dto.getContent() == null || dto.getContent().trim().isEmpty()) {
             throw new IllegalArgumentException("필수값 누락 (title, content)");
         }
 
+        // displayEnd
+        // - null → 상시 공지
+        // - 값 있음 → 종료 날짜 공지
         adminNoticeMapper.insertNotice(dto);
     }
 
     /**
      * ADMIN 공지사항 수정
+     * - 종료 날짜 수정 가능
+     * - null 전달 시 상시 공지로 변경
      */
     @Transactional
     public void updateNotice(NoticeDto dto) {
@@ -67,7 +89,6 @@ public class AdminNoticeService {
 
     /**
      * ADMIN 공지사항 숨김 / 보이기
-     * - is_visible 컬럼만 사용
      */
     @Transactional
     public void updateVisible(Long postId, boolean visible) {
@@ -75,9 +96,7 @@ public class AdminNoticeService {
     }
 
     /**
-     * ADMIN 공지사항 삭제 (논리 삭제)
-     * - 실제 DELETE 아님
-     * - is_visible = false 처리
+     * ADMIN 공지사항 삭제
      */
     @Transactional
     public void deleteNotice(Long postId) {

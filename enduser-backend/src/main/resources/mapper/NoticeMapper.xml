@@ -5,7 +5,12 @@
 
 <mapper namespace="com.project.app.notice.mapper.NoticeMapper">
 
-    <!-- USER 공지 목록 조회 -->
+    <!-- =========================
+         USER 공지 목록 조회
+         - 숨김 제외
+         - 종료된 공지 제외
+         - 상시 공지는 유지
+    ========================= -->
     <select id="selectNoticeList"
             resultType="com.project.app.notice.dto.NoticeDto">
 
@@ -14,15 +19,24 @@
             title       AS title,
             content     AS content,
             views       AS views,
+            display_end AS displayEnd,   <!-- 🔥 추가 -->
             created_at  AS createdAt
         FROM community_post
         WHERE post_type = 'NOTICE'
           AND is_visible = 1
+          AND (
+                display_end IS NULL
+                OR display_end >= NOW()
+          )
         ORDER BY created_at DESC
 
     </select>
 
-    <!-- USER 공지 상세 조회 -->
+    <!-- =========================
+         USER 공지 상세 조회
+         - 숨김 제외
+         - 종료된 공지 접근 불가
+    ========================= -->
     <select id="selectNoticeDetail"
             parameterType="long"
             resultType="com.project.app.notice.dto.NoticeDto">
@@ -32,15 +46,23 @@
             title       AS title,
             content     AS content,
             views       AS views,
+            display_end AS displayEnd,   <!-- 🔥 추가 -->
             created_at  AS createdAt
         FROM community_post
         WHERE post_id = #{postId}
           AND post_type = 'NOTICE'
           AND is_visible = 1
+          AND (
+                display_end IS NULL
+                OR display_end >= NOW()
+          )
 
     </select>
 
-    <!-- 조회수 증가 (숨김/비존재 공지는 업데이트 0건 처리되도록 조건 포함) -->
+    <!-- =========================
+         조회수 증가
+         - 숨김/종료 공지는 증가 안 됨
+    ========================= -->
     <update id="increaseViews" parameterType="long">
 
         UPDATE community_post
@@ -49,6 +71,10 @@
         WHERE post_id = #{postId}
           AND post_type = 'NOTICE'
           AND is_visible = 1
+          AND (
+                display_end IS NULL
+                OR display_end >= NOW()
+          )
 
     </update>
 

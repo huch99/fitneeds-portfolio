@@ -14,20 +14,31 @@
             resultType="com.project.app.notice.dto.NoticeDto">
 
         SELECT
-            post_id,
-            post_type,
-            title,
-            content,
-            writer_id,
-            writer_type,
-            branch_id,
-            views,
-            is_visible,
-            created_at,
-            updated_at
-        FROM community_post
-        WHERE post_type = 'NOTICE'
-        ORDER BY created_at DESC
+            cp.post_id,
+            cp.post_type,
+            cp.title,
+            cp.content,
+            cp.writer_id,
+            cp.writer_type,
+            cp.branch_id,
+            cp.views,
+            cp.is_visible,
+            cp.display_end,
+            cp.created_at,
+            cp.updated_at,
+
+            -- 작성자 / 지점 표시용
+            s.staff_nm   AS writerName,
+            b.brch_nm    AS branchName
+
+        FROM community_post cp
+        LEFT JOIN staff s
+               ON cp.writer_id = s.staff_id
+        LEFT JOIN branch b
+               ON cp.branch_id = b.brch_id
+
+        WHERE cp.post_type = 'NOTICE'
+        ORDER BY cp.created_at DESC
 
     </select>
 
@@ -39,25 +50,37 @@
             resultType="com.project.app.notice.dto.NoticeDto">
 
         SELECT
-            post_id,
-            post_type,
-            title,
-            content,
-            writer_id,
-            writer_type,
-            branch_id,
-            views,
-            is_visible,
-            created_at,
-            updated_at
-        FROM community_post
-        WHERE post_id = #{postId}
-          AND post_type = 'NOTICE'
+            cp.post_id,
+            cp.post_type,
+            cp.title,
+            cp.content,
+            cp.writer_id,
+            cp.writer_type,
+            cp.branch_id,
+            cp.views,
+            cp.is_visible,
+            cp.display_end,
+            cp.created_at,
+            cp.updated_at,
+
+            -- 작성자 / 지점 표시용
+            s.staff_nm   AS writerName,
+            b.brch_nm    AS branchName
+
+        FROM community_post cp
+        LEFT JOIN staff s
+               ON cp.writer_id = s.staff_id
+        LEFT JOIN branch b
+               ON cp.branch_id = b.brch_id
+
+        WHERE cp.post_id = #{postId}
+          AND cp.post_type = 'NOTICE'
 
     </select>
 
     <!-- =========================
          공지사항 등록 (ADMIN)
+         - display_end : NULL이면 상시
     ========================= -->
     <insert id="insertNotice"
             parameterType="com.project.app.notice.dto.NoticeDto"
@@ -74,6 +97,7 @@
             branch_id,
             views,
             is_visible,
+            display_end,
             created_at,
             updated_at
         )
@@ -87,6 +111,7 @@
             #{branchId},
             #{views},
             #{isVisible},
+            #{displayEnd},
             NOW(),
             NOW()
         )
@@ -95,6 +120,7 @@
 
     <!-- =========================
          공지사항 수정 (ADMIN)
+         - 종료 날짜 수정 가능
     ========================= -->
     <update id="updateNotice"
             parameterType="com.project.app.notice.dto.NoticeDto">
@@ -104,6 +130,7 @@
             title = #{title},
             content = #{content},
             branch_id = #{branchId},
+            display_end = #{displayEnd},
             updated_at = NOW()
         WHERE post_id = #{postId}
           AND post_type = 'NOTICE'
@@ -127,15 +154,14 @@
 
     <!-- =========================
          공지사항 삭제 (ADMIN)
-         - 논리 삭제
-         - is_visible = false
+         - 실제 DELETE
     ========================= -->
-   <delete id="deleteNotice">
+    <delete id="deleteNotice">
 
-    DELETE FROM community_post
-    WHERE post_id = #{postId}
-      AND post_type = 'NOTICE'
+        DELETE FROM community_post
+        WHERE post_id = #{postId}
+          AND post_type = 'NOTICE'
 
-   </delete>
+    </delete>
 
 </mapper>

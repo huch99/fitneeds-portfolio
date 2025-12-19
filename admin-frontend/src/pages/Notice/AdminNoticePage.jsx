@@ -228,7 +228,7 @@ function AdminNoticePage() {
                   <tr>
                     <td colSpan="7" style={{ background: "#fafafa", padding: "15px" }}>
                       <strong>내용</strong>
-                      <div style={{ marginTop: "10px" }}>{n.content}</div>
+                      <div style={{ marginTop: "10px", whiteSpace: "pre-line", }}>{n.content}</div>
                       <div style={{ marginTop: "15px", fontSize: "13px", color: "#777" }}>
                         작성일: {n.createdAt}
                       </div>
