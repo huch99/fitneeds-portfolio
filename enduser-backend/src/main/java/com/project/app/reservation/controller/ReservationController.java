@@ -127,6 +127,47 @@ public class ReservationController {
 	}
 	
 	/**
+	 * 예약일자 변경 (예약목록)
+	 * PATCH /api/reservation/{reservationId}/date
+	 * 헤더: Authorization: Bearer {token}
+	 * 
+	 * 요청 본문 예시:
+	 * {
+	 *   "reservedDate": "2024-02-15",
+	 *   "reservedTime": "14:00:00"
+	 * }
+	 */
+	@PatchMapping("/{reservationId}/date")
+	public ResponseEntity<?> updateReservationDate(
+			@PathVariable("reservationId") Long reservationId,
+			@RequestBody java.util.Map<String, String> requestBody) {
+		try {
+			String currentUserId = getCurrentUserId();
+			
+			// 요청 본문에서 날짜/시간 추출
+			String dateStr = requestBody.get("reservedDate");
+			String timeStr = requestBody.get("reservedTime");
+			
+			if (dateStr == null) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+						.body("예약날짜는 필수입니다.");
+			}
+			
+			java.time.LocalDate reservedDate = java.time.LocalDate.parse(dateStr);
+			java.time.LocalTime reservedTime = timeStr != null 
+					? java.time.LocalTime.parse(timeStr) 
+					: null;
+			
+			reservationService.updateReservationDate(reservationId, currentUserId, reservedDate, reservedTime);
+			return ResponseEntity.ok("예약일자가 변경되었습니다.");
+		} catch (Exception e) {
+			log.error("예약일자 변경 중 오류 발생", e);
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body("예약일자 변경 중 오류가 발생했습니다: " + e.getMessage());
+		}
+	}
+	
+	/**
 	 * 예약 취소 (마이페이지)
 	 * PATCH /api/reservation/{reservationId}/cancel
 	 * 헤더: Authorization: Bearer {token}

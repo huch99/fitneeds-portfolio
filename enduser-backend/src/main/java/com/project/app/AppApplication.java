@@ -1,5 +1,7 @@
 package com.project.app;
 
+import java.time.LocalDateTime;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -7,6 +9,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.client.RestTemplate;
 
+import com.project.app.payment.entity.Payment;
+import com.project.app.payment.repository.PaymentRepository;
 import com.project.app.user.entity.User;
 import com.project.app.user.repository.UserRepository;
 
@@ -36,38 +40,260 @@ public class AppApplication {
 	}
 	
 	/**
-	 * 애플리케이션 시작 시 admin 계정 자동 생성
-	 * ⚠️ 보안 경고: admin 사용자는 평문 비밀번호를 사용합니다 (개발/테스트 목적)
+	 * 애플리케이션 시작 시 테스트용 사용자 계정 자동 생성
+	 * 개발/테스트 환경에서 편리하게 사용하기 위한 기능
 	 * 운영 환경에서는 이 메소드를 제거하거나 비활성화하세요!
 	 */
 	@Bean
-	public CommandLineRunner createAdminUser(UserRepository userRepository) {
+	public CommandLineRunner createTestUser(UserRepository userRepository, PasswordEncoder passwordEncoder) {
 		return args -> {
-			// 관리자 계정 생성 (아이디: admin, 비밀번호: admin - 평문 저장)
-			// ⚠️ 중요: userId는 @GeneratedValue가 없으므로 반드시 직접 설정해야 함
+			// 일반 사용자 계정 생성 (아이디: user, 비밀번호: user)
+			if (!userRepository.existsByUserId("user1")) {
+				User testUser = new User();
+				testUser.setUserId("user1");
+				testUser.setEmail("user1@naver.com");
+				testUser.setUserName("User1");
+//				testUser.setUserName("일반");
+				// 비밀번호를 암호화하여 저장 (보안을 위해 평문 저장 금지!)
+				testUser.setPassword(passwordEncoder.encode("user1"));
+				testUser.setAuth("USER"); // 일반 사용자 권한
+				userRepository.save(testUser);
+				System.out.println("[테스트 계정 생성] 아이디: user1, 비밀번호: user1");
+			}
+			
+			if (!userRepository.existsByUserId("user2")) {
+				User testUser = new User();
+				testUser.setUserId("user2");
+				testUser.setEmail("user2@naver.com");
+				testUser.setUserName("User2");
+//				testUser.setUserName("일반");
+				// 비밀번호를 암호화하여 저장 (보안을 위해 평문 저장 금지!)
+				testUser.setPassword(passwordEncoder.encode("user2"));
+				testUser.setAuth("USER"); // 일반 사용자 권한
+				userRepository.save(testUser);
+				System.out.println("[테스트 계정 생성] 아이디: user2, 비밀번호: user2");
+			}
+
+			// 관리자 계정 생성 (아이디: admin, 비밀번호: admin)
 			if (!userRepository.existsByUserId("admin")) {
-				User adminUser = User.builder()
-						.userId("admin")  // ⭐ 필수: PK이므로 반드시 설정
-						.email("admin@example.com")
-						.userName("관리자")
-						.password("admin")  // ⚠️ 평문 비밀번호 저장 (개발/테스트 목적)
-						.auth("ADMIN")  // 관리자 권한
-						.build();
+				User adminUser = new User();
+				adminUser.setUserId("admin");
+				adminUser.setEmail("admin@naver.com");
+				adminUser.setUserName("Admin");
+//				adminUser.setUserName("관리자");
+				adminUser.setPassword(passwordEncoder.encode("admin"));
+				adminUser.setAuth("ADMIN"); // 관리자 권한
 				userRepository.save(adminUser);
-				System.out.println("========================================");
-				System.out.println("[관리자 계정 생성] 아이디: admin, 비밀번호: admin (평문)");
-				System.out.println("⚠️ 경고: 운영 환경에서는 평문 비밀번호를 사용하지 마세요!");
-				System.out.println("========================================");
-			} else {
-				// 기존 admin 사용자의 비밀번호를 평문으로 업데이트
-				userRepository.findByUserId("admin").ifPresent(admin -> {
-					if (!"admin".equals(admin.getPassword())) {
-						admin.setPassword("admin");  // 평문 비밀번호로 업데이트
-						userRepository.save(admin);
-						System.out.println("[관리자 계정 업데이트] admin 비밀번호를 평문으로 변경");
-					}
-				});
+				System.out.println("[테스트 계정 생성] 아이디: admin, 비밀번호: admin");
 			}
 		};
 	}
+	
+	/**
+	 * 애플리케이션 시작 시 결제 목록 가데이터 자동 생성
+	 * 개발/테스트 환경에서 편리하게 사용하기 위한 기능
+	 * 운영 환경에서는 이 메소드를 제거하거나 비활성화하세요!
+	 */
+	@Bean
+	public CommandLineRunner createPaymentData(
+			PaymentRepository paymentRepository, 
+			UserRepository userRepository) {
+		return args -> {
+			// 사용자 조회
+			User user1 = userRepository.findByUserId("user1").orElse(null);
+			User user2 = userRepository.findByUserId("user2").orElse(null);
+			User admin = userRepository.findByUserId("admin").orElse(null);
+			
+			if (user1 == null || user2 == null || admin == null) {
+				System.out.println("[결제 가데이터 생성] 사용자 데이터가 없어 결제 데이터를 생성할 수 없습니다.");
+				return;
+			}
+			
+			// user1의 결제 내역 생성
+			if (paymentRepository.findByUser_UserId("user1").isEmpty()) {
+				// 결제 1: 예약 결제 (완료)
+				Payment payment1 = Payment.builder()
+						.orderNo("ORD20240101001")
+						.user(user1)
+						.payTypeCd("RESERVATION")
+						.refId(null) // 외래키 제약조건을 피하기 위해 null로 설정
+						.payAmount(50000)
+						.payMethod("CARD")
+						.statusCode("COMPLETED")
+						.registrationDateTime(LocalDateTime.of(2024, 1, 15, 10, 30, 0))
+						.pgOrderNo("PG20240115001")
+						.build();
+				paymentRepository.save(payment1);
+				
+				// 결제 2: 예약 결제 (완료)
+				Payment payment2 = Payment.builder()
+						.orderNo("ORD20240102002")
+						.user(user1)
+						.payTypeCd("RESERVATION")
+						.refId(null) // 외래키 제약조건을 피하기 위해 null로 설정
+						.payAmount(30000)
+						.payMethod("BANK_TRANSFER")
+						.statusCode("COMPLETED")
+						.registrationDateTime(LocalDateTime.of(2024, 1, 20, 14, 20, 0))
+						.pgOrderNo("PG20240120002")
+						.build();
+				paymentRepository.save(payment2);
+				
+				// 결제 3: 패스 구매 (완료)
+				Payment payment3 = Payment.builder()
+						.orderNo("ORD20240103003")
+						.user(user1)
+						.payTypeCd("PASS")
+						.refId(null)
+						.payAmount(100000)
+						.payMethod("CARD")
+						.statusCode("COMPLETED")
+						.registrationDateTime(LocalDateTime.of(2024, 2, 1, 9, 15, 0))
+						.pgOrderNo("PG20240201003")
+						.build();
+				paymentRepository.save(payment3);
+				
+				// 결제 4: 예약 결제 (대기중)
+				Payment payment4 = Payment.builder()
+						.orderNo("ORD20240104004")
+						.user(user1)
+						.payTypeCd("RESERVATION")
+						.refId(null) // 외래키 제약조건을 피하기 위해 null로 설정
+						.payAmount(25000)
+						.payMethod("CARD")
+						.statusCode("PENDING")
+						.registrationDateTime(LocalDateTime.of(2024, 2, 10, 16, 45, 0))
+						.pgOrderNo("PG20240210004")
+						.build();
+				paymentRepository.save(payment4);
+				
+				System.out.println("[결제 가데이터 생성] user1의 결제 데이터 4건 생성 완료");
+			}
+			
+			// user2의 결제 내역 생성
+			if (paymentRepository.findByUser_UserId("user2").isEmpty()) {
+				// 결제 5: 예약 결제 (완료)
+				Payment payment5 = Payment.builder()
+						.orderNo("ORD20240105005")
+						.user(user2)
+						.payTypeCd("RESERVATION")
+						.refId(null) // 외래키 제약조건을 피하기 위해 null로 설정
+						.payAmount(40000)
+						.payMethod("CARD")
+						.statusCode("COMPLETED")
+						.registrationDateTime(LocalDateTime.of(2024, 1, 18, 11, 0, 0))
+						.pgOrderNo("PG20240118005")
+						.build();
+				paymentRepository.save(payment5);
+				
+				// 결제 6: 패스 구매 (완료)
+				Payment payment6 = Payment.builder()
+						.orderNo("ORD20240106006")
+						.user(user2)
+						.payTypeCd("PASS")
+						.refId(null)
+						.payAmount(80000)
+						.payMethod("BANK_TRANSFER")
+						.statusCode("COMPLETED")
+						.registrationDateTime(LocalDateTime.of(2024, 1, 25, 13, 30, 0))
+						.pgOrderNo("PG20240125006")
+						.build();
+				paymentRepository.save(payment6);
+				
+				// 결제 7: 예약 결제 (완료)
+				Payment payment7 = Payment.builder()
+						.orderNo("ORD20240107007")
+						.user(user2)
+						.payTypeCd("RESERVATION")
+						.refId(null) // 외래키 제약조건을 피하기 위해 null로 설정
+						.payAmount(35000)
+						.payMethod("CARD")
+						.statusCode("COMPLETED")
+						.registrationDateTime(LocalDateTime.of(2024, 2, 5, 15, 20, 0))
+						.pgOrderNo("PG20240205007")
+						.build();
+				paymentRepository.save(payment7);
+				
+				System.out.println("[결제 가데이터 생성] user2의 결제 데이터 3건 생성 완료");
+			}
+			
+			// admin의 결제 내역 생성
+			if (paymentRepository.findByUser_UserId("admin").isEmpty()) {
+				// 결제 8: 예약 결제 (완료)
+				Payment payment8 = Payment.builder()
+						.orderNo("ORD20240108008")
+						.user(admin)
+						.payTypeCd("RESERVATION")
+						.refId(null) // 외래키 제약조건을 피하기 위해 null로 설정
+						.payAmount(60000)
+						.payMethod("CARD")
+						.statusCode("COMPLETED")
+						.registrationDateTime(LocalDateTime.of(2024, 1, 22, 10, 0, 0))
+						.pgOrderNo("PG20240122008")
+						.build();
+				paymentRepository.save(payment8);
+				
+				// 결제 9: 패스 구매 (완료)
+				Payment payment9 = Payment.builder()
+						.orderNo("ORD20240109009")
+						.user(admin)
+						.payTypeCd("PASS")
+						.refId(null)
+						.payAmount(150000)
+						.payMethod("CARD")
+						.statusCode("COMPLETED")
+						.registrationDateTime(LocalDateTime.of(2024, 1, 28, 12, 0, 0))
+						.pgOrderNo("PG20240128009")
+						.build();
+				paymentRepository.save(payment9);
+				
+				// 결제 10: 예약 결제 (완료)
+				Payment payment10 = Payment.builder()
+						.orderNo("ORD20240110010")
+						.user(admin)
+						.payTypeCd("RESERVATION")
+						.refId(null) // 외래키 제약조건을 피하기 위해 null로 설정
+						.payAmount(45000)
+						.payMethod("BANK_TRANSFER")
+						.statusCode("COMPLETED")
+						.registrationDateTime(LocalDateTime.of(2024, 2, 8, 14, 0, 0))
+						.pgOrderNo("PG20240208010")
+						.build();
+				paymentRepository.save(payment10);
+				
+				// 결제 11: 예약 결제 (대기중)
+				Payment payment11 = Payment.builder()
+						.orderNo("ORD20240111011")
+						.user(admin)
+						.payTypeCd("RESERVATION")
+						.refId(null) // 외래키 제약조건을 피하기 위해 null로 설정
+						.payAmount(55000)
+						.payMethod("CARD")
+						.statusCode("PENDING")
+						.registrationDateTime(LocalDateTime.of(2024, 2, 12, 16, 30, 0))
+						.pgOrderNo("PG20240212011")
+						.build();
+				paymentRepository.save(payment11);
+				
+				// 결제 12: 예약 결제 (완료)
+				Payment payment12 = Payment.builder()
+						.orderNo("ORD20240112012")
+						.user(admin)
+						.payTypeCd("RESERVATION")
+						.refId(null) // 외래키 제약조건을 피하기 위해 null로 설정
+						.payAmount(30000)
+						.payMethod("CARD")
+						.statusCode("COMPLETED")
+						.registrationDateTime(LocalDateTime.of(2024, 2, 15, 9, 0, 0))
+						.pgOrderNo("PG20240215012")
+						.build();
+				paymentRepository.save(payment12);
+				
+				System.out.println("[결제 가데이터 생성] admin의 결제 데이터 5건 생성 완료");
+			}
+			
+			System.out.println("[결제 가데이터 생성] 총 " + paymentRepository.count() + "건의 결제 데이터가 준비되었습니다.");
+		};
+	}
+
 }

@@ -4,8 +4,10 @@ import { ACCESS_TOKEN_KEY } from '../store/authSlice';
 
 // import store from '../store'; // Redux Store를 import하여 로그아웃 액션 디스패치
 
+// 개발 환경에서는 Vite proxy를 사용하므로 baseURL을 빈 문자열로 설정
+// 프로덕션 환경에서는 환경 변수에서 가져옴
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_BASE_URL,
+    baseURL: import.meta.env.VITE_API_BASE_URL || '',
     headers: {
         'Content-Type': 'application/json',
     },

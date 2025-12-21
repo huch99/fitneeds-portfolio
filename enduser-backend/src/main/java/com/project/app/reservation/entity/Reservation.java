@@ -28,7 +28,7 @@ import com.project.app.user.entity.User;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "RESERVATION")
+@Table(name = "reservation")
 public class Reservation {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,7 +36,7 @@ public class Reservation {
 	private Long reservationId;
 	
 	@ManyToOne
-	@JoinColumn(name = "usr_id", referencedColumnName = "userId", nullable = false)
+	@JoinColumn(name = "usr_id", referencedColumnName = "user_id", nullable = false)
 	private User user;
 	
 	@ManyToOne
@@ -59,7 +59,10 @@ public class Reservation {
 	@Column(name = "mod_usr_ID", length = 50)
 	private String modifyUserId; // 수정자ID
 	
-	@Column(name = "rsvd_dt", nullable = false)
-	private LocalDateTime reservedDate; // 예약날짜 (사용자 선택날짜)
+	@Column(name = "rsv_dt", nullable = false)
+	private LocalDateTime reservedDate; // 예약날짜 (사용자 선택날짜) - 실제 테이블: rsv_dt (DATE)
+	
+	@Column(name = "rsv_time", nullable = false)
+	private java.time.LocalTime reservedTime; // 예약시간 - 실제 테이블: rsv_time (TIME)
 }
 

@@ -1,10 +1,11 @@
 package com.project.app.config.security;
 
+import java.io.IOException;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
 
-import java.io.IOException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
@@ -13,12 +14,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * JWT 인증 필터
- * 모든 HTTP 요청을 가로채서 JWT 토큰을 검사하는 필터
+ * JWT 인증 필터 모든 HTTP 요청을 가로채서 JWT 토큰을 검사하는 필터
  * 
  * 동작 순서:
- * 1. 요청 헤더에서 JWT 토큰 추출
- * 2. 토큰 유효성 검증
+ * 1. 요청 헤더에서 JWT 토큰 추출 
+ * 2. 토큰 유효성 검증 
  * 3. 유효하면 사용자 인증 정보를 Spring Security에 등록
  * 4. 다음 필터로 요청 전달
  */
@@ -26,98 +26,59 @@ import lombok.extern.slf4j.Slf4j;
 public class JwtAuthenticationFilter extends GenericFilterBean {
 
 	// JWT 토큰을 처리하는 클래스
-    private final JwtTokenProvider jwtTokenProvider;
-    
-    // 생성자: JwtTokenProvider를 주입받습니다
-    public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider) {
-        this.jwtTokenProvider = jwtTokenProvider;
-    }
-    
-    /**
-     * 필터 메인 로직
-     * 모든 HTTP 요청이 들어올 때마다 실행됩니다
-     */
-    @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) 
-    		throws IOException, ServletException {
+	private final JwtTokenProvider jwtTokenProvider;
 
-        HttpServletRequest req = (HttpServletRequest) request;
-        String uri = req.getRequestURI();
-        String method = req.getMethod();
-        String auth = req.getHeader("Authorization");
+	// 생성자: JwtTokenProvider를 주입받습니다
+	public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider) {
+		this.jwtTokenProvider = jwtTokenProvider;
+	}
 
-        log.info("[JWT] {} {} Authorization={}", method, uri, auth);
+	/**
+	 * 필터 메인 로직 모든 HTTP 요청이 들어올 때마다 실행됩니다
+	 */
+	@Override
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+			throws IOException, ServletException {
 
-        // URL 정규화: 특수 문자 제거 (줄바꿈 %0A 등)
-        String cleanUri = uri.replaceAll("%0A", "").replaceAll("%0a", "").trim();
-        
-        // 로그인/회원가입/에러 핸들링 경로는 토큰 검증을 건너뜀
-        // 원본 URI와 정규화된 URI 모두 확인
-        if (uri.startsWith("/api/auth/") || cleanUri.startsWith("/api/auth/") || 
-            uri.equals("/api/user/register") || cleanUri.equals("/api/user/register") ||
-            uri.equals("/error") || cleanUri.equals("/error")) {
-            log.debug("[JWT] Skipping token validation for public endpoint: {} (cleaned: {})", uri, cleanUri);
-            chain.doFilter(request, response);
-            return;
-        }
+		try {
+			// 1. HTTP 요청 헤더에서 JWT 토큰 추출
+			String token = resolveToken((HttpServletRequest) request);
 
-        String token = resolveToken(req);
+			// 2. 토큰이 존재하고 유효한지 검사
+			if (token != null && jwtTokenProvider.validateToken(token)) {
+				// 3. 토큰에서 사용자 정보를 추출하여 인증 객체 생성
+				Authentication authentication = jwtTokenProvider.getAuthentication(token);
 
-        if (token != null) {
-            log.info("[JWT] extracted token length={}", token.length());
-            try {
-                if (jwtTokenProvider.validateToken(token)) {
-                    Authentication authentication = jwtTokenProvider.getAuthentication(token);
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                } else {
-                    // 토큰이 유효하지 않은 경우
-                    log.warn("[JWT] token validation failed: invalid token");
-                    jakarta.servlet.http.HttpServletResponse httpResponse = (jakarta.servlet.http.HttpServletResponse) response;
-                    httpResponse.setStatus(401);
-                    httpResponse.setContentType("application/json;charset=UTF-8");
-                    httpResponse.getWriter().write("{\"error\":\"Unauthorized\",\"message\":\"유효하지 않은 인증 토큰입니다.\"}");
-                    return;
-                }
-            } catch (Exception e) {
-                log.warn("[JWT] token validation failed: {}", e.toString());
-                // ❗ 여기서 401로 명확히 내리는 게 좋음 (403보다 자연스러움)
-                jakarta.servlet.http.HttpServletResponse httpResponse = (jakarta.servlet.http.HttpServletResponse) response;
-                httpResponse.setStatus(401);
-                httpResponse.setContentType("application/json;charset=UTF-8");
-                httpResponse.getWriter().write("{\"error\":\"Unauthorized\",\"message\":\"인증 토큰 검증에 실패했습니다.\"}");
-                return;
-            }
-        } else {
-            // 토큰이 없는 경우 - 인증이 필요한 엔드포인트이므로 401 반환
-            // (로그인/회원가입 경로는 이미 위에서 처리됨)
-            log.warn("[JWT] No token provided for protected endpoint: {}", uri);
-            jakarta.servlet.http.HttpServletResponse httpResponse = (jakarta.servlet.http.HttpServletResponse) response;
-            httpResponse.setStatus(401);
-            httpResponse.setContentType("application/json;charset=UTF-8");
-            httpResponse.getWriter().write("{\"error\":\"Unauthorized\",\"message\":\"인증 토큰이 필요합니다.\"}");
-            return;
-        }
+				// 4. Spring Security에 인증 정보 등록 (로그인 상태로 만듬)
+				SecurityContextHolder.getContext().setAuthentication(authentication);
+			}
+			chain.doFilter(request, response);
 
-        chain.doFilter(request, response);
-    }
-    
-    /**
-     * HTTP 요청 헤더에서 JWT 토큰 추출
-     * 
-     * 헤더 형식: Authorization: Bearer {JWT 토큰}
-     * 예시: Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-     * 
-     * @param request HTTP 요청 객체
-     * @return JWT 토큰 문자열 (없으면 null)
-     */
-    private String resolveToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-        
-        // "Bearer " 로 시작하는지 확인
-        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-            // "Bearer " 를 제외한 나머지 부분이 실제 토큰
-            return bearerToken.substring(7);
-        }
-        return null;
-    }
+		} catch (Exception e) {
+			log.warn("[JWT] token validation failed: {}", e.toString());
+			// ❗ 여기서 401로 명확히 내리는 게 좋음 (403보다 자연스러움)
+			((jakarta.servlet.http.HttpServletResponse) response).sendError(401, "Invalid token");
+			return;
+		}
+	}
+
+	/**
+	 * HTTP 요청 헤더에서 JWT 토큰 추출
+	 * 
+	 * 헤더 형식: Authorization: Bearer {JWT 토큰} 예시: Authorization: Bearer
+	 * eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+	 * 
+	 * @param request HTTP 요청 객체
+	 * @return JWT 토큰 문자열 (없으면 null)
+	 */
+	private String resolveToken(HttpServletRequest request) {
+		String bearerToken = request.getHeader("Authorization");
+
+		// "Bearer " 로 시작하는지 확인
+		if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+			// "Bearer " 를 제외한 나머지 부분이 실제 토큰
+			return bearerToken.substring(7);
+		}
+		return null;
+	}
 }
