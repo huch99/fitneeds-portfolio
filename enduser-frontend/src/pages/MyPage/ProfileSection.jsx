@@ -11,7 +11,7 @@ function ProfileSection({ userName, userInfo, onMenuClick }) {
           </div>
         </div>
         <div className="profile-info">
-          <div className="profile-name">{userName || userInfo.name || '사용자'} 님</div>
+          <div className="profile-name">{localStorage.getItem('userName') } 님</div>
           <div className="profile-email">{userInfo.email}</div>
         </div>
       </div>

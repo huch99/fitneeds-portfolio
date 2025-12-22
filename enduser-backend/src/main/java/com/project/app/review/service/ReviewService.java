@@ -2,6 +2,7 @@ package com.project.app.review.service;
 
 import java.util.List;
 
+import com.project.app.board.dto.BoardDto;
 import com.project.app.review.dto.ReviewDto;
 
 public interface ReviewService {
@@ -29,5 +30,9 @@ public interface ReviewService {
      * 리뷰 삭제 (권한 체크 포함)
      */
     void deleteReviewById(Long reviewId, String userId);
+
+	Object getAllReviews();
+
+	List<BoardDto> getReviewById(Long id);
 }
 

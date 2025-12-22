@@ -13,7 +13,7 @@ import api from './index';
  */
 export const getMyPayments = async () => {
   try {
-    const response = await api.get('/payment/my');
+    const response = await api.get('/payment/my/{id}');
     return response.data;
   } catch (error) {
     console.error('결제내역 조회 실패:', error);

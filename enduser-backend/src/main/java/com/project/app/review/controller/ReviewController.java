@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.project.app.board.dto.BoardDto;
 import com.project.app.review.dto.ReviewDto;
 import com.project.app.review.service.ReviewService;
 
@@ -37,59 +38,41 @@ public class ReviewController {
     public ReviewController(ReviewService reviewService) {
         this.reviewService = reviewService;
     }
-    
-    /**
-     * 요청 헤더에서 사용자 ID를 가져옵니다.
-     * 프론트엔드의 localStorage에서 가져온 userId가 X-User-Id 헤더로 전달됩니다.
-     * 
-     * @param request HTTP 요청 객체
-     * @return 사용자 ID
-     */
-    private String getCurrentUserId(HttpServletRequest request) {
-        String userId = request.getHeader("X-User-Id");
-        if (userId == null || userId.isEmpty()) {
-            log.error("X-User-Id 헤더가 없습니다. localStorage에서 userId를 확인해주세요.");
-            throw new RuntimeException("사용자 ID가 없습니다.");
-        }
-        log.debug("현재 사용자 ID (localStorage에서 가져옴): {}", userId);
-        return userId;
-    }
 
     /**
      * 나의 리뷰 목록 조회
-     * GET /api/reviews/my
-     * 헤더: Authorization: Bearer {token}
+     * GET /api/reviews
      */
-    @GetMapping("/my")
-    public ResponseEntity<?> getMyReviews(HttpServletRequest request) {
-        try {
-            String currentUserId = getCurrentUserId(request);
-            List<ReviewDto> reviews = reviewService.getMyReviews(currentUserId);
-            return ResponseEntity.ok(reviews);
-        } catch (Exception e) {
-            log.error("리뷰 목록 조회 중 오류 발생", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("리뷰 목록 조회 중 오류가 발생했습니다: " + e.getMessage());
-        }
+    @GetMapping
+    public ResponseEntity<List<ReviewDto>> getAllReviews() {
+        return ResponseEntity.ok(reviewService.getAllReviews());
     }
 
     /**
      * 예약 ID로 리뷰 조회
-     * GET /api/reviews/reservation/{reservationId}
-     * 헤더: Authorization: Bearer {token}
+     * GET /api/reviews/id/1
      */
-    @GetMapping("/reservation/{reservationId}")
-    public ResponseEntity<?> getReviewByReservationId(
-            @PathVariable Long reservationId,
-            HttpServletRequest request) {
-        try {
-            String currentUserId = getCurrentUserId(request);
-            List<ReviewDto> reviews = reviewService.getReviewByReservationId(reservationId, currentUserId);
-            return ResponseEntity.ok(reviews);
-        } catch (Exception e) {
-            log.error("예약별 리뷰 조회 중 오류 발생", e);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("예약별 리뷰 조회 중 오류가 발생했습니다: " + e.getMessage());
+    @GetMapping("/id/{id}")
+    public ResponseEntity<List<ReviewDto>> getReviewById(@PathVariable Long id) {
+    	List<BoardDto> review = reviewService.getReviewById(id);
+        if (review != null) {
+            return ResponseEntity.ok(review); // 200 OK + 데이터
+        } else {
+            return ResponseEntity.notFound().build(); // 404 Not Found
+        }
+    }
+    
+    /**
+     * 작성자로 게시글 조회
+     * GET /api/reviews/author/admin
+     */
+    @GetMapping("/author/{author}")
+    public ResponseEntity<List<ReviewDto>> getReviewByAuthor(@PathVariable String Author) {
+    	List<ReviewDto> board = reviewService.getReviewByAuthor(Author);
+        if (review != null) {
+            return ResponseEntity.ok(review);
+        } else {
+            return ResponseEntity.notFound().build();
         }
     }
 
@@ -107,19 +90,12 @@ public class ReviewController {
      * }
      */
     @PostMapping
-    public ResponseEntity<?> createReview(
-            @RequestBody ReviewDto reviewDto,
-            HttpServletRequest request){
-        try {
-            String currentUserId = getCurrentUserId(request);
-            ReviewDto createdReview = reviewService.createReview(reviewDto, currentUserId);
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdReview);
-        } catch (Exception e) {
-            log.error("리뷰 생성 중 오류 발생", e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("리뷰 생성 중 오류가 발생했습니다: " + e.getMessage());
-        }
+    public ResponseEntity<ReviewDto> createReview(@RequestBody ReviewDto reviewDto){
+    	reviewService.createReview(reviewDto);
+    	// 201 Created 상태 코드와 함께 생성된 데이터 반환
+    	return ResponseEntity.status(HttpStatus.CREATED).body(reviewDto);
     }
+
 
     /**
      * 리뷰 수정
@@ -132,21 +108,12 @@ public class ReviewController {
      *   "content": "수정된 후기 내용"
      * }
      */
-    @PutMapping("/{reviewId}")
-    public ResponseEntity<?> updateReview(
-            @PathVariable Long reviewId,
-            @RequestBody ReviewDto reviewDto,
-            HttpServletRequest request){
-        try {
-            String currentUserId = getCurrentUserId(request);
-            reviewDto.setReviewId(reviewId);
-            ReviewDto updatedReview = reviewService.updateReview(reviewDto, currentUserId);
-            return ResponseEntity.ok(updatedReview);
-        } catch (Exception e) {
-            log.error("리뷰 수정 중 오류 발생", e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("리뷰 수정 중 오류가 발생했습니다: " + e.getMessage());
-        }
+    @PutMapping("/{id}")
+    public ResponseEntity<ReviewDto> updateReview(@PathVariable Long id, @RequestBody ReviewDto reviewDto){
+    	// URL의 id를 DTO에 설정 (어떤 게시글을 수정할지 명확히 하기 위해)
+    	reviewDto.setId(id);
+    	reviewService.updateBoard(reviewDto);
+    	return ResponseEntity.ok(reviewDto); // 200 OK + 수정된 데이터
     }
     
     /**
@@ -154,19 +121,11 @@ public class ReviewController {
      * DELETE /api/reviews/{reviewId}
      * 헤더: Authorization: Bearer {token}
      */
-    @DeleteMapping("/{reviewId}")
-    public ResponseEntity<?> deleteReviewById(
-            @PathVariable Long reviewId,
-            HttpServletRequest request){
-        try {
-            String currentUserId = getCurrentUserId(request);
-            reviewService.deleteReviewById(reviewId, currentUserId);
-            return ResponseEntity.ok("리뷰가 삭제되었습니다.");
-        } catch (Exception e) {
-            log.error("리뷰 삭제 중 오류 발생", e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("리뷰 삭제 중 오류가 발생했습니다: " + e.getMessage());
-        }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteReviewById(@PathVariable Long id){
+    	reviewService.deleteReviewById(id);
+        // 삭제 성공 시 본문 없이 200 OK만 반환
+        return ResponseEntity.ok().build();
     }
 }
 
