@@ -112,39 +112,6 @@ public class AppApplication {
 				System.out.println("[테스트 계정 생성] 아이디: user2, 비밀번호: user2");
 			}
 
-			if (!userRepository.existsByUserId("admin")) {
-				User adminUser = new User();
-				adminUser.setUserId(generator.generateUniqueUserId());
-				adminUser.setEmail("admin@naver.com");
-				adminUser.setUserName("Admin");
-				adminUser.setPassword(passwordEncoder.encode("admin"));
-				adminUser.setRole("ADMIN"); // 관리자 권한
-				adminUser.setCashPoint(0);
-				adminUser.setGradePoint(0);
-				adminUser.setPhoneNumber("01011111234");
-				adminUser.setAgreeAt(LocalDateTime.now());
-				adminUser.setIsActive(true);
-				userRepository.save(adminUser);
-				System.out.println("[테스트 계정 생성] 아이디: admin, 비밀번호: admin");
-			}
-
-			// 관리자 계정 생성 (아이디: admin, 비밀번호: admin)
-			if (!userRepository.existsByUserId("fitneeds")) {
-				User adminUser = new User();
-				adminUser.setUserId(generator.generateUniqueUserId());
-				adminUser.setEmail("fitneeds@fitneeds.com");
-				adminUser.setUserName("fitneeds");
-				adminUser.setPassword(passwordEncoder.encode("fullstack2025"));
-				adminUser.setRole("ADMIN"); // 관리자 권한
-				adminUser.setCashPoint(0);
-				adminUser.setGradePoint(0);
-				adminUser.setPhoneNumber("01099991234");
-				adminUser.setAgreeAt(LocalDateTime.now());
-				adminUser.setIsActive(true);
-				userRepository.save(adminUser);
-				System.out.println("[테스트 계정 생성] 아이디: fitneeds, 비밀번호: fullstack2025");
-			}
-
 			//Branch table insert 
 			Branch branch = new Branch();
 			branch.setBrchId(generator.generateUniqueUserId());
