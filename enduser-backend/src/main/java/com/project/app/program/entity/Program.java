@@ -39,9 +39,6 @@ public class Program {
 	@Column(name = "one_time_amt", nullable = false)
 	private Integer oneTimeAmount; // 1회 이용 금액
 	
-	@Column(name = "rwd_game_point", nullable = false)
-	private Integer rewardGamePoint; // 보상 게임 포인트
-	
 	@Column(name = "reg_dt", nullable = false)
 	private java.time.LocalDateTime registrationDateTime; // 등록일시
 	

@@ -38,12 +38,18 @@ public class Schedule {
 	private Long scheduleId;
 	
 	@ManyToOne
-	@JoinColumn(name = "prog_id", nullable = false)
+	@JoinColumn(name = "prog_id", nullable = true)
 	private Program program; // 프로그램
 	
+	@Column(name = "prog_id", insertable = false, updatable = false)
+	private Long programId; // 직접 ID 참조용
+	
 	@ManyToOne
-	@JoinColumn(name = "usr_id", referencedColumnName = "user_id", nullable = false)
+	@JoinColumn(name = "usr_id", referencedColumnName = "user_id", nullable = true)
 	private User user; // 강사/사용자
+	
+	@Column(name = "usr_id", insertable = false, updatable = false)
+	private String userId; // 직접 ID 참조용
 	
 	@Column(name = "strt_dt", nullable = false)
 	private LocalDate startDate; // 시작 날짜

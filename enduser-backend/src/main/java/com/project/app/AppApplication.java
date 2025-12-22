@@ -86,6 +86,8 @@ public class AppApplication {
 				userRepository.save(adminUser);
 				System.out.println("[테스트 계정 생성] 아이디: admin, 비밀번호: admin");
 			}
+			
+			
 		};
 	}
 	
@@ -121,7 +123,6 @@ public class AppApplication {
 						.payMethod("CARD")
 						.statusCode("COMPLETED")
 						.registrationDateTime(LocalDateTime.of(2024, 1, 15, 10, 30, 0))
-						.pgOrderNo("PG20240115001")
 						.build();
 				paymentRepository.save(payment1);
 				
@@ -135,45 +136,13 @@ public class AppApplication {
 						.payMethod("BANK_TRANSFER")
 						.statusCode("COMPLETED")
 						.registrationDateTime(LocalDateTime.of(2024, 1, 20, 14, 20, 0))
-						.pgOrderNo("PG20240120002")
 						.build();
 				paymentRepository.save(payment2);
-				
-				// 결제 3: 패스 구매 (완료)
-				Payment payment3 = Payment.builder()
-						.orderNo("ORD20240103003")
-						.user(user1)
-						.payTypeCd("PASS")
-						.refId(null)
-						.payAmount(100000)
-						.payMethod("CARD")
-						.statusCode("COMPLETED")
-						.registrationDateTime(LocalDateTime.of(2024, 2, 1, 9, 15, 0))
-						.pgOrderNo("PG20240201003")
-						.build();
-				paymentRepository.save(payment3);
-				
-				// 결제 4: 예약 결제 (대기중)
-				Payment payment4 = Payment.builder()
-						.orderNo("ORD20240104004")
-						.user(user1)
-						.payTypeCd("RESERVATION")
-						.refId(null) // 외래키 제약조건을 피하기 위해 null로 설정
-						.payAmount(25000)
-						.payMethod("CARD")
-						.statusCode("PENDING")
-						.registrationDateTime(LocalDateTime.of(2024, 2, 10, 16, 45, 0))
-						.pgOrderNo("PG20240210004")
-						.build();
-				paymentRepository.save(payment4);
-				
-				System.out.println("[결제 가데이터 생성] user1의 결제 데이터 4건 생성 완료");
-			}
 			
 			// user2의 결제 내역 생성
 			if (paymentRepository.findByUser_UserId("user2").isEmpty()) {
-				// 결제 5: 예약 결제 (완료)
-				Payment payment5 = Payment.builder()
+				// 결제 3: 예약 결제 (완료)
+				Payment payment3 = Payment.builder()
 						.orderNo("ORD20240105005")
 						.user(user2)
 						.payTypeCd("RESERVATION")
@@ -182,26 +151,11 @@ public class AppApplication {
 						.payMethod("CARD")
 						.statusCode("COMPLETED")
 						.registrationDateTime(LocalDateTime.of(2024, 1, 18, 11, 0, 0))
-						.pgOrderNo("PG20240118005")
 						.build();
-				paymentRepository.save(payment5);
+				paymentRepository.save(payment3);
 				
-				// 결제 6: 패스 구매 (완료)
-				Payment payment6 = Payment.builder()
-						.orderNo("ORD20240106006")
-						.user(user2)
-						.payTypeCd("PASS")
-						.refId(null)
-						.payAmount(80000)
-						.payMethod("BANK_TRANSFER")
-						.statusCode("COMPLETED")
-						.registrationDateTime(LocalDateTime.of(2024, 1, 25, 13, 30, 0))
-						.pgOrderNo("PG20240125006")
-						.build();
-				paymentRepository.save(payment6);
-				
-				// 결제 7: 예약 결제 (완료)
-				Payment payment7 = Payment.builder()
+				// 결제 4: 예약 결제 (완료)
+				Payment payment4 = Payment.builder()
 						.orderNo("ORD20240107007")
 						.user(user2)
 						.payTypeCd("RESERVATION")
@@ -210,84 +164,13 @@ public class AppApplication {
 						.payMethod("CARD")
 						.statusCode("COMPLETED")
 						.registrationDateTime(LocalDateTime.of(2024, 2, 5, 15, 20, 0))
-						.pgOrderNo("PG20240205007")
 						.build();
-				paymentRepository.save(payment7);
+				paymentRepository.save(payment4);
 				
 				System.out.println("[결제 가데이터 생성] user2의 결제 데이터 3건 생성 완료");
 			}
 			
-			// admin의 결제 내역 생성
-			if (paymentRepository.findByUser_UserId("admin").isEmpty()) {
-				// 결제 8: 예약 결제 (완료)
-				Payment payment8 = Payment.builder()
-						.orderNo("ORD20240108008")
-						.user(admin)
-						.payTypeCd("RESERVATION")
-						.refId(null) // 외래키 제약조건을 피하기 위해 null로 설정
-						.payAmount(60000)
-						.payMethod("CARD")
-						.statusCode("COMPLETED")
-						.registrationDateTime(LocalDateTime.of(2024, 1, 22, 10, 0, 0))
-						.pgOrderNo("PG20240122008")
-						.build();
-				paymentRepository.save(payment8);
-				
-				// 결제 9: 패스 구매 (완료)
-				Payment payment9 = Payment.builder()
-						.orderNo("ORD20240109009")
-						.user(admin)
-						.payTypeCd("PASS")
-						.refId(null)
-						.payAmount(150000)
-						.payMethod("CARD")
-						.statusCode("COMPLETED")
-						.registrationDateTime(LocalDateTime.of(2024, 1, 28, 12, 0, 0))
-						.pgOrderNo("PG20240128009")
-						.build();
-				paymentRepository.save(payment9);
-				
-				// 결제 10: 예약 결제 (완료)
-				Payment payment10 = Payment.builder()
-						.orderNo("ORD20240110010")
-						.user(admin)
-						.payTypeCd("RESERVATION")
-						.refId(null) // 외래키 제약조건을 피하기 위해 null로 설정
-						.payAmount(45000)
-						.payMethod("BANK_TRANSFER")
-						.statusCode("COMPLETED")
-						.registrationDateTime(LocalDateTime.of(2024, 2, 8, 14, 0, 0))
-						.pgOrderNo("PG20240208010")
-						.build();
-				paymentRepository.save(payment10);
-				
-				// 결제 11: 예약 결제 (대기중)
-				Payment payment11 = Payment.builder()
-						.orderNo("ORD20240111011")
-						.user(admin)
-						.payTypeCd("RESERVATION")
-						.refId(null) // 외래키 제약조건을 피하기 위해 null로 설정
-						.payAmount(55000)
-						.payMethod("CARD")
-						.statusCode("PENDING")
-						.registrationDateTime(LocalDateTime.of(2024, 2, 12, 16, 30, 0))
-						.pgOrderNo("PG20240212011")
-						.build();
-				paymentRepository.save(payment11);
-				
-				// 결제 12: 예약 결제 (완료)
-				Payment payment12 = Payment.builder()
-						.orderNo("ORD20240112012")
-						.user(admin)
-						.payTypeCd("RESERVATION")
-						.refId(null) // 외래키 제약조건을 피하기 위해 null로 설정
-						.payAmount(30000)
-						.payMethod("CARD")
-						.statusCode("COMPLETED")
-						.registrationDateTime(LocalDateTime.of(2024, 2, 15, 9, 0, 0))
-						.pgOrderNo("PG20240215012")
-						.build();
-				paymentRepository.save(payment12);
+
 				
 				System.out.println("[결제 가데이터 생성] admin의 결제 데이터 5건 생성 완료");
 			}

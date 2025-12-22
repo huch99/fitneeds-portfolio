@@ -41,7 +41,14 @@ public class ReservationServiceImpl implements ReservationService {
 		// 예약일자가 아직 지나지 않은 예약만 필터링 (예약목록)
 		LocalDateTime now = LocalDateTime.now();
 		return completedPayments.stream()
-				.map(Payment::getReservation)
+				.map(payment -> {
+					// refId를 통해 Reservation 조회
+					if (payment.getRefId() != null) {
+						return reservationRepository.findByReservationId(payment.getRefId()).orElse(null);
+					}
+					return null;
+				})
+				.filter(reservation -> reservation != null)
 				.filter(reservation -> {
 					// 예약일자가 오늘 이후인 경우만 (예약목록에 표시)
 					LocalDateTime reservedDateTime = reservation.getReservedDate();
@@ -67,7 +74,14 @@ public class ReservationServiceImpl implements ReservationService {
 		// 예약일자가 지난 예약만 필터링 (이용목록)
 		LocalDateTime now = LocalDateTime.now();
 		return completedPayments.stream()
-				.map(Payment::getReservation)
+				.map(payment -> {
+					// refId를 통해 Reservation 조회
+					if (payment.getRefId() != null) {
+						return reservationRepository.findByReservationId(payment.getRefId()).orElse(null);
+					}
+					return null;
+				})
+				.filter(reservation -> reservation != null)
 				.filter(reservation -> {
 					// 예약일자가 오늘 이전이거나 오늘인 경우 (이용목록에 표시)
 					LocalDateTime reservedDateTime = reservation.getReservedDate();
@@ -99,16 +113,16 @@ public class ReservationServiceImpl implements ReservationService {
 				.orElseThrow(() -> new RuntimeException("예약을 찾을 수 없습니다."));
 		
 		// 권한 체크: 본인의 예약인지 확인
-		if (!reservation.getUser().getUserId().equals(userId)) {
+		if (reservation.getUser() != null && !reservation.getUser().getUserId().equals(userId)) {
+			throw new RuntimeException("예약을 변경할 권한이 없습니다.");
+		}
+		if (reservation.getUserId() != null && !reservation.getUserId().equals(userId)) {
 			throw new RuntimeException("예약을 변경할 권한이 없습니다.");
 		}
 		
-		// 결제완료된 예약인지 확인 (ref_id로 조회)
-		Payment payment = paymentRepository.findByRefId(reservation.getReservationId())
-				.orElseThrow(() -> new RuntimeException("결제 정보를 찾을 수 없습니다."));
-		
-		// 실제 테이블의 stts_cd 확인
-		if (!"COMPLETED".equals(payment.getStatusCode())) {
+		// 결제 정보 조회 및 확인
+		Payment payment = paymentRepository.findByRefId(reservationId).orElse(null);
+		if (payment != null && !"COMPLETED".equals(payment.getStatusCode())) {
 			throw new RuntimeException("결제완료된 예약만 변경할 수 있습니다.");
 		}
 		
@@ -141,7 +155,10 @@ public class ReservationServiceImpl implements ReservationService {
 		Reservation reservation = reservationRepository.findByReservationId(reservationId)
 				.orElseThrow(() -> new RuntimeException("예약을 찾을 수 없습니다."));
 		
-		if (!reservation.getUser().getUserId().equals(userId)) {
+		if (reservation.getUser() != null && !reservation.getUser().getUserId().equals(userId)) {
+			throw new RuntimeException("예약을 취소할 권한이 없습니다.");
+		}
+		if (reservation.getUserId() != null && !reservation.getUserId().equals(userId)) {
 			throw new RuntimeException("예약을 취소할 권한이 없습니다.");
 		}
 		
@@ -158,7 +175,10 @@ public class ReservationServiceImpl implements ReservationService {
 		Reservation reservation = reservationRepository.findByReservationId(reservationId)
 				.orElseThrow(() -> new RuntimeException("예약을 찾을 수 없습니다."));
 		
-		if (!reservation.getUser().getUserId().equals(userId)) {
+		if (reservation.getUser() != null && !reservation.getUser().getUserId().equals(userId)) {
+			throw new RuntimeException("예약을 취소할 권한이 없습니다.");
+		}
+		if (reservation.getUserId() != null && !reservation.getUserId().equals(userId)) {
 			throw new RuntimeException("예약을 취소할 권한이 없습니다.");
 		}
 		
@@ -173,8 +193,8 @@ public class ReservationServiceImpl implements ReservationService {
 		
 		// 결제 정보 조회 (ref_id로 조회)
 		Payment payment = paymentRepository.findByRefId(reservation.getReservationId()).orElse(null);
-		String paymentStatus = payment != null ? payment.getPaymentStatus() : null;
-		BigDecimal paymentAmount = payment != null ? payment.getPaymentAmount() : null;
+		String paymentStatus = payment != null ? payment.getStatusCode() : null;
+		BigDecimal paymentAmount = payment != null ? BigDecimal.valueOf(payment.getPayAmount()) : null;
 		
 		// 예약날짜/시간 추출
 		LocalDate reservedDate = reservation.getReservedDate() != null 

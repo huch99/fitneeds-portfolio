@@ -19,11 +19,6 @@ import com.project.app.reservation.service.ReservationService;
 
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * 예약 컨트롤러
- * 모든 API는 JWT 인증 토큰이 필요합니다.
- * Authorization 헤더에 "Bearer {token}" 형식으로 토큰을 포함해야 합니다.
- */
 @Slf4j
 @RestController
 @RequestMapping("/api/reservation")
@@ -34,11 +29,7 @@ public class ReservationController {
 	public ReservationController(ReservationService reservationService) {
 		this.reservationService = reservationService;
 	}
-	
-	/**
-	 * 현재 인증된 사용자의 userId를 가져옵니다.
-	 * JWT 토큰에서 추출된 사용자 정보를 사용합니다.
-	 */
+
 	private String getCurrentUserId() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if (authentication == null) {
@@ -57,10 +48,8 @@ public class ReservationController {
 	/**
 	 * 결제완료된 예약 목록 조회 (이용내역 화면)
 	 * GET /api/reservation/my/completed
-	 * 헤더: Authorization: Bearer {token}
 	 * 
 	 * 결제 상태가 COMPLETED인 예약만 조회합니다.
-	 * 경로 매핑 순서: 더 구체적인 경로를 먼저 배치
 	 */
 	@GetMapping("/my/completed")
 	public ResponseEntity<?> getMyCompletedReservations() {
@@ -79,8 +68,6 @@ public class ReservationController {
 	/**
 	 * 나의 운동 목록 조회 (마이페이지)
 	 * GET /api/reservation/my
-	 * 헤더: Authorization: Bearer {token}
-	 * 경로 매핑 순서: 더 구체적인 경로를 먼저 배치
 	 */
 	@GetMapping("/my")
 	public ResponseEntity<?> getMyReservations() {
@@ -99,10 +86,6 @@ public class ReservationController {
 	/**
 	 * 예약 상세 조회
 	 * GET /api/reservation/{reservationId}
-	 * 헤더: Authorization: Bearer {token}
-	 * 
-	 * 인증된 사용자만 자신의 예약을 조회할 수 있습니다.
-	 * 경로 매핑 순서: 동적 경로는 구체적인 경로 뒤에 배치
 	 */
 	@GetMapping("/{reservationId}")
 	public ResponseEntity<?> getReservationById(@PathVariable("reservationId") Long reservationId) {
@@ -129,7 +112,6 @@ public class ReservationController {
 	/**
 	 * 예약일자 변경 (예약목록)
 	 * PATCH /api/reservation/{reservationId}/date
-	 * 헤더: Authorization: Bearer {token}
 	 * 
 	 * 요청 본문 예시:
 	 * {
@@ -170,7 +152,6 @@ public class ReservationController {
 	/**
 	 * 예약 취소 (마이페이지)
 	 * PATCH /api/reservation/{reservationId}/cancel
-	 * 헤더: Authorization: Bearer {token}
 	 * 
 	 * 인증된 사용자만 자신의 예약을 취소할 수 있습니다.
 	 * 예약 상태를 CANCELLED로 변경합니다.

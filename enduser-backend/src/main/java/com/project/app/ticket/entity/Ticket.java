@@ -34,8 +34,11 @@ public class Ticket {
 	private Long ticketId;
 	
 	@ManyToOne
-	@JoinColumn(name = "usr_id", referencedColumnName = "user_id", nullable = false)
+	@JoinColumn(name = "usr_id", referencedColumnName = "user_id", nullable = true)
 	private User user;
+	
+	@Column(name = "usr_id", insertable = false, updatable = false)
+	private String userId; // 직접 ID 참조용
 	
 	@Column(name = "ticket_type")
 	private String ticketType; // 이용권 종류

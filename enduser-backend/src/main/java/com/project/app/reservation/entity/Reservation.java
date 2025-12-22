@@ -36,16 +36,25 @@ public class Reservation {
 	private Long reservationId;
 	
 	@ManyToOne
-	@JoinColumn(name = "usr_id", referencedColumnName = "user_id", nullable = false)
+	@JoinColumn(name = "usr_id", referencedColumnName = "user_id", nullable = true)
 	private User user;
 	
+	@Column(name = "usr_id", insertable = false, updatable = false)
+	private String userId; // 직접 ID 참조용
+	
 	@ManyToOne
-	@JoinColumn(name = "schd_id", nullable = false)
+	@JoinColumn(name = "schd_id", nullable = true)
 	private Schedule schedule;
+	
+	@Column(name = "schd_id", insertable = false, updatable = false)
+	private Long scheduleId; // 직접 ID 참조용
 	
 	@ManyToOne
 	@JoinColumn(name = "tkt_id", nullable = true)
 	private Ticket ticket; // 이용권 (선택적)
+	
+	@Column(name = "tkt_id", insertable = false, updatable = false)
+	private Long ticketId; // 직접 ID 참조용
 	
 	@Column(name = "stts_cd", nullable = false)
 	private String statusCode; // 상태코드: RESERVED, CANCELLED, COMPLETED 등

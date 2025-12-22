@@ -21,7 +21,7 @@ export const getMyReservations = async () => {
  */
 export const getMyCompletedReservations = async () => {
   try {
-    const response = await api.get('/api/reservation/my/completed');
+    const response = await api.get('/reservation/my/completed');
     return response.data;
   } catch (error) {
     console.error('결제완료 예약 목록 조회 실패:', error);
@@ -35,7 +35,7 @@ export const getMyCompletedReservations = async () => {
  */
 export const getReservationById = async (reservationId) => {
   try {
-    const response = await api.get(`/api/reservation/${reservationId}`);
+    const response = await api.get(`/reservation/${reservationId}`);
     return response.data;
   } catch (error) {
     console.error('예약 조회 실패:', error);

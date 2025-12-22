@@ -8,10 +8,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * 결제 응답 DTO
- * 결제내역 화면에서 사용할 결제 정보
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

@@ -17,10 +17,6 @@ import com.project.app.reservation.entity.Reservation;
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
 	
-	/**
-	 * 예약 ID로 결제 정보 조회 (ref_id 사용)
-	 */
-	Optional<Payment> findByRefId(Long refId);
 	
 	/**
 	 * 사용자 ID와 결제 상태로 결제 목록 조회 (이용내역용)
@@ -32,6 +28,18 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
 	 * 사용자 ID로 결제 목록 조회
 	 */
 	List<Payment> findByUser_UserId(String userId);
+	
+	/**
+	 * 사용자 ID와 결제 상태로 결제 목록 조회 (네이티브 쿼리 - User 관계 없이도 동작)
+	 */
+	@Query(value = "SELECT * FROM payment WHERE usr_id = :userId AND stts_cd = :statusCode", nativeQuery = true)
+	List<Payment> findByUserIdAndStatusCodeNative(@Param("userId") String userId, @Param("statusCode") String statusCode);
+	
+	/**
+	 * 사용자 ID로 결제 목록 조회 (네이티브 쿼리 - User 관계 없이도 동작)
+	 */
+	@Query(value = "SELECT * FROM payment WHERE usr_id = :userId", nativeQuery = true)
+	List<Payment> findByUserIdNative(@Param("userId") String userId);
 	
 	/**
 	 * 사용자 ID로 결제 목록 조회 (대안: 직접 usr_id 컬럼 사용)
@@ -53,5 +61,7 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
 	 */
 	@Query("SELECT DISTINCT p FROM Payment p JOIN FETCH p.user")
 	List<Payment> findAllWithUser();
+
+	Optional<Payment> findByRefId(Long refId);
 }
 
