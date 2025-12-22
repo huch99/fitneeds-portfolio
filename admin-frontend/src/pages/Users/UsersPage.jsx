@@ -93,7 +93,7 @@ function AdminMemberPage() {
                                 <th>USER NAME</th>
                                 <th>E-MAIL</th>
                                 <th>PHONE-NUMBER</th>
-                                <th>ROLE</th>
+                                {/* <th>ROLE</th> */}
                                 <th>CASH POINT</th>
                                 <th>GRADE POINT</th>
                                 <th>AGREE</th>
@@ -118,7 +118,7 @@ function AdminMemberPage() {
                                             <td>{item.userName}</td>
                                             <td>{item.email}</td>
                                             <td>{item.phoneNumber}</td>
-                                            <td>{item.role}</td>
+                                            {/* <td>{item.role}</td> */}
 
                                             <td>{item.cashPoint}</td>
                                             <td>{item.gradePoint}</td>
