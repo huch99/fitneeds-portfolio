@@ -7,7 +7,7 @@ import AdminTicketPage from './pages/AdminTicketPage';
 import AdminReservationPage from './pages/AdminReservationPage';
 import AdminTradePage from './pages/AdminTradePage';
 import UserPage from './pages/Users/UsersPage';
-import AdminUserPage from './pages/AdminUsers/AdminUsersPage';
+import UsersAdminPage from './pages/UsersAdmin/UsersAdminPage';
 
 // 아직 없는 파일은 import 에러가 날 수 있으니 주석 처리하거나 빈 파일 생성 필요
 // import AdminDashboardPage from './pages/AdminDashboardPage'; 
@@ -39,7 +39,7 @@ function App() {
         {/* AdminLayout을 공통 부모로 사용합니다. */}
         <Route element={<LayoutWrapper />}>
           <Route path="/dashboard" element={<div className="p-4">대시보드(준비중)</div>} />
-          <Route path="/adminUsers" element={<AdminUserPage />} />
+          <Route path="/Usersadmin" element={<UsersAdminPage />} />
           <Route path="/users" element={<UserPage />} />
           <Route path="/centers" element={<div className="p-4">센터관리(준비중)</div>} />
 
