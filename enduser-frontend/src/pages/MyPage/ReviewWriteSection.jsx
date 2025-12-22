@@ -1,9 +1,36 @@
 import React, { useState, useEffect } from 'react';
-import { getMyCompletedReservations } from '../../api/reservation';
-import { getMyReviews } from '../../api/review';
+import { useNavigate } from 'react-router-dom';
+import api from '../../api';
 import { ReviewEditModal, ReviewMenuButton } from './ReviewComponents';
+import { USER_ID_KEY } from '../../store/authSlice';
+
+/* =========================
+   API 함수들
+========================= */
+// 결제완료된 예약 목록 조회
+const getMyCompletedReservations = async () => {
+  try {
+    const response = await api.get('/reservation/my/completed');
+    return response.data;
+  } catch (error) {
+    console.error('결제완료 예약 목록 조회 실패:', error);
+    throw error;
+  }
+};
+
+// 나의 리뷰 목록 조회
+const getMyReviews = async () => {
+  try {
+    const response = await api.get('/api/reviews/my');
+    return response.data;
+  } catch (error) {
+    console.error('리뷰 목록 조회 실패:', error);
+    throw error;
+  }
+};
 
 function ReviewWriteSection({ reviewTab, setReviewTab, setIsReviewModalOpen, setSelectedHistoryId }) {
+  const navigate = useNavigate();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedReviewId, setSelectedReviewId] = useState(null);
   const [reservations, setReservations] = useState([]);
@@ -11,9 +38,18 @@ function ReviewWriteSection({ reviewTab, setReviewTab, setIsReviewModalOpen, set
   const [loading, setLoading] = useState(true);
   const [refreshKey, setRefreshKey] = useState(0); // 리뷰 작성/수정/삭제 후 새로고침용
 
+  // localStorage에서 userId 가져오기
+  const loginUserId = localStorage.getItem(USER_ID_KEY);
+
   // 예약 목록과 작성한 리뷰 목록 가져오기
   useEffect(() => {
     const fetchData = async () => {
+      if (!loginUserId) {
+        alert('로그인이 필요합니다.');
+        navigate('/mypage');
+        return;
+      }
+
       try {
         setLoading(true);
         // 결제완료된 예약 목록 가져오기
@@ -72,7 +108,7 @@ function ReviewWriteSection({ reviewTab, setReviewTab, setIsReviewModalOpen, set
     };
 
     fetchData();
-  }, [refreshKey]);
+  }, [refreshKey, loginUserId, navigate]);
 
   // 예약한 수업의 다음날 수업 목록 (리뷰 작성 가능)
   const getReviewableClasses = () => {

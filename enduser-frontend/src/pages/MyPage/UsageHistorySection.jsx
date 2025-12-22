@@ -1,5 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { getMyCompletedReservations } from '../../api/reservation';
+import api from '../../api';
+
+/* =========================
+   API 함수들
+========================= */
+// 결제완료된 예약 목록 조회
+const getMyCompletedReservations = async () => {
+  try {
+    const response = await api.get('/reservation/my/completed');
+    return response.data;
+  } catch (error) {
+    console.error('결제완료 예약 목록 조회 실패:', error);
+    throw error;
+  }
+};
 
 function UsageHistorySection({ setSelectedHistoryId, setIsReviewModalOpen, onRefresh }) {
   const [usageHistoryData, setUsageHistoryData] = useState([]);

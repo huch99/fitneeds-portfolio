@@ -3,7 +3,36 @@ import { Helmet } from 'react-helmet-async';
 import SideBar from '../../components/SideBar/SideBar';
 import '../../components/auth/modalStyles.css';
 import '../MyPage/MyPage.css';
-import { getMyReservations, updateReservationDate } from '../../api/reservation';
+import api from '../../api';
+
+/* =========================
+   API 함수들
+========================= */
+// 나의 예약 목록 조회
+const getMyReservations = async () => {
+  try {
+    const response = await api.get('/api/reservation/my');
+    return response.data;
+  } catch (error) {
+    console.error('예약 목록 조회 실패:', error);
+    throw error;
+  }
+};
+
+// 예약일자 변경
+const updateReservationDate = async (reservationId, reservedDate, reservedTime = null) => {
+  try {
+    const requestBody = {
+      reservedDate: reservedDate,
+      ...(reservedTime && { reservedTime: reservedTime })
+    };
+    const response = await api.patch(`/api/reservation/${reservationId}/date`, requestBody);
+    return response.data;
+  } catch (error) {
+    console.error('예약일자 변경 실패:', error);
+    throw error;
+  }
+};
 
 function MyReservationList() {
   const [isReservationEditModalOpen, setIsReservationEditModalOpen] = useState(false);

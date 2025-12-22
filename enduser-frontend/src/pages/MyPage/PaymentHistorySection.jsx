@@ -1,5 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { getMyPayments } from '../../api/payment';
+import api from '../../api';
+
+/* =========================
+   API 함수들
+========================= */
+// 나의 결제내역 조회
+const getMyPayments = async () => {
+  try {
+    const response = await api.get('/payment/my');
+    return response.data;
+  } catch (error) {
+    console.error('결제내역 조회 실패:', error);
+    throw error;
+  }
+};
 
 function PaymentHistorySection() {
   const [paymentHistoryData, setPaymentHistoryData] = useState([]);
