@@ -59,7 +59,11 @@ public class ReviewServiceImpl implements ReviewService {
 		Reservation reservation = reservationRepository.findByReservationId(reservationId)
 				.orElseThrow(() -> new RuntimeException("예약을 찾을 수 없습니다."));
 		
-		if (!reservation.getUser().getUserId().equals(userId)) {
+		// user가 null일 수 있으므로 userId 필드도 확인
+		String reservationUserId = reservation.getUser() != null 
+				? reservation.getUser().getUserId() 
+				: reservation.getUserId();
+		if (reservationUserId == null || !reservationUserId.equals(userId)) {
 			throw new RuntimeException("리뷰 조회 권한이 없습니다.");
 		}
 		
@@ -81,16 +85,19 @@ public class ReviewServiceImpl implements ReviewService {
 		Reservation reservation = reservationRepository.findByReservationId(reviewDto.getReservationId())
 				.orElseThrow(() -> new RuntimeException("예약을 찾을 수 없습니다."));
 		
-		// 본인의 예약인지 확인
-		if (!reservation.getUser().getUserId().equals(userId)) {
+		// 본인의 예약인지 확인 (user가 null일 수 있으므로 userId 필드도 확인)
+		String reservationUserId = reservation.getUser() != null 
+				? reservation.getUser().getUserId() 
+				: reservation.getUserId();
+		if (reservationUserId == null || !reservationUserId.equals(userId)) {
 			throw new RuntimeException("리뷰 작성 권한이 없습니다.");
 		}
 		
 		// 결제완료된 예약인지 확인 (이용내역에 있는 예약만 리뷰 작성 가능)
-		Payment payment = paymentRepository.findByReservation_ReservationId(reviewDto.getReservationId())
+		Payment payment = paymentRepository.findByReservationId(reviewDto.getReservationId())
 				.orElse(null);
 		
-		if (payment == null || !"BANK_TRANSFER_COMPLETED".equals(payment.getPaymentStatus())) {
+		if (payment == null || !"COMPLETED".equals(payment.getStatusCode())) {
 			throw new RuntimeException("결제완료된 예약만 리뷰를 작성할 수 있습니다.");
 		}
 		
@@ -104,12 +111,12 @@ public class ReviewServiceImpl implements ReviewService {
 		reviewMapper.insertReview(reviewDto);
 		
 		// 생성된 리뷰 조회
-		List<ReviewDto> createdReviews = reviewMapper.selectReviewById(reviewDto.getReviewId());
-		if (createdReviews == null || createdReviews.isEmpty()) {
+		ReviewDto createdReview = reviewMapper.selectReviewById(reviewDto.getReviewId());
+		if (createdReview == null) {
 			throw new RuntimeException("리뷰 생성 후 조회에 실패했습니다.");
 		}
 		
-		return createdReviews.get(0);
+		return createdReview;
 	}
 		
 	/**
@@ -124,17 +131,20 @@ public class ReviewServiceImpl implements ReviewService {
 	@Transactional
 	public ReviewDto updateReview(ReviewDto reviewDto, String userId) {
 		// 리뷰 조회
-		List<ReviewDto> reviews = reviewMapper.selectReviewById(reviewDto.getReviewId());
-		if (reviews == null || reviews.isEmpty()) {
+		ReviewDto existingReview = reviewMapper.selectReviewById(reviewDto.getReviewId());
+		if (existingReview == null) {
 			throw new RuntimeException("리뷰를 찾을 수 없습니다.");
 		}
 		
 		// 권한 체크: 본인의 예약에 대한 리뷰인지 확인
-		ReviewDto existingReview = reviews.get(0);
 		Reservation reservation = reservationRepository.findByReservationId(existingReview.getReservationId())
 				.orElseThrow(() -> new RuntimeException("예약을 찾을 수 없습니다."));
 		
-		if (!reservation.getUser().getUserId().equals(userId)) {
+		// user가 null일 수 있으므로 userId 필드도 확인
+		String reservationUserId = reservation.getUser() != null 
+				? reservation.getUser().getUserId() 
+				: reservation.getUserId();
+		if (reservationUserId == null || !reservationUserId.equals(userId)) {
 			throw new RuntimeException("리뷰 수정 권한이 없습니다.");
 		}
 		
@@ -142,12 +152,12 @@ public class ReviewServiceImpl implements ReviewService {
 		reviewMapper.updateReview(reviewDto);
 		
 		// 수정된 리뷰 조회
-		List<ReviewDto> updatedReviews = reviewMapper.selectReviewById(reviewDto.getReviewId());
-		if (updatedReviews == null || updatedReviews.isEmpty()) {
+		ReviewDto updatedReview = reviewMapper.selectReviewById(reviewDto.getReviewId());
+		if (updatedReview == null) {
 			throw new RuntimeException("리뷰 수정 후 조회에 실패했습니다.");
 		}
 		
-		return updatedReviews.get(0);
+		return updatedReview;
 	}
 	
 	/**
@@ -161,17 +171,20 @@ public class ReviewServiceImpl implements ReviewService {
 	@Transactional
 	public void deleteReviewById(Long reviewId, String userId) {
 		// 리뷰 조회
-		List<ReviewDto> reviews = reviewMapper.selectReviewById(reviewId);
-		if (reviews == null || reviews.isEmpty()) {
+		ReviewDto review = reviewMapper.selectReviewById(reviewId);
+		if (review == null) {
 			throw new RuntimeException("리뷰를 찾을 수 없습니다.");
 		}
 		
 		// 권한 체크: 본인의 예약에 대한 리뷰인지 확인
-		ReviewDto review = reviews.get(0);
 		Reservation reservation = reservationRepository.findByReservationId(review.getReservationId())
 				.orElseThrow(() -> new RuntimeException("예약을 찾을 수 없습니다."));
 		
-		if (!reservation.getUser().getUserId().equals(userId)) {
+		// user가 null일 수 있으므로 userId 필드도 확인
+		String reservationUserId = reservation.getUser() != null 
+				? reservation.getUser().getUserId() 
+				: reservation.getUserId();
+		if (reservationUserId == null || !reservationUserId.equals(userId)) {
 			throw new RuntimeException("리뷰 삭제 권한이 없습니다.");
 		}
 		

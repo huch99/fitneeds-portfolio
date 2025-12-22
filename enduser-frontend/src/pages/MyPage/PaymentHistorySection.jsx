@@ -1,6 +1,42 @@
-import React from 'react';
-  
-function PaymentHistorySection({ paymentHistoryData, paymentHistoryLoading }) {
+import React, { useState, useEffect } from 'react';
+import { getMyPayments } from '../../api/payment';
+
+function PaymentHistorySection() {
+  const [paymentHistoryData, setPaymentHistoryData] = useState([]);
+  const [paymentHistoryLoading, setPaymentHistoryLoading] = useState(false);
+
+  // 결제내역 데이터 가져오기
+  useEffect(() => {
+    const fetchPaymentHistory = async () => {
+      try {
+        setPaymentHistoryLoading(true);
+        const data = await getMyPayments();
+
+        // 백엔드 데이터를 화면에 맞게 변환
+        const transformed = data.map((payment) => ({
+          id: payment.paymentId,
+          paymentId: payment.paymentId,
+          paymentDate: payment.paymentDate
+            ? new Date(payment.paymentDate).toISOString().split('T')[0]
+            : '',
+          productName: payment.programName || '프로그램',
+          option: payment.option || '그룹 레슨',
+          price: payment.paymentAmount ? Number(payment.paymentAmount) : 0,
+          isCompleted: payment.paymentStatus === 'BANK_TRANSFER_COMPLETED',
+          cancelRefundStatus: payment.cancelRefundStatus
+        }));
+
+        setPaymentHistoryData(transformed);
+      } catch (error) {
+        console.error('결제내역 조회 실패:', error);
+        setPaymentHistoryData([]);
+      } finally {
+        setPaymentHistoryLoading(false);
+      }
+    };
+
+    fetchPaymentHistory();
+  }, []);
 
   return (
     <section className="mypage-content-section">

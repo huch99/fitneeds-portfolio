@@ -4,9 +4,8 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,22 +39,20 @@ public class ReviewController {
     }
     
     /**
-     * 현재 인증된 사용자의 userId를 가져옵니다.
-     * JWT 토큰에서 추출된 사용자 정보를 사용합니다.
+     * 요청 헤더에서 사용자 ID를 가져옵니다.
+     * 프론트엔드의 localStorage에서 가져온 userId가 X-User-Id 헤더로 전달됩니다.
+     * 
+     * @param request HTTP 요청 객체
+     * @return 사용자 ID
      */
-    private String getCurrentUserId() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null) {
-            log.error("SecurityContext에 인증 정보가 없습니다.");
-            throw new RuntimeException("인증되지 않은 사용자입니다.");
+    private String getCurrentUserId(HttpServletRequest request) {
+        String userId = request.getHeader("X-User-Id");
+        if (userId == null || userId.isEmpty()) {
+            log.error("X-User-Id 헤더가 없습니다. localStorage에서 userId를 확인해주세요.");
+            throw new RuntimeException("사용자 ID가 없습니다.");
         }
-        if (!authentication.isAuthenticated()) {
-            log.error("인증되지 않은 사용자입니다. Authentication: {}", authentication);
-            throw new RuntimeException("인증되지 않은 사용자입니다.");
-        }
-        String userId = authentication.getName();
-        log.debug("현재 인증된 사용자 ID: {}", userId);
-        return userId; // JWT 토큰의 subject (userId)
+        log.debug("현재 사용자 ID (localStorage에서 가져옴): {}", userId);
+        return userId;
     }
 
     /**
@@ -64,9 +61,9 @@ public class ReviewController {
      * 헤더: Authorization: Bearer {token}
      */
     @GetMapping("/my")
-    public ResponseEntity<?> getMyReviews() {
+    public ResponseEntity<?> getMyReviews(HttpServletRequest request) {
         try {
-            String currentUserId = getCurrentUserId();
+            String currentUserId = getCurrentUserId(request);
             List<ReviewDto> reviews = reviewService.getMyReviews(currentUserId);
             return ResponseEntity.ok(reviews);
         } catch (Exception e) {
@@ -82,9 +79,11 @@ public class ReviewController {
      * 헤더: Authorization: Bearer {token}
      */
     @GetMapping("/reservation/{reservationId}")
-    public ResponseEntity<?> getReviewByReservationId(@PathVariable Long reservationId) {
+    public ResponseEntity<?> getReviewByReservationId(
+            @PathVariable Long reservationId,
+            HttpServletRequest request) {
         try {
-            String currentUserId = getCurrentUserId();
+            String currentUserId = getCurrentUserId(request);
             List<ReviewDto> reviews = reviewService.getReviewByReservationId(reservationId, currentUserId);
             return ResponseEntity.ok(reviews);
         } catch (Exception e) {
@@ -108,9 +107,11 @@ public class ReviewController {
      * }
      */
     @PostMapping
-    public ResponseEntity<?> createReview(@RequestBody ReviewDto reviewDto){
+    public ResponseEntity<?> createReview(
+            @RequestBody ReviewDto reviewDto,
+            HttpServletRequest request){
         try {
-            String currentUserId = getCurrentUserId();
+            String currentUserId = getCurrentUserId(request);
             ReviewDto createdReview = reviewService.createReview(reviewDto, currentUserId);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdReview);
         } catch (Exception e) {
@@ -132,9 +133,12 @@ public class ReviewController {
      * }
      */
     @PutMapping("/{reviewId}")
-    public ResponseEntity<?> updateReview(@PathVariable Long reviewId, @RequestBody ReviewDto reviewDto){
+    public ResponseEntity<?> updateReview(
+            @PathVariable Long reviewId,
+            @RequestBody ReviewDto reviewDto,
+            HttpServletRequest request){
         try {
-            String currentUserId = getCurrentUserId();
+            String currentUserId = getCurrentUserId(request);
             reviewDto.setReviewId(reviewId);
             ReviewDto updatedReview = reviewService.updateReview(reviewDto, currentUserId);
             return ResponseEntity.ok(updatedReview);
@@ -151,9 +155,11 @@ public class ReviewController {
      * 헤더: Authorization: Bearer {token}
      */
     @DeleteMapping("/{reviewId}")
-    public ResponseEntity<?> deleteReviewById(@PathVariable Long reviewId){
+    public ResponseEntity<?> deleteReviewById(
+            @PathVariable Long reviewId,
+            HttpServletRequest request){
         try {
-            String currentUserId = getCurrentUserId();
+            String currentUserId = getCurrentUserId(request);
             reviewService.deleteReviewById(reviewId, currentUserId);
             return ResponseEntity.ok("리뷰가 삭제되었습니다.");
         } catch (Exception e) {

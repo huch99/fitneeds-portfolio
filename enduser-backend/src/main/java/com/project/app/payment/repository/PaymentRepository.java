@@ -63,5 +63,13 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
 	List<Payment> findAllWithUser();
 
 	Optional<Payment> findByRefId(Long refId);
+	
+	/**
+	 * 예약 ID로 결제 조회 (refId와 refType으로 조회)
+	 * @param reservationId 예약 ID
+	 * @return 결제 정보
+	 */
+	@Query(value = "SELECT * FROM payment WHERE ref_id = :reservationId AND ref_type = 'RESERVATION'", nativeQuery = true)
+	Optional<Payment> findByReservationId(@Param("reservationId") Long reservationId);
 }
 

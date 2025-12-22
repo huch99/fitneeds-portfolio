@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getMyCompletedReservations } from '../../api/reservation';
 import { getMyReviews } from '../../api/review';
-import ReviewEditModal from './ReviewEditModal';
-import ReviewMenuButton from './ReviewMenuButton';
+import { ReviewEditModal, ReviewMenuButton } from './ReviewComponents';
 
 function ReviewWriteSection({ reviewTab, setReviewTab, setIsReviewModalOpen, setSelectedHistoryId }) {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -210,7 +209,7 @@ function ReviewWriteSection({ reviewTab, setReviewTab, setIsReviewModalOpen, set
                       <button 
                         className="review-written-edit-btn"
                         onClick={() => {
-                          setSelectedReviewId(review.id);
+                          setSelectedReviewId(review.reviewId);
                           setIsEditModalOpen(true);
                         }}
                       >

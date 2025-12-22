@@ -16,7 +16,7 @@ public interface ReviewMapper {
     /**
      * 리뷰 ID로 조회
      */
-    List<ReviewDto> selectReviewById(Long reviewId);
+    ReviewDto selectReviewById(Long reviewId);
     
     /**
      * 예약 ID로 리뷰 조회

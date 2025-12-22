@@ -4,9 +4,8 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,22 +32,20 @@ public class TicketController {
 	}
 	
 	/**
-	 * 현재 인증된 사용자의 userId를 가져옵니다.
-	 * JWT 토큰에서 추출된 사용자 정보를 사용합니다.
+	 * 요청 헤더에서 사용자 ID를 가져옵니다.
+	 * 프론트엔드의 localStorage에서 가져온 userId가 X-User-Id 헤더로 전달됩니다.
+	 * 
+	 * @param request HTTP 요청 객체
+	 * @return 사용자 ID
 	 */
-	private String getCurrentUserId() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if (authentication == null) {
-			log.error("SecurityContext에 인증 정보가 없습니다.");
-			throw new RuntimeException("인증되지 않은 사용자입니다.");
+	private String getCurrentUserId(HttpServletRequest request) {
+		String userId = request.getHeader("X-User-Id");
+		if (userId == null || userId.isEmpty()) {
+			log.error("X-User-Id 헤더가 없습니다. localStorage에서 userId를 확인해주세요.");
+			throw new RuntimeException("사용자 ID가 없습니다.");
 		}
-		if (!authentication.isAuthenticated()) {
-			log.error("인증되지 않은 사용자입니다. Authentication: {}", authentication);
-			throw new RuntimeException("인증되지 않은 사용자입니다.");
-		}
-		String userId = authentication.getName();
-		log.debug("현재 인증된 사용자 ID: {}", userId);
-		return userId; // JWT 토큰의 subject (userId)
+		log.debug("현재 사용자 ID (localStorage에서 가져옴): {}", userId);
+		return userId;
 	}
 	
 	/**
@@ -57,10 +54,10 @@ public class TicketController {
 	 * 헤더: Authorization: Bearer {token}
 	 */
 	@GetMapping("/my")
-	public ResponseEntity<?> getMyTickets() {
+	public ResponseEntity<?> getMyTickets(HttpServletRequest request) {
 		try {
-			// 인증된 사용자의 이용권 목록만 조회
-			String currentUserId = getCurrentUserId();
+			// localStorage에서 가져온 사용자 ID로 이용권 목록 조회
+			String currentUserId = getCurrentUserId(request);
 			List<TicketResponseDto> tickets = ticketService.getMyTickets(currentUserId);
 			return ResponseEntity.ok(tickets);
 		} catch (Exception e) {

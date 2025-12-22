@@ -4,9 +4,8 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,19 +29,21 @@ public class ReservationController {
 		this.reservationService = reservationService;
 	}
 
-	private String getCurrentUserId() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if (authentication == null) {
-			log.error("SecurityContext에 인증 정보가 없습니다.");
-			throw new RuntimeException("인증되지 않은 사용자입니다.");
+	/**
+	 * 요청 헤더에서 사용자 ID를 가져옵니다.
+	 * 프론트엔드의 localStorage에서 가져온 userId가 X-User-Id 헤더로 전달됩니다.
+	 * 
+	 * @param request HTTP 요청 객체
+	 * @return 사용자 ID
+	 */
+	private String getCurrentUserId(HttpServletRequest request) {
+		String userId = request.getHeader("X-User-Id");
+		if (userId == null || userId.isEmpty()) {
+			log.error("X-User-Id 헤더가 없습니다. localStorage에서 userId를 확인해주세요.");
+			throw new RuntimeException("사용자 ID가 없습니다.");
 		}
-		if (!authentication.isAuthenticated()) {
-			log.error("인증되지 않은 사용자입니다. Authentication: {}", authentication);
-			throw new RuntimeException("인증되지 않은 사용자입니다.");
-		}
-		String userId = authentication.getName();
-		log.debug("현재 인증된 사용자 ID: {}", userId);
-		return userId; // JWT 토큰의 subject (userId)
+		log.debug("현재 사용자 ID (localStorage에서 가져옴): {}", userId);
+		return userId;
 	}
 	
 	/**
@@ -52,10 +53,10 @@ public class ReservationController {
 	 * 결제 상태가 COMPLETED인 예약만 조회합니다.
 	 */
 	@GetMapping("/my/completed")
-	public ResponseEntity<?> getMyCompletedReservations() {
+	public ResponseEntity<?> getMyCompletedReservations(HttpServletRequest request) {
 		try {
-			// 인증된 사용자의 결제완료된 예약 목록만 조회
-			String currentUserId = getCurrentUserId();
+			// localStorage에서 가져온 사용자 ID로 결제완료된 예약 목록 조회
+			String currentUserId = getCurrentUserId(request);
 			List<ReservationResponseDto> reservations = reservationService.getMyCompletedReservations(currentUserId);
 			return ResponseEntity.ok(reservations);
 		} catch (Exception e) {
@@ -70,10 +71,10 @@ public class ReservationController {
 	 * GET /api/reservation/my
 	 */
 	@GetMapping("/my")
-	public ResponseEntity<?> getMyReservations() {
+	public ResponseEntity<?> getMyReservations(HttpServletRequest request) {
 		try {
-			// 인증된 사용자의 예약 목록만 조회
-			String currentUserId = getCurrentUserId();
+			// localStorage에서 가져온 사용자 ID로 예약 목록 조회
+			String currentUserId = getCurrentUserId(request);
 			List<ReservationResponseDto> reservations = reservationService.getMyReservations(currentUserId);
 			return ResponseEntity.ok(reservations);
 		} catch (Exception e) {
@@ -88,10 +89,12 @@ public class ReservationController {
 	 * GET /api/reservation/{reservationId}
 	 */
 	@GetMapping("/{reservationId}")
-	public ResponseEntity<?> getReservationById(@PathVariable("reservationId") Long reservationId) {
+	public ResponseEntity<?> getReservationById(
+			@PathVariable("reservationId") Long reservationId,
+			HttpServletRequest request) {
 		try {
-			// 인증된 사용자만 자신의 예약을 조회할 수 있음
-			String currentUserId = getCurrentUserId();
+			// localStorage에서 가져온 사용자 ID로 예약 조회
+			String currentUserId = getCurrentUserId(request);
 			ReservationResponseDto reservation = reservationService.getReservationById(reservationId);
 			
 			// 본인의 예약인지 확인
@@ -122,9 +125,10 @@ public class ReservationController {
 	@PatchMapping("/{reservationId}/date")
 	public ResponseEntity<?> updateReservationDate(
 			@PathVariable("reservationId") Long reservationId,
-			@RequestBody java.util.Map<String, String> requestBody) {
+			@RequestBody java.util.Map<String, String> requestBody,
+			HttpServletRequest request) {
 		try {
-			String currentUserId = getCurrentUserId();
+			String currentUserId = getCurrentUserId(request);
 			
 			// 요청 본문에서 날짜/시간 추출
 			String dateStr = requestBody.get("reservedDate");
@@ -157,10 +161,12 @@ public class ReservationController {
 	 * 예약 상태를 CANCELLED로 변경합니다.
 	 */
 	@PatchMapping("/{reservationId}/cancel")
-	public ResponseEntity<?> cancelReservation(@PathVariable("reservationId") Long reservationId) {
+	public ResponseEntity<?> cancelReservation(
+			@PathVariable("reservationId") Long reservationId,
+			HttpServletRequest request) {
 		try {
-			// 인증된 사용자만 자신의 예약을 취소할 수 있음
-			String currentUserId = getCurrentUserId();
+			// localStorage에서 가져온 사용자 ID로 예약 취소
+			String currentUserId = getCurrentUserId(request);
 			reservationService.cancelReservation(reservationId, currentUserId);
 			return ResponseEntity.ok("예약이 취소되었습니다.");
 		} catch (Exception e) {
