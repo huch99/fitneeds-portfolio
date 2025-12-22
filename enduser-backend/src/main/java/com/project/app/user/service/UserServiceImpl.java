@@ -37,9 +37,22 @@ public class UserServiceImpl implements UserService{
 	public boolean existsByUserId(String userId) {
 		return userRepository.existsByUserId(userId);
 	}
+	
+	// email 존재 유무조회
+	public boolean existsByEmail(String email) {
+		return userRepository.existsByEmail(email);
+	}
 
     // 아이디로 사용자 조회
     public Optional<User> findByUserId(String userId) {
         return userRepository.findByUserId(userId);
+    }
+    
+    public Optional<User> getUserByEmailAdmin(String email) {
+		return userRepository.getUserByEmailAndRole(email, "ADMIN");
+	}
+	
+	public Optional<User> getUserByEmail(String email) {
+        return userRepository.getUserByEmail(email);
     }
 }

@@ -1,5 +1,7 @@
 package com.project.app.user.controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.project.app.config.security.JwtTokenProvider;
 import com.project.app.user.dto.UserRequestDto;
+import com.project.app.user.entity.User;
 import com.project.app.user.service.UserService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +30,12 @@ public class UserController {
 		this.userService = userService;
 	}
 
+	@GetMapping("/all")
+	public ResponseEntity<List<User>> getAllUsers(){
+		List<User> users = userService.getAllUsers();
+		return ResponseEntity.ok(users);
+	}
+	
 	@PostMapping("/register")
 	public ResponseEntity<?> createUser(@RequestBody UserRequestDto userRequestDto) {
 		try {

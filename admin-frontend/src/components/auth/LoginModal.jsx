@@ -10,6 +10,7 @@ function LoginModal({ isOpen, onClose, onOpenRegister }) {
     const { isLoading, error } = useSelector((state) => state.auth); // Redux 상태 가져오기
 
     const [userId, setUserId] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
     if (!isOpen) return null; // 모달이 닫혀있으면 아무것도 렌더링하지 않음
@@ -17,10 +18,10 @@ function LoginModal({ isOpen, onClose, onOpenRegister }) {
     // 폼 제출 핸들러 (로그인 로직)
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const resultAction = await dispatch(login({ userId, password }));
+        const resultAction = await dispatch(login({ userId, email, password }));
         if (login.fulfilled.match(resultAction)) {
             onClose(); // 로그인 성공 시 모달 닫기
-            setUserId('');
+            setEmail('');
             setPassword('');
         }
     };
@@ -46,13 +47,21 @@ function LoginModal({ isOpen, onClose, onOpenRegister }) {
             <div className="modal-content">
                 <h2 style={{ marginBottom: '20px', color: 'black' }}>ADMIN</h2>
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    <input
+                    {/* <input
                         type="text"
                         placeholder="아이디"
                         value={userId}
                         onChange={(e) => setUserId(e.target.value)}
                         className="modal-input"
                         autoComplete="current-userId"
+                    /> */}
+                    <input
+                        type="text"
+                        placeholder="EMAIL"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="modal-input"
+                        autoComplete="current-email"
                     />
                     <input
                         type="password"

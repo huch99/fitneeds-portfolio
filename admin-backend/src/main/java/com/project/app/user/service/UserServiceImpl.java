@@ -1,5 +1,6 @@
 package com.project.app.user.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,10 +15,10 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
-	
+
 	public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
 		this.userRepository = userRepository;
 		this.passwordEncoder = passwordEncoder;
@@ -38,8 +39,26 @@ public class UserServiceImpl implements UserService{
 		return userRepository.existsByUserId(userId);
 	}
 
-    // 아이디로 사용자 조회
-    public Optional<User> findByUserId(String userId) {
-        return userRepository.findByUserId(userId);
+	// email 존재 유무조회
+	public boolean existsByEmail(String email) {
+		return userRepository.existsByEmail(email);
+	}
+
+	// 아이디로 사용자 조회
+	public Optional<User> findByUserId(String userId) {
+		return userRepository.findByUserId(userId);
+	}
+
+	public List<User> getAllUsers() {
+		return userRepository.findAll();
+	}
+
+	public Optional<User> getUserByEmailAdmin(String email) {
+		return userRepository.getUserByEmailAndRole(email, "ADMIN");
+	}
+	
+	public Optional<User> getUserByEmail(String email) {
+        return userRepository.getUserByEmail(email);
     }
+
 }

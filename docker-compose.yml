@@ -11,11 +11,6 @@ services:
     networks:
       - fitneeds-net
     restart: unless-stopped
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
 
   # 메인 사용자용 백엔드
   fitneeds-enduser-backend:
@@ -25,7 +20,6 @@ services:
     expose:
       - "8080"
     environment:
-      - SERVER_PORT=8080
       - SPRING_DATASOURCE_URL=jdbc:mariadb://fitneeds-db:3306/fitneedsdb
       - SPRING_DATASOURCE_USERNAME=fitneeds
       - SPRING_DATASOURCE_PASSWORD=fullstack2025
@@ -35,12 +29,6 @@ services:
     depends_on:
       - fitneeds-db
     restart: unless-stopped
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-
 
   # 관리자용 프론트
   fitneeds-admin-frontend:
@@ -54,12 +42,6 @@ services:
     networks:
       - fitneeds-net
     restart: unless-stopped
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-
 
   # 관리자용 백엔드
   fitneeds-admin-backend:
@@ -69,7 +51,6 @@ services:
     expose:
       - "8080"
     environment:
-      - SERVER_PORT=8080
       - SPRING_DATASOURCE_URL=jdbc:mariadb://fitneeds-db:3306/fitneedsdb
       - SPRING_DATASOURCE_USERNAME=fitneeds
       - SPRING_DATASOURCE_PASSWORD=fullstack2025
@@ -79,12 +60,6 @@ services:
     depends_on:
       - fitneeds-db
     restart: unless-stopped
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-
 
   # 공용 MariaDB
   fitneeds-db:
@@ -96,7 +71,7 @@ services:
     environment:
       - MARIADB_ROOT_PASSWORD=rfullstack2025
       - MARIADB_DATABASE=fitneedsdb
-      - MARIADB_USER=fitneeds
+      - MARIADB_USER=fituser
       - MARIADB_PASSWORD=fullstack2025
     volumes:
       - fitneeds-db-data:/var/lib/mysql
