@@ -5,6 +5,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import './styles/common.css';
 
+
 // Components
 import Layout from './components/Layout';
 
@@ -20,6 +21,14 @@ import PortfolioOverview from './pages/PortfolioOverview/PortfolioOverview';
 import PortfolioItem from './pages/PortfolioItem/PortfolioItem';
 import MyPage from './pages/MyPage/MyPage';
 import UsageStatus from './pages/UsageStatus/UsageStatus';
+import CommunityUser from './pages/Community/CommunityUser';
+import CommunityUserDetail from './pages/Community/CommunityUserDetail';
+import CommunityUserWrite from './pages/Community/CommunityUserWrite';
+import CommunityMyRecruitList from './pages/Community/CommunityMyRecruitList';
+import CommunityMyPostList from './pages/Community/CommunityMyPostList';
+
+import NoticeUserPage from "./pages/Notice/NoticeUserPage";
+
 
 function App() {
   useEffect(() => {
@@ -51,6 +60,16 @@ function App() {
             <Route path="/mypage" element={<MyPage />} />
             <Route path="/mypage/usage-status" element={<UsageStatus />} />
             <Route path="*" element={<div>404 Not Found</div>} />
+
+            <Route path="/community" element={<CommunityUser />} />
+            <Route path="/community/:postId" element={<CommunityUserDetail />} />
+            <Route path="/community/write" element={<CommunityUserWrite />} />
+            <Route path="/community/my-recruits" element={<CommunityMyRecruitList />}/>
+            <Route path="/community/my-posts" element={<CommunityMyPostList />} />
+
+            <Route path="/notice" element={<NoticeUserPage />} />
+
+
           </Routes>
         </Layout>
       </Router>

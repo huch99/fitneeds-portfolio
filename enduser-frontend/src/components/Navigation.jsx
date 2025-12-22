@@ -19,13 +19,11 @@ function Navigation() {
 
   // Handle scroll to change header style - only on home page
   useEffect(() => {
-    // On other pages, always show yellow background
     if (location.pathname !== '/') {
       setIsScrolled(true);
       return;
     }
 
-    // On home page, start transparent and change on scroll
     setIsScrolled(false);
 
     const handleScroll = () => {
@@ -76,9 +74,7 @@ function Navigation() {
             <li className="nav-menu-item">
               <Link className="nav-menu-link" to="/">홈</Link>
             </li>
-            <li className="nav-menu-item">
-              <Link className="nav-menu-link" to="/faq">공지사항</Link>
-            </li>
+
             <li className="nav-menu-item">
               <Link className="nav-menu-link" to="/about">센터안내</Link>
             </li>
@@ -91,6 +87,37 @@ function Navigation() {
             <li className="nav-menu-item">
               <Link className="nav-menu-link" to="/mypage">나의 운동</Link>
             </li>
+
+            <li
+              className="nav-menu-item nav-dropdown"
+              ref={portfolioDropdownRef}
+              onMouseEnter={() => setPortfolioDropdownOpen(true)}
+              onMouseLeave={() => setPortfolioDropdownOpen(false)}
+            >
+              <Link className="nav-menu-link nav-dropdown-toggle" to="/community">
+                커뮤니티
+              </Link>
+
+              <ul className={`nav-dropdown-menu ${portfolioDropdownOpen ? 'nav-dropdown-show' : ''}`}>
+                <li>
+                  <Link className="nav-dropdown-item" to="/notice">
+                    공지사항
+                  </Link>
+                </li>
+                <li>
+                  <Link className="nav-dropdown-item" to="/faq">
+                    FAQ
+                  </Link>
+                </li>
+                <li>
+                  <Link className="nav-dropdown-item" to="/community">
+                    커뮤니티 게시판
+                  </Link>
+                </li>
+              </ul>
+            </li>
+
+
             <li
               className="nav-menu-item nav-dropdown"
               ref={blogDropdownRef}
@@ -125,5 +152,3 @@ function Navigation() {
 }
 
 export default Navigation;
-
-

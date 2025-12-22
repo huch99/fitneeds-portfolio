@@ -1,0 +1,355 @@
+/* =========================
+   공통 래퍼 (커뮤니티 기준)
+========================= */
+.notice-wrap {
+  width: 100%;
+  padding: 30px;
+  margin: 0 auto;
+  min-height: calc(100vh - 120px);
+}
+
+/* =========================
+   섹션 박스 (노란 테두리)
+========================= */
+.notice-section {
+  border: 2px solid #f0c84b;
+  border-radius: 8px;
+  background: #fff;
+  padding: 24px;
+}
+
+.notice-section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.notice-section-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.notice-dot {
+  width: 10px;
+  height: 10px;
+  background: #f0c84b;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* =========================
+   본문
+========================= */
+.notice-section-body {
+  padding: 0;
+}
+
+.notice-h2 {
+  font-size: 22px;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.notice-desc {
+  font-size: 14px;
+  color: #777;
+  margin-bottom: 20px;
+}
+
+/* =========================
+   필터 라인
+========================= */
+.notice-filter-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.notice-search-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.notice-filter-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #555;
+  min-width: 48px;
+}
+
+.notice-input {
+  width: 100%;
+  height: 36px;
+  padding: 0 10px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+  background: #fffdf3;
+}
+
+.notice-right-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.notice-select {
+  height: 36px;
+  min-width: 160px;
+  border-radius: 6px;
+  border: 1px solid #f0c84b;
+  background: #fffdf3;
+  padding: 0 10px;
+  font-size: 14px;
+}
+
+.notice-search-btn {
+  height: 36px;
+  padding: 0 16px;
+  border: none;
+  background: #f0c84b;
+  font-weight: 700;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.notice-search-btn:hover {
+  filter: brightness(0.97);
+}
+
+.notice-guide {
+  font-size: 13px;
+  color: #888;
+  margin-bottom: 12px;
+}
+
+/* =========================
+   테이블
+========================= */
+.notice-table-wrap {
+  border-top: 1px solid #eee;
+}
+
+.notice-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.notice-table thead th {
+  background: #f3f3f3;
+  font-size: 14px;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.notice-table tbody td {
+  font-size: 14px;
+  padding: 12px 10px;
+  border-bottom: 1px solid #eee;
+  text-align: center;
+}
+
+.notice-row:nth-child(even) {
+  background: #fafafa;
+}
+
+.notice-row:hover {
+  background: #f5f5f5;
+  cursor: pointer;
+}
+
+.col-num { width: 80px; }
+.col-branch { width: 160px; }
+.col-period { width: 240px; }
+.col-views { width: 90px; }
+
+.notice-td-title {
+  text-align: left !important;
+}
+
+.notice-badge {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  color: #8a6a00;
+  background: #ffe38a;
+  border-radius: 999px;
+  padding: 3px 10px;
+  margin-right: 6px;
+}
+
+.notice-title-text {
+  font-weight: 700;
+}
+
+.notice-empty {
+  padding: 20px !important;
+  color: #888;
+}
+
+/* =========================
+   하단 영역
+========================= */
+.notice-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.notice-count {
+  font-size: 14px;
+  color: #666;
+}
+
+.notice-pagination {
+  display: flex;
+  gap: 6px;
+}
+
+.page-btn,
+.page-num {
+  font-size: 14px;
+  padding: 6px 10px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.page-num.active {
+  background: #f0c84b;
+  border-radius: 6px;
+  font-weight: 700;
+}
+
+/* =========================
+   팝업 (요구사항 반영)
+   - 팝업 크기 고정 (920x620)
+   - 어떤 화면에서도 중앙 고정 (overlay flex center 유지)
+   - 스크롤은 notice-content-box 내부에서만
+   - 닫기/확인 버튼 절대 안 짤리게
+========================= */
+.notice-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.notice-modal-stage {
+  background: transparent;
+  padding: 0;
+}
+
+/* 🔥 팝업 크기 고정 + 내부 레이아웃 안정화 */
+.notice-modal {
+  position: relative;
+  width: 920px;
+  height: 620px;
+  background: #fff;
+  border-radius: 10px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  overflow: hidden; /* 🔥 라운드 밖으로 요소 튀어나오는 것 방지 */
+}
+
+/* 닫기 버튼 (팝업 내부에서 안 짤리게) */
+.notice-modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  background: #fff;
+  font-size: 18px;
+  cursor: pointer;
+  z-index: 2; /* 🔥 스크롤 영역 위로 */
+}
+
+/* 제목 영역 (고정) */
+.notice-modal-title {
+  padding: 20px 24px;
+  font-size: 18px;
+  font-weight: 800;
+  border-bottom: 1px solid #eee;
+  background: #fff;
+  flex-shrink: 0;
+  padding-right: 56px; /* 🔥 닫기 버튼 영역 겹침 방지 */
+}
+
+/* 메타 정보 영역 (고정) */
+.notice-modal-meta {
+  padding: 10px 24px;
+  font-size: 13px;
+  color: #777;
+  background: #fafafa;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+/* ✅ 내용 영역: 스크롤은 안쪽(content-box)에서만 발생해야 하므로
+   여기서는 overflow hidden + padding만 담당 */
+.notice-modal-content {
+  flex: 1;
+  overflow: hidden;
+  background: #fff;
+  padding: 24px;
+  box-sizing: border-box;
+  min-height: 0; /* 🔥 flex 레이아웃에서 하단 버튼 침범 방지 */
+}
+
+/* ✅ 실제 스크롤 영역 (사용자 요구 위치) */
+.notice-content-box {
+  height: 100%;
+  overflow-y: auto; /* 🔥 여기서 스크롤 */
+  background: #fffdf2;
+  border: 1px solid #f0e6b8;
+  border-radius: 8px;
+  padding: 18px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #333;
+  box-sizing: border-box;
+  white-space: pre-line;
+  font-size: 150%;
+  font-weight: bolder;
+  /* USER 쪽은 입력 안 하므로 white-space 설정 제거 */
+}
+
+/* 하단 버튼 영역 (고정, 절대 줄어들지 않게) */
+.notice-modal-actions {
+  padding: 16px 24px 20px;
+  border-top: 1px solid #eee;
+  display: flex;
+  justify-content: center;
+  background: #fff;
+  flex-shrink: 0;
+}
+
+.notice-ok-btn {
+  border: none;
+  background: #f0c84b;
+  color: #222;
+  font-weight: 700;
+  border-radius: 6px;
+  padding: 10px 28px;
+  cursor: pointer;
+}
+
+.notice-ok-btn:hover {
+  filter: brightness(0.95);
+}
