@@ -17,6 +17,9 @@ function AdminCommunityDetailPage() {
   const [totalCount, setTotalCount] = useState(0);
   const pageSize = 10;
 
+  // 모집 참여자
+  const [recruitUsers, setRecruitUsers] = useState([]);
+
   /* =========================
      게시글 상세 조회
   ========================= */
@@ -37,7 +40,7 @@ function AdminCommunityDetailPage() {
   }, [id]);
 
   /* =========================
-     ADMIN 댓글 목록 조회 (페이징)
+     ADMIN 댓글 목록 조회
   ========================= */
   const fetchComments = async (page = 1) => {
     try {
@@ -58,6 +61,27 @@ function AdminCommunityDetailPage() {
   }, [id]);
 
   /* =========================
+     ADMIN 모집 참여자 조회
+  ========================= */
+  const fetchRecruitUsers = async () => {
+    try {
+      const res = await axios.get(
+        `/api/admin/community/${id}/recruit-users`
+      );
+      setRecruitUsers(res.data || []);
+    } catch (err) {
+      console.error('모집 참여자 조회 실패', err);
+    }
+  };
+
+  // ✅ 모집 글일 때만 참여자 조회 (기준 통일)
+  useEffect(() => {
+    if (post?.category === '모집') {
+      fetchRecruitUsers();
+    }
+  }, [post]);
+
+  /* =========================
      댓글 숨김 / 보이기
   ========================= */
   const toggleVisible = async (commentId, currentVisible) => {
@@ -67,9 +91,7 @@ function AdminCommunityDetailPage() {
       await axios.put(
         `/api/admin/community/comments/${commentId}/visible`,
         null,
-        {
-          params: { commentVisible: nextVisible }
-        }
+        { params: { commentVisible: nextVisible } }
       );
       fetchComments(currentPage);
     } catch (err) {
@@ -92,20 +114,27 @@ function AdminCommunityDetailPage() {
   };
 
   /* =========================
-     작성자 표시용 함수 (🔥 핵심)
+     모집 참여자 삭제
   ========================= */
-  const renderWriter = (writerType, writerId) => {
-    if (writerType === 'USER') {
-      return `회원 (${writerId})`;
+  const deleteRecruitUser = async (joinId) => {
+    if (!window.confirm('해당 참여자를 삭제하시겠습니까?')) return;
+
+    try {
+      await axios.delete(
+        `/api/admin/community/recruit-users/${joinId}`
+      );
+
+      // 🔥 상태 동기화 보장
+      await fetchRecruitUsers();
+
+      alert('모집 참여자가 삭제되었습니다.');
+    } catch (err) {
+      console.error('모집 참여자 삭제 실패', err);
     }
-    if (writerType === 'STAFF') {
-      return `관리자 (${writerId})`;
-    }
-    return writerId || '-';
   };
 
   /* =========================
-     페이징 계산
+     페이징
   ========================= */
   const totalPages = Math.ceil(totalCount / pageSize);
 
@@ -118,7 +147,7 @@ function AdminCommunityDetailPage() {
         ← 목록으로
       </button>
 
-      <h2 style={{ marginBottom: '10px' }}>{post.title}</h2>
+      <h2>{post.title}</h2>
 
       <div style={{ marginBottom: '20px', color: '#777' }}>
         <div>카테고리: {post.category}</div>
@@ -132,14 +161,59 @@ function AdminCommunityDetailPage() {
           padding: '15px',
           background: '#f8f8f8',
           marginBottom: '30px',
-          whiteSpace: 'pre-line',   // 🔥 엔터 줄바꿈
+          whiteSpace: 'pre-line',
           lineHeight: 1.6
         }}
       >
         {post.content}
       </div>
 
+      {/* =========================
+          모집 참여자 목록
+      ========================= */}
+      {post.category === '모집' && (
+        <>
+          <h3>모집 참여자 ({recruitUsers.length})</h3>
 
+          <table className="admin-table" style={{ marginBottom: '40px' }}>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>회원 ID</th>
+                <th>관리</th>
+              </tr>
+            </thead>
+            <tbody>
+              {recruitUsers.length === 0 && (
+                <tr>
+                  <td colSpan="3" style={{ textAlign: 'center' }}>
+                    참여자가 없습니다.
+                  </td>
+                </tr>
+              )}
+
+              {recruitUsers.map((u) => (
+                <tr key={u.joinId}>
+                  <td>{u.joinId}</td>
+                  <td>{u.userId}</td>
+                  <td>
+                    <button
+                      style={{ color: 'red' }}
+                      onClick={() => deleteRecruitUser(u.joinId)}
+                    >
+                      삭제
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </>
+      )}
+
+      {/* =========================
+          댓글 영역
+      ========================= */}
       <h3>댓글 ({totalCount})</h3>
 
       <table className="admin-table">
@@ -153,7 +227,6 @@ function AdminCommunityDetailPage() {
             <th>관리</th>
           </tr>
         </thead>
-
         <tbody>
           {comments.map((c) => (
             <tr
@@ -161,28 +234,16 @@ function AdminCommunityDetailPage() {
               style={{ opacity: c.commentVisible === 1 ? 1 : 0.4 }}
             >
               <td>{c.commentId}</td>
-              <td>{renderWriter(c.writerType, c.writerId)}</td>
-              <td
-                style={{
-                  whiteSpace: 'pre-line',   // 🔥 엔터 줄바꿈
-                  lineHeight: 1.5
-                }}
-              >
-                {c.content}
-              </td>
-
+              <td>{c.writerId}</td>
+              <td style={{ whiteSpace: 'pre-line' }}>{c.content}</td>
               <td>{c.createdAt}</td>
-
               <td>
                 <button
-                  onClick={() =>
-                    toggleVisible(c.commentId, c.commentVisible)
-                  }
+                  onClick={() => toggleVisible(c.commentId, c.commentVisible)}
                 >
                   {c.commentVisible === 1 ? '숨김' : '보이기'}
                 </button>
               </td>
-
               <td>
                 <button
                   style={{ color: 'red' }}
@@ -196,7 +257,7 @@ function AdminCommunityDetailPage() {
         </tbody>
       </table>
 
-      {/* 페이징 버튼 */}
+      {/* 댓글 페이징 */}
       <div style={{ marginTop: '20px', textAlign: 'center' }}>
         {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
           <button

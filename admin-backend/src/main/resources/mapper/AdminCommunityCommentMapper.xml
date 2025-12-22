@@ -40,5 +40,10 @@
     DELETE FROM community_comment
     WHERE comment_id = #{commentId}
   </delete>
-
+	
+   <delete id="deleteByPostId" parameterType="long">
+    DELETE FROM community_comment
+    WHERE post_id = #{postId}
+   </delete>	
+	
 </mapper>

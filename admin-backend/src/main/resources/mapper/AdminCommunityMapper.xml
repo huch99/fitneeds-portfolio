@@ -5,10 +5,9 @@
 
 <mapper namespace="com.project.app.community.mapper.AdminCommunityMapper">
 
-  <!-- ✅ ADMIN 커뮤니티 목록 (검색 + 정렬 + 댓글수 + 페이징)
-       - 기본: 숨김글 포함 전체 조회
-       - post_visible은 상태값으로만 사용 (필터 아님)
-  -->
+  <!-- ===============================
+       ADMIN 커뮤니티 목록
+  =============================== -->
   <select id="selectCommunityPostList"
           resultType="com.project.app.community.dto.CommunityPostDto">
 
@@ -20,28 +19,25 @@
       ON p.post_id = c.post_id
      AND c.comment_visible = 1
 
-   <where>
-  AND p.post_type = 'COMMUNITY'
+    <where>
+      AND p.post_type = 'COMMUNITY'
 
-  <!-- 카테고리를 명시적으로 선택한 경우 -->
-  <if test="category != null and category != ''">
-    AND p.category = #{category}
-  </if>
+      <if test="category != null and category != ''">
+        AND p.category = #{category}
+      </if>
 
-  <!-- 카테고리 미선택 시 개인정보동의 제외 -->
-  <if test="category == null or category == ''">
-    AND p.category != '개인정보동의'
-  </if>
+      <if test="category == null or category == ''">
+        AND p.category != '개인정보동의'
+      </if>
 
-  <if test="keyword != null and keyword != ''">
-    AND p.title LIKE CONCAT('%', #{keyword}, '%')
-  </if>
+      <if test="keyword != null and keyword != ''">
+        AND p.title LIKE CONCAT('%', #{keyword}, '%')
+      </if>
 
-  <if test="visible != null">
-    AND p.post_visible = #{visible}
-  </if>
-</where>
-
+      <if test="visible != null">
+        AND p.post_visible = #{visible}
+      </if>
+    </where>
 
     GROUP BY p.post_id
 
@@ -58,10 +54,11 @@
     </choose>
 
     LIMIT #{limit} OFFSET #{offset}
-
   </select>
 
-  <!-- ✅ ADMIN 커뮤니티 전체 건수 (페이징용) -->
+  <!-- ===============================
+       ADMIN 커뮤니티 전체 건수
+  =============================== -->
   <select id="selectCommunityPostCount" resultType="int">
     SELECT COUNT(DISTINCT p.post_id)
     FROM community_post p
@@ -80,14 +77,25 @@
         AND p.title LIKE CONCAT('%', #{keyword}, '%')
       </if>
 
-      <!-- 🔹 확장용 필터 -->
       <if test="visible != null">
         AND p.post_visible = #{visible}
       </if>
     </where>
   </select>
 
-  <!-- ✅ ADMIN 커뮤니티 게시글 상세 조회 -->
+  <!-- ===============================
+       ✅ 모집 참여자 수 조회
+       (게시글 삭제 가능 여부 판단)
+  =============================== -->
+  <select id="selectRecruitJoinCountByPostId" resultType="int">
+    SELECT COUNT(*)
+    FROM community_recruit_join
+    WHERE post_id = #{postId}
+  </select>
+
+  <!-- ===============================
+       ADMIN 게시글 상세
+  =============================== -->
   <select id="selectCommunityPostDetail"
           resultType="com.project.app.community.dto.CommunityPostDto">
     SELECT p.*
@@ -96,7 +104,9 @@
       AND p.post_type = 'COMMUNITY'
   </select>
 
-  <!-- ✅ 숨김 / 보이기 -->
+  <!-- ===============================
+       숨김 / 보이기
+  =============================== -->
   <update id="updatePostVisible">
     UPDATE community_post
     SET post_visible = #{postVisible},
@@ -105,32 +115,34 @@
       AND post_type = 'COMMUNITY'
   </update>
 
-  <!-- ✅ 삭제 -->
+  <!-- ===============================
+       ✅ ADMIN 모집 참여자 목록 조회
+       (created_at 컬럼 ❌ → join_id 기준)
+  =============================== -->
+  <select id="selectRecruitUsersByPostId" resultType="map">
+    SELECT
+      crj.join_id AS joinId,
+      crj.user_id AS userId
+    FROM community_recruit_join crj
+    WHERE crj.post_id = #{postId}
+    ORDER BY crj.join_id ASC
+  </select>
+
+  <!-- ===============================
+       ADMIN 모집 참여자 삭제
+  =============================== -->
+  <delete id="deleteRecruitJoin">
+    DELETE FROM community_recruit_join
+    WHERE join_id = #{joinId}
+  </delete>
+
+  <!-- ===============================
+       ADMIN 게시글 삭제
+  =============================== -->
   <delete id="deleteCommunityPost">
     DELETE FROM community_post
     WHERE post_id = #{postId}
       AND post_type = 'COMMUNITY'
   </delete>
-
-
-<!--
-	<where>
-      AND p.post_type = 'COMMUNITY'
-
-      <if test="category != null and category != ''">
-        AND p.category = #{category}
-      </if>
-
-      <if test="keyword != null and keyword != ''">
-        AND p.title LIKE CONCAT('%', #{keyword}, '%')
-      </if>
-
-      
-      <if test="visible != null">
-        AND p.post_visible = #{visible}
-      </if>
-    </where>
-	
--->
 
 </mapper>

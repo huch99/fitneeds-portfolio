@@ -173,33 +173,43 @@
 
     <!-- 상세 조회 -->
     <select id="selectCommunityPostDetail"
-            parameterType="long"
-            resultType="com.project.app.community.dto.CommunityPostDto">
+        parameterType="long"
+        resultType="com.project.app.community.dto.CommunityPostDto">
 
-        SELECT
-            post_id        AS postId,
-            post_type      AS postType,
-            category,
-            title,
-            content,
-            writer_id      AS writerId,
-            writer_type    AS writerType,
-            branch_id      AS branchId,
-            views,
-            is_visible     AS isVisible,
-            post_visible   AS postVisible,
-            sport_type     AS sportType,
-            recruit_max    AS recruitMax,
-            recruit_end_date AS recruitEndDate,
-            display_start  AS displayStart,
-            display_end    AS displayEnd,
-            created_at     AS createdAt,
-            updated_at     AS updatedAt
-        FROM community_post
-        WHERE post_id = #{postId}
-          AND post_visible = 1
-          AND (category IS NULL OR category NOT IN ('개인정보동의'))
-    </select>
+    SELECT
+        cp.post_id        AS postId,
+        cp.post_type      AS postType,
+        cp.category,
+        cp.title,
+        cp.content,
+        cp.writer_id      AS writerId,
+        cp.writer_type    AS writerType,
+        cp.branch_id      AS branchId,
+        cp.views,
+        cp.is_visible     AS isVisible,
+        cp.post_visible   AS postVisible,
+        cp.sport_type     AS sportType,
+        cp.recruit_max    AS recruitMax,
+        cp.recruit_end_date AS recruitEndDate,
+        cp.display_start  AS displayStart,
+        cp.display_end    AS displayEnd,
+        cp.created_at     AS createdAt,
+        cp.updated_at     AS updatedAt,
+
+        /* 🔥 현재 모집 참여 인원 */
+        COUNT(crj.join_id) AS recruitCount
+
+    FROM community_post cp
+    LEFT JOIN community_recruit_join crj
+           ON crj.post_id = cp.post_id
+
+    WHERE cp.post_id = #{postId}
+      AND cp.post_visible = 1
+      AND (cp.category IS NULL OR cp.category NOT IN ('개인정보동의'))
+
+    GROUP BY cp.post_id
+</select>
+
 
     <!-- 작성자 본인 체크 -->
     <select id="countByPostIdAndWriterId" resultType="int">

@@ -5,19 +5,13 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface AdminCommunityMapper {
 
     /**
      * ADMIN 커뮤니티 목록 조회
-     * - 검색 (keyword)
-     * - 카테고리 (category)
-     * - 정렬 (orderType)
-     * - 페이징 (limit / offset)
-     * - 댓글 수 포함
-     * - 기본: 숨김글 포함 전체 조회
-     * - visible: 선택적 관리자 필터 (기본 사용 안 함)
      */
     List<CommunityPostDto> selectCommunityPostList(
             @Param("category") String category,
@@ -30,7 +24,6 @@ public interface AdminCommunityMapper {
 
     /**
      * ADMIN 커뮤니티 전체 건수 (페이징용)
-     * - visible: 선택적 관리자 필터
      */
     int selectCommunityPostCount(
             @Param("category") String category,
@@ -58,5 +51,26 @@ public interface AdminCommunityMapper {
      */
     void deleteCommunityPost(
             @Param("postId") Long postId
+    );
+
+    /**
+     * ✅ ADMIN 모집 참여자 수 조회 (삭제 가능 여부 판단)
+     */
+    int selectRecruitJoinCountByPostId(
+            @Param("postId") Long postId
+    );
+
+    /**
+     * ✅ ADMIN 모집 참여자 목록 조회
+     */
+    List<Map<String, Object>> selectRecruitUsersByPostId(
+            @Param("postId") Long postId
+    );
+
+    /**
+     * ✅ ADMIN 모집 참여자 삭제
+     */
+    void deleteRecruitJoin(
+            @Param("joinId") Long joinId
     );
 }

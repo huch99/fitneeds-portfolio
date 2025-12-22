@@ -3,9 +3,12 @@ package com.project.app.community.controller;
 import com.project.app.community.dto.CommunityPostDto;
 import com.project.app.community.service.AdminCommunityService;
 import com.project.app.community.service.AdminCommunityService.AdminPagedResult;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -20,10 +23,6 @@ public class AdminCommunityController {
 
     /**
      * ADMIN 커뮤니티 목록 조회
-     * - 검색
-     * - 필터
-     * - 정렬
-     * - 페이징
      */
     @GetMapping
     public Map<String, Object> getCommunityPostList(
@@ -75,9 +74,37 @@ public class AdminCommunityController {
 
     /**
      * ADMIN 커뮤니티 글 삭제
+     * - 댓글 또는 모집 참여자 있으면 false 반환
      */
     @DeleteMapping("/{postId}")
-    public void deleteCommunityPost(@PathVariable("postId") Long postId) {
-        adminCommunityService.deleteCommunityPost(postId);
+    public ResponseEntity<Boolean> deleteCommunityPost(
+            @PathVariable("postId") Long postId
+    ) {
+        boolean deleted = adminCommunityService.deleteCommunityPost(postId);
+        return ResponseEntity.ok(deleted);
+    }
+
+    /* =====================================================
+       🔥 여기부터 [추가]
+       ===================================================== */
+
+    /**
+     * ✅ ADMIN 모집 참여자 목록 조회
+     */
+    @GetMapping("/{postId}/recruit-users")
+    public List<Map<String, Object>> getRecruitUsers(
+            @PathVariable("postId") Long postId
+    ) {
+        return adminCommunityService.getRecruitUsersByPostId(postId);
+    }
+
+    /**
+     * ✅ ADMIN 모집 참여자 삭제
+     */
+    @DeleteMapping("/recruit-users/{joinId}")
+    public void deleteRecruitUser(
+            @PathVariable("joinId") Long joinId
+    ) {
+        adminCommunityService.deleteRecruitJoin(joinId);
     }
 }

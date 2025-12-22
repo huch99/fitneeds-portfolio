@@ -58,15 +58,27 @@ function AdminCommunityPage() {
   };
 
   const deletePost = async (postId) => {
-    if (!window.confirm('정말 삭제하시겠습니까?')) return;
+  if (!window.confirm('정말 삭제하시겠습니까?')) return;
 
-    try {
-      await axios.delete(`/api/admin/community/${postId}`);
-      fetchPosts();
-    } catch (e) {
-      alert('삭제 실패');
+  try {
+    const res = await axios.delete(`/api/admin/community/${postId}`);
+
+    // ❗ 댓글 또는 모집 참여자가 있는 경우
+    if (res.data === false) {
+      alert('댓글 또는 모집 참여자를 먼저 삭제하세요.');
+      return;
     }
-  };
+
+    // ✅ 삭제 성공
+    alert('삭제되었습니다.');
+    fetchPosts();
+
+  } catch (e) {
+    alert('삭제 처리 중 오류가 발생했습니다.');
+  }
+};
+
+
 
   return (
     <div>

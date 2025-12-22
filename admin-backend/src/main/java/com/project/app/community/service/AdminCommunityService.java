@@ -2,9 +2,12 @@ package com.project.app.community.service;
 
 import com.project.app.community.dto.CommunityPostDto;
 import com.project.app.community.mapper.AdminCommunityMapper;
+import com.project.app.community.mapper.AdminCommunityCommentMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class AdminCommunityService {
@@ -12,9 +15,15 @@ public class AdminCommunityService {
     private static final int PAGE_SIZE = 10;
 
     private final AdminCommunityMapper adminCommunityMapper;
+    private final AdminCommunityCommentMapper adminCommunityCommentMapper; // ✅ 추가
 
-    public AdminCommunityService(AdminCommunityMapper adminCommunityMapper) {
+    // ✅ 생성자 주입
+    public AdminCommunityService(
+            AdminCommunityMapper adminCommunityMapper,
+            AdminCommunityCommentMapper adminCommunityCommentMapper
+    ) {
         this.adminCommunityMapper = adminCommunityMapper;
+        this.adminCommunityCommentMapper = adminCommunityCommentMapper;
     }
 
     /**
@@ -39,9 +48,6 @@ public class AdminCommunityService {
         );
     }
 
-    /**
-     * ADMIN 커뮤니티 전체 개수 (기존 유지)
-     */
     public int getCommunityPostCount(
             String category,
             String keyword,
@@ -54,10 +60,6 @@ public class AdminCommunityService {
         );
     }
 
-    /**
-     * ✅ ADMIN 커뮤니티 목록 조회 (페이징 전용)
-     * - 기본: 숨김글 포함
-     */
     public AdminPagedResult<CommunityPostDto> getCommunityPostPaged(
             String category,
             String keyword,
@@ -86,39 +88,60 @@ public class AdminCommunityService {
 
         int totalPages = (int) Math.ceil((double) totalCount / PAGE_SIZE);
 
-        return new AdminPagedResult<>(
-                list,
-                page,
-                totalPages,
-                totalCount
-        );
+        return new AdminPagedResult<>(list, page, totalPages, totalCount);
     }
 
-    /**
-     * ADMIN 커뮤니티 게시글 상세 조회
-     */
     public CommunityPostDto getCommunityPostDetail(Long postId) {
         return adminCommunityMapper.selectCommunityPostDetail(postId);
     }
 
-    /**
-     * ADMIN 커뮤니티 글 숨김 / 보이기
-     */
     public void updatePostVisible(Long postId, Boolean postVisible) {
         adminCommunityMapper.updatePostVisible(postId, postVisible);
     }
 
     /**
-     * ADMIN 커뮤니티 글 삭제
+     * ✅ ADMIN 커뮤니티 글 삭제
+     * - 댓글 있으면 삭제 불가
+     * - 댓글 없을 때만 게시글 삭제
      */
-    public void deleteCommunityPost(Long postId) {
+    @Transactional
+    public boolean deleteCommunityPost(Long postId) {
+
+        // 1️⃣ 댓글 개수
+        int commentCount =
+                adminCommunityCommentMapper.selectCommentCountByPostId(postId);
+
+        // 2️⃣ 모집 참여자 개수
+        int recruitJoinCount =
+                adminCommunityMapper.selectRecruitJoinCountByPostId(postId);
+
+        // ❌ 하나라도 있으면 삭제 불가
+        if (commentCount > 0 || recruitJoinCount > 0) {
+            return false;
+        }
+
+        // ✅ 둘 다 없을 때만 게시글 삭제
         adminCommunityMapper.deleteCommunityPost(postId);
+        return true;
+    }
+    
+    /**
+     * ✅ ADMIN 모집 참여자 목록 조회
+     */
+    public List<Map<String, Object>> getRecruitUsersByPostId(Long postId) {
+        return adminCommunityMapper.selectRecruitUsersByPostId(postId);
     }
 
     /**
-     * ✅ ADMIN 전용 페이징 결과 클래스
-     * - import 문제 방지용
+     * ✅ ADMIN 모집 참여자 삭제
      */
+    @Transactional
+    public void deleteRecruitJoin(Long joinId) {
+        adminCommunityMapper.deleteRecruitJoin(joinId);
+    }
+
+
+
     public static class AdminPagedResult<T> {
         private List<T> list;
         private int currentPage;
@@ -132,20 +155,9 @@ public class AdminCommunityService {
             this.totalCount = totalCount;
         }
 
-        public List<T> getList() {
-            return list;
-        }
-
-        public int getCurrentPage() {
-            return currentPage;
-        }
-
-        public int getTotalPages() {
-            return totalPages;
-        }
-
-        public int getTotalCount() {
-            return totalCount;
-        }
+        public List<T> getList() { return list; }
+        public int getCurrentPage() { return currentPage; }
+        public int getTotalPages() { return totalPages; }
+        public int getTotalCount() { return totalCount; }
     }
 }

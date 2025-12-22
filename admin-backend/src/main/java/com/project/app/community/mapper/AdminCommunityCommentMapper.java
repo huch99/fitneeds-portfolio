@@ -26,4 +26,8 @@ public interface AdminCommunityCommentMapper {
     void deleteComment(
             @Param("commentId") Long commentId
     );
+    
+    void deleteByPostId(
+            @Param("postId") Long postId
+    );
 }
