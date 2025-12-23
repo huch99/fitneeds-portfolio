@@ -16,4 +16,5 @@ public class LoginResponseDto {
     private String role;
     private boolean success;
     private String message;
+    private Long brchId;
 }

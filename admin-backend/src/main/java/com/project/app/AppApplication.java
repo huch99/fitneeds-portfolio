@@ -61,6 +61,7 @@ public class AppApplication {
 				adminUser.setPhoneNumber("01011111234");
 				adminUser.setAgreeAt(LocalDateTime.now());
 				adminUser.setIsActive(true);
+				adminUser.setBrchId(1L);
 				userAdminRepository.save(adminUser);
 				System.out.println("[테스트 계정 생성] 아이디: admin, 비밀번호: admin");
 			}
@@ -75,6 +76,7 @@ public class AppApplication {
 				adminUser.setPhoneNumber("01099991234");
 				adminUser.setAgreeAt(LocalDateTime.now());
 				adminUser.setIsActive(true);
+				adminUser.setBrchId(2L);
 				userAdminRepository.save(adminUser);
 				System.out.println("[테스트 계정 생성] 아이디: fitneeds, 비밀번호: fullstack2025");
 			}
@@ -114,19 +116,19 @@ public class AppApplication {
 
 			//Branch table insert 
 			Branch branch = new Branch();
-			branch.setBrchId(generator.generateUniqueUserId());
+			branch.setBrchId(1L);
 			branch.setBrchNm("SUWON");
 			branch.setOperYn(true);
 			branch.setRegDt(LocalDateTime.now());
 			branchRepository.save(branch);			
 
-			branch.setBrchId(generator.generateUniqueUserId());
+			branch.setBrchId(2L);
 			branch.setBrchNm("SEOUL");
 			branch.setOperYn(true);
 			branch.setRegDt(LocalDateTime.now());
 			branchRepository.save(branch);
 			
-			branch.setBrchId(generator.generateUniqueUserId());
+			branch.setBrchId(3L);
 			branch.setBrchNm("JEJU");
 			branch.setOperYn(true);
 			branch.setRegDt(LocalDateTime.now());

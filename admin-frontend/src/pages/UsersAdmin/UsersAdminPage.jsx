@@ -96,6 +96,7 @@ function AdminMemberPage() {
                                 <th>ROLE</th>
                                 {/* <th>CASH POINT</th> */}
                                 {/* <th>GRADE POINT</th> */}
+                                <th>BRANCH</th>
                                 <th>AGREE</th>
                                 <th>ACTIVE</th>
                             </tr>
@@ -118,10 +119,11 @@ function AdminMemberPage() {
                                             <td>{item.userName}</td>
                                             <td>{item.email}</td>
                                             <td>{item.phoneNumber}</td>
-                                            <td>{item.role}</td>
-
                                             {/* <td>{item.cashPoint}</td> */}
                                             {/* <td>{item.gradePoint}</td> */}
+
+                                            <td>{item.role}</td>
+                                            <td>{item.brchId}</td>
                                             <td>{item.agreeAt}</td>
                                             <td>
                                                 <input

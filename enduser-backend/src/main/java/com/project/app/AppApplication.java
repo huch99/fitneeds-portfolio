@@ -11,8 +11,6 @@ import org.springframework.web.client.RestTemplate;
 
 import com.project.app.config.util.UserIdGenerator;
 import com.project.app.user.entity.User;
-import com.project.app.user.entity.UserAdmin;
-import com.project.app.user.repository.UserAdminRepository;
 import com.project.app.user.repository.UserRepository;
 
 /**
@@ -44,40 +42,9 @@ public class AppApplication {
 	 * 제거하거나 비활성화하세요!
 	 */
 	@Bean
-	public CommandLineRunner createTestUser(UserAdminRepository userAdminRepository, UserRepository userRepository,
-			PasswordEncoder passwordEncoder) {
+	public CommandLineRunner createTestUser(UserRepository userRepository, PasswordEncoder passwordEncoder) {
 		UserIdGenerator generator = new UserIdGenerator();
 		return args -> {
-			// 관리자 계정 생성 (아이디: admin, 비밀번호: admin)
-			if (!userAdminRepository.existsByUserId("admin")) {
-				UserAdmin adminUser = new UserAdmin();
-				adminUser.setUserId(generator.generateUniqueUserId());
-				adminUser.setEmail("admin@naver.com");
-				adminUser.setUserName("Admin");
-//							adminUser.setUserName("관리자");
-				adminUser.setPassword(passwordEncoder.encode("admin"));
-				adminUser.setRole("ADMIN"); // 관리자 권한
-				adminUser.setPhoneNumber("01011111234");
-				adminUser.setAgreeAt(LocalDateTime.now());
-				adminUser.setIsActive(true);
-				userAdminRepository.save(adminUser);
-				System.out.println("[테스트 계정 생성] 아이디: admin, 비밀번호: admin");
-			}
-
-			// 관리자 계정 생성 (아이디: fitneeds, 비밀번호: fitneeds)
-			if (!userAdminRepository.existsByUserId("fitneeds")) {
-				UserAdmin adminUser = new UserAdmin();
-				adminUser.setUserId(generator.generateUniqueUserId());
-				adminUser.setEmail("fitneeds@fitneeds.com");
-				adminUser.setUserName("fitneeds");
-				adminUser.setPassword(passwordEncoder.encode("fullstack2025"));
-				adminUser.setRole("ADMIN"); // 관리자 권한
-				adminUser.setPhoneNumber("01099991234");
-				adminUser.setAgreeAt(LocalDateTime.now());
-				adminUser.setIsActive(true);
-				userAdminRepository.save(adminUser);
-				System.out.println("[테스트 계정 생성] 아이디: fitneeds, 비밀번호: fullstack2025");
-			}
 
 			// 일반 사용자 계정 생성 (아이디: user, 비밀번호: user)
 			if (!userRepository.existsByUserId("user1")) {

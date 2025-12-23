@@ -120,6 +120,7 @@ public class LoginController {
 		response.put("user", LoginResponseDto.builder()
 				.userId(user.getUserId())
 				.email(user.getEmail())
+				.brchId(user.getBrchId())
 				.userName(user.getUserName())
 				.role(user.getRole())
 				.success(true)

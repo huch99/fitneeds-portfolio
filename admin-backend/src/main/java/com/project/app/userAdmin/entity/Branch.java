@@ -24,7 +24,7 @@ public class Branch {
 	// brch_id (BIGINT, PRIMARY KEY)
     @Id // 기본 키로 지정
     @Column(name = "brch_id", nullable = false) // 컬럼 이름 명시, NULL 허용 안함
-    private String brchId;
+    private Long brchId;
 
     @Column(name = "brch_nm", length = 50, nullable = false) // 컬럼 이름, 길이 50, NULL 허용 안함
     private String brchNm;

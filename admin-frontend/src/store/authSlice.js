@@ -4,6 +4,7 @@ export const ACCESS_TOKEN_KEY = 'accessToken';
 export const USER_NAME_KEY = 'userName';
 export const USER_ID_KEY = 'userId';
 export const ROLE_KEY = 'role';
+export const BRCH_ID_KEY = 'brchId';
 
 // 비동기 로그인 액션
 export const login = createAsyncThunk(
@@ -14,6 +15,7 @@ export const login = createAsyncThunk(
             const token = response.data.token;
             const userName = response.data.user.userName || 'null'; // 백엔드에서 userName을 받아오거나 userId 사용
             const role = response.data.user.role;
+            const brchId = response.data.user.brchId;
             userId = response.data.user.userId;
 
             console.log(response.data);
@@ -21,8 +23,9 @@ export const login = createAsyncThunk(
             localStorage.setItem(USER_NAME_KEY, userName); // <<-- userName도 localStorage에 저장
             localStorage.setItem(USER_ID_KEY, userId);
             localStorage.setItem(ROLE_KEY, role);
+            localStorage.setItem(BRCH_ID_KEY, brchId);
 
-            return { token, userName, userId, role }; // Redux 상태 업데이트를 위해 token과 userName을 리턴
+            return { token, userName, userId, role, brchId }; // Redux 상태 업데이트를 위해 token과 userName을 리턴
         } catch (error) {
             const message = error.response?.data?.message || '로그인 실패';
             return rejectWithValue(message);
@@ -38,7 +41,7 @@ const authSlice = createSlice({
         userName: localStorage.getItem(USER_NAME_KEY) || null, // <<-- 초기 상태에서 localStorage에서 userName 로드
         userId: localStorage.getItem(USER_ID_KEY) || null,
         role: localStorage.getItem(ROLE_KEY) || null,
-        isAuthenticated: !!localStorage.getItem(ACCESS_TOKEN_KEY),
+        brchId: localStorage.getItem(BRCH_ID_KEY) || null,
         isLoading: false,
         error: null,
     },
@@ -50,6 +53,7 @@ const authSlice = createSlice({
             localStorage.removeItem(USER_NAME_KEY); // <<-- 로그아웃 시 localStorage에서 userName 제거
             localStorage.removeItem(USER_ID_KEY);
             localStorage.removeItem(ROLE_KEY);
+            localStorage.removeItem(BRCH_ID_KEY);
         },
         // 사용자 이름 설정 (필요에 따라 외부에서 userName 업데이트 시 사용)
         setUsername: (state, action) => {
@@ -80,6 +84,9 @@ const authSlice = createSlice({
                 state.error = action.payload;
                 state.token = null;
                 state.userName = null; // 로그인 실패 시 userName 초기화
+                state.userId = null;
+                state.role = null;
+                state.brchId = null;
                 localStorage.removeItem(ACCESS_TOKEN_KEY);
                 localStorage.removeItem(USER_NAME_KEY); // 로그인 실패 시 localStorage userName도 제거
             });

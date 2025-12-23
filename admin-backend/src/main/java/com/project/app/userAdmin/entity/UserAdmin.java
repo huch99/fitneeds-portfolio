@@ -52,6 +52,6 @@ public class UserAdmin {
  private Boolean isActive; // String -> Boolean 타입으로 변경
  
  @Column(name = "brch_id")
- private String brchId;
+ private Long brchId;
 
 }
