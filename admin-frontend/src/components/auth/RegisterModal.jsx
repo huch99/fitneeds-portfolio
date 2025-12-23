@@ -10,6 +10,7 @@ function RegisterModal({ isOpen, onClose }) {
     const [email, setEmail] = useState('');
     const [message, setMessage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const isLoggedIn = !!localStorage.getItem('isLoggedIn');
 
     if (!isOpen) return null;
 
@@ -42,7 +43,7 @@ function RegisterModal({ isOpen, onClose }) {
         <>
             <div className="modal-overlay" onClick={onClose}></div>
             <div className="modal-content">
-                <h2 style={{ marginBottom: '20px', color: 'black' }}>회원가입</h2>
+                <h2 style={{ marginBottom: '20px', color: 'black' }}>{isLoggedIn ? '내 정보' : '회원가입'}</h2> {userId}
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     <input
                         type="text"
@@ -77,7 +78,7 @@ function RegisterModal({ isOpen, onClose }) {
                     /> */}
                     {message && <p style={{ color: message.includes('실패') ? 'red' : 'green', fontSize: '14px' }}>{message}</p>}
                     <button type="submit" disabled={isLoading} className="modal-button-register">
-                        {isLoading ? '가입 중...' : '회원가입'}
+                        {isLoggedIn ? '정보수정' : '회원가입'}
                     </button>
                 </form>
                 <br></br>

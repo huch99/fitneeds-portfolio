@@ -33,11 +33,15 @@ function LoginButtonAndModal() {
         setIsRegisterModalOpen(false);
     };
 
+    const handleMyinfoClick = () => {
+        setIsRegisterModalOpen(true);
+    };
+
     return (
         <div>
             {isAuthenticated ? (
-                <span className="nav-menu-login"> {userName || 'ADMIN'} &nbsp;  {/* <<-- 새로고침 시 userName이 null이면 'ADMIN' */}
-                    {' '}
+                <span className="nav-menu-login"> <span onClick={handleMyinfoClick} style={{ cursor: 'pointer' }} >{userName || 'ADMIN'} &nbsp; </span>
+
                     <button onClick={handleLogoutClick} style={buttonLogoutButton}>
                         로그아웃
                     </button>

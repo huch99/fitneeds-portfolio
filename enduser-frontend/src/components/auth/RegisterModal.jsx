@@ -8,8 +8,10 @@ function RegisterModal({ isOpen, onClose }) {
     const [userName, setUserName] = useState('');
     const [password, setPassword] = useState('');
     const [email, setEmail] = useState('');
+    const [phoneNumber, setPhoneNumber] = useState('');
     const [message, setMessage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const isLoggedIn = !!localStorage.getItem('isLoggedIn');
 
     if (!isOpen) return null;
 
@@ -42,21 +44,23 @@ function RegisterModal({ isOpen, onClose }) {
         <>
             <div className="modal-overlay" onClick={onClose}></div>
             <div className="modal-content">
-                <h2 style={{ marginBottom: '20px', color: 'black' }}>회원가입</h2>
+                <h2 style={{ marginBottom: '20px', color: 'black' }}>{isLoggedIn ? '내 정보' : '회원가입'}</h2> {userId}
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    <input
+                    {/* <input
                         type="text"
                         placeholder="아이디"
                         value={userId}
                         onChange={(e) => setUserId(e.target.value)}
                         className="modal-input"
-                    />
+                        autoComplete="current-password"
+                    /> */}
                     <input
                         type="text"
                         placeholder="이름"
                         value={userName}
                         onChange={(e) => setUserName(e.target.value)}
                         className="modal-input"
+                        autoComplete="current-username"
                     />
                     <input
                         type="password"
@@ -64,21 +68,33 @@ function RegisterModal({ isOpen, onClose }) {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         className="modal-input"
+                        autoComplete="current-password"
                     />
-                    {/* <input
+
+                    <input
                         type="email"
                         placeholder="이메일"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        style={inputStyle}
-                    /> */}
+                        className="modal-input"
+                        autoComplete="current-email"
+                    />
+                    <input
+                        type="tel"
+                        placeholder="전화번호"
+                        value={phoneNumber}
+                        onChange={(e) => setPhoneNumber(e.target.value)}
+                        className="modal-input"
+                        autoComplete="tel-national"
+                    />
+
                     {message && <p style={{ color: message.includes('실패') ? 'red' : 'green', fontSize: '14px' }}>{message}</p>}
                     <button type="submit" disabled={isLoading} className="modal-button-register">
-                        {isLoading ? '가입 중...' : '회원가입'}
+                        {isLoggedIn ? '정보수정' : '회원가입'}
                     </button>
                 </form>
                 <button onClick={onClose} className="modal-close-button">X</button>
-            </div>
+            </div >
         </>
     );
 }

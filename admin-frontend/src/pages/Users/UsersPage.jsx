@@ -103,7 +103,7 @@ function AdminMemberPage() {
                         <tbody>
                             {schedules.length === 0 ? (
                                 <tr>
-                                    <td colSpan="6" style={{ padding: '40px', color: '#7f8c8d' }}>
+                                    <td colSpan="7" style={{ padding: '40px', color: '#7f8c8d' }}>
                                         조회된 회원이 없습니다.
                                     </td>
                                 </tr>
