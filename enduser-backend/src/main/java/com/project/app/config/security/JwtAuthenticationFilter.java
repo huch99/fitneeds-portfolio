@@ -11,18 +11,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.extern.slf4j.Slf4j;
-
-/**
- * JWT 인증 필터 모든 HTTP 요청을 가로채서 JWT 토큰을 검사하는 필터
- * 
- * 동작 순서:
- * 1. 요청 헤더에서 JWT 토큰 추출 
- * 2. 토큰 유효성 검증 
- * 3. 유효하면 사용자 인증 정보를 Spring Security에 등록
- * 4. 다음 필터로 요청 전달
- */
-@Slf4j
 public class JwtAuthenticationFilter extends GenericFilterBean {
 
 	// JWT 토큰을 처리하는 클래스
@@ -55,7 +43,6 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 			chain.doFilter(request, response);
 
 		} catch (Exception e) {
-			log.warn("[JWT] token validation failed: {}", e.toString());
 			// ❗ 여기서 401로 명확히 내리는 게 좋음 (403보다 자연스러움)
 			((jakarta.servlet.http.HttpServletResponse) response).sendError(401, "Invalid token");
 			return;

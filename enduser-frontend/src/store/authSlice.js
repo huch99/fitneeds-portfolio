@@ -3,23 +3,26 @@ import api from '../api';
 export const ACCESS_TOKEN_KEY = 'accessToken';
 export const USER_NAME_KEY = 'userName';
 export const USER_ID_KEY = 'userId';
+export const ROLE_KEY = 'role';
 
 // 비동기 로그인 액션
 export const login = createAsyncThunk(
     'auth/login',
-    async ({ userId, password }, { rejectWithValue }) => {
+    async ({ userId, email, password }, { rejectWithValue }) => {
         try {
-            const response = await api.post('/auth/login', { userId, password });
+            const response = await api.post('/login', { userId, email, password });
             const token = response.data.token;
             const userName = response.data.user.userName || 'null'; // 백엔드에서 userName을 받아오거나 userId 사용
+            const role = response.data.user.role;
             userId = response.data.user.userId;
 
             console.log(response.data);
             localStorage.setItem(ACCESS_TOKEN_KEY, token);
             localStorage.setItem(USER_NAME_KEY, userName); // <<-- userName도 localStorage에 저장
             localStorage.setItem(USER_ID_KEY, userId);
+            localStorage.setItem(ROLE_KEY, role);
 
-            return { token, userName, userId }; // Redux 상태 업데이트를 위해 token과 userName을 리턴
+            return { token, userName, userId, role }; // Redux 상태 업데이트를 위해 token과 userName을 리턴
         } catch (error) {
             const message = error.response?.data?.message || '로그인 실패';
             return rejectWithValue(message);
@@ -34,6 +37,7 @@ const authSlice = createSlice({
         token: localStorage.getItem(ACCESS_TOKEN_KEY) || null,
         userName: localStorage.getItem(USER_NAME_KEY) || null, // <<-- 초기 상태에서 localStorage에서 userName 로드
         userId: localStorage.getItem(USER_ID_KEY) || null,
+        role: localStorage.getItem(ROLE_KEY) || null,
         isAuthenticated: !!localStorage.getItem(ACCESS_TOKEN_KEY),
         isLoading: false,
         error: null,
@@ -45,6 +49,7 @@ const authSlice = createSlice({
             localStorage.removeItem(ACCESS_TOKEN_KEY);
             localStorage.removeItem(USER_NAME_KEY); // <<-- 로그아웃 시 localStorage에서 userName 제거
             localStorage.removeItem(USER_ID_KEY);
+            localStorage.removeItem(ROLE_KEY);
         },
         // 사용자 이름 설정 (필요에 따라 외부에서 userName 업데이트 시 사용)
         setUsername: (state, action) => {

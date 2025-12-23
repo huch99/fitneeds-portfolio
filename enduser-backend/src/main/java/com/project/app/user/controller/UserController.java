@@ -30,8 +30,8 @@ public class UserController {
 	@PostMapping("/register")
 	public ResponseEntity<?> createUser(@RequestBody UserRequestDto userRequestDto) {
 		try {
-			if (userRequestDto.getUserId() == null || userRequestDto.getPassword() == null) {
-				return ResponseEntity.badRequest().body("아이디와 비밀번호는 필수 항목 입니다.");
+			if (userRequestDto.getEmail() == null || userRequestDto.getPassword() == null) {
+				return ResponseEntity.badRequest().body("이메일과 비밀번호는 필수 항목 입니다.");
 			}
 			if (userService.existsByUserId(userRequestDto.getUserId())) {
 				return ResponseEntity.badRequest().body("이미 사용중인 아이디입니다.");

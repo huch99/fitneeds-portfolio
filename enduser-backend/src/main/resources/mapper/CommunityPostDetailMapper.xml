@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.project.app.community.mapper.CommunityPostDetailMapper">
+
+  <!-- 커뮤니티 게시글 상세 조회 (USER) -->
+  <select id="selectVisiblePostDetail"
+          resultType="com.project.app.community.dto.CommunityPostDto">
+    SELECT
+      post_id          AS postId,
+      post_type        AS postType,
+      category,
+      title,
+      content,
+      writer_id        AS writerId,
+      writer_type      AS writerType,
+      branch_id        AS branchId,
+      views,
+      created_at       AS createdAt,
+      updated_at       AS updatedAt,
+      sport_type       AS sportType,
+      recruit_max      AS recruitMax,
+      recruit_end_date AS recruitEndDate
+    FROM community_post
+    WHERE post_id = #{postId}
+      AND post_visible = 1
+  </select>
+
+  <!-- 🔥 커뮤니티 게시글 조회수 증가 (USER 전용, 중복 허용) -->
+  <update id="increaseViewCount">
+    UPDATE community_post
+    SET views = views + 1
+    WHERE post_id = #{postId}
+      AND post_visible = 1
+  </update>
+
+  <!-- 커뮤니티 댓글 목록 조회 (USER) -->
+  <select id="selectVisibleCommentsByPostId"
+          resultType="com.project.app.community.dto.CommunityCommentDto">
+    SELECT
+      comment_id   AS commentId,
+      post_id      AS postId,
+      writer_id    AS writerId,
+      writer_type  AS writerType,
+      content,
+      created_at   AS createdAt
+    FROM community_comment
+    WHERE post_id = #{postId}
+      AND comment_visible = 1
+    ORDER BY comment_id ASC
+  </select>
+
+  <!-- 커뮤니티 댓글 작성 (USER) -->
+  <insert id="insertComment">
+    INSERT INTO community_comment (
+      post_id,
+      writer_id,
+      writer_type,
+      content,
+      comment_visible,
+      created_at
+    ) VALUES (
+      #{postId},
+      #{writerId},
+      #{writerType},
+      #{content},
+      1,
+      NOW()
+    )
+  </insert>
+
+</mapper>
