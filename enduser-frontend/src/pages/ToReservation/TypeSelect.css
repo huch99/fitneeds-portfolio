@@ -1,0 +1,90 @@
+/* TypeSelect.css */
+
+:root {
+    --primary-color: #FFC107; /* 메인 컨셉 색상 */
+    --text-color: #333;
+    --sub-text-color: #555;
+    --background-light: #fdfdfd;
+    --background-white: #ffffff;
+    --border-light: #eee;
+    --border-soft: #e0e0e0;
+    --shadow-light: rgba(0, 0, 0, 0.1);
+    --shadow-soft: rgba(0, 0, 0, 0.05);
+    --shadow-hover: rgba(0, 0, 0, 0.15);
+}
+
+.type-select-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* 각 섹션 간의 간격 */
+    padding: 30px;
+    max-width: 800px;
+    margin: 50px auto; /* 중앙 정렬 및 상하 여백 */
+    background-color: var(--background-light);
+    border-radius: 12px;
+    box-shadow: 0 8px 16px var(--shadow-light); /* 은은한 그림자 효과 */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.type-section {
+    background-color: var(--background-white);
+    border-radius: 10px;
+    padding: 25px;
+    box-shadow: 0 4px 8px var(--shadow-soft); /* 내부 섹션 그림자 */
+    border: 1px solid var(--border-light);
+}
+
+.section-title {
+    font-size: 1.6em;
+    font-weight: bold;
+    color: var(--text-color);
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 3px solid var(--primary-color); /* 메인 색상으로 강조 */
+}
+
+.info-text {
+    font-size: 1.1em;
+    color: var(--sub-text-color);
+    margin-bottom: 8px;
+}
+
+/* "더보기" 텍스트에 대한 추가 스타일 */
+.info-text.more {
+    font-weight: 600;
+    color: var(--primary-color);
+    cursor: pointer;
+    transition: color 0.2s ease-in-out;
+    width: fit-content; /* 텍스트 너비만큼만 영역 차지 */
+}
+
+.info-text.more:hover {
+    color: #d1a100; /* 호버 시 살짝 어둡게 */
+    text-decoration: underline;
+}
+
+.sport-link {
+    display: flex; /* 가로 정렬을 위해 flexbox 사용 */
+    align-items: center; /* 세로 중앙 정렬 */
+    text-decoration: none; /* 밑줄 제거 */
+    color: var(--text-color);
+    background-color: #f7f7f7;
+    padding: 15px 20px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, transform 0.2s ease-in-out;
+    border: 1px solid var(--border-soft);
+}
+
+.sport-link p {
+    margin: 0; /* p 태그의 기본 마진 제거 */
+    font-size: 1.2em;
+    font-weight: 500;
+}
+
+.sport-link:hover {
+    background-color: var(--primary-color);
+    color: var(--background-white);
+    transform: translateY(-3px); /* 호버 시 살짝 떠오르는 효과 */
+    box-shadow: 0 6px 12px var(--shadow-hover); /* 더 뚜렷한 그림자 */
+}

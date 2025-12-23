@@ -38,7 +38,7 @@ public class SecurityConfig {
 
 					// 백엔드 API 경로
 					"/api/**", // 모든 API (필요시 세부 경로로 제한 가능)
-
+					"/api/schedules/**",
 					// 정적 리소스 (CSS, JS, 이미지 등)
 					"/favicon.ico", // 파비콘
 					"/css/**", // CSS 파일

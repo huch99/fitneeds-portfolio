@@ -9,8 +9,8 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.project.app.admin.entity.UserAdmin;
 import com.project.app.program.entity.Program;
-import com.project.app.user.entity.UserAdmin;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
