@@ -6,7 +6,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @Transactional
 public class ReviewServiceImpl implements ReviewService {
@@ -22,7 +24,15 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     public List<ReviewDto> getMyReviewList(String userId) {
-        return reviewMapper.selectMyReviewList(userId);
+        log.info("[ReviewServiceImpl] getMyReviewList 호출됨 - userId: {}", userId);
+        try {
+            List<ReviewDto> result = reviewMapper.selectMyReviewList(userId);
+            log.info("[ReviewServiceImpl] 조회 성공 - 결과 개수: {}", result != null ? result.size() : 0);
+            return result;
+        } catch (Exception e) {
+            log.error("[ReviewServiceImpl] 조회 실패 - userId: {}, 에러: {}", userId, e.getMessage(), e);
+            throw e;
+        }
     }
 
     public void updateReview(Long reviewId, String userId, ReviewDto reviewDto) {

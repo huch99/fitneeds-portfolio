@@ -11,7 +11,7 @@ import api from '../../api';
 // 나의 예약 목록 조회
 const getMyReservations = async () => {
   try {
-    const response = await api.get('/api/reservation/my');
+    const response = await api.get('/reservation/my');
     return response.data;
   } catch (error) {
     console.error('예약 목록 조회 실패:', error);
@@ -26,7 +26,7 @@ const updateReservationDate = async (reservationId, reservedDate, reservedTime =
       reservedDate: reservedDate,
       ...(reservedTime && { reservedTime: reservedTime })
     };
-    const response = await api.patch(`/api/reservation/${reservationId}/date`, requestBody);
+    const response = await api.patch(`/reservation/${reservationId}/date`, requestBody);
     return response.data;
   } catch (error) {
     console.error('예약일자 변경 실패:', error);

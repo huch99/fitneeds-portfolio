@@ -6,7 +6,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/reviews")
 public class ReviewController {
@@ -37,9 +39,19 @@ public class ReviewController {
 	 * GET /api/reviews/my?userId=UUID =========================
 	 */
 	@GetMapping("/my")
-	@ResponseBody
 	public ResponseEntity<List<ReviewDto>> getMyReviewList(@RequestParam("userId") String userId) {
-		return ResponseEntity.ok(reviewService.getMyReviewList(userId));
+		log.info("==========================================");
+		log.info("[ReviewController] getMyReviewList 호출됨!!!");
+		log.info("[ReviewController] userId: {}", userId);
+		log.info("==========================================");
+		try {
+			List<ReviewDto> result = reviewService.getMyReviewList(userId);
+			log.info("[ReviewController] 조회 결과 개수: {}", result != null ? result.size() : 0);
+			return ResponseEntity.ok(result);
+		} catch (Exception e) {
+			log.error("[ReviewController] 예외 발생: {}", e.getMessage(), e);
+			throw e;
+		}
 	}
 
 	/**

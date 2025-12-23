@@ -34,7 +34,6 @@ function useLocalStorage(key, initialValue) {
 }
 
 import UsageListSection from './UsageListSection';
-import EditInfoSection from './EditInfoSection';
 import UsageHistorySection from './UsageHistorySection';
 import ReviewWriteSection from './ReviewWriteSection';
 import InquirySection from './InquirySection';
@@ -101,9 +100,6 @@ function MyPage() {
             onRefresh={refreshKey}
           />
         );
-
-      case 'edit-info':
-        return <EditInfoSection />;
 
       case 'usage-history':
         return (

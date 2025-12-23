@@ -47,13 +47,6 @@ function SideBar({ activeMenu, onMenuClick }) {
             {isMyExerciseOpen && (
               <ul className="sidebar-submenu">
                 <li 
-                  className={`sidebar-submenu-item ${isMyPageActive && activeMenu === 'edit-info' ? 'active' : ''}`}
-                  onClick={() => handleMenuClick('edit-info')}
-                  style={{ cursor: 'pointer' }}
-                >
-                  나의 정보 수정하기
-                </li>
-                <li 
                   className={`sidebar-submenu-item ${isMyPageActive && activeMenu === 'usage-history' ? 'active' : ''}`}
                   onClick={() => handleMenuClick('usage-history')}
                   style={{ cursor: 'pointer' }}
