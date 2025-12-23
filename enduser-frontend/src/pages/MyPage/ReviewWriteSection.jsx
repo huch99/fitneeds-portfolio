@@ -7,10 +7,31 @@ function ReviewWriteSection({ reviewTab, setReviewTab, setIsReviewModalOpen, set
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedReviewId, setSelectedReviewId] = useState(null);
   const [writtenReviews, setWrittenReviews] = useState([]);
+  const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(true);
 
-
   const loginUserId = localStorage.getItem('userId');
+
+  /* =========================
+     결제완료된 예약 목록 조회 (리뷰 작성 가능한 예약)
+  ========================= */
+  const getMyCompletedReservations = async () => {
+    if (!loginUserId) return [];
+    try {
+      const token = localStorage.getItem('accessToken');
+      const response = await api.get('/reservation/my/completed', {
+        params: { userId: loginUserId },
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('결제완료 예약 목록 조회 실패:', error);
+      return [];
+    }
+  };
 
   /* =========================
      나의 리뷰 목록 조회
@@ -61,7 +82,29 @@ function ReviewWriteSection({ reviewTab, setReviewTab, setIsReviewModalOpen, set
   };
 
   useEffect(() => {
-    fetchMyReviews();
+    const fetchData = async () => {
+      setLoading(true);
+      await Promise.all([
+        fetchMyReviews(),
+        getMyCompletedReservations().then(data => {
+          const transformed = data.map((reservation) => ({
+            id: reservation.reservationId,
+            reservationId: reservation.reservationId,
+            date: reservation.reservedDate
+              ? new Date(reservation.reservedDate).toISOString().split('T')[0]
+              : (reservation.exerciseDate ? new Date(reservation.exerciseDate).toISOString().split('T')[0] : ''),
+            service: reservation.programName || reservation.exerciseName || '프로그램',
+            facility: reservation.branchName || reservation.exerciseLocation || '지점',
+            amount: reservation.paymentAmount ? Number(reservation.paymentAmount) : 0,
+            option: reservation.trainerName ? '개인 레슨' : '그룹 레슨',
+            image: '/images/pilates.png'
+          }));
+          setReservations(transformed);
+        })
+      ]);
+      setLoading(false);
+    };
+    fetchData();
   }, []);
 
   if (loading) {
@@ -82,12 +125,66 @@ function ReviewWriteSection({ reviewTab, setReviewTab, setIsReviewModalOpen, set
       {/* 탭 */}
       <div className="review-tabs">
         <button
+          className={`review-tab ${reviewTab === 'write' ? 'active' : ''}`}
+          onClick={() => setReviewTab('write')}
+        >
+          리뷰작성하기 {reservations.length}
+        </button>
+        <button
           className={`review-tab ${reviewTab === 'written' ? 'active' : ''}`}
           onClick={() => setReviewTab('written')}
         >
           작성한 리뷰 {writtenReviews.length}
         </button>
       </div>
+
+      {/* 리뷰작성하기 탭 내용 */}
+      {reviewTab === 'write' && (
+        <div className="reservation-table-container">
+          <div className="reservation-summary">
+            리뷰 작성 가능한 예약 {reservations.length}건
+          </div>
+          <table className="reservation-table">
+            <thead>
+              <tr>
+                <th>날짜</th>
+                <th>상품명/옵션</th>
+                <th>상품금액</th>
+                <th>리뷰작성</th>
+              </tr>
+            </thead>
+            <tbody>
+              {reservations.length > 0 ? (
+                reservations.map((reservation) => (
+                  <tr key={reservation.id}>
+                    <td>{reservation.date}</td>
+                    <td>
+                      <div>{reservation.service}</div>
+                      <div className="text-muted">{reservation.option}</div>
+                    </td>
+                    <td>{reservation.amount > 0 ? reservation.amount.toLocaleString() + '원' : '-'}</td>
+                    <td>
+                      <button 
+                        className="btn-action"
+                        onClick={() => {
+                          setSelectedHistoryId(reservation.reservationId || reservation.id);
+                          setIsReviewModalOpen(true);
+                        }}
+                      >
+                        리뷰쓰기
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="4" className="text-center">리뷰 작성 가능한 예약이 없습니다.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {/* 작성한 리뷰 탭 내용 */}
       {reviewTab === 'written' && (

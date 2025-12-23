@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
+// import axios from 'axios';
 import SideBar from "./SideBar";
 import '../../components/auth/modalStyles.css';
 import '../MyPage/MyPage.css';
@@ -9,9 +10,16 @@ import api from '../../api';
    API 함수들
 ========================= */
 // 나의 예약 목록 조회
-const getMyReservations = async () => {
+const getMyReservations = async (userId) => {
   try {
-    const response = await api.get('/reservation/my');
+    const token = localStorage.getItem('accessToken');
+    const response = await api.get('/reservation/my', {
+      params: { userId: userId },
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
     return response.data;
   } catch (error) {
     console.error('예약 목록 조회 실패:', error);
@@ -20,13 +28,24 @@ const getMyReservations = async () => {
 };
 
 // 예약일자 변경
-const updateReservationDate = async (reservationId, reservedDate, reservedTime = null) => {
+const updateReservationDate = async (reservationId, reservedDate, reservedTime = null, userId) => {
   try {
+    const token = localStorage.getItem('accessToken');
     const requestBody = {
       reservedDate: reservedDate,
       ...(reservedTime && { reservedTime: reservedTime })
     };
-    const response = await api.patch(`/reservation/${reservationId}/date`, requestBody);
+    const response = await axios.patch(
+      `/api/reservation/${reservationId}/date`,
+      requestBody,
+      {
+        params: { userId: userId },
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
     return response.data;
   } catch (error) {
     console.error('예약일자 변경 실패:', error);
@@ -35,6 +54,7 @@ const updateReservationDate = async (reservationId, reservedDate, reservedTime =
 };
 
 function MyReservationList() {
+  const loginUserId = localStorage.getItem('userId');
   const [isReservationEditModalOpen, setIsReservationEditModalOpen] = useState(false);
   const [selectedReservationId, setSelectedReservationId] = useState(null);
   const [reservations, setReservations] = useState([]);
@@ -44,9 +64,14 @@ function MyReservationList() {
   // 예약 목록 가져오기
   useEffect(() => {
     const fetchReservations = async () => {
+      if (!loginUserId) {
+        setLoading(false);
+        return;
+      }
+
       try {
         setLoading(true);
-        const data = await getMyReservations();
+        const data = await getMyReservations(loginUserId);
         
         // 백엔드 데이터를 화면에 맞게 변환
         const transformedReservations = data.map((reservation) => ({
@@ -76,7 +101,7 @@ function MyReservationList() {
     };
 
     fetchReservations();
-  }, [refreshKey]);
+  }, [refreshKey, loginUserId]);
 
   // 상태별 카운트 계산
   const paymentCompletedCount = reservations.filter(r => r.status === '결제완료' || r.status === '예약완료').length;
@@ -232,7 +257,8 @@ function MyReservationList() {
         await updateReservationDate(
           reservation.reservationId || reservation.id,
           selectedDate,
-          selectedTime || null
+          selectedTime || null,
+          loginUserId
         );
         alert('예약일자가 변경되었습니다.');
         onClose();

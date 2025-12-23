@@ -36,6 +36,7 @@ function useLocalStorage(key, initialValue) {
 import UsageListSection from './UsageListSection';
 import UsageHistorySection from './UsageHistorySection';
 import ReviewWriteSection from './ReviewWriteSection';
+import PaymentHistorySection from './PaymentHistorySection';
 import InquirySection from './InquirySection';
 import SearchSection from './SearchSection';
 import ProfileSection from './ProfileSection';
