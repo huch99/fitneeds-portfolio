@@ -1,63 +1,87 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
 <mapper namespace="com.project.app.review.mapper.ReviewMapper">
-    <select id="selectReviewsByUserId" parameterType="String" resultType="com.project.app.review.dto.ReviewDto">
-		SELECT
-		r.RVW_ID AS reviewId,
-		r.RSV_ID AS reservationId,
-		r.RATING AS rating,
-		r.CONTENT AS content,
-		r.INST_ID AS instructorId,
-		r.REG_DT AS registrationDateTime
-		FROM REVIEW r
-		INNER JOIN RESERVATION rsv ON r.RSV_ID = rsv.RSV_ID
-		WHERE rsv.USR_ID = #{userId}
+
+    <!-- 중복 리뷰 체크 -->
+    <select id="existsByReservationId" resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM review
+        WHERE reservation_id = #{reservationId}
+          AND deleted = false
     </select>
-    
-    <select id="selectReviewById" parameterType="Long" resultType="com.project.app.review.dto.ReviewDto">
-		SELECT
-		RVW_ID AS reviewId,
-		RSV_ID AS reservationId,
-		RATING AS rating,
-		CONTENT AS content,
-		INST_ID AS instructorId,
-		REG_DT AS registrationDateTime
-		FROM REVIEW
-		WHERE RVW_ID = #{reviewId}
-    </select>
-    
-    <select id="selectReviewByReservationId" parameterType="Long" resultType="com.project.app.review.dto.ReviewDto">
-		SELECT
-		RVW_ID AS reviewId,
-		RSV_ID AS reservationId,
-		RATING AS rating,
-		CONTENT AS content,
-		INST_ID AS instructorId,
-		REG_DT AS registrationDateTime
-		FROM REVIEW
-		WHERE RSV_ID = #{reservationId}
-    </select>
-    
-    <insert id="insertReview" parameterType="com.project.app.review.dto.ReviewDto">
-	    <selectKey keyProperty="reviewId" resultType="long" order="BEFORE">
-        	SELECT "ADMIN"."ISEQ$$_117556".nextval AS REVIEW_ID FROM DUAL
-    	</selectKey>
-       	INSERT INTO REVIEW(RVW_ID, RSV_ID, RATING, CONTENT, INST_ID, REG_DT)
-    	VALUES (#{reviewId}, #{reservationId}, #{rating}, #{content}, #{instructorId}, SYSDATE)
+
+    <!-- 리뷰 작성 -->
+    <insert id="insertReview">
+        INSERT INTO review (
+            reservation_id,
+            rating,
+            content,
+            user_id,
+            deleted,
+            reg_dt
+        ) VALUES (
+            #{reservationId},
+            #{rating},
+            #{content},
+            #{userId},
+            false,
+            NOW()
+        )
     </insert>
-    
-    <update id="updateReview" parameterType="com.project.app.review.dto.ReviewDto">
-    	UPDATE REVIEW
-    	SET 
-    		RATING = #{rating},
-    		CONTENT = #{content}
-		WHERE RVW_ID = #{reviewId}    		
+
+    <!-- 내 리뷰 목록 -->
+    <select id="selectReviewsByUserId"
+            resultType="com.project.app.review.dto.ReviewResponse">
+        SELECT
+            review_id AS reviewId,
+            reservation_id AS reservationId,
+            rating,
+            content,
+            instructor_id AS instructorId,
+            reg_dt AS registrationDateTime
+        FROM review
+        WHERE user_id = #{userId}
+          AND deleted = false
+        ORDER BY reg_dt DESC
+    </select>
+
+    <!-- 리뷰 단건 조회 -->
+    <select id="selectReviewById"
+            resultType="com.project.app.review.dto.ReviewResponse">
+        SELECT
+            review_id AS reviewId,
+            reservation_id AS reservationId,
+            rating,
+            content,
+            instructor_id AS instructorId,
+            reg_dt AS registrationDateTime
+        FROM review
+        WHERE review_id = #{reviewId}
+          AND deleted = false
+    </select>
+
+    <!-- 리뷰 수정 (본인만) -->
+    <update id="updateReview">
+        UPDATE review
+        SET
+            rating = #{rating},
+            content = #{content}
+        WHERE review_id = #{reviewId}
+          AND user_id = #{userId}
+          AND deleted = false
     </update>
-    
-    <delete id="deleteReviewById" parameterType="Long">
-    	DELETE FROM REVIEW
-    	WHERE RVW_ID = #{reviewId}
-    </delete>
-    
+
+    <!-- 리뷰 삭제 (소프트 삭제, 본인만) -->
+    <update id="deleteReview">
+        UPDATE review
+        SET deleted = true
+        WHERE review_id = #{reviewId}
+          AND user_id = #{userId}
+    </update>
+
 </mapper>
+
 

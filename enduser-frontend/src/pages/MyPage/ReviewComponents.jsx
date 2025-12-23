@@ -6,16 +6,6 @@ import { USER_ID_KEY } from '../../store/authSlice';
 /* =========================
    API 함수들
 ========================= */
-// 결제완료된 예약 목록 조회
-const getMyCompletedReservations = async () => {
-  try {
-    const response = await api.get('/reservation/my/completed');
-    return response.data;
-  } catch (error) {
-    console.error('결제완료 예약 목록 조회 실패:', error);
-    throw error;
-  }
-};
 
 // 리뷰 생성
 const createReview = async (reviewData) => {
@@ -128,7 +118,7 @@ export function ReviewModal({ isOpen, onClose, historyId, onRefresh }) {
         reservationId: reservation.reservationId || reservation.id,
         rating: rating,
         content: reviewText,
-        instructorId: null // 강사 ID는 선택사항 (개인 레슨인 경우에만 필요)
+        instructorId: null 
       });
       alert('리뷰가 작성되었습니다.');
       setRating(0);

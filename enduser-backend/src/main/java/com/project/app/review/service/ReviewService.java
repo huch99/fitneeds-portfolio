@@ -2,37 +2,57 @@ package com.project.app.review.service;
 
 import java.util.List;
 
-import com.project.app.board.dto.BoardDto;
-import com.project.app.review.dto.ReviewDto;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-public interface ReviewService {
-    /**
-     * 나의 리뷰 목록 조회
-     */
-    List<ReviewDto> getMyReviews(String userId);
-    
-    /**
-     * 예약 ID로 리뷰 조회 (권한 체크 포함)
-     */
-    List<ReviewDto> getReviewByReservationId(Long reservationId, String userId);
-    
-    /**
-     * 리뷰 생성 (권한 체크 포함)
-     */
-    ReviewDto createReview(ReviewDto reviewDto, String userId);
-    
-    /**
-     * 리뷰 수정 (권한 체크 포함)
-     */
-    ReviewDto updateReview(ReviewDto reviewDto, String userId);
-    
-    /**
-     * 리뷰 삭제 (권한 체크 포함)
-     */
-    void deleteReviewById(Long reviewId, String userId);
+import com.project.app.review.dto.*;
+import com.project.app.review.mapper.ReviewMapper;
 
-	Object getAllReviews();
+import lombok.RequiredArgsConstructor;
 
-	List<BoardDto> getReviewById(Long id);
+@Service
+@RequiredArgsConstructor
+public class ReviewService {
+
+    private final ReviewMapper reviewMapper;
+
+    @Transactional
+    public void createReview(ReviewCreateRequest request, String userId) {
+
+        if (reviewMapper.existsByReservationId(request.getReservationId())) {
+            throw new RuntimeException("이미 리뷰가 작성된 예약입니다.");
+        }
+
+        reviewMapper.insertReview(
+            request.getReservationId(),
+            request.getRating(),
+            request.getContent(),
+            userId
+        );
+    }
+
+    public List<ReviewResponse> getMyReviews(String userId) {
+        return reviewMapper.selectReviewsByUserId(userId);
+    }
+
+    @Transactional
+    public void updateReview(Long reviewId, ReviewUpdateRequest request, String userId) {
+
+        ReviewResponse review = reviewMapper.selectReviewById(reviewId);
+        if (review == null) {
+            throw new RuntimeException("리뷰가 존재하지 않습니다.");
+        }
+
+        reviewMapper.updateReview(
+            reviewId,
+            request.getRating(),
+            request.getContent(),
+            userId
+        );
+    }
+
+    @Transactional
+    public void deleteReview(Long reviewId, String userId) {
+        reviewMapper.deleteReview(reviewId, userId);
+    }
 }
-
