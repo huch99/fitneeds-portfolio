@@ -32,6 +32,8 @@
     padding: 25px;
     box-shadow: 0 4px 8px var(--shadow-soft); /* 내부 섹션 그림자 */
     border: 1px solid var(--border-light);
+    position: relative; /* "더보기"를 절대 위치로 배치하기 위해 추가 */
+    padding-bottom: 50px; /* "더보기" 공간 확보를 위해 패딩 추가 */
 }
 
 .section-title {
@@ -56,6 +58,12 @@
     cursor: pointer;
     transition: color 0.2s ease-in-out;
     width: fit-content; /* 텍스트 너비만큼만 영역 차지 */
+
+    /* 우측 하단 배치 */
+    position: absolute; /* 절대 위치 */
+    bottom: 15px; /* 하단에서 15px */
+    right: 25px; /* 우측에서 25px (type-section의 패딩과 유사하게) */
+    margin: 0; /* 기존 마진 제거 */
 }
 
 .info-text.more:hover {
@@ -63,14 +71,14 @@
     text-decoration: underline;
 }
 
+/* 아래부터는 기존 sport-link와 동일 */
 .sport-link {
-    display: flex; /* 가로 정렬을 위해 flexbox 사용 */
-    align-items: center; /* 세로 중앙 정렬 */
+    display: block; /* 링크 전체를 클릭할 수 있도록 block으로 설정 */
     text-decoration: none; /* 밑줄 제거 */
     color: var(--text-color);
     background-color: #f7f7f7;
     padding: 15px 20px;
-    margin-bottom: 12px;
+    margin-bottom: 12px; /* 각 링크 사이의 간격 */
     border-radius: 8px;
     transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, transform 0.2s ease-in-out;
     border: 1px solid var(--border-soft);

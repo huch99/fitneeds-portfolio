@@ -28,8 +28,9 @@ import CommunityMyRecruitList from './pages/Community/CommunityMyRecruitList';
 import CommunityMyPostList from './pages/Community/CommunityMyPostList';
 
 import NoticeUserPage from "./pages/Notice/NoticeUserPage";
-import TypeSelect from './pages/ToReservation/TypeSelect';
-import ScheduleListPage from './pages/ToReservation/ScheduleListPage';
+import TypeSelect from './pages/ToReservation/TypeSelect/TypeSelect';
+import ScheduleListPage from './pages/ToReservation/ScheduleListPage/ScheduleListPage';
+
 
 
 function App() {
@@ -73,7 +74,7 @@ function App() {
 
             {/* 예약하기 */}
             <Route path="/type-select" element={<TypeSelect />} />
-            <Route path="/type-sport" element={<ScheduleListPage />} />
+            <Route path="/schedule-list" element={<ScheduleListPage />} />
 
 
           </Routes>
