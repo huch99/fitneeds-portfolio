@@ -31,6 +31,10 @@ function NoticeUserPage() {
   const [loadingList, setLoadingList] = useState(false);
   const [loadingDetail, setLoadingDetail] = useState(false);
 
+  // ✅ 프론트 페이징
+  const [page, setPage] = useState(1);
+  const PAGE_SIZE = 10;
+
   const params = useMemo(() => {
     const p = {};
     if (keyword?.trim()) p.keyword = keyword.trim();
@@ -52,6 +56,7 @@ function NoticeUserPage() {
     try {
       const res = await axios.get("/api/user/notice", { params });
       setNotices(res.data || []);
+      setPage(1); // 🔥 조건 변경 시 첫 페이지로
     } catch {
       alert("공지사항 목록 조회 실패");
       setNotices([]);
@@ -80,6 +85,13 @@ function NoticeUserPage() {
     fetchNotices();
   }, []);
 
+  // ✅ 페이징 계산
+  const totalPages = Math.ceil(notices.length / PAGE_SIZE);
+  const pagedNotices = notices.slice(
+    (page - 1) * PAGE_SIZE,
+    page * PAGE_SIZE
+  );
+
   return (
     <div className="notice-wrap">
       {/* 공지 목록 */}
@@ -102,7 +114,7 @@ function NoticeUserPage() {
                 </tr>
               </thead>
               <tbody>
-                {notices.map((n) => (
+                {pagedNotices.map((n) => (
                   <tr
                     key={n.postId}
                     className="notice-row"
@@ -117,7 +129,6 @@ function NoticeUserPage() {
                       {n.displayEnd
                         ? formatDateYmd(n.displayEnd)
                         : "상시"}
-
                     </td>
                     <td>{n.views ?? 0}</td>
                   </tr>
@@ -125,13 +136,47 @@ function NoticeUserPage() {
               </tbody>
             </table>
           </div>
+
+          {/* ✅ 페이징 버튼 */}
+          <div className="community-pagination" style={{ marginTop: "20px" }}>
+            <button
+              disabled={page === 1}
+              onClick={() => setPage(page - 1)}
+            >
+              이전
+            </button>
+
+            {Array.from({ length: totalPages }, (_, i) => {
+              const pageNum = i + 1;
+              return (
+                <button
+                  key={pageNum}
+                  className={page === pageNum ? "active" : ""}
+                  onClick={() => setPage(pageNum)}
+                >
+                  {pageNum}
+                </button>
+              );
+            })}
+
+            <button
+              disabled={page === totalPages || totalPages === 0}
+              onClick={() => setPage(page + 1)}
+            >
+              다음
+            </button>
+          </div>
+
         </div>
       </section>
 
       {/* 팝업 */}
       {detail && (
         <div className="notice-modal-overlay" onClick={closePopup}>
-          <div className="notice-modal-stage" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="notice-modal-stage"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="notice-modal">
               <button
                 className="notice-modal-close"
@@ -148,14 +193,12 @@ function NoticeUserPage() {
                 <span>조회수 {detail.views ?? 0}</span>
               </div>
 
-              {/* ✅ 스크롤 영역 */}
               <div className="notice-modal-content">
                 <div className="notice-content-box">
                   {detail.content}
                 </div>
               </div>
 
-              {/* ✅ 고정 버튼 영역 (content 밖!) */}
               <div className="notice-modal-actions">
                 <button
                   className="notice-ok-btn"

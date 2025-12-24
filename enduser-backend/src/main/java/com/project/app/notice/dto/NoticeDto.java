@@ -9,8 +9,11 @@ public class NoticeDto {
     private String content;
     private Integer views;
 
-    private LocalDateTime displayEnd;   // 🔥 공지 종료 날짜
+    private LocalDateTime displayEnd;   // 공지 종료 날짜
     private LocalDateTime createdAt;
+
+    // ✅ 지점명 (branch JOIN 결과)
+    private String branchName;
 
     // ===== getter / setter =====
 
@@ -60,5 +63,13 @@ public class NoticeDto {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getBranchName() {
+        return branchName;
+    }
+
+    public void setBranchName(String branchName) {
+        this.branchName = branchName;
     }
 }

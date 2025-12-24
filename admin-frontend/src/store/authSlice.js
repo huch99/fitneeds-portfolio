@@ -42,6 +42,10 @@ const authSlice = createSlice({
         userId: localStorage.getItem(USER_ID_KEY) || null,
         role: localStorage.getItem(ROLE_KEY) || null,
         brchId: localStorage.getItem(BRCH_ID_KEY) || null,
+
+        // ✅ 추가 (로그인 유지)
+        isAuthenticated: !!localStorage.getItem(ACCESS_TOKEN_KEY),
+
         isLoading: false,
         error: null,
     },
@@ -77,6 +81,9 @@ const authSlice = createSlice({
                 state.isAuthenticated = true;
                 state.token = action.payload.token;
                 state.userName = action.payload.userName; // <<-- Redux 상태에도 userName 업데이트
+                state.userId = action.payload.userId;
+                state.role = action.payload.role;
+                state.brchId = action.payload.brchId;
             })
             .addCase(login.rejected, (state, action) => {
                 state.isLoading = false;
