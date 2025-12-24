@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import api from '../../api';
 
 function AdminMemberPage() {
     // --- State 관리 ---
@@ -22,7 +23,7 @@ function AdminMemberPage() {
             // 파라미터 동적 구성
             const params = {};
 
-            const response = await axios.get('/api/user/all', { params });
+            const response = await api.get('/user/all', { params });
             setSchedules(response.data);
         } catch (error) {
             alert("데이터를 불러오지 못했습니다.");
