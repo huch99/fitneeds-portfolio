@@ -14,94 +14,83 @@ const ScheduleListPage = () => {
     const [error, setError] = useState(null);    
 
     const [searchTerm, setSearchTerm] = useState('');
-    
+    const [inputVal, setInputVal] = useState('');
+
+    // 페이지네이션을 위한 상태 추가 (현재 페이지, 총 페이지 수)
+    const [currentPage, setCurrentPage] = useState(0); // Spring Data JPA는 페이지를 0부터 시작
+    const [totalPages, setTotalPages] = useState(0);
+
     useEffect(() => {
         const fetchSchedulesBySportId = async () => {
             setLoading(true);
             setError(null);
 
-            let rawSchedules = [];
+            // API 응답 전체를 저장할 변수 (페이지 정보 포함)
+            let apiResponsePage = null; 
 
-            if (sportId) { // sportId가 유효한 경우에만 API 호출
-                try {
-                    const response = await api.get(`/schedules/getSchedulesBySportIdForR/${sportId}`);
-                    rawSchedules = response.data;
-                } catch (err) {
-                    setError('스케줄 데이터를 불러오는 데 실패 했습니다.');
-                    console.error('Error fetching schedule data:', err);
-                    setLoading(false); // 에러 발생 시 로딩 종료
-                    return; // 에러 발생 시 이후 로직 실행 중단
-                } finally {
+            try {
+                if (sportId) {
+                    const response = await api.get(`/schedules/getSchedulesBySportIdForR/${sportId}`,
+                        {
+                            params: {
+                                searchKeyword: searchTerm,
+                                page: currentPage,
+                                size : 10,
+                            }
+                        }
+                    );
+                    apiResponsePage = response.data;
+                } else if (brchId) {
+                    const response = await api.get(`/schedules/getSchedulesByBrchIdForR/${brchId}`,
+                        {
+                            params: {
+                                searchKeyword: searchTerm,
+                                page: currentPage,
+                                size : 10,
+                            }
+                        }
+                    );
+                    apiResponsePage = response.data;
+                } else {
+                    setError('유효한 ID가 전달되지 않았습니다.');
+                    console.warn('Neither sportId nor brchId is present in query parameters.');
                     setLoading(false);
+                    return;
                 }
-            } else if (brchId) { // brchId가 유효한 경우에 호출
-                try {
-                    const response = await api.get(`/schedules/getSchedulesByBrchIdForR/${brchId}`);
-                    rawSchedules = response.data;
-                } catch (err) {
-                    setError('스케줄 데이터를 불러오는 데 실패 했습니다.');
-                    console.error('Error fetching schedule data:', err);
-                    setLoading(false); // 에러 발생 시 로딩 종료
-                    return; // 에러 발생 시 이후 로직 실행 중단
-                } finally {
-                    setLoading(false);
-                }
-            } else {
+            } catch (err) {
+                setError('스케줄 데이터를 불러오는 데 실패했습니다.');
+                console.error('Error fetching schedule data:', err);
                 setLoading(false);
-                setError('유효한 ID가 전달되지 않았습니다.');
-                console.warn('Sport ID is missing in query parameters, skipping API call.');
                 return;
             }
 
-            // 원본 스케줄 데이터 가공로직 ---
-            const groupedSchedulesMap = new Map();
-
-            rawSchedules.forEach(schedule => {
-                const key = `${schedule.userId} - ${schedule.progId}`;
-
-                if(!groupedSchedulesMap.has(key)) {
-                    groupedSchedulesMap.set(key, {
-                        schdId : schedule.schdId,
-                        userName : schedule.userName,
-                        progNm : schedule.progNm,
-                        brchNm : schedule.brchNm,
-                        strtTm: schedule.strtTm,
-                        endTm: schedule.endTm,
-                        groupedStrtDt: schedule.strtDt,
-                        groupedEndDt: schedule.endDt,
-                    });
-                } else {
-                    const existingGroup = groupedSchedulesMap.get(key);
-
-                    if(schedule.strtDt < existingGroup.groupedStrtDt) {
-                        existingGroup.groupedStrtDt = schedule.strtDt;
-                    }
-                    if(schedule.endDt < existingGroup.groupedEndDt) {
-                        existingGroup.groupedEndDt = schedule.endDt;
-                    }
-
-                    groupedSchedulesMap.set(key, existingGroup);
-                }
-            });
-
-            setSchedules(Array.from(groupedSchedulesMap.values()));
+            
+            // Page 객체의 'content' 필드에서 실제 데이터 배열을 추출
+            if (apiResponsePage && apiResponsePage.content) {
+                setSchedules(apiResponsePage.content);
+                setTotalPages(apiResponsePage.totalPages);
+            } else {
+                setSchedules([]);
+                setTotalPages(0);
+            }
             setLoading(false);
         };
 
         fetchSchedulesBySportId();
-    }, [sportId, brchId, location.search])
+    }, [sportId, brchId, searchTerm, currentPage, location.search])
 
-    const handleSearchChange = (e) => {
-        setSearchTerm(e.target.value);
-        // 검색어 변경 시 바로 useEffect가 필터링을 다시 실행함
+    const handleInputChange = (e) => {
+        setInputVal(e.target.value);
     };
 
     const handleSearchSubmit = (e) => {
         e.preventDefault(); // 폼 제출 시 페이지 새로고침 방지
-        // handleSearchChange에서 이미 searchTerm이 업데이트되었고,
-        // 이로 인해 useEffect가 필터링을 수행하므로 별도의 필터링 로직은 필요 없음.
-        // 여기서는 주로 폼 제출 시 검색 input에 포커스를 두거나 추가 작업을 할 때 사용.
-        console.log("검색어 제출:", searchTerm);
+        setSearchTerm(inputVal);
+    };
+
+    // 페이지 번호 클릭 핸들러
+    const handlePageChange = (pageNumber) => {
+        setCurrentPage(pageNumber);
     };
 
     return (
@@ -119,8 +108,8 @@ const ScheduleListPage = () => {
                 <input 
                     type="search" 
                     placeholder="프로그램명 또는 강사명을 검색하세요"
-                    value={searchTerm}
-                    onChange={handleSearchChange}
+                    value={inputVal}
+                    onChange={handleInputChange}
                     className="search-input"
                 />
                 <button type="submit" className="search-button">
@@ -154,6 +143,35 @@ const ScheduleListPage = () => {
                     )
                 )}
             </div>
+
+             {/* 페이지네이션 UI */}
+            {totalPages > 1 && (
+                <div className='pagination'>
+                    <button 
+                        onClick={() => handlePageChange(currentPage - 1)} 
+                        disabled={currentPage === 0}
+                        className='pagination-button'
+                    >
+                        이전
+                    </button>
+                    {[...Array(totalPages)].map((_, index) => (
+                        <button 
+                            key={index} 
+                            onClick={() => handlePageChange(index)} 
+                            className={`pagination-button ${currentPage === index ? 'active' : ''}`}
+                        >
+                            {index + 1}
+                        </button>
+                    ))}
+                    <button 
+                        onClick={() => handlePageChange(currentPage + 1)} 
+                        disabled={currentPage === totalPages - 1}
+                        className='pagination-button'
+                    >
+                        다음
+                    </button>
+                </div>
+            )}
         </div>
     );
 };
