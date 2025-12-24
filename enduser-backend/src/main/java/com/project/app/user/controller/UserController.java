@@ -4,10 +4,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.project.app.config.security.JwtTokenProvider;
@@ -47,10 +47,8 @@ public class UserController {
 	}
 
 	@GetMapping("/userinfo")
-	public ResponseEntity<?> userinfo(@PathVariable String userId) {
+	public ResponseEntity<?> userinfo(@RequestParam("userId") String userId) {
 		try {
-			userService.findByUserId(userId);
-
 			return ResponseEntity.ok(userService.findByUserId(userId)); // 200 OK와 사용자 정보 반환
 		} catch (Exception e) {
 			// 로깅 후 클라이언트에 에러 메시지 반환
