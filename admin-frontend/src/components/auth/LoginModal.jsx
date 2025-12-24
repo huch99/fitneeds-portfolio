@@ -79,7 +79,7 @@ function LoginModal({ isOpen, onClose, onOpenRegister }) {
                         회원가입
                     </button>
                 </form>
-                <button onClick={onClose} className="modal-close-button">X</button>
+                <button onClick={onClose} className="modal-close-button"></button>
             </div>
         </>
     );
