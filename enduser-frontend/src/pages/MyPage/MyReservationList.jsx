@@ -72,6 +72,14 @@ function MyReservationList() {
       try {
         setLoading(true);
         const data = await getMyReservations(loginUserId);
+        console.log('[MyReservationList] API 응답 데이터:', data);
+        
+        if (!data || data.length === 0) {
+          console.log('[MyReservationList] 예약 데이터가 없습니다.');
+          setReservations([]);
+          setLoading(false);
+          return;
+        }
         
         // 백엔드 데이터를 화면에 맞게 변환
         const transformedReservations = data.map((reservation) => ({
@@ -91,9 +99,11 @@ function MyReservationList() {
           branchName: reservation.branchName || reservation.exerciseLocation || '지점'
         }));
         
+        console.log('[MyReservationList] 변환된 예약 데이터:', transformedReservations);
         setReservations(transformedReservations);
       } catch (error) {
-        console.error('예약 목록 조회 실패:', error);
+        console.error('[MyReservationList] 예약 목록 조회 실패:', error);
+        console.error('[MyReservationList] 에러 상세:', error.response?.data || error.message);
         setReservations([]);
       } finally {
         setLoading(false);

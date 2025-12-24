@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import api from '../../api';
 import { ReviewEditModal, ReviewMenuButton } from './ReviewComponents';
 
@@ -36,7 +35,7 @@ function ReviewWriteSection({ reviewTab, setReviewTab, setIsReviewModalOpen, set
   /* =========================
      나의 리뷰 목록 조회
   ========================= */
-  const fetchMyReviews = async () => {
+  const fetchMyReviews = async (reviewId) => {
     if (!loginUserId) {
       return;
     }

@@ -5,26 +5,40 @@ import api from '../../api';
    API 함수들
 ========================= */
 // 결제완료된 예약 목록 조회
-const getMyCompletedReservations = async () => {
+const getMyCompletedReservations = async (userId) => {
+  if (!userId) return [];
   try {
-    const response = await api.get('/reservation/my/completed');
-    return response.data;
+    const token = localStorage.getItem('accessToken');
+    const response = await api.get('/reservation/my/completed', {
+      params: { userId },
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    return response.data || [];
   } catch (error) {
     console.error('결제완료 예약 목록 조회 실패:', error);
-    throw error;
+    return [];
   }
 };
 
 function UsageHistorySection({ setSelectedHistoryId, setIsReviewModalOpen, onRefresh }) {
   const [usageHistoryData, setUsageHistoryData] = useState([]);
   const [usageHistoryLoading, setUsageHistoryLoading] = useState(false);
+  const loginUserId = localStorage.getItem('userId');
 
   // 이용내역 데이터 가져오기 (예약일자가 지난 예약들)
   useEffect(() => {
     const fetchUsageHistory = async () => {
+      if (!loginUserId) {
+        setUsageHistoryLoading(false);
+        return;
+      }
+      
       try {
         setUsageHistoryLoading(true);
-        const data = await getMyCompletedReservations();
+        const data = await getMyCompletedReservations(loginUserId);
 
         // 백엔드 데이터를 화면에 맞게 변환
         const transformed = data.map((reservation) => ({
@@ -53,7 +67,7 @@ function UsageHistorySection({ setSelectedHistoryId, setIsReviewModalOpen, onRef
     };
 
     fetchUsageHistory();
-  }, [onRefresh]);
+  }, [onRefresh, loginUserId]);
   // 상태별 카운트 계산
   const paymentCompletedCount = usageHistoryData.filter(h => h.paymentStatus === '결제완료').length;
   const reservationCompletedCount = usageHistoryData.filter(h => h.reservationStatus === '예약완료').length;

@@ -17,6 +17,21 @@ const getAuthHeaders = () => {
 /* =========================
    API 요청
 ========================= */
+const getMyCompletedReservations = async () => {
+  const userId = getUserId();
+  if (!userId) return [];
+  try {
+    const res = await api.get('/reviews/my/completed-reservations', {
+      params: { userId },
+      headers: getAuthHeaders()
+    });
+    return res.data || [];
+  } catch (error) {
+    console.error('결제완료 예약 목록 조회 실패:', error);
+    return [];
+  }
+};
+
 const createReview = async (reviewData) => {
   const userId = getUserId();
   if (!userId) throw new Error('로그인이 필요합니다.');
@@ -82,7 +97,7 @@ export function ReviewModal({ isOpen, onClose, historyId, onRefresh }) {
             setReservation({
               id: found.reservationId,
               reservationId: found.reservationId,
-              trainerName: found.trainerName || ''
+              trainerName: found.teacherName || ''
             });
           }
         } catch (error) {
@@ -330,9 +345,9 @@ function ReviewWriteSection({ reviewTab, setReviewTab }) {
         reviewId: review.reviewId,
         reservationId: review.reservationId,
         date: review.exerciseDate ? new Date(review.exerciseDate).toISOString().split('T')[0] : '',
-        productName: review.exerciseName || review.programName || '운동',
-        option: review.trainerName ? '개인 레슨' : '그룹 레슨',
-        facility: review.exerciseLocation || review.branchName || '지점',
+        productName: review.productName,
+        teacherId: review.teacherName,
+        facility: review.facilityName, 
         rating: review.rating,
         reviewText: review.content || '',
         writtenDate: review.registrationDateTime ? new Date(review.registrationDateTime).toISOString().split('T')[0].replace(/-/g,'.') : '',
@@ -387,7 +402,7 @@ function ReviewWriteSection({ reviewTab, setReviewTab }) {
                   <div className="review-written-header">
                     <div className="review-written-info">
                       <div className="review-written-title">{review.productName}</div>
-                      <div className="review-written-detail">{review.option} | {review.facility}</div>
+                      <div className="review-written-detail">{review.facility}</div>
                     </div>
                     <ReviewMenuButton reviewId={review.reviewId} onDelete={fetchMyReviews}/>
                   </div>

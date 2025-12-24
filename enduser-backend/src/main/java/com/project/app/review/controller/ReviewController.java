@@ -1,6 +1,8 @@
 package com.project.app.review.controller;
 
+import com.project.app.review.dto.ReservationReviewDto;
 import com.project.app.review.dto.ReviewDto;
+import com.project.app.review.service.ReservationReviewService;
 import com.project.app.review.service.ReviewServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,9 +16,15 @@ import lombok.extern.slf4j.Slf4j;
 public class ReviewController {
 
 	private final ReviewServiceImpl reviewService;
+	private final ReservationReviewService reservationReviewService;
 
-	public ReviewController(ReviewServiceImpl reviewService) {
+	public ReviewController
+		(ReviewServiceImpl reviewService, 
+		ReservationReviewService reservationReviewService) {
+		
 		this.reviewService = reviewService;
+		this.reservationReviewService = reservationReviewService;
+		
 	}
 
 	/**
@@ -40,10 +48,7 @@ public class ReviewController {
 	 */
 	@GetMapping("/my")
 	public ResponseEntity<List<ReviewDto>> getMyReviewList(@RequestParam("userId") String userId) {
-		log.info("==========================================");
-		log.info("[ReviewController] getMyReviewList 호출됨!!!");
 		log.info("[ReviewController] userId: {}", userId);
-		log.info("==========================================");
 		try {
 			List<ReviewDto> result = reviewService.getMyReviewList(userId);
 			log.info("[ReviewController] 조회 결과 개수: {}", result != null ? result.size() : 0);
@@ -77,4 +82,12 @@ public class ReviewController {
 		reviewService.deleteReview(reviewId, userId);
 		return ResponseEntity.ok().build();
 	}
+	
+	@GetMapping("/my/completed-reservations")
+    public List<ReservationReviewDto> getCompletedReservationsForReview(
+            @RequestParam String userId
+    ) {
+        return reservationReviewService.getCompletedReservationsForReview(userId);
+    }
+	
 }
