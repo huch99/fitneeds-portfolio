@@ -28,8 +28,8 @@ public class SwaggerConfig {
     public OpenAPI openAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("온비드 공매 API")                                    // API 문서 제목
-                        .description("한국자산관리공사 온비드 공매물건 관련 API 문서입니다.")  // API 설명
+                        .title("FitNeeds Admin api")                                    // API 문서 제목
+                        .description("FitNeeds Admin 관련 API 문서입니다.")  // API 설명
                         .version("1.0.0"));                                  // API 버전
     }
 }
