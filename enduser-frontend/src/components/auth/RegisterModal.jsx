@@ -69,10 +69,10 @@ function RegisterModal({ isOpen, onClose }) {
             setUserName(response.data.userName || '');
             setEmail(response.data.email || '');
             setPhoneNumber(response.data.phoneNumber || '');
-            setCashPoint(response.data.cashPoint || '');
-            setGradePoint(response.data.gradePoint || '');
+            setCashPoint(response.data.cashPoint);
+            setGradePoint(response.data.gradePoint);
             setAgreeAt(response.data.agreeAt || '');
-            // password는 보안상 채우지 않는 것이 일반적입니다.
+
         } catch (error) {
             setMessage(error.response?.data?.message || '정보 가져오기 실패');
         } finally {
@@ -148,6 +148,7 @@ function RegisterModal({ isOpen, onClose }) {
                         onChange={(e) => setUserName(e.target.value)}
                         className="modal-input"
                         autoComplete="current-username"
+                        readOnly={isAuthenticated}
                     />
                     <input
                         type="password"
@@ -176,27 +177,30 @@ function RegisterModal({ isOpen, onClose }) {
                     />
 
                     {isAuthenticated ?
-                        <>{/* '비 로그인' */}
+                        <>{/* '로그인' */}
                             <input
-                                type="number"
+                                type="text"
                                 placeholder="cashPoint"
                                 value={cashPoint}
                                 onChange={(e) => setCashPoint(e.target.value)}
                                 className="modal-input"
+                                readOnly={isAuthenticated}
                             />
                             <input
-                                type="number"
+                                type="text"
                                 placeholder="gradePoint"
                                 value={gradePoint}
                                 onChange={(e) => setGradePoint(e.target.value)}
                                 className="modal-input"
+                                readOnly={isAuthenticated}
                             />
                             <input
-                                type="boolean"
+                                type="text"
                                 placeholder="개인정보 사용동의"
                                 value={agreeAt}
                                 onChange={(e) => setAgreeAt(e.target.value)}
                                 className="modal-input"
+                                readOnly={isAuthenticated}
                             />
                         </>
                         :
