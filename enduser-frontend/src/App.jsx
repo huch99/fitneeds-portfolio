@@ -30,6 +30,7 @@ import CommunityMyPostList from './pages/Community/CommunityMyPostList';
 import NoticeUserPage from "./pages/Notice/NoticeUserPage";
 import TypeSelect from './pages/ToReservation/TypeSelect/TypeSelect';
 import ScheduleListPage from './pages/ToReservation/ScheduleListPage/ScheduleListPage';
+import ProgramDetailPage from './pages/ToReservation/ProgramDetailPage/ProgramDetailPage';
 
 
 
@@ -75,6 +76,7 @@ function App() {
             {/* 예약하기 */}
             <Route path="/type-select" element={<TypeSelect />} />
             <Route path="/schedule-list" element={<ScheduleListPage />} />
+            <Route path="/program-detail" element={<ProgramDetailPage/>} />
 
 
           </Routes>

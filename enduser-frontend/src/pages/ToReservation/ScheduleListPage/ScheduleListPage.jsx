@@ -127,13 +127,23 @@ const ScheduleListPage = () => {
                     ) : (
                         schedules.length > 0 ? ( // 스케줄 데이터가 있을 때만 맵핑
                             schedules.map(schedule => (
-                                <div key={schedule.schdId}> {/* Link 컴포넌트에 직접 클래스를 적용하지 않고, Link를 감싸는 div를 만들어도 돼요 */}
-                                    <Link to={`/`} className='schedule-item-link'>
-                                        <p>{schedule.userName}</p>
-                                        <p>{schedule.progNm}</p>
-                                        <p>{schedule.brchNm}</p>
-                                        <p>{schedule.groupedStrtDt} ~ {schedule.groupedEndDt}</p>
-                                        <p>{schedule.strtTm} ~ {schedule.endTm}</p>
+                                <div key={schedule.schdId} className='schedule-item-wrapper'> {/* Link 컴포넌트에 직접 클래스를 적용하지 않고, Link를 감싸는 div를 만들어도 돼요 */}
+                                    <Link to={`/program-detail`} className='schedule-item-link'
+                                        state = {{
+                                            progId : schedule.progId
+                                        }}
+                                    >
+                                        <div className="item-top-section">
+                                            <div className="item-left-header">
+                                                <p className="item-user-name">강사: {schedule.userName}</p>
+                                                <p className="item-prog-name">{schedule.progNm}</p> {/* 여기에 프로그램명 배치 */}
+                                            </div>
+                                            <p className="item-brch-name">{schedule.brchNm}</p>
+                                        </div>
+                                        <div className="item-footer">
+                                            <p className="item-date">기간: {schedule.groupedStrtDt} ~ {schedule.groupedEndDt}</p>
+                                            <p className="item-time">시간: {schedule.strtTm} ~ {schedule.endTm}</p>
+                                        </div>
                                     </Link>
                                 </div>
                             ))

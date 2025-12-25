@@ -54,6 +54,7 @@ const TypeSelect = () => {
         <div className='type-select-container'>
             <div className='type-section'>
                 <p className='section-title'>지점별 예약</p>
+                <div className="branch-selection-area">
                 {branchloading ? (
                     <div>지점 데이터를 불러오는 중 입니다.</div>
                 ) : (
@@ -64,22 +65,23 @@ const TypeSelect = () => {
                             <div>등록된 지점이 없습니다.</div>
                         ) : (
                             filteredBranches.map(branch => (
-                                <div key={branch.brchId}>
+                                <div key={branch.brchId} className="branch-item-wrapper">
                                     <Link
-                                        className='sport-link'
+                                        className='branch-link-item'
                                         to={`/schedule-list?brchId=${branch.brchId}`}
                                         state={{
                                             selectedType: "branch",
                                             selectedBranch: `${branch.brchNm}`,
                                         }}
                                     >
-                                        <p>{branch.brchNm}</p>
+                                        <p className="branch-name-text">{branch.brchNm}</p>
                                     </Link>
                                 </div>
                             ))
                         )
                     )
                 )}
+                </div>
                 <p className='info-text more'>더보기</p>
             </div>
 
@@ -87,22 +89,25 @@ const TypeSelect = () => {
                 <p className='section-title'>종목별 예약</p>
                 {sportLoading ? (<div>스포츠 종목 데이터를 불러오는 중 입니다.</div>) :
                     sportError ? (<div>{sportError}</div>) : (
-                        sports === 0 ? (
+                        sports.length === 0 ? (
                             <div>등록된 종목이 없습니다.</div>
                         ) : (
-                            sports.map(sport => (
-                                <div key={sport.sportId}>
-                                    <Link
-                                        className='sport-link'
-                                        to={`/schedule-list?sportId=${sport.sportId}`}
-                                        state={{
-                                            selectedType: "sport",
-                                            selectedSport: `${sport.sportNm}`,
-                                        }}>
-                                        <p>{sport.sportNm}</p>
-                                    </Link>
-                                </div>
-                            ))
+                            <div className="sport-selection-area"> {/* 종목 목록을 감쌀 새로운 div */}
+                                {sports.map(sport => (
+                                    <div key={sport.sportId} className="sport-item-wrapper"> {/* 각 종목 링크를 감싸는 div */}
+                                        <Link
+                                            className='sport-link-item' // 새로운 클래스명으로 변경
+                                            to={`/schedule-list?sportId=${sport.sportId}`}
+                                            state={{
+                                                selectedType: "sport",
+                                                selectedSport: `${sport.sportNm}`,
+                                            }}
+                                        >
+                                            <p className="sport-name-text">{sport.sportNm}</p> {/* p 태그에도 클래스 부여 */}
+                                        </Link>
+                                    </div>
+                                ))}
+                            </div>
                         )
 
                     )

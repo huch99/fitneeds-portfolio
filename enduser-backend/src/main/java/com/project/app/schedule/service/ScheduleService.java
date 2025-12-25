@@ -31,13 +31,13 @@ public class ScheduleService {
 
 	// 스케줄 ID를 통한 조회 메서드 (변경 없음)
 	@Transactional(readOnly = true)
-	public Optional<Schedule> getScheduleBySchdIdForR(Long schdId) {
+	public Optional<ScheduleResponseDto> getScheduleBySchdIdForR(Long schdId) {
 		try {
-			return scheduleRepository.findById(schdId);
+			return scheduleRepository.findById(schdId).map(ScheduleResponseDto::from);
 		} catch (Exception e) {
 			log.error("스케줄 ID {} 조회 중 오류 발생: {}", schdId, e.getMessage(), e);
-			return Optional.empty(); 
-		}		
+			return Optional.empty();
+		}
 	}
 	
 	// --- 그룹핑 로직을 서비스 메서드 안으로 이동 (기존과 동일) ---
@@ -80,37 +80,29 @@ public class ScheduleService {
     }
     
     @Transactional(readOnly = true)
-	public Page<GroupedScheduleResponseDto> getSchedulesBySportIdForR(Long sportId, String searchKeyword, LocalDate currentDate, LocalTime currentTime, Pageable pageable) {
-		try {
-			// JPQL `@Query` 메서드 호출. searchKeyword가 null/empty여도 JPQL 내부에서 처리.
-			Page<Schedule> schedulesPage = scheduleRepository.findSchedulesBySportIdAndDateAndTimeFiltered(
-						sportId, currentDate, currentTime, searchKeyword, pageable
-				);
-			// 가져온 Page<Schedule>을 그룹핑하여 Page<GroupedScheduleResponseDto>로 변환
-			return applyGrouping(schedulesPage, pageable);
-		} catch (Exception e) {
-			log.error("스포츠 ID {} 로 스케줄 조회 중 오류 발생: {}", sportId, e.getMessage(), e);
-			return Page.empty(pageable);
-		}
-    	
-    	
-        
-	}
+   	public Page<GroupedScheduleResponseDto> getSchedulesBySportIdForR(Long sportId, String searchKeyword, LocalDate currentDate, LocalTime currentTime, Pageable pageable) {
+   		try {
+   			// JPQL @Query 메서드 호출.
+   			return scheduleRepository.findGroupedSchedulesBySportId(
+   					sportId, currentDate, currentTime, searchKeyword, pageable
+   			);
+   		} catch (Exception e) {
+   			log.error("스포츠 ID {} 로 스케줄 조회 중 오류 발생: {}", sportId, e.getMessage(), e);
+   			return Page.empty(pageable);
+   		}
+   	}
 
     
     @Transactional(readOnly = true)
-	public Page<GroupedScheduleResponseDto> getSchedulesByBrchIdForR(Long brchId, String searchKeyword, LocalDate currentDate, LocalTime currentTime, Pageable pageable) {
-		try {
-			// JPQL `@Query` 메서드 호출. searchKeyword가 null/empty여도 JPQL 내부에서 처리.
-			Page<Schedule> schedulesPage = scheduleRepository.findSchedulesByBrchIdAndDateAndTimeFiltered(
-						brchId, currentDate, currentTime, searchKeyword, pageable
-				);
-	        // 가져온 Page<Schedule>을 그룹핑하여 Page<GroupedScheduleResponseDto>로 변환
-			return applyGrouping(schedulesPage, pageable);
-		} catch (Exception e) {
-			log.error("지점 ID {} 로 스케줄 조회 중 오류 발생: {}", brchId, e.getMessage(), e);
-			return Page.empty(pageable);
-		}
-    	
-	}
+   	public Page<GroupedScheduleResponseDto> getSchedulesByBrchIdForR(Long brchId, String searchKeyword, LocalDate currentDate, LocalTime currentTime, Pageable pageable) {
+   		try {
+   			// JPQL @Query 메서드 호출.
+   			return scheduleRepository.findGroupedSchedulesByBrchId(
+   					brchId, currentDate, currentTime, searchKeyword, pageable
+   			);
+   		} catch (Exception e) {
+   			log.error("지점 ID {} 로 스케줄 조회 중 오류 발생: {}", brchId, e.getMessage(), e);
+   			return Page.empty(pageable);
+   		}
+   	}
 }
