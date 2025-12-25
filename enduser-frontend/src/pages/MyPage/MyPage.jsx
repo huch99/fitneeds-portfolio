@@ -33,14 +33,12 @@ function useLocalStorage(key, initialValue) {
   return [storedValue, setValue];
 }
 
-import UsageListSection from './UsageListSection';
 import UsageHistorySection from './UsageHistorySection';
 import ReviewWriteSection from './ReviewWriteSection';
 import PaymentHistorySection from './PaymentHistorySection';
 import InquirySection from './InquirySection';
 import SearchSection from './SearchSection';
 import ProfileSection from './ProfileSection';
-import { ReviewModal } from './ReviewComponents';
 
 function MyPage() {
   const location = useLocation();
@@ -64,9 +62,7 @@ function MyPage() {
     }
   }, [location.state, location.pathname]);
 
-  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false); // 리뷰 작성 모달 상태
-  const [selectedHistoryId, setSelectedHistoryId] = useState(null); // 선택된 이용내역 ID
-  const [reviewTab, setReviewTab] = useState('write'); // 'write' 또는 'written'
+  const [reviewTab, setReviewTab] = useState('written'); // 'written' (작성한 리뷰만 표시)
   const [searchQuery, setSearchQuery] = useState(''); // 검색어
   const [refreshKey, setRefreshKey] = useState(0); // 리뷰 작성 후 새로고침을 위한 키
 
@@ -94,19 +90,9 @@ function MyPage() {
   const renderContent = () => {
     switch (activeMenu) {
       case 'usage-list':
-        return (
-          <UsageListSection
-            setSelectedHistoryId={setSelectedHistoryId}
-            setIsReviewModalOpen={setIsReviewModalOpen}
-            onRefresh={refreshKey}
-          />
-        );
-
       case 'usage-history':
         return (
           <UsageHistorySection
-            setSelectedHistoryId={setSelectedHistoryId}
-            setIsReviewModalOpen={setIsReviewModalOpen}
             onRefresh={refreshKey}
           />
         );
@@ -116,8 +102,6 @@ function MyPage() {
           <ReviewWriteSection
             reviewTab={reviewTab}
             setReviewTab={setReviewTab}
-            setIsReviewModalOpen={setIsReviewModalOpen}
-            setSelectedHistoryId={setSelectedHistoryId}
           />
         );
 
@@ -166,23 +150,6 @@ function MyPage() {
           )}
         </main>
       </div>
-
-      {/* 리뷰 작성 모달 */}
-      {isReviewModalOpen && (
-        <ReviewModal
-          isOpen={isReviewModalOpen}
-          onClose={() => {
-            setIsReviewModalOpen(false);
-            setSelectedHistoryId(null);
-          }}
-          historyId={selectedHistoryId}
-          onRefresh={() => {
-            // 리뷰 작성 후 새로고침을 위해 refreshKey 업데이트
-            setRefreshKey(prev => prev + 1);
-          }}
-        />
-      )}
-
     </>
   );
 }
