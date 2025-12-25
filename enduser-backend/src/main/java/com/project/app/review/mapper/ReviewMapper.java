@@ -30,6 +30,14 @@ public interface ReviewMapper {
     );
 
     /**
+     * 이용내역 ID로 리뷰 조회
+     */
+    List<ReviewDto> selectReviewByHistoryId(
+            @Param("historyId") Long historyId,
+            @Param("userId") String userId
+    );
+
+    /**
      * 리뷰 상세 조회
      */
     ReviewDto selectReviewDetail(

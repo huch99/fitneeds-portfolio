@@ -12,7 +12,8 @@ public class ReviewDto {
     private String userId;
 
     private String userType; // 작성자 유형 (선택적)
-    private Long reservationId; // 리뷰 대상 예약 ID
+    private Long reservationId; // 리뷰 대상 예약 ID (하위 호환성)
+    private Long historyId; // 리뷰 대상 이용내역 ID
     private Integer rating; // 별점 등 평가 점수
     private Date createdAt;
     private Date updatedAt;
@@ -70,6 +71,14 @@ public class ReviewDto {
 
     public void setReservationId(Long reservationId) {
         this.reservationId = reservationId;
+    }
+
+    public Long getHistoryId() {
+        return historyId;
+    }
+
+    public void setHistoryId(Long historyId) {
+        this.historyId = historyId;
     }
 
     public Integer getRating() {

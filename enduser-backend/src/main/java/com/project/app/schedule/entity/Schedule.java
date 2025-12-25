@@ -83,4 +83,8 @@ public class Schedule {
 	@LastModifiedDate
 	private LocalDateTime updDt;
 	
+	 // 마감 임박 관련 추가 필드
+    @Column(name = "is_notified")
+    private Boolean isNotified;
+	
 }

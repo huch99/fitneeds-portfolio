@@ -30,7 +30,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "USERPASS", uniqueConstraints = { @UniqueConstraint(columnNames = { "user_id", "sport_id" }) })
+@Table(name = "USER_PASS", uniqueConstraints = { @UniqueConstraint(columnNames = { "user_id", "sport_id" }) })
 public class UserPass {
 
 	@Id
