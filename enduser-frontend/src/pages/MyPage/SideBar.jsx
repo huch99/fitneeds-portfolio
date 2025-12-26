@@ -65,7 +65,7 @@ function SideBar({ activeMenu, onMenuClick }) {
                   onClick={() => handleMenuClick('inquiry')}
                   style={{ cursor: 'pointer' }}
                 >
-                  문의하기
+                  이용권 거래
                 </li>
               </ul>
             )}
