@@ -17,19 +17,50 @@ function SearchSection({ searchQuery, setSearchQuery, recentSearches, setRecentS
         // setPopularCategories(categories);
         // setPopularSearches(searches);
         
-        // 임시로 빈 배열 설정 (API 준비되면 위 주석 해제)
-        setPopularCategories([]);
-        setPopularSearches([]);
+        // ===== 더미 데이터 (화면 확인용) =====
+        // TODO: 백엔드 API 연결 후 제거
+        setPopularCategories([{
+          id: 1,
+          name: '필라테스',
+          image: '/images/pilates.png'
+        }]);
+        
+        setPopularSearches([{
+          id: 1,
+          keyword: '요가',
+          trend: 'up'
+        }]);
+        // ===== 더미 데이터 끝 =====
       } catch (error) {
         console.error('검색 데이터 로딩 실패:', error);
-        setPopularCategories([]);
-        setPopularSearches([]);
+        
+        // ===== 더미 데이터 (에러 시 화면 확인용) =====
+        setPopularCategories([{
+          id: 1,
+          name: '필라테스',
+          image: '/images/pilates.png'
+        }]);
+        
+        setPopularSearches([{
+          id: 1,
+          keyword: '요가',
+          trend: 'up'
+        }]);
+        // ===== 더미 데이터 끝 =====
       } finally {
         setSearchLoading(false);
       }
     };
     
     fetchSearchData();
+  }, []);
+  
+  // 최근 검색어 더미 데이터 (화면 확인용)
+  useEffect(() => {
+    // 최근 검색어가 없으면 더미 데이터 추가
+    if (recentSearches.length === 0) {
+      setRecentSearches(['필라테스']);
+    }
   }, []);
 
   // 검색어 삭제

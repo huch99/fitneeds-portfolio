@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import api from '../../api';
 import '../../components/auth/modalStyles.css';
 
@@ -52,6 +53,7 @@ function UsageHistorySection({ onRefresh }) {
   const [frequentReservations, setFrequentReservations] = useState([]);
   const [frequentReservationsLoading, setFrequentReservationsLoading] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [showFrequentModal, setShowFrequentModal] = useState(false);
   
   // 운동 종목명에 따른 이미지 매핑 함수
   const getSportImage = (sportName) => {
@@ -284,18 +286,9 @@ function UsageHistorySection({ onRefresh }) {
                 <p>로딩 중...</p>
               </div>
             ) : (
-              <div style={{ marginTop: '2rem', marginBottom: '2rem' }}>
+              <div style={{ marginTop: '2rem', marginBottom: '2rem', paddingLeft: '2rem' }}>
                 {frequentReservations.map((item, index) => (
                   <div key={index} style={{ marginBottom: '1rem' }}>
-                    {/* 텍스트 (카드 위) */}
-                    <div style={{ 
-                      fontSize: '1.5625rem', 
-                      color: '#6c757d',
-                      marginBottom: '0.5rem'
-                    }}>
-                      자주 이용하는 프로그램 {item.count}
-                    </div>
-                    
                     {/* 카드 */}
                     <div style={{
                       backgroundColor: '#fff',
@@ -330,7 +323,7 @@ function UsageHistorySection({ onRefresh }) {
                           right: '4px',
                           backgroundColor: 'rgba(0, 0, 0, 0.6)',
                           color: '#fff',
-                          fontSize: '0.75rem',
+                          fontSize: '0.875rem',
                           fontWeight: '600',
                           padding: '2px 6px',
                           borderRadius: '4px'
@@ -338,8 +331,26 @@ function UsageHistorySection({ onRefresh }) {
                           x{item.count}
                         </div>
                       </div>
-                      <div style={{ marginLeft: 'auto' }}>
-                        <div style={{ fontSize: '0.875rem', color: '#6c757d' }}>
+                      
+                      {/* 텍스트 (이미지 옆) */}
+                      <div style={{ 
+                        fontSize: '1.375rem', 
+                        color: '#212529',
+                        flex: 1
+                      }}>
+                        자주 이용하는 프로그램 {item.count}
+                      </div>
+                      
+                      <div style={{ marginLeft: 'auto', marginRight: '4rem' }}>
+                        <div 
+                          onClick={() => setShowFrequentModal(true)}
+                          style={{ 
+                            fontSize: '1rem', 
+                            color: '#6c757d',
+                            cursor: 'pointer',
+                            textDecoration: 'underline'
+                          }}
+                        >
                           전체보기 &gt;
                         </div>
                       </div>
@@ -351,7 +362,7 @@ function UsageHistorySection({ onRefresh }) {
           </>
         )}
 
-        <div className="reservation-summary">
+        <div className="reservation-summary" style={{ paddingLeft: '2rem' }}>
           이용내역 총 {usageHistoryData.length}건
         </div>
 
@@ -385,10 +396,10 @@ function UsageHistorySection({ onRefresh }) {
                 };
 
                 return Object.entries(groupedByDate).map(([date, histories]) => (
-                  <div key={date} style={{ marginBottom: '2rem' }}>
+                  <div key={date} style={{ marginBottom: '2rem', paddingLeft: '2rem' }}>
                     {/* 날짜 헤더 */}
                     <div style={{ 
-                      fontSize: '1.25rem', 
+                      fontSize: '1.375rem', 
                       fontWeight: '700', 
                       color: '#212529',
                       marginBottom: '1rem',
@@ -397,7 +408,7 @@ function UsageHistorySection({ onRefresh }) {
                       gap: '0.5rem'
                     }}>
                       {formatDate(date)}
-                      <span style={{ fontSize: '1rem', color: '#6c757d' }}>&gt;</span>
+                      <span style={{ fontSize: '1.125rem', color: '#6c757d' }}>&gt;</span>
                     </div>
 
                     {/* 해당 날짜의 이용내역 목록 */}
@@ -435,7 +446,7 @@ function UsageHistorySection({ onRefresh }) {
                         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.25rem', paddingTop: '1.5rem' }}>
                           {/* 지점명 */}
                           <div style={{ 
-                            fontSize: '1.125rem', 
+                            fontSize: '1.25rem', 
                             color: '#212529',
                             fontWeight: '500',
                             marginBottom: '0.25rem'
@@ -445,12 +456,48 @@ function UsageHistorySection({ onRefresh }) {
                           
                           {/* 프로그램명 | 강사명 */}
                           <div style={{ 
-                            fontSize: '1rem', 
+                            fontSize: '1.125rem', 
                             color: '#6c757d',
                             lineHeight: '1.5'
                           }}>
                             {history.programName} | {history.trainerName || '-'}
                           </div>
+                        </div>
+
+                        {/* 상세보기 버튼 */}
+                        <div style={{ 
+                          display: 'flex', 
+                          alignItems: 'center',
+                          paddingTop: '1.5rem',
+                          marginRight: '4rem'
+                        }}>
+                          <button
+                            onClick={() => {
+                              // TODO: 상세보기 페이지로 이동하는 로직 추가
+                              console.log('상세보기 클릭:', history);
+                            }}
+                            style={{
+                              padding: '0.75rem 1.5rem',
+                              fontSize: '1.125rem',
+                              color: '#6c757d',
+                              backgroundColor: '#fff',
+                              border: '1px solid #e9ecef',
+                              borderRadius: '6px',
+                              cursor: 'pointer',
+                              transition: 'all 0.2s',
+                              whiteSpace: 'nowrap'
+                            }}
+                            onMouseEnter={(e) => {
+                              e.target.style.backgroundColor = '#f8f9fa';
+                              e.target.style.borderColor = '#dee2e6';
+                            }}
+                            onMouseLeave={(e) => {
+                              e.target.style.backgroundColor = '#fff';
+                              e.target.style.borderColor = '#e9ecef';
+                            }}
+                          >
+                            상세보기
+                          </button>
                         </div>
                       </div>
                     ))}
@@ -465,6 +512,158 @@ function UsageHistorySection({ onRefresh }) {
           </div>
         )}
       </section>
+
+      {/* 자주 이용하는 프로그램 전체보기 모달 */}
+      {showFrequentModal && createPortal(
+        <div 
+          onClick={() => setShowFrequentModal(false)}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            width: '100vw',
+            height: '100vh',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 9999,
+            margin: 0,
+            padding: 0
+          }}
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              backgroundColor: '#fff',
+              borderRadius: '12px',
+              padding: '2rem',
+              maxWidth: '600px',
+              width: '90%',
+              maxHeight: '80vh',
+              overflow: 'auto',
+              boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+              position: 'relative',
+              margin: 0
+            }}
+          >
+            {/* 모달 헤더 */}
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '1.5rem',
+              paddingBottom: '1rem',
+              borderBottom: '1px solid #e9ecef'
+            }}>
+              <h2 style={{
+                fontSize: '1.5rem',
+                fontWeight: '700',
+                color: '#212529',
+                margin: 0
+              }}>
+                자주 이용하는 프로그램
+              </h2>
+              <button
+                onClick={() => setShowFrequentModal(false)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  fontSize: '1.5rem',
+                  color: '#6c757d',
+                  cursor: 'pointer',
+                  padding: '0',
+                  width: '30px',
+                  height: '30px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                ×
+              </button>
+            </div>
+
+            {/* 모달 내용 */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              {frequentReservations.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '2rem', color: '#6c757d' }}>
+                  자주 이용하는 프로그램이 없습니다.
+                </div>
+              ) : (
+                frequentReservations.map((item, index) => (
+                  <div 
+                    key={index}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '1rem',
+                      padding: '1rem',
+                      border: '1px solid #e9ecef',
+                      borderRadius: '8px',
+                      backgroundColor: '#fff'
+                    }}
+                  >
+                    {/* 이미지 */}
+                    <div style={{ position: 'relative', flexShrink: 0 }}>
+                      <div style={{
+                        width: '80px',
+                        height: '80px',
+                        borderRadius: '8px',
+                        overflow: 'hidden',
+                        backgroundColor: '#f8f9fa'
+                      }}>
+                        {item.image && (
+                          <img 
+                            src={item.image} 
+                            alt={item.programName}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                          />
+                        )}
+                      </div>
+                      {/* 카운트 배지 */}
+                      <div style={{
+                        position: 'absolute',
+                        bottom: '4px',
+                        right: '4px',
+                        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                        color: '#fff',
+                        fontSize: '0.75rem',
+                        fontWeight: '600',
+                        padding: '2px 6px',
+                        borderRadius: '4px'
+                      }}>
+                        x{item.count}
+                      </div>
+                    </div>
+
+                    {/* 정보 */}
+                    <div style={{ flex: 1 }}>
+                      <div style={{
+                        fontSize: '1rem',
+                        fontWeight: '500',
+                        color: '#212529',
+                        marginBottom: '0.25rem'
+                      }}>
+                        {item.programName}
+                      </div>
+                      <div style={{
+                        fontSize: '0.875rem',
+                        color: '#6c757d'
+                      }}>
+                        {item.branchName} | {item.trainerName || '-'}
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </>
   );
 }

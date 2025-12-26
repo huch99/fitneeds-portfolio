@@ -36,18 +36,26 @@ function ProfileSection({ userName, userInfo, onMenuClick }) {
           </div>
           <div className="quick-link-label">이용내역</div>
         </div>
-        <Link to="#" className="quick-link-item">
+        <div
+          className="quick-link-item"
+          onClick={() => onMenuClick('review-write')}
+          style={{ cursor: 'pointer' }}
+        >
           <div className="quick-link-icon">
             <i className="bi bi-pencil-square"></i>
           </div>
           <div className="quick-link-label">리뷰</div>
-        </Link>
-        <Link to="#" className="quick-link-item">
+        </div>
+        <div
+          className="quick-link-item"
+          onClick={() => onMenuClick('inquiry')}
+          style={{ cursor: 'pointer' }}
+        >
           <div className="quick-link-icon">
             <i className="bi bi-question-circle"></i>
           </div>
           <div className="quick-link-label">문의</div>
-        </Link>
+        </div>
       </div>
     </section>
   );
