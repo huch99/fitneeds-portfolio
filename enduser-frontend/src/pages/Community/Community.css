@@ -395,3 +395,57 @@
 .recruit-cancel-btn:hover {
   background-color: #e0e0e0;
 }
+
+/* =========================
+   상세 페이지 카드 레이아웃
+========================= */
+.community-detail-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 30px 20px;
+  background: #f5f6f8;
+}
+
+.community-card {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  margin-top: 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+
+/* 게시글 */
+.post-title {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.post-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #777;
+  margin-bottom: 15px;
+}
+
+.post-content {
+  white-space: pre-line;
+  line-height: 1.7;
+}
+
+/* 댓글 */
+.comment-item {
+  border-bottom: 1px solid #eee;
+  padding: 12px 0;
+}
+
+.comment-item:last-child {
+  border-bottom: none;
+}
+
+.comment-meta {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 6px;
+}

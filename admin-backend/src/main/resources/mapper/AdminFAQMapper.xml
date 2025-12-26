@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.project.app.faq.mapper.AdminFAQMapper">
+
+    <select id="selectFAQCount" resultType="int">
+        SELECT COUNT(*)
+        FROM community_post
+        WHERE post_type = 'FAQ'
+        <if test="keyword != null and keyword != ''">
+            AND (title LIKE CONCAT('%', #{keyword}, '%')
+                 OR content LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="visible != null">
+            AND is_visible = #{visible}
+        </if>
+        AND post_visible = 1
+    </select>
+
+    <select id="selectFAQListPaged" resultType="com.project.app.faq.dto.FAQDto">
+        SELECT
+            post_id       AS postId,
+            post_type     AS postType,
+            title         AS title,
+            content       AS content,
+            writer_id     AS writerId,
+            writer_type   AS writerType,
+            branch_id     AS branchId,
+            display_start AS displayStart,
+            display_end   AS displayEnd,
+            is_visible    AS isVisible,
+            post_visible  AS postVisible,
+            created_at    AS createdAt,
+            updated_at    AS updatedAt
+        FROM community_post
+        WHERE post_type = 'FAQ'
+        <if test="keyword != null and keyword != ''">
+            AND (title LIKE CONCAT('%', #{keyword}, '%')
+                 OR content LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="visible != null">
+            AND is_visible = #{visible}
+        </if>
+        AND post_visible = 1
+        ORDER BY post_id DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="selectFAQDetail" resultType="com.project.app.faq.dto.FAQDto">
+        SELECT
+            post_id       AS postId,
+            post_type     AS postType,
+            title         AS title,
+            content       AS content,
+            writer_id     AS writerId,
+            writer_type   AS writerType,
+            branch_id     AS branchId,
+            display_start AS displayStart,
+            display_end   AS displayEnd,
+            is_visible    AS isVisible,
+            post_visible  AS postVisible,
+            created_at    AS createdAt,
+            updated_at    AS updatedAt
+        FROM community_post
+        WHERE post_id = #{postId}
+          AND post_type = 'FAQ'
+          AND post_visible = 1
+    </select>
+
+    <insert id="insertFAQ" parameterType="com.project.app.faq.dto.FAQDto"
+            useGeneratedKeys="true" keyProperty="postId">
+        INSERT INTO community_post
+        (
+            post_type,
+            title,
+            content,
+            writer_id,
+            writer_type,
+            branch_id,
+            display_start,
+            display_end,
+            is_visible,
+            post_visible
+        )
+        VALUES
+        (
+            'FAQ',
+            #{title},
+            #{content},
+            #{writerId},
+            #{writerType},
+            #{branchId},
+            #{displayStart},
+            #{displayEnd},
+            #{isVisible},
+            #{postVisible}
+        )
+    </insert>
+
+    <update id="updateFAQ" parameterType="com.project.app.faq.dto.FAQDto">
+        UPDATE community_post
+        SET
+            title = #{title},
+            content = #{content},
+            branch_id = #{branchId},
+            display_start = #{displayStart},
+            display_end = #{displayEnd},
+            updated_at = CURRENT_TIMESTAMP
+        WHERE post_id = #{postId}
+          AND post_type = 'FAQ'
+          AND post_visible = 1
+    </update>
+
+    <update id="updateFAQVisible">
+        UPDATE community_post
+        SET
+            is_visible = #{visible},
+            updated_at = CURRENT_TIMESTAMP
+        WHERE post_id = #{postId}
+          AND post_type = 'FAQ'
+          AND post_visible = 1
+    </update>
+
+    <update id="deleteFAQ">
+        UPDATE community_post
+        SET
+            post_visible = 0,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE post_id = #{postId}
+          AND post_type = 'FAQ'
+    </update>
+
+</mapper>

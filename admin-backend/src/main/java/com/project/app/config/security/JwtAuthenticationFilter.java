@@ -24,6 +24,26 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 	/**
 	 * 필터 메인 로직 모든 HTTP 요청이 들어올 때마다 실행됩니다
 	 */
+//	@Override
+//	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+//	        throws IOException, ServletException {
+//
+//	    HttpServletRequest httpRequest = (HttpServletRequest) request;
+//
+//	    String token = resolveToken(httpRequest);
+//
+//	    if (token != null && jwtTokenProvider.validateToken(token)) {
+//	        Authentication authentication =
+//	                jwtTokenProvider.getAuthentication(token);
+//	        SecurityContextHolder.getContext().setAuthentication(authentication);
+//	    }
+//
+//	    // ❗ try-catch 제거
+//	    chain.doFilter(request, response);
+//	}
+
+
+		
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
