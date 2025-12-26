@@ -279,43 +279,73 @@ function UsageHistorySection({ onRefresh }) {
         {/* 2회 이상 예약한 항목 섹션 */}
         {frequentReservations.length > 0 && (
           <>
-            <div className="reservation-summary" style={{ marginTop: '2rem' }}>자주 이용하는 프로그램</div>
             {frequentReservationsLoading ? (
               <div style={{ textAlign: 'center', padding: '2rem' }}>
                 <p>로딩 중...</p>
               </div>
             ) : (
-              <div className="reservation-table-container" style={{ marginBottom: '2rem' }}>
-                <table className="reservation-table">
-                  <thead>
-                    <tr>
-                      <th></th>
-                      <th>지점명</th>
-                      <th>프로그램명</th>
-                      <th>강사명</th>
-                      <th>가격</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {frequentReservations.map((item, index) => (
-                      <tr key={index}>
-                        <td>
+              <div style={{ marginTop: '2rem', marginBottom: '2rem' }}>
+                {frequentReservations.map((item, index) => (
+                  <div key={index} style={{ marginBottom: '1rem' }}>
+                    {/* 텍스트 (카드 위) */}
+                    <div style={{ 
+                      fontSize: '1.5625rem', 
+                      color: '#6c757d',
+                      marginBottom: '0.5rem'
+                    }}>
+                      자주 이용하는 프로그램 {item.count}
+                    </div>
+                    
+                    {/* 카드 */}
+                    <div style={{
+                      backgroundColor: '#fff',
+                      border: '1px solid #e9ecef',
+                      borderRadius: '12px',
+                      padding: '1rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '1rem'
+                    }}>
+                      {/* 이미지 */}
+                      <div style={{ position: 'relative', flexShrink: 0 }}>
+                        <div style={{
+                          width: '80px',
+                          height: '80px',
+                          borderRadius: '8px',
+                          overflow: 'hidden',
+                          backgroundColor: '#f8f9fa'
+                        }}>
                           {item.image && (
                             <img 
                               src={item.image} 
-                              alt={item.programName} 
-                              style={{ width: '100px', height: '100px', objectFit: 'cover', borderRadius: '4px' }}
+                              alt={item.programName}
+                              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                             />
                           )}
-                        </td>
-                        <td>{item.branchName}</td>
-                        <td>{item.programName}</td>
-                        <td>{item.trainerName || '-'}</td>
-                        <td>{item.price}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                        </div>
+                        {/* 카운트 배지 */}
+                        <div style={{
+                          position: 'absolute',
+                          bottom: '4px',
+                          right: '4px',
+                          backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                          color: '#fff',
+                          fontSize: '0.75rem',
+                          fontWeight: '600',
+                          padding: '2px 6px',
+                          borderRadius: '4px'
+                        }}>
+                          x{item.count}
+                        </div>
+                      </div>
+                      <div style={{ marginLeft: 'auto' }}>
+                        <div style={{ fontSize: '0.875rem', color: '#6c757d' }}>
+                          전체보기 &gt;
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
           </>
@@ -330,49 +360,108 @@ function UsageHistorySection({ onRefresh }) {
             <p>로딩 중...</p>
           </div>
         ) : (
-          <div className="reservation-table-container">
-            <table className="reservation-table">
-              <thead>
-                <tr>
-                  <th>이용날짜</th>
-                  <th>지점명</th>
-                  <th>프로그램명</th>
-                  <th>강사이름</th>
-                </tr>
-              </thead>
-              <tbody>
-                {usageHistoryData.length > 0 ? (
-                  [...usageHistoryData]
-                    .sort((a, b) => new Date(b.date) - new Date(a.date))
-                    .map((history) => (
-                      <tr key={history.id || history.historyId}>
-                        <td>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <div className="usage-history-list">
+            {usageHistoryData.length > 0 ? (
+              (() => {
+                // 날짜별로 그룹화
+                const groupedByDate = {};
+                [...usageHistoryData]
+                  .sort((a, b) => new Date(b.date) - new Date(a.date))
+                  .forEach((history) => {
+                    const dateKey = history.date;
+                    if (!groupedByDate[dateKey]) {
+                      groupedByDate[dateKey] = [];
+                    }
+                    groupedByDate[dateKey].push(history);
+                  });
+
+                // 날짜 포맷 변환 함수
+                const formatDate = (dateStr) => {
+                  const parts = dateStr.split('-');
+                  if (parts.length === 3) {
+                    return `${parts[0]}. ${parseInt(parts[1])}. ${parseInt(parts[2])}`;
+                  }
+                  return dateStr.replace(/-/g, '. ');
+                };
+
+                return Object.entries(groupedByDate).map(([date, histories]) => (
+                  <div key={date} style={{ marginBottom: '2rem' }}>
+                    {/* 날짜 헤더 */}
+                    <div style={{ 
+                      fontSize: '1.25rem', 
+                      fontWeight: '700', 
+                      color: '#212529',
+                      marginBottom: '1rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.5rem'
+                    }}>
+                      {formatDate(date)}
+                      <span style={{ fontSize: '1rem', color: '#6c757d' }}>&gt;</span>
+                    </div>
+
+                    {/* 해당 날짜의 이용내역 목록 */}
+                    {histories.map((history) => (
+                      <div key={history.id || history.historyId} style={{
+                        display: 'flex',
+                        alignItems: 'flex-start',
+                        gap: '1rem',
+                        padding: '1rem 0',
+                        borderBottom: '1px solid #e9ecef'
+                      }}>
+                        {/* 이미지 영역 */}
+                        <div style={{ 
+                          flexShrink: 0
+                        }}>
+                          {/* 이미지 */}
+                          <div style={{ 
+                            width: '120px', 
+                            height: '120px', 
+                            borderRadius: '8px',
+                            overflow: 'hidden',
+                            backgroundColor: '#f8f9fa'
+                          }}>
                             {history.image && (
                               <img 
                                 src={history.image} 
-                                alt={history.programName} 
-                                style={{ width: '100px', height: '100px', objectFit: 'cover', borderRadius: '4px' }}
+                                alt={history.programName}
+                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                               />
                             )}
-                            <div>
-                              {history.date}
-                              {history.time && <div className="text-muted" style={{ fontSize: '0.875rem' }}>{history.time}</div>}
-                            </div>
                           </div>
-                        </td>
-                        <td>{history.branchName}</td>
-                        <td>{history.programName}</td>
-                        <td>{history.trainerName || '-'}</td>
-                      </tr>
-                    ))
-                ) : (
-                  <tr>
-                    <td colSpan="4" className="text-center">이용내역이 없습니다.</td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                        </div>
+
+                        {/* 정보 영역 */}
+                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.25rem', paddingTop: '1.5rem' }}>
+                          {/* 지점명 */}
+                          <div style={{ 
+                            fontSize: '1.125rem', 
+                            color: '#212529',
+                            fontWeight: '500',
+                            marginBottom: '0.25rem'
+                          }}>
+                            {history.branchName}
+                          </div>
+                          
+                          {/* 프로그램명 | 강사명 */}
+                          <div style={{ 
+                            fontSize: '1rem', 
+                            color: '#6c757d',
+                            lineHeight: '1.5'
+                          }}>
+                            {history.programName} | {history.trainerName || '-'}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ));
+              })()
+            ) : (
+              <div className="text-center" style={{ padding: '3rem', color: '#6c757d' }}>
+                이용내역이 없습니다.
+              </div>
+            )}
           </div>
         )}
       </section>
