@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import './Navigation.css';
 import LoginButtonAndModal from './auth/LoginButtonAndModal';
 
@@ -10,6 +10,7 @@ function Navigation() {
   const blogDropdownRef = useRef(null);
   const portfolioDropdownRef = useRef(null);
   const location = useLocation();
+  const navigate = useNavigate();
 
   // Close dropdowns when route changes
   useEffect(() => {
@@ -85,7 +86,22 @@ function Navigation() {
               <Link className="nav-menu-link" to="/contact">예약하기</Link>
             </li>
             <li className="nav-menu-item">
-              <Link className="nav-menu-link" to="/mypage">나의 운동</Link>
+              <Link 
+                className="nav-menu-link" 
+                to="/mypage"
+                onClick={(e) => {
+                  // 같은 경로일 때도 강제로 메인 페이지로 이동하도록 처리
+                  if (location.pathname.startsWith('/mypage')) {
+                    e.preventDefault();
+                    navigate('/mypage', { 
+                      replace: false,
+                      state: { menu: null } // 메인 페이지로 초기화
+                    });
+                  }
+                }}
+              >
+                나의 운동
+              </Link>
             </li>
 
             <li
