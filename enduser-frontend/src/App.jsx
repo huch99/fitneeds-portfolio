@@ -31,6 +31,8 @@ import NoticeUserPage from "./pages/Notice/NoticeUserPage";
 import TypeSelect from './pages/ToReservation/TypeSelect/TypeSelect';
 import ScheduleListPage from './pages/ToReservation/ScheduleListPage/ScheduleListPage';
 import ProgramDetailPage from './pages/ToReservation/ProgramDetailPage/ProgramDetailPage';
+import PaymentForReservation from './pages/ToReservation/Payment/PaymentForReservation';
+import ReservationComplete from './pages/ToReservation/ReservationComplete/ReservationComplete';
 
 
 
@@ -77,6 +79,8 @@ function App() {
             <Route path="/type-select" element={<TypeSelect />} />
             <Route path="/schedule-list" element={<ScheduleListPage />} />
             <Route path="/program-detail" element={<ProgramDetailPage/>} />
+            <Route path="/payment-reservation" element={<PaymentForReservation/>} />
+            <Route path="/reservation-complete" element={<ReservationComplete/>} />
 
 
           </Routes>

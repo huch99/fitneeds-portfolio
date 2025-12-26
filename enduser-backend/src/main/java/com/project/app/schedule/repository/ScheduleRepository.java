@@ -20,7 +20,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
 	// --- 종목 ID를 통한 스케줄 조회 (날짜/시간 필터링, 검색어 필터링 포함) ---
 	@Query("SELECT new com.project.app.schedule.dto.GroupedScheduleResponseDto(" +
-	           " MAX(s.schdId), ua.userName, p.progNm, b.brchNm, s.strtTm, s.endTm, MIN(s.strtDt), MAX(s.endDt)) " +
+	           " MAX(s.schdId), ua.userName, p.progId, p.progNm, b.brchNm, s.strtTm, s.endTm, MIN(s.strtDt), MAX(s.endDt)) " +
 	           "FROM Schedule s " +
 	           "JOIN s.program p " +
 	           "JOIN p.sportType st " +
@@ -36,7 +36,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 	           "   LOWER(p.progNm) LIKE LOWER(CONCAT('%', :searchKeyword, '%')) OR " +
 	           "   LOWER(ua.userName) LIKE LOWER(CONCAT('%', :searchKeyword, '%'))" +
 	           ") " +
-	           "GROUP BY ua.userName, p.progNm, b.brchNm, s.strtTm, s.endTm " + // 그룹핑 기준
+	           "GROUP BY ua.userName,  p.progId, p.progNm, b.brchNm, s.strtTm, s.endTm " + // 그룹핑 기준
 	           "ORDER BY MAX(s.schdId) DESC") // 정렬 기준 (Pageable의 sort와 충돌하지 않도록 직접 지정)
 	           // Pageable의 sort 인자가 필요 없어질 수 있습니다.
 	    Page<GroupedScheduleResponseDto> findGroupedSchedulesBySportId(
@@ -49,7 +49,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
     // --- 지점 ID를 통한 스케줄 조회 (날짜/시간 필터링, 검색어 필터링 포함) ---
 	@Query("SELECT new com.project.app.schedule.dto.GroupedScheduleResponseDto(" +
-	           " MAX(s.schdId), ua.userName, p.progNm, b.brchNm, s.strtTm, s.endTm, MIN(s.strtDt), MAX(s.endDt)) " +
+	           " MAX(s.schdId), ua.userName, p.progId, p.progNm, b.brchNm, s.strtTm, s.endTm, MIN(s.strtDt), MAX(s.endDt)) " +
 	           "FROM Schedule s " +
 	           "JOIN s.program p " +
 	           "JOIN p.sportType st " +
@@ -65,7 +65,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 	           "   LOWER(p.progNm) LIKE LOWER(CONCAT('%', :searchKeyword, '%')) OR " +
 	           "   LOWER(ua.userName) LIKE LOWER(CONCAT('%', :searchKeyword, '%'))" +
 	           ") " +
-	           "GROUP BY ua.userName, p.progNm, b.brchNm, s.strtTm, s.endTm " +
+	           "GROUP BY ua.userName,  p.progId, p.progNm, b.brchNm, s.strtTm, s.endTm " +
 	           "ORDER BY MAX(s.schdId) DESC")
 	    Page<GroupedScheduleResponseDto> findGroupedSchedulesByBrchId(
 	            @Param("brchId") Long brchId,

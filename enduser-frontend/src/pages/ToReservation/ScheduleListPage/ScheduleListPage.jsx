@@ -128,9 +128,14 @@ const ScheduleListPage = () => {
                         schedules.length > 0 ? ( // 스케줄 데이터가 있을 때만 맵핑
                             schedules.map(schedule => (
                                 <div key={schedule.schdId} className='schedule-item-wrapper'> {/* Link 컴포넌트에 직접 클래스를 적용하지 않고, Link를 감싸는 div를 만들어도 돼요 */}
-                                    <Link to={`/program-detail`} className='schedule-item-link'
+                                    <Link to={`/program-detail?progId=${schedule.progId}`} className='schedule-item-link'
                                         state = {{
-                                            progId : schedule.progId
+                                            userName : schedule.userName,
+                                            strtDt : schedule.groupedStrtDt,
+                                            endDt : schedule.groupedEndDt,
+                                            strtTm : schedule.strtTm,
+                                            endTm : schedule.endTm,
+                                            brchNm : schedule.brchNm,
                                         }}
                                     >
                                         <div className="item-top-section">

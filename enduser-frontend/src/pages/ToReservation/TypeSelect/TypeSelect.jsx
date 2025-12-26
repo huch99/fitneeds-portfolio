@@ -38,7 +38,7 @@ const TypeSelect = () => {
             try {
                 const response = await api.get('/branches/getAllBranchesForR');
                 setBranches(response.data);
-                setFilteredBranches(response.data.slice(0, 10)); // 가장 앞의 10개의 데이터만 저장
+                setFilteredBranches(response.data.slice(0, 4)); // 가장 앞의 4개의 데이터만 저장
             } catch (err) {
                 setBranchError('지점 데이터를 불러오는 데 실패 했습니다.');
                 console.error('Error fetching branch data:', err);
@@ -61,7 +61,7 @@ const TypeSelect = () => {
                     branchError ? (
                         <div>{branchError}</div>
                     ) : (
-                        branches === 0 ? (
+                        branches.length === 0 ? (
                             <div>등록된 지점이 없습니다.</div>
                         ) : (
                             filteredBranches.map(branch => (
