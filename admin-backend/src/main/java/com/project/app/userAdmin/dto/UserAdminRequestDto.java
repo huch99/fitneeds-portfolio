@@ -1,5 +1,9 @@
 package com.project.app.userAdmin.dto;
 
+import java.util.Optional;
+
+import com.project.app.userAdmin.entity.UserAdmin;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,13 +19,11 @@ public class UserAdminRequestDto {
 	private String userName;
 	private String password;
 	private String role;
-	private String cash_point;
-	private String grade_point;
-	private String is_active;
-	private String agree_at;
-	private String phone_number;
-	private String user_id;
-	private String user_nam;
+	private String cashPoint;
+	private String gradePoint;
+	private String isActive;
+	private String agreeAt;
+	private String phoneNumber;
 	private boolean success;
 	private String message;
 }
