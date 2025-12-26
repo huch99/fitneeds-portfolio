@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api';
 import '../../components/auth/modalStyles.css';
-  
+
 /* =========================
    API 함수들
 ========================= */
@@ -203,6 +203,7 @@ function ReviewWriteModal({ isOpen, onClose, history, onRefresh }) {
               </div>
             </div>
             <div className="form-group">
+              <label htmlFor="review-content">리뷰 내용</label>
               <textarea
                 id="review-content"
                 className="form-control"
