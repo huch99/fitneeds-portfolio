@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.project.app.schedule.dto.GroupedScheduleResponseDto;
-import com.project.app.schedule.dto.ScheduleResponseDto;
 import com.project.app.schedule.entity.Schedule;
 import com.project.app.schedule.repository.ScheduleRepository;
 

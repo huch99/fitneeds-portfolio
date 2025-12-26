@@ -63,6 +63,8 @@ public class ReviewController {
 			log.info("[ReviewController] 리뷰 작성 요청 - historyId: {}, reservationId: {}, userId: {}", 
 					reviewDto.getHistoryId(), reviewDto.getReservationId(), userId);
 
+			reviewDto.setUserId(userId);
+			
 			// 리뷰 작성
 			reviewService.createReview(reviewDto);
 
@@ -89,9 +91,9 @@ public class ReviewController {
 	}
 
 	/**
-	 * ========================= 🔥 내가 쓴 리뷰 목록 조회 (USER)
+	 * 내가 쓴 리뷰 목록 조회 (USER)
 	 *
-	 * GET /api/reviews/my =========================
+	 * GET /api/reviews/my 
 	 */
 	@GetMapping("/my")
 	public ResponseEntity<Map<String, Object>> getMyReviewList() {
@@ -127,9 +129,9 @@ public class ReviewController {
 	}
 
 	/**
-	 * ========================= ✏️ 내가 쓴 리뷰 수정 (본인만)
+	 *내가 쓴 리뷰 수정 (본인만)
 	 *
-	 * PUT /api/reviews/{reviewId} =========================
+	 * PUT /api/reviews/{reviewId} 
 	 */
 	@PutMapping("/{reviewId}")
 	public ResponseEntity<Map<String, Object>> updateReview(
@@ -178,9 +180,9 @@ public class ReviewController {
 	}
 
 	/**
-	 * ========================= 🗑 내가 쓴 리뷰 삭제 (본인만, 소프트 삭제)
+	 * 내가 쓴 리뷰 삭제 (본인만, 소프트 삭제)
 	 *
-	 * DELETE /api/reviews/{reviewId} =========================
+	 * DELETE /api/reviews/{reviewId} 
 	 */
 	@DeleteMapping("/{reviewId}")
 	public ResponseEntity<Map<String, Object>> deleteReview(

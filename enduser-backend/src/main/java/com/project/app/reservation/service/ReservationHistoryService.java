@@ -2,9 +2,7 @@ package com.project.app.reservation.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -15,7 +13,6 @@ import com.project.app.reservation.entity.Reservation;
 import com.project.app.reservation.entity.ReservationHistory;
 import com.project.app.reservation.repository.ReservationHistoryRepository;
 import com.project.app.reservation.repository.ReservationRepository;
-import com.project.app.review.mapper.ReviewMapper;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,8 +24,6 @@ public class ReservationHistoryService {
 
 	private final ReservationRepository reservationRepository;
 	private final ReservationHistoryRepository reservationHistoryRepository;
-	private final ReviewMapper reviewMapper;
-
 	/**
 	 * 날짜가 지난 예약을 예약 테이블에서 제거하고 이용내역 테이블로 이동합니다.
 	 * 

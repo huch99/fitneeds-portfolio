@@ -373,7 +373,7 @@
 }
 
 .form-group {
-  margin-bottom: 2.5rem;
+  margin-bottom: 2rem;
 }
 
 .info-edit-form .form-group label {
@@ -846,7 +846,7 @@
 }
 
 .review-rating {
-  margin: 0.5rem 0;
+  margin: 1rem 0;
   font-size: 1.5625rem;
   text-align: right;
 }

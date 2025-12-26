@@ -12,8 +12,6 @@ import com.project.app.reservation.entity.RsvSttsCd;
 import com.project.app.reservation.repository.ReservationRepository;
 import com.project.app.schedule.entity.Schedule;
 import com.project.app.schedule.repository.ScheduleRepository;
-import com.project.app.user.repository.UserRepository;
-import com.project.app.userpass.repository.UserPassRepository;
 import com.project.app.userpass.service.UserPassService;
 
 import lombok.RequiredArgsConstructor;
@@ -27,9 +25,6 @@ public class ReservationService {
 	private final ReservationRepository reservationRepository;
 	private final ScheduleRepository scheduleRepository;
 	private final UserPassService userPassService;
-	private final UserRepository userRepository;
-	private final UserPassRepository userPassRepository;
-
 	/**
 	 * 로그인한 사용자의 예약 목록을 조회합니다.
 	 * 

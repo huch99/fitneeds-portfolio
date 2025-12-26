@@ -58,12 +58,8 @@ public class ReviewHistoryService {
 
 		// Schedule에서 강사 ID 조회
 		Schedule schedule = scheduleRepository.findById(history.getScheduleId()).orElse(null);
-		Long instructorId = null;
 		if (schedule != null && schedule.getUserAdmin() != null) {
-			// UserAdmin의 userId는 String이므로 Long으로 변환 불가
-			// 대신 scheduleId를 instructorId로 사용하거나, 별도 매핑 필요
-			// 여기서는 scheduleId를 instructorId로 사용
-			instructorId = schedule.getSchdId();
+			schedule.getSchdId();
 		}
 
 		// DTO 변환
