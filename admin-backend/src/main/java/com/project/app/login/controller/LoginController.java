@@ -81,7 +81,7 @@ public class LoginController {
 //		User user = userService.getUserByEmail(loginRequestDto.getEmail())
 //				.orElse(null); // 사용자가 없으면 null 반환
 		
-		UserAdmin user = userAdminService.getUserByEmailAdmin(loginRequestDto.getEmail())
+		UserAdmin user = userAdminService.getUserByEmail(loginRequestDto.getEmail())
 					.orElse(null); // 사용자가 없으면 null 반환
 		
         if (user == null) {

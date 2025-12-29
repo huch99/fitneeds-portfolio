@@ -10,7 +10,7 @@ import '../Navigation.css';
 function LoginButtonAndModal() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { isAuthenticated, userName } = useSelector((state) => state.auth); // Redux 상태 가져오기
+    const { isAuthenticated, userName, userId } = useSelector((state) => state.auth); // Redux 상태 가져오기
 
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
     const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
@@ -33,11 +33,15 @@ function LoginButtonAndModal() {
         setIsRegisterModalOpen(false);
     };
 
+    const handleMyinfoClick = () => {
+        setIsRegisterModalOpen(true);
+    };
+
     return (
         <div>
             {isAuthenticated ? (
-                <span className="nav-menu-login"> {userName || 'ADMIN'} &nbsp;  {/* <<-- 새로고침 시 userName이 null이면 'ADMIN' */}
-                    {' '}
+                <span className="nav-menu-login"> <span onClick={handleMyinfoClick} style={{ cursor: 'pointer' }} >{userName || 'USER'} &nbsp; </span>
+
                     <button onClick={handleLogoutClick} style={buttonLogoutButton}>
                         로그아웃
                     </button>

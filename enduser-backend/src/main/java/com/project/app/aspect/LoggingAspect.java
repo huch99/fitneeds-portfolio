@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
  * - 현재는 모든 로그가 주석 처리되어 비활성화 상태
  * - 필요하면 주석을 해제하여 로그를 활성화하세요
  */
-@Slf4j      // Lombok: 로그 기능 자동 생성
+@Slf4j      
 @Aspect     // 이 클래스가 AOP 기능을 제공함을 표시
 @Component  // Spring Bean으로 등록
 public class LoggingAspect {
@@ -49,8 +49,8 @@ public class LoggingAspect {
 	@AfterReturning(pointcut = "execution(* com.project.app..*.*(..))", returning = "result")
 	public void logAfter(JoinPoint joinPoint, Object result) {
 		// 로그가 필요하면 아래 주석을 해제하세요
-//		log.info("[AfterReturning] 메소드 실행 성공: {}, 반환값: {}", 
-//				joinPoint.getSignature(), result);
+		log.info("[AfterReturning] 메소드 실행 성공: {}, 반환값: {}", 
+				joinPoint.getSignature(), result);
 	}
 	
 	/**
@@ -116,7 +116,7 @@ public class LoggingAspect {
 	@AfterThrowing(pointcut = "execution(* com.project.app..*.*(..))", throwing = "excep")
 	public void logError(JoinPoint joinPoint, Exception excep) {
 		// 로그가 필요하면 아래 주석을 해제하세요
-//		log.error("[Error] 메소드 실행 중 예외 발생: {}, 에러: {}", 
-//				joinPoint.getSignature(), excep.getMessage());
+		log.error("[Error] 메소드 실행 중 예외 발생: {}, 에러: {}", 
+				joinPoint.getSignature(), excep.getMessage());
 	}
 }
