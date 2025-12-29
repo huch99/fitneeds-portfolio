@@ -39,7 +39,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 	           ") " +
 	           // **[핵심] GROUP BY 제거**: 그룹핑은 서비스 레이어에서 할 것
 	           // 서비스 레이어에서 그룹핑을 효율적으로 하기 위한 정렬 조건
-	           "ORDER BY s.userAdmin.userId ASC, s.program.progId ASC, s.strtTm ASC, s.endTm ASC, s.strtDt ASC")
+	           "ORDER BY s.strtDt ASC, s.userAdmin.userId ASC, s.program.progId ASC, s.strtTm ASC, s.endTm ASC")
 	List<Schedule> findAvailableSchedulesBySportId(
 	    		@Param("sportId") Long sportId,
 	            @Param("currentDate") LocalDate currentDate,
@@ -66,7 +66,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 	           ") " +
 	           // **[핵심] GROUP BY 제거**: 그룹핑은 서비스 레이어에서 할 것
 	           // 서비스 레이어에서 그룹핑을 효율적으로 하기 위한 정렬 조건
-	           "ORDER BY s.userAdmin.userId ASC, s.program.progId ASC, s.strtTm ASC, s.endTm ASC, s.strtDt ASC")
+	           "ORDER BY s.strtDt ASC, s.userAdmin.userId ASC, s.program.progId ASC, s.strtTm ASC, s.endTm ASC")
 	    List<Schedule> findAvailableSchedulesByBrchId(
 	    		@Param("brchId") Long brchId,
 	            @Param("currentDate") LocalDate currentDate,

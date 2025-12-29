@@ -72,7 +72,7 @@ public class Schedule {
 	@ColumnDefault("0")
 	private Integer rsvCnt;			// 현재 인원
 	
-	@Column(name = "stts_cd", nullable = false, length = 20, columnDefinition = "VARCHAR()")
+	@Column(name = "stts_cd", nullable = false, columnDefinition = "VARCHAR(20)")
 	@Enumerated(EnumType.STRING)
 	private ScheduleSttsCd sttsCd;			// 상태 코드
 	
