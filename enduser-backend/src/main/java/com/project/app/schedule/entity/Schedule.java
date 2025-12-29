@@ -14,6 +14,8 @@ import com.project.app.program.entity.Program;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -70,7 +72,8 @@ public class Schedule {
 	private Integer rsvCnt;			// 현재 인원
 	
 	@Column(name = "stts_cd", nullable = false, length = 20)
-	private String sttsCd;			// 상태 코드
+	@Enumerated(EnumType.STRING)
+	private ScheduleSttsCd sttsCd;			// 상태 코드
 	
 	@Column(name = "description", nullable = true, columnDefinition = "TEXT")
 	private String description;

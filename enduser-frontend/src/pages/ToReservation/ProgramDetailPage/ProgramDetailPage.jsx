@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import api from '../../../api';
 import CalendarModal from '../CalendarModal/CalendarModal';
 import './ProgramDetailPage.css';
@@ -9,6 +9,7 @@ import { useSelector } from 'react-redux';
 
 const ProgramDetailPage = () => {
     const location = useLocation();
+    const navigate = useNavigate();
     const queryParams = new URLSearchParams(location.search);
     const progId = queryParams.get('progId');
     const userName = location.state?.userName;
@@ -44,15 +45,27 @@ const ProgramDetailPage = () => {
 
     const handleDateSelect = (date) => {
         setSelectedDate(date);
-        console.log("선택된 날짜:", date.toLocaleDateString()); // 날짜 확인
         // 모달에서 날짜 선택 후 바로 닫고 결제 페이지로 이동하는 로직이 필요하면 여기에 추가
     };
 
      // 결제 페이지로 이동하는 핸들러
     const handleProceedToPayment = () => {
-        if (selectedDate) {
-            console.log(`선택된 날짜 ${selectedDate.toLocaleDateString()}로 결제 페이지 이동`);
-             setIsReservationModalOpen(false);
+        if (selectedDate && programDetails) {
+            navigate('/payment-reservation', { 
+                state: {
+                    progId: progId, // 프로그램 ID
+                    selectedDate: selectedDate.toISOString().split('T')[0], // 선택된 날짜 (YYYY-MM-DD 형식)
+                    userName: userName, // 강사명
+                    brchNm: brchNm,     // 지점명
+                    progNm: programDetails.progNm, // 프로그램명
+                    strtTm: strtTm,     // 시작 시간
+                    endTm: endTm,       // 종료 시간
+                    // 필요한 경우 programDetails의 다른 정보들도 추가
+                    oneTimeAmt: programDetails.oneTimeAmt, // 프로그램 단일 금액
+                    rwdGamePnt: programDetails.rwdGamePnt, // 보상 게임 포인트
+                }
+            });
+            handleCloseModal();
         } else {
             alert("날짜를 선택해주세요.");
         }
@@ -107,6 +120,7 @@ const ProgramDetailPage = () => {
                         {isReservationModalOpen && (
                             <CalendarModal
                                 isOpen={isReservationModalOpen}
+                                sportId={programDetails.sportId}
                                 onClose={handleCloseModal}
                                 strtDt={strtDt}
                                 endDt={endDt}
