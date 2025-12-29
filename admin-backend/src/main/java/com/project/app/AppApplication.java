@@ -45,7 +45,7 @@ public class AppApplication {
 	 * 애플리케이션 시작 시 테스트용 사용자 계정 자동 생성 개발/테스트 환경에서 편리하게 사용하기 위한 기능 운영 환경에서는 이 메소드를
 	 * 제거하거나 비활성화하세요!
 	 */
-	
+	@Bean
 	public CommandLineRunner createTestUser(UserAdminRepository userAdminRepository, UserRepository userRepository,
 			BranchRepository branchRepository, PasswordEncoder passwordEncoder) {
 		UserIdGenerator generator = new UserIdGenerator();
@@ -117,19 +117,19 @@ public class AppApplication {
 			//Branch table insert 
 			Branch branch = new Branch();
 			branch.setBrchId(1L);
-			branch.setBrchNm("SUWON");
+			branch.setBrchNm("수원점");
 			branch.setOperYn(true);
 			branch.setRegDt(LocalDateTime.now());
 			branchRepository.save(branch);			
 
 			branch.setBrchId(2L);
-			branch.setBrchNm("SEOUL");
+			branch.setBrchNm("서울점");
 			branch.setOperYn(true);
 			branch.setRegDt(LocalDateTime.now());
 			branchRepository.save(branch);
 			
 			branch.setBrchId(3L);
-			branch.setBrchNm("JEJU");
+			branch.setBrchNm("제주점");
 			branch.setOperYn(true);
 			branch.setRegDt(LocalDateTime.now());
 			branchRepository.save(branch);

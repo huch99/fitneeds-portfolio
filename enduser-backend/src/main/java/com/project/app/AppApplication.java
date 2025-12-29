@@ -41,7 +41,7 @@ public class AppApplication {
 	 * 애플리케이션 시작 시 테스트용 사용자 계정 자동 생성 개발/테스트 환경에서 편리하게 사용하기 위한 기능 운영 환경에서는 이 메소드를
 	 * 제거하거나 비활성화하세요!
 	 */
-	
+	@Bean
 	public CommandLineRunner createTestUser(UserRepository userRepository, PasswordEncoder passwordEncoder) {
 		UserIdGenerator generator = new UserIdGenerator();
 		return args -> {
