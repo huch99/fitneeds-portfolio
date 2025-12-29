@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import api from '../../api';
 
 function AdminMemberPage() {
     // --- State 관리 ---
@@ -22,7 +23,7 @@ function AdminMemberPage() {
             // 파라미터 동적 구성
             const params = {};
 
-            const response = await axios.get('/api/admin/all', { params });
+            const response = await api.get('/admin/all', { params });
             setSchedules(response.data);
         } catch (error) {
             alert("데이터를 불러오지 못했습니다.");
@@ -104,7 +105,7 @@ function AdminMemberPage() {
                         <tbody>
                             {schedules.length === 0 ? (
                                 <tr>
-                                    <td colSpan="6" style={{ padding: '40px', color: '#7f8c8d' }}>
+                                    <td colSpan="7" style={{ padding: '40px', color: '#7f8c8d' }}>
                                         조회된 회원이 없습니다.
                                     </td>
                                 </tr>

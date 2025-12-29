@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../api';
+
+// localStorage 키 정의
 export const ACCESS_TOKEN_KEY = 'accessToken';
 export const USER_NAME_KEY = 'userName';
 export const USER_ID_KEY = 'userId';
@@ -7,24 +9,34 @@ export const ROLE_KEY = 'role';
 
 // 비동기 로그인 액션
 export const login = createAsyncThunk(
-    'auth/login',
+    'auth/login', // slice name/action name 형식으로 변경
     async ({ userId, email, password }, { rejectWithValue }) => {
         try {
             const response = await api.post('/login', { userId, email, password });
             const token = response.data.token;
-            const userName = response.data.user.userName || 'null'; // 백엔드에서 userName을 받아오거나 userId 사용
+            const userName = response.data.user.userName || null; // userName이 없을 경우 null로 처리
             const role = response.data.user.role;
-            userId = response.data.user.userId;
+            const loggedInUserId = response.data.user.userId; // 로그인 응답에서 실제 userId를 가져옴
 
-            console.log(response.data);
+            console.log("Login Response Data:", response.data);
+
+            // localStorage에 모든 관련 정보 저장
             localStorage.setItem(ACCESS_TOKEN_KEY, token);
-            localStorage.setItem(USER_NAME_KEY, userName); // <<-- userName도 localStorage에 저장
-            localStorage.setItem(USER_ID_KEY, userId);
+            localStorage.setItem(USER_NAME_KEY, userName);
+            localStorage.setItem(USER_ID_KEY, loggedInUserId); // 응답받은 userId 저장
             localStorage.setItem(ROLE_KEY, role);
+            localStorage.setItem('isLoggedIn', true); // 로그인 상태 저장
 
-            return { token, userName, userId, role }; // Redux 상태 업데이트를 위해 token과 userName을 리턴
+            // Redux 상태 업데이트를 위해 필요한 모든 정보 리턴
+            return {
+                token,
+                userName,
+                userId: loggedInUserId, // userId는 여기서 응답받은 값으로 사용
+                role,
+            };
         } catch (error) {
             const message = error.response?.data?.message || '로그인 실패';
+            console.error("Login Error:", error.response?.data);
             return rejectWithValue(message);
         }
     }
@@ -35,10 +47,10 @@ const authSlice = createSlice({
     name: 'auth',
     initialState: {
         token: localStorage.getItem(ACCESS_TOKEN_KEY) || null,
-        userName: localStorage.getItem(USER_NAME_KEY) || null, // <<-- 초기 상태에서 localStorage에서 userName 로드
+        userName: localStorage.getItem(USER_NAME_KEY) || null,
         userId: localStorage.getItem(USER_ID_KEY) || null,
         role: localStorage.getItem(ROLE_KEY) || null,
-        isAuthenticated: !!localStorage.getItem(ACCESS_TOKEN_KEY),
+        isAuthenticated: !!localStorage.getItem(ACCESS_TOKEN_KEY), // 토큰 유무로 인증 상태 판단
         isLoading: false,
         error: null,
     },
@@ -46,10 +58,18 @@ const authSlice = createSlice({
         // 로그아웃 액션
         logout: (state) => {
             state.isAuthenticated = false;
+            state.token = null;
+            state.userName = null;
+            state.userId = null;
+            state.role = null;
+
+            // localStorage에서 모든 관련 정보 제거
             localStorage.removeItem(ACCESS_TOKEN_KEY);
-            localStorage.removeItem(USER_NAME_KEY); // <<-- 로그아웃 시 localStorage에서 userName 제거
+            localStorage.removeItem(USER_NAME_KEY);
             localStorage.removeItem(USER_ID_KEY);
             localStorage.removeItem(ROLE_KEY);
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('authToken'); // 'authToken'도 제거 (어떤 용도인지는 명확치 않지만 1번 코드에 있었으므로 포함)
         },
         // 사용자 이름 설정 (필요에 따라 외부에서 userName 업데이트 시 사용)
         setUsername: (state, action) => {
@@ -72,18 +92,30 @@ const authSlice = createSlice({
                 state.isLoading = false;
                 state.isAuthenticated = true;
                 state.token = action.payload.token;
-                state.userName = action.payload.userName; // <<-- Redux 상태에도 userName 업데이트
+                state.userName = action.payload.userName;
+                state.userId = action.payload.userId; // userId도 상태 업데이트
+                state.role = action.payload.role; // role도 상태 업데이트
+                state.error = null; // 로그인 성공 시 에러 초기화
             })
             .addCase(login.rejected, (state, action) => {
                 state.isLoading = false;
                 state.isAuthenticated = false;
                 state.error = action.payload;
+                // 로그인 실패 시 Redux 상태 초기화
                 state.token = null;
-                state.userName = null; // 로그인 실패 시 userName 초기화
+                state.userName = null;
+                state.userId = null;
+                state.role = null;
+
+                // 로그인 실패 시 localStorage 정보도 제거
                 localStorage.removeItem(ACCESS_TOKEN_KEY);
-                localStorage.removeItem(USER_NAME_KEY); // 로그인 실패 시 localStorage userName도 제거
+                localStorage.removeItem(USER_NAME_KEY);
+                localStorage.removeItem(USER_ID_KEY);
+                localStorage.removeItem(ROLE_KEY);
+                localStorage.removeItem('isLoggedIn');
+                localStorage.removeItem('authToken'); // 'authToken'도 제거
             });
-        // fetchUserInfo 관련 extraReducers는 모두 제거합니다.
+        // fetchUserInfo 관련 extraReducers는 모두 제거되었습니다.
     },
 });
 

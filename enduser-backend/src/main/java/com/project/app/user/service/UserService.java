@@ -8,6 +8,7 @@ import com.project.app.user.entity.User;
 public interface UserService {
 	
 	User createUser(UserRequestDto userRequestDto);
+	User updateUser(UserRequestDto userRequestDto);
 	boolean existsByUserId(String userId);
 	boolean existsByEmail(String email);
 	Optional<User> findByUserId(String userId);
