@@ -18,11 +18,11 @@ const initialFormState = {
 
 function RegisterModal({ isOpen, onClose }) {
     // ⭐⭐ 1. 모든 Hooks 호출 (useState, useSelector, useDispatch) ⭐⭐
-    const { isAuthenticated, userId: currentLoggedInUserId } = useSelector((state) => state.auth);
+    const { isAuthenticated, userId } = useSelector((state) => state.auth);
     const dispatch = useDispatch();
 
     const [formState, setFormState] = useState(initialFormState);
-    const { userId, userName, password, email, phoneNumber, cashPoint, gradePoint, agreeAt } = formState;
+    const { userName, password, email, phoneNumber, cashPoint, gradePoint, agreeAt } = formState;
 
     const [message, setMessage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -68,7 +68,7 @@ function RegisterModal({ isOpen, onClose }) {
         setIsLoading(true);
         try {
             const response = await api.get('/user/userinfo', {
-                params: { userId: currentLoggedInUserId }
+                params: { userId: userId }
             });
             console.log('User Info Response:', response.data);
             setMessage('정보를 성공적으로 가져왔습니다.');
@@ -89,11 +89,11 @@ function RegisterModal({ isOpen, onClose }) {
         } finally {
             setIsLoading(false);
         }
-    }, [currentLoggedInUserId, handleApiError]); // 의존성 배열
+    }, [userId, handleApiError]); // 의존성 배열
 
     // 모달 상태 및 인증 여부에 따른 사이드 이펙트 관리
     useEffect(() => {
-        if (isOpen && isAuthenticated && currentLoggedInUserId) {
+        if (isOpen && isAuthenticated && userId) {
             fetchUserInfo();
         }
 
@@ -105,7 +105,7 @@ function RegisterModal({ isOpen, onClose }) {
                 setIsLoading(false);
             }
         };
-    }, [isOpen, isAuthenticated, currentLoggedInUserId, fetchUserInfo]); // 의존성 배열
+    }, [isOpen, isAuthenticated, userId, fetchUserInfo]); // 의존성 배열
 
     // ⭐⭐ useMemo 훅들 또한 여기에 위치해야 합니다! ⭐⭐
     const formTitle = useMemo(() => isAuthenticated ? '내 정보' : '회원가입', [isAuthenticated]);
