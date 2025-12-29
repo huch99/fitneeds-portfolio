@@ -32,12 +32,11 @@ public class GroupedScheduleResponseDto {
 	private LocalTime endTm;
 
 	private LocalDate groupedStrtDt;
-	private LocalDate groupedEndDt;
 	
 	private List<LocalDate> scheduledDates;
 
  	public GroupedScheduleResponseDto(Long schdId, String userId, String userName, Long progId, String progNm, String brchNm, LocalTime strtTm,
-			LocalTime endTm, LocalDate groupedStrtDt, LocalDate groupedEndDt) {
+			LocalTime endTm, LocalDate groupedStrtDt) {
 		this.schdId = schdId;
 		this.userId = userId;
 		this.userName = userName;
@@ -46,8 +45,7 @@ public class GroupedScheduleResponseDto {
 		this.brchNm = brchNm;
 		this.strtTm = strtTm;
 		this.endTm = endTm;
-		this.groupedStrtDt = groupedStrtDt; 
-		this.groupedEndDt = groupedEndDt; 
+		this.groupedStrtDt = groupedStrtDt;  
 		this.scheduledDates = new ArrayList<>();
 	}
 
@@ -69,7 +67,6 @@ public class GroupedScheduleResponseDto {
 																													// String
 				.endTm(schedule.getEndTm()) 
 				.groupedStrtDt(schedule.getStrtDt()) 
-				.groupedEndDt(schedule.getEndDt()) 
 				.scheduledDates(new ArrayList<>())
 				.build();
 	}

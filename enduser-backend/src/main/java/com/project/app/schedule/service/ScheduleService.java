@@ -83,9 +83,6 @@ public class ScheduleService {
 			if (currentStrtDt.isBefore(existingGroup.getGroupedStrtDt())) {
 				existingGroup.setGroupedStrtDt(currentStrtDt);
 			}
-			if (currentStrtDt.isAfter(existingGroup.getGroupedEndDt())) {
-				existingGroup.setGroupedEndDt(currentStrtDt);
-			}
 		});
 
 		// --- 그룹화된 DTO에 scheduledDates 채워 넣기 ---

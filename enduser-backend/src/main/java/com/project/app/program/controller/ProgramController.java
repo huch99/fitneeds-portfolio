@@ -22,6 +22,7 @@ public class ProgramController {
 
 	private final ProgramService programService;
 	
+	// 프로그램 상세정보 조회
 	@GetMapping("/getProgramByProgIdForR/{progId}")
 	public ResponseEntity<ProgramResponseDto> getProgramByProgIdForR(@PathVariable("progId") Long progId) {
 		 Optional<Program> programOptional = programService.getProgramByProgId(progId);

@@ -15,7 +15,6 @@ public class ScheduleResponseDto {
 
 	private Long schdId;
 	private LocalDate strtDt;
-	private LocalDate endDt;
 	private LocalTime strtTm;
 	private LocalTime endTm;
 	private Integer maxNopCnt;
@@ -50,7 +49,6 @@ public class ScheduleResponseDto {
 		return ScheduleResponseDto.builder()
 				.schdId(schedule.getSchdId())
 				.strtDt(schedule.getStrtDt())
-				.endDt(schedule.getEndDt())
 				.strtTm(schedule.getStrtTm())
 				.endTm(schedule.getEndTm())
 				.maxNopCnt(schedule.getMaxNopCnt())
