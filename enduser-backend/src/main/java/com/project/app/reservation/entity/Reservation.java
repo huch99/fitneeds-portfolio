@@ -68,11 +68,9 @@ public class Reservation {
 	private LocalTime rsvTime;
 
 	@Column(name = "reg_dt", nullable = false)
-	@CreatedDate
 	private LocalDateTime regDt;
 
 	@Column(name = "upd_dt", nullable = false)
-	@LastModifiedDate
 	private LocalDateTime updDt;
 
 	@Column(name = "cncl_rsn", nullable = true, length = 255)

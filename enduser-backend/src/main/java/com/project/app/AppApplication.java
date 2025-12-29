@@ -6,7 +6,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.client.RestTemplate;
 
@@ -23,7 +23,7 @@ import com.project.app.user.repository.UserRepository;
  * 제외: @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
  */
 @SpringBootApplication
-@EnableJpaAuditing
+@EnableScheduling
 public class AppApplication {
 
 	// 애플리케이션 실행 메소드

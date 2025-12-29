@@ -3,6 +3,7 @@ package com.project.app.reservation.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.springframework.stereotype.Service;
@@ -73,5 +74,26 @@ public class ReservationService {
         // 3. 결제 취소 (paymentService.cancelPayment(reservation.getPayment().getPaymentId(), reason)) - Payment 엔티티에 rsvId가 있다면 가능
 
         return reservationRepository.save(reservation);
+    }
+    
+    /**
+     * 스케줄러가 호출하여 지난 날짜의 예약 (CONFIRMED 상태)을 COMPLETED 상태로 업데이트합니다.
+     * @param batchUser 업데이터 사용자 ID (예: "SYSTEM" 또는 "SCHEDULER")
+     * @return 업데이트된 예약의 수
+     */
+    public int updatePastReservationsToCompleted(String batchUser) {
+        LocalDate today = LocalDate.now(); // 오늘 날짜
+
+        // rsvDt가 오늘 날짜 이전이고, sttsCd가 CONFIRMED인 예약들을 찾습니다.
+        List<Reservation> pastConfirmedReservations = reservationRepository.findByRsvDtBeforeAndSttsCd(today, RsvSttsCd.CONFIRMED);
+
+        int updatedCount = 0;
+        for (Reservation reservation : pastConfirmedReservations) {
+            reservation.setSttsCd(RsvSttsCd.COMPLETED); // 상태를 COMPLETED로 변경
+            reservation.setUpdID(batchUser); // 스케줄러가 업데이트했음을 기록
+            reservationRepository.save(reservation);
+            updatedCount++;
+        }
+        return updatedCount;
     }
 }

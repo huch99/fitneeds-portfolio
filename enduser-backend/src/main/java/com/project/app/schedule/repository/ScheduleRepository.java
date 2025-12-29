@@ -2,6 +2,7 @@ package com.project.app.schedule.repository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -74,5 +75,6 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 	            @Param("scheduleStatus") ScheduleSttsCd scheduleStatus
 	    );
 	
+	List<Schedule> findByStrtDtBeforeAndSttsCdIn(LocalDate strtDt, Collection<ScheduleSttsCd> sttsCds);
 
 }

@@ -3,6 +3,7 @@ package com.project.app.schedule.service;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -155,4 +156,28 @@ public class ScheduleService {
 			return Page.empty(pageable);
 		}
 	}
+	
+	 /**
+     * 스케줄러가 호출하여 지난 날짜의 스케줄 (AVAILABLE 상태)을 CLOSED 상태로 업데이트합니다.
+     * @param batchUser 업데이터 사용자 ID (예: "SYSTEM" 또는 "SCHEDULER")
+     * @return 업데이트된 스케줄의 수
+     */
+    public int updatePastSchedulesToClosed(String batchUser) {
+        LocalDate today = LocalDate.now(); // 오늘 날짜
+
+        // strtDt가 오늘 날짜 이전이고, sttsCd가 AVAILABLE인 스케줄을 찾습니다.
+        // Huch의 ScheduleSttsCd에는 AVAILABLE, CLOSED만 있으므로, AVAILABLE인 것만 종료 처리
+        Collection<ScheduleSttsCd> activeSttsCds = List.of(ScheduleSttsCd.AVAILABLE); // <-- Huch의 Enum 값에 맞춰 AVAILABLE만
+        List<Schedule> activePastSchedules = scheduleRepository.findByStrtDtBeforeAndSttsCdIn(today, activeSttsCds);
+            
+        int updatedCount = 0;
+        for (Schedule schedule : activePastSchedules) {
+            schedule.setSttsCd(ScheduleSttsCd.CLOSED); // <-- Huch의 Enum 값에 맞춰 CLOSED로 변경
+            // schedule.setUpdID(batchUser); // Schedule 엔티티에 updID가 있다면 기록
+            // schedule.setUpdDt(LocalDateTime.now()); // Schedule 엔티티에 updDt가 있다면 기록
+            scheduleRepository.save(schedule);
+            updatedCount++;
+        }
+        return updatedCount;
+    }
 }
