@@ -54,9 +54,9 @@ public class ReviewServiceImpl implements ReviewService {
         }
     }
 
-    public void updateReview(Long reviewId, String userId, ReviewDto reviewDto) {
+    public void updateReview(Long reviewId, ReviewDto reviewDto) {
         // 본인 체크
-        int count = reviewMapper.countByReviewIdAndUserId(reviewId, userId);
+        int count = reviewMapper.countByReviewIdAndUserId(reviewId, reviewDto.getUserId());
         if (count == 0) {
             throw new RuntimeException("권한이 없습니다. 본인 리뷰만 수정 가능합니다.");
         }
@@ -114,6 +114,12 @@ public class ReviewServiceImpl implements ReviewService {
         
         log.info("[ReviewServiceImpl] 리뷰 삭제 프로세스 완료");
     }
+
+	@Override
+	public void updateReview(Long reviewId, String userId, ReviewDto reviewDto) {
+		// TODO Auto-generated method stub
+		
+	}
 
 }
 

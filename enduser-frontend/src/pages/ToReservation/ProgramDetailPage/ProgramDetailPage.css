@@ -1,0 +1,73 @@
+/* ProgramDetailPage.css */
+
+.program-detail-container {
+    background-color: #fff;
+    padding: 40px 50px;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    max-width: 900px;
+    margin: 40px auto 80px;
+    font-family: 'Noto Sans KR', sans-serif;
+    color: #333;
+}
+
+/* 모든 p 태그에 일괄 적용되던 스타일을 개별 클래스로 변경 */
+.program-detail-container .program-title { /* p:nth-child(1) 대신 클래스 사용 */
+    font-weight: 700;
+    font-size: 2rem;
+    margin-bottom: 30px;
+    color: #FFC107; /* 메인 컨셉 색상 */
+}
+
+.program-detail-container .instructor-name, /* p:nth-child(2) 대신 클래스 사용 */
+.program-detail-container .branch-name {   /* p:nth-child(3) 대신 클래스 사용 */
+    font-weight: 600;
+    color: #555;
+    font-size: 1.25rem; /* 기본 p 스타일에서 이관 */
+    margin-bottom: 18px; /* 기본 p 스타일에서 이관 */
+    line-height: 1.6; /* 기본 p 스타일에서 이관 */
+}
+
+.program-detail-container .program-duration, /* p:nth-child(4) 대신 클래스 사용 */
+.program-detail-container .program-time {   /* p:nth-child(5) 대신 클래스 사용 */
+    font-size: 1.15rem;
+    color: #666;
+    margin-bottom: 18px; /* 기본 p 스타일에서 이관 */
+    line-height: 1.6; /* 기본 p 스타일에서 이관 */
+}
+
+.program-detail-container .program-description { /* p:nth-child(6) 대신 클래스 사용 */
+    font-size: 1.15rem;
+    line-height: 1.8;
+    color: #444;
+    white-space: pre-wrap; /* 줄바꿈 유지 */
+    margin-top: 25px;
+    margin-bottom: 30px;
+}
+
+
+/* 버튼 스타일도 클래스 선택자로 변경 */
+.program-detail-container .reserve-button { /* button 대신 클래스 사용 */
+    display: block;
+    width: 100%;
+    max-width: 300px;
+    padding: 14px 0;
+    background-color: #FFC107;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #222;
+    cursor: pointer;
+    margin-top: 25px;
+    transition: background-color 0.3s ease;
+    margin-left: auto; /* 버튼 중앙 정렬을 위해 추가 */
+    margin-right: auto; /* 버튼 중앙 정렬을 위해 추가 */
+}
+
+.program-detail-container .reserve-button:hover {
+    background-color: #e0ac06;
+}
+
+/* 링크는 스타일링을 원치 않으셨으므로 그대로 두거나,
+   필요하다면 .program-detail-container .payment-link { ... } 를 추가 */

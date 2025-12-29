@@ -70,8 +70,15 @@ const cancelReservation = async (reservationId, cancelReason = null) => {
 // 이용권 목록 조회
 const getUserPasses = async (userId) => {
   try {
-    const response = await api.get(`/userpasses/getUserPassesByUserIdForR/${userId}`);
-    
+    if (!userId) throw new Error('userId가 없습니다.');
+
+    const response = await api.post(
+      '/userpasses/my',
+      {
+        userId: Number(userId)
+      }
+    );
+
     // 백엔드 응답 구조: UserPassResponseDto 배열
     if (Array.isArray(response.data)) {
       return response.data;
@@ -112,6 +119,7 @@ function MyReservationList() {
     const fetchReservations = async () => {
       try {
         setLoading(true);
+        const userId = localStorage.getItem('userId')
         const data = await getMyReservations();
         console.log('[MyReservationList] API 응답 데이터:', data);
         
@@ -155,32 +163,32 @@ function MyReservationList() {
         
         // ===== 더미 데이터 (화면 확인용) =====
         // TODO: 백엔드 API 연결 후 제거
-        if (transformedReservations.length === 0) {
-          transformedReservations.push({
-            id: 999,
-            reservationId: 999,
-            date: '2024-12-25',
-            time: '10:00',
-            productName: '크로스핏',
-            option: '그룹 레슨',
-            price: 0,
-            status: '예약완료',
-            branchName: '잠실점',
-            trainerName: ''
-          });
-          transformedReservations.push({
-            id: 998,
-            reservationId: 998,
-            date: '2024-12-27',
-            time: '14:00',
-            productName: 'PT',
-            option: '개인 레슨',
-            price: 50000,
-            status: '예약완료',
-            branchName: '강남점',
-            trainerName: '박강사'
-          });
-        }
+        // if (transformedReservations.length === 0) {
+        //   transformedReservations.push({
+        //     id: 999,
+        //     reservationId: 999,
+        //     date: '2024-12-25',
+        //     time: '10:00',
+        //     productName: '크로스핏',
+        //     option: '그룹 레슨',
+        //     price: 0,
+        //     status: '예약완료',
+        //     branchName: '잠실점',
+        //     trainerName: ''
+        //   });
+        //   transformedReservations.push({
+        //     id: 998,
+        //     reservationId: 998,
+        //     date: '2024-12-27',
+        //     time: '14:00',
+        //     productName: 'PT',
+        //     option: '개인 레슨',
+        //     price: 50000,
+        //     status: '예약완료',
+        //     branchName: '강남점',
+        //     trainerName: '박강사'
+        //   });
+        // }
         // ===== 더미 데이터 끝 =====
         
         setReservations(transformedReservations);
@@ -190,29 +198,29 @@ function MyReservationList() {
         
         // ===== 더미 데이터 (에러 시 화면 확인용) =====
         // TODO: 백엔드 API 연결 후 제거
-        setReservations([{
-          id: 999,
-          reservationId: 999,
-          date: '2024-12-25',
-          time: '10:00',
-          productName: '크로스핏',
-          option: '그룹 레슨',
-          price: 0,
-          status: '예약완료',
-          branchName: '잠실점',
-          trainerName: ''
-        }, {
-          id: 998,
-          reservationId: 998,
-          date: '2024-12-27',
-          time: '14:00',
-          productName: 'PT',
-          option: '개인 레슨',
-          price: 50000,
-          status: '예약완료',
-          branchName: '강남점',
-          trainerName: '박강사'
-        }]);
+        // setReservations([{
+        //   id: 999,
+        //   reservationId: 999,
+        //   date: '2024-12-25',
+        //   time: '10:00',
+        //   productName: '크로스핏',
+        //   option: '그룹 레슨',
+        //   price: 0,
+        //   status: '예약완료',
+        //   branchName: '잠실점',
+        //   trainerName: ''
+        // }, {
+        //   id: 998,
+        //   reservationId: 998,
+        //   date: '2024-12-27',
+        //   time: '14:00',
+        //   productName: 'PT',
+        //   option: '개인 레슨',
+        //   price: 50000,
+        //   status: '예약완료',
+        //   branchName: '강남점',
+        //   trainerName: '박강사'
+        // }]);
         // ===== 더미 데이터 끝 =====
       } finally {
         setLoading(false);
@@ -227,6 +235,7 @@ function MyReservationList() {
     const fetchClosingSoonSchedules = async () => {
       try {
         setUrgentClassesLoading(true);
+        const userId = localStorage.getItem('userId')
         const data = await getClosingSoonSchedules();
         console.log('[MyReservationList] 마감임박 수업 API 응답 데이터:', data);
         
@@ -277,36 +286,36 @@ function MyReservationList() {
         
         // ===== 더미 데이터 (화면 확인용) =====
         // TODO: 백엔드 API 연결 후 제거
-        if (transformedClasses.length === 0) {
-          transformedClasses.push({
-            id: 999,
-            scheduleId: 999,
-            name: '필라테스 개인레슨',
-            branch: '강남점',
-            image: '/images/pilates.png',
-            rating: 5,
-            date: '2024-12-26',
-            time: '15:00',
-            maxCapacity: 10,
-            reservedCount: 7,
-            remainingSeats: 3,
-            trainerName: '박강사'
-          });
-          transformedClasses.push({
-            id: 998,
-            scheduleId: 998,
-            name: '요가 그룹레슨',
-            branch: '홍대점',
-            image: '/images/yoga.png',
-            rating: 5,
-            date: '2024-12-28',
-            time: '18:00',
-            maxCapacity: 15,
-            reservedCount: 12,
-            remainingSeats: 3,
-            trainerName: ''
-          });
-        }
+        // if (transformedClasses.length === 0) {
+        //   transformedClasses.push({
+        //     id: 999,
+        //     scheduleId: 999,
+        //     name: '필라테스 개인레슨',
+        //     branch: '강남점',
+        //     image: '/images/pilates.png',
+        //     rating: 5,
+        //     date: '2024-12-26',
+        //     time: '15:00',
+        //     maxCapacity: 10,
+        //     reservedCount: 7,
+        //     remainingSeats: 3,
+        //     trainerName: '박강사'
+        //   });
+        //   transformedClasses.push({
+        //     id: 998,
+        //     scheduleId: 998,
+        //     name: '요가 그룹레슨',
+        //     branch: '홍대점',
+        //     image: '/images/yoga.png',
+        //     rating: 5,
+        //     date: '2024-12-28',
+        //     time: '18:00',
+        //     maxCapacity: 15,
+        //     reservedCount: 12,
+        //     remainingSeats: 3,
+        //     trainerName: ''
+        //   });
+        // }
         // ===== 더미 데이터 끝 =====
         
         setUrgentClasses(transformedClasses);
@@ -316,33 +325,33 @@ function MyReservationList() {
         
         // ===== 더미 데이터 (에러 시 화면 확인용) =====
         // TODO: 백엔드 API 연결 후 제거
-        setUrgentClasses([{
-          id: 999,
-          scheduleId: 999,
-          name: '필라테스 개인레슨',
-          branch: '강남점',
-          image: '/images/pilates.png',
-          rating: 5,
-          date: '2024-12-26',
-          time: '15:00',
-          maxCapacity: 10,
-          reservedCount: 7,
-          remainingSeats: 3,
-          trainerName: '박강사'
-        }, {
-          id: 998,
-          scheduleId: 998,
-          name: '요가 그룹레슨',
-          branch: '홍대점',
-          image: '/images/yoga.png',
-          rating: 5,
-          date: '2024-12-28',
-          time: '18:00',
-          maxCapacity: 15,
-          reservedCount: 12,
-          remainingSeats: 3,
-          trainerName: ''
-        }]);
+        // setUrgentClasses([{
+        //   id: 999,
+        //   scheduleId: 999,
+        //   name: '필라테스 개인레슨',
+        //   branch: '강남점',
+        //   image: '/images/pilates.png',
+        //   rating: 5,
+        //   date: '2024-12-26',
+        //   time: '15:00',
+        //   maxCapacity: 10,
+        //   reservedCount: 7,
+        //   remainingSeats: 3,
+        //   trainerName: '박강사'
+        // }, {
+        //   id: 998,
+        //   scheduleId: 998,
+        //   name: '요가 그룹레슨',
+        //   branch: '홍대점',
+        //   image: '/images/yoga.png',
+        //   rating: 5,
+        //   date: '2024-12-28',
+        //   time: '18:00',
+        //   maxCapacity: 15,
+        //   reservedCount: 12,
+        //   remainingSeats: 3,
+        //   trainerName: ''
+        // }]);
         // ===== 더미 데이터 끝 =====
       } finally {
         setUrgentClassesLoading(false);
@@ -407,44 +416,44 @@ function MyReservationList() {
 
 
   // 핫 pick 수업 예약하기 데이터
-  const hotPickClasses = [
-    {
-      id: 1,
-      name: '필라테스 그룹레슨',
-      branch: '강남점',
-      image: '/images/pilates.png',
-      rating: 5,
-      date: '2024-02-15',
-      time: '10:00'
-    },
-    {
-      id: 2,
-      name: '요가 명상',
-      branch: '홍대점',
-      image: '/images/yoga.png',
-      rating: 5,
-      date: '2024-02-15',
-      time: '14:00'
-    },
-    {
-      id: 3,
-      name: '헬스 웨이트',
-      branch: '잠실점',
-      image: '/images/pt.png',
-      rating: 4,
-      date: '2024-02-16',
-      time: '16:00'
-    },
-    {
-      id: 4,
-      name: '크로스핏 클래스',
-      branch: '신촌점',
-      image: '/images/crossfit.png',
-      rating: 5,
-      date: '2024-02-16',
-      time: '18:00'
-    }
-  ];
+  // const hotPickClasses = [
+  //   {
+  //     id: 1,
+  //     name: '필라테스 그룹레슨',
+  //     branch: '강남점',
+  //     image: '/images/pilates.png',
+  //     rating: 5,
+  //     date: '2024-02-15',
+  //     time: '10:00'
+  //   },
+  //   {
+  //     id: 2,
+  //     name: '요가 명상',
+  //     branch: '홍대점',
+  //     image: '/images/yoga.png',
+  //     rating: 5,
+  //     date: '2024-02-15',
+  //     time: '14:00'
+  //   },
+  //   {
+  //     id: 3,
+  //     name: '헬스 웨이트',
+  //     branch: '잠실점',
+  //     image: '/images/pt.png',
+  //     rating: 4,
+  //     date: '2024-02-16',
+  //     time: '16:00'
+  //   },
+  //   {
+  //     id: 4,
+  //     name: '크로스핏 클래스',
+  //     branch: '신촌점',
+  //     image: '/images/crossfit.png',
+  //     rating: 5,
+  //     date: '2024-02-16',
+  //     time: '18:00'
+  //   }
+  // ];
 
   // 예약 취소 핸들러
   const handleCancelReservation = async (reservationId) => {
@@ -592,7 +601,7 @@ function MyReservationList() {
             )}
           </section>
 
-          {/* 핫 pick 수업 예약하기 */}
+          {/* 핫 pick 수업 예약하기
           <section className="mypage-content-section">
             <h2 className="content-title">핫 pick 수업 예약하기</h2>
             <div className="class-cards-container">
@@ -619,7 +628,7 @@ function MyReservationList() {
                 </div>
               ))}
             </div>
-          </section>
+          </section> */}
         </main>
       </div>
     </>

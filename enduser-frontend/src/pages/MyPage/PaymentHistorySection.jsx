@@ -9,13 +9,15 @@ const getMyPayments = async (userId) => {
   if (!userId) return [];
   try {
     const token = localStorage.getItem('accessToken');
-    const response = await api.get('/payment/my', {
-      params: { userId },
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
+    const response = await api.post('/payment/my',  
+      { userId }, // body에 포함
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       }
-    });
+    );
     return response.data || [];
   } catch (error) {
     console.error('결제내역 조회 실패:', error);
@@ -50,6 +52,7 @@ function PaymentHistorySection() {
 
       try {
         setPaymentHistoryLoading(true);
+        const userId = localStorage.getItem('userId');
         const data = await getMyPayments(loginUserId);
 
         // 백엔드 데이터를 화면에 맞게 변환
@@ -69,19 +72,19 @@ function PaymentHistorySection() {
 
         // ===== 더미 데이터 (화면 확인용) =====
         // TODO: 백엔드 API 연결 후 제거
-        if (transformed.length === 0) {
-          transformed.push({
-            id: 999,
-            paymentId: 999,
-            date: '2024-12-20',
-            paymentDate: '2024-12-20',
-            productName: '필라테스',
-            option: '그룹 레슨',
-            price: 30000,
-            isCompleted: true,
-            cancelRefundStatus: null
-          });
-        }
+        // if (transformed.length === 0) {
+        //   transformed.push({
+        //     id: 999,
+        //     paymentId: 999,
+        //     date: '2024-12-20',
+        //     paymentDate: '2024-12-20',
+        //     productName: '필라테스',
+        //     option: '그룹 레슨',
+        //     price: 30000,
+        //     isCompleted: true,
+        //     cancelRefundStatus: null
+        //   });
+        // }
         // ===== 더미 데이터 끝 =====
 
         setPaymentHistoryData(transformed);
@@ -90,17 +93,17 @@ function PaymentHistorySection() {
         
         // ===== 더미 데이터 (에러 시 화면 확인용) =====
         // TODO: 백엔드 API 연결 후 제거
-        setPaymentHistoryData([{
-          id: 999,
-          paymentId: 999,
-          date: '2024-12-20',
-          paymentDate: '2024-12-20',
-          productName: '필라테스',
-          option: '그룹 레슨',
-          price: 30000,
-          isCompleted: true,
-          cancelRefundStatus: null
-        }]);
+        // setPaymentHistoryData([{
+        //   id: 999,
+        //   paymentId: 999,
+        //   date: '2024-12-20',
+        //   paymentDate: '2024-12-20',
+        //   productName: '필라테스',
+        //   option: '그룹 레슨',
+        //   price: 30000,
+        //   isCompleted: true,
+        //   cancelRefundStatus: null
+        // }]);
         // ===== 더미 데이터 끝 =====
       } finally {
         setPaymentHistoryLoading(false);

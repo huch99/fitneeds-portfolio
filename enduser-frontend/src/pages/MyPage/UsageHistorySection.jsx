@@ -75,6 +75,7 @@ function UsageHistorySection({ onRefresh }) {
     const fetchUsageHistory = async () => {
       try {
         setUsageHistoryLoading(true);
+        const userId = localStorage.getItem('userId');
         const data = await getPastHistory();
         console.log('[UsageHistorySection] 이용내역 API 응답 데이터:', data);
         
@@ -119,32 +120,32 @@ function UsageHistorySection({ onRefresh }) {
         
         // ===== 더미 데이터 (화면 확인용) =====
         // TODO: 백엔드 API 연결 후 제거
-        if (transformed.length === 0) {
-          transformed.push({
-            id: 999,
-            reservationId: 999,
-            historyId: 999,
-            date: '2024-12-20',
-            time: '14:00',
-            branchName: '강남점',
-            programName: '필라테스',
-            trainerName: '김강사',
-            reviewWritten: false,
-            image: '/images/pilates.png'
-          });
-          transformed.push({
-            id: 998,
-            reservationId: 998,
-            historyId: 998,
-            date: '2024-12-18',
-            time: '16:00',
-            branchName: '잠실점',
-            programName: '요가',
-            trainerName: '이강사',
-            reviewWritten: true,
-            image: '/images/yoga.png'
-          });
-        }
+        // if (transformed.length === 0) {
+        //   transformed.push({
+        //     id: 999,
+        //     reservationId: 999,
+        //     historyId: 999,
+        //     date: '2024-12-20',
+        //     time: '14:00',
+        //     branchName: '강남점',
+        //     programName: '필라테스',
+        //     trainerName: '김강사',
+        //     reviewWritten: false,
+        //     image: '/images/pilates.png'
+        //   });
+        //   transformed.push({
+        //     id: 998,
+        //     reservationId: 998,
+        //     historyId: 998,
+        //     date: '2024-12-18',
+        //     time: '16:00',
+        //     branchName: '잠실점',
+        //     programName: '요가',
+        //     trainerName: '이강사',
+        //     reviewWritten: true,
+        //     image: '/images/yoga.png'
+        //   });
+        // }
         // ===== 더미 데이터 끝 =====
         
         setUsageHistoryData(transformed);
@@ -153,29 +154,29 @@ function UsageHistorySection({ onRefresh }) {
         
         // ===== 더미 데이터 (에러 시 화면 확인용) =====
         // TODO: 백엔드 API 연결 후 제거
-        setUsageHistoryData([{
-          id: 999,
-          reservationId: 999,
-          historyId: 999,
-          date: '2024-12-20',
-          time: '14:00',
-          branchName: '강남점',
-          programName: '필라테스',
-          trainerName: '김강사',
-          reviewWritten: false,
-          image: '/images/pilates.png'
-        }, {
-          id: 998,
-          reservationId: 998,
-          historyId: 998,
-          date: '2024-12-18',
-          time: '16:00',
-          branchName: '잠실점',
-          programName: '요가',
-          trainerName: '이강사',
-          reviewWritten: true,
-          image: '/images/yoga.png'
-        }]);
+        // setUsageHistoryData([{
+        //   id: 999,
+        //   reservationId: 999,
+        //   historyId: 999,
+        //   date: '2024-12-20',
+        //   time: '14:00',
+        //   branchName: '강남점',
+        //   programName: '필라테스',
+        //   trainerName: '김강사',
+        //   reviewWritten: false,
+        //   image: '/images/pilates.png'
+        // }, {
+        //   id: 998,
+        //   reservationId: 998,
+        //   historyId: 998,
+        //   date: '2024-12-18',
+        //   time: '16:00',
+        //   branchName: '잠실점',
+        //   programName: '요가',
+        //   trainerName: '이강사',
+        //   reviewWritten: true,
+        //   image: '/images/yoga.png'
+        // }]);
         // ===== 더미 데이터 끝 =====
       } finally {
         setUsageHistoryLoading(false);
@@ -190,6 +191,7 @@ function UsageHistorySection({ onRefresh }) {
     const fetchFrequentReservations = async () => {
       try {
         setFrequentReservationsLoading(true);
+        const userId = localStorage.getItem('userId');
         const reservations = await getMyReservations();
         console.log('[UsageHistorySection] 예약 목록 API 응답 데이터:', reservations);
         
@@ -221,16 +223,16 @@ function UsageHistorySection({ onRefresh }) {
         
         // ===== 더미 데이터 (화면 확인용) =====
         // TODO: 백엔드 API 연결 후 제거
-        if (frequent.length === 0) {
-          frequent.push({
-            programName: '필라테스',
-            branchName: '강남점',
-            trainerName: '김강사',
-            count: 3,
-            image: '/images/pilates.png',
-            price: '-'
-          });
-        }
+        // if (frequent.length === 0) {
+        //   frequent.push({
+        //     programName: '필라테스',
+        //     branchName: '강남점',
+        //     trainerName: '김강사',
+        //     count: 3,
+        //     image: '/images/pilates.png',
+        //     price: '-'
+        //   });
+        // }
         // ===== 더미 데이터 끝 =====
         
         setFrequentReservations(frequent);
@@ -239,14 +241,14 @@ function UsageHistorySection({ onRefresh }) {
         
         // ===== 더미 데이터 (에러 시 화면 확인용) =====
         // TODO: 백엔드 API 연결 후 제거
-        setFrequentReservations([{
-          programName: '필라테스',
-          branchName: '강남점',
-          trainerName: '김강사',
-          count: 3,
-          image: '/images/pilates.png',
-          price: '-'
-        }]);
+        // setFrequentReservations([{
+        //   programName: '필라테스',
+        //   branchName: '강남점',
+        //   trainerName: '김강사',
+        //   count: 3,
+        //   image: '/images/pilates.png',
+        //   price: '-'
+        // }]);
         // ===== 더미 데이터 끝 =====
       } finally {
         setFrequentReservationsLoading(false);

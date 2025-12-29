@@ -138,14 +138,9 @@ public class ReviewController {
 			@PathVariable("reviewId") Long reviewId,
 			@RequestBody ReviewDto dto) {
 		try {
-			// JWT 토큰에서 사용자 ID 추출
-			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-			String userId = authentication.getName();
-
-			log.info("[ReviewController] 리뷰 수정 요청 - reviewId: {}, userId: {}", reviewId, userId);
 
 			// 리뷰 수정
-			reviewService.updateReview(reviewId, userId, dto);
+			reviewService.updateReview(reviewId, dto);
 
 			// 응답 데이터 구성
 			Map<String, Object> response = new HashMap<>();

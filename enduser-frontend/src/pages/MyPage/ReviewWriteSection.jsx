@@ -150,7 +150,8 @@ function ReviewWriteModal({ isOpen, onClose, history, onRefresh }) {
         historyId: history.historyId || history.id,
         reservationId: history.reservationId,
         rating: rating,
-        content: reviewText.trim()
+        content: reviewText.trim(),
+        userId: loginUserId
       });
       alert('리뷰가 작성되었습니다.');
       onClose();
@@ -259,7 +260,8 @@ function ReviewEditModal({ isOpen, onClose, reviewId, writtenReviews, onRefresh 
     try {
       await updateReview(review.reviewId, { 
         rating, 
-        content: reviewText.trim() 
+        content: reviewText.trim(),
+        userId: loginUserId 
       });
       alert('리뷰가 수정되었습니다.');
       onClose();
@@ -464,7 +466,6 @@ function ReviewWriteSection({ reviewTab, setReviewTab }) {
           reservationId: review.reservationId,
           historyId: review.historyId,
           programName: history?.sportName || review.title || '프로그램',
-          productName: history?.sportName || review.title || '프로그램',
           branchName: history?.brchNm || '',
           facility: history?.brchNm || '',
           trainerName: history?.trainerName || '',
@@ -480,24 +481,24 @@ function ReviewWriteSection({ reviewTab, setReviewTab }) {
       
       // ===== 더미 데이터 (화면 확인용) =====
       // TODO: 백엔드 API 연결 후 제거
-      if (transformedReviews.length === 0) {
-        transformedReviews.push({
-          id: 999,
-          reviewId: 999,
-          reservationId: 999,
-          historyId: 999,
-          programName: '요가',
-          productName: '요가',
-          branchName: '홍대점',
-          facility: '홍대점',
-          trainerName: '이강사',
-          rating: 5,
-          content: '정말 좋은 수업이었습니다! 강사님이 친절하시고 수업 내용도 알차요.',
-          reviewText: '정말 좋은 수업이었습니다! 강사님이 친절하시고 수업 내용도 알차요.',
-          writtenDate: '2024.12.15',
-          image: '/images/yoga.png'
-        });
-      }
+      // if (transformedReviews.length === 0) {
+      //   transformedReviews.push({
+      //     id: 999,
+      //     reviewId: 999,
+      //     reservationId: 999,
+      //     historyId: 999,
+      //     programName: '요가',
+      //     productName: '요가',
+      //     branchName: '홍대점',
+      //     facility: '홍대점',
+      //     trainerName: '이강사',
+      //     rating: 5,
+      //     content: '정말 좋은 수업이었습니다! 강사님이 친절하시고 수업 내용도 알차요.',
+      //     reviewText: '정말 좋은 수업이었습니다! 강사님이 친절하시고 수업 내용도 알차요.',
+      //     writtenDate: '2024.12.15',
+      //     image: '/images/yoga.png'
+      //   });
+      // }
       // ===== 더미 데이터 끝 =====
       
       setWrittenReviews(transformedReviews);
@@ -506,22 +507,22 @@ function ReviewWriteSection({ reviewTab, setReviewTab }) {
       
       // ===== 더미 데이터 (에러 시 화면 확인용) =====
       // TODO: 백엔드 API 연결 후 제거
-      setWrittenReviews([{
-        id: 999,
-        reviewId: 999,
-        reservationId: 999,
-        historyId: 999,
-        programName: '요가',
-        productName: '요가',
-        branchName: '홍대점',
-        facility: '홍대점',
-        trainerName: '이강사',
-        rating: 5,
-        content: '정말 좋은 수업이었습니다! 강사님이 친절하시고 수업 내용도 알차요.',
-        reviewText: '정말 좋은 수업이었습니다! 강사님이 친절하시고 수업 내용도 알차요.',
-        writtenDate: '2024.12.15',
-        image: '/images/yoga.png'
-      }]);
+      // setWrittenReviews([{
+      //   id: 999,
+      //   reviewId: 999,
+      //   reservationId: 999,
+      //   historyId: 999,
+      //   programName: '요가',
+      //   productName: '요가',
+      //   branchName: '홍대점',
+      //   facility: '홍대점',
+      //   trainerName: '이강사',
+      //   rating: 5,
+      //   content: '정말 좋은 수업이었습니다! 강사님이 친절하시고 수업 내용도 알차요.',
+      //   reviewText: '정말 좋은 수업이었습니다! 강사님이 친절하시고 수업 내용도 알차요.',
+      //   writtenDate: '2024.12.15',
+      //   image: '/images/yoga.png'
+      // }]);
       // ===== 더미 데이터 끝 =====
     } finally {
       setLoading(false);
@@ -596,41 +597,25 @@ function ReviewWriteSection({ reviewTab, setReviewTab }) {
       
       // ===== 더미 데이터 (화면 확인용) =====
       // TODO: 백엔드 API 연결 후 제거
-      if (transformed.length === 0) {
-        transformed.push({
-          id: 999,
-          reservationId: 999,
-          historyId: 999,
-          date: '2024-12-20',
-          time: '14:00',
-          branchName: '강남점',
-          programName: '필라테스',
-          trainerName: '김강사',
-          reviewWritten: false,
-          image: '/images/pilates.png'
-        });
-      }
+      // if (transformed.length === 0) {
+      //   transformed.push({
+      //     id: 999,
+      //     reservationId: 999,
+      //     historyId: 999,
+      //     date: '2024-12-20',
+      //     time: '14:00',
+      //     branchName: '강남점',
+      //     programName: '필라테스',
+      //     trainerName: '김강사',
+      //     reviewWritten: false,
+      //     image: '/images/pilates.png'
+      //   });
+      // }
       // ===== 더미 데이터 끝 =====
       
       setUnwrittenHistories(transformed);
     } catch (error) {
       console.error('[ReviewWriteSection] 리뷰 미작성 이용내역 조회 실패:', error);
-      
-      // ===== 더미 데이터 (에러 시 화면 확인용) =====
-      // TODO: 백엔드 API 연결 후 제거
-      setUnwrittenHistories([{
-        id: 999,
-        reservationId: 999,
-        historyId: 999,
-        date: '2024-12-20',
-        time: '14:00',
-        branchName: '강남점',
-        programName: '필라테스',
-        trainerName: '김강사',
-        reviewWritten: false,
-        image: '/images/pilates.png'
-      }]);
-      // ===== 더미 데이터 끝 =====
     } finally {
       setWriteLoading(false);
     }
