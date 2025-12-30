@@ -5,6 +5,7 @@
 
 <mapper namespace="com.project.app.faq.mapper.AdminFAQMapper">
 
+    <!-- FAQ 개수 -->
     <select id="selectFAQCount" resultType="int">
         SELECT COUNT(*)
         FROM community_post
@@ -16,13 +17,15 @@
         <if test="visible != null">
             AND is_visible = #{visible}
         </if>
-        AND post_visible = 1
     </select>
 
-    <select id="selectFAQListPaged" resultType="com.project.app.faq.dto.FAQDto">
+    <!-- FAQ 목록 -->
+    <select id="selectFAQListPaged"
+            resultType="com.project.app.faq.dto.FAQDto">
         SELECT
             post_id       AS postId,
             post_type     AS postType,
+            category      AS category,
             title         AS title,
             content       AS content,
             writer_id     AS writerId,
@@ -31,7 +34,6 @@
             display_start AS displayStart,
             display_end   AS displayEnd,
             is_visible    AS isVisible,
-            post_visible  AS postVisible,
             created_at    AS createdAt,
             updated_at    AS updatedAt
         FROM community_post
@@ -43,15 +45,17 @@
         <if test="visible != null">
             AND is_visible = #{visible}
         </if>
-        AND post_visible = 1
         ORDER BY post_id DESC
         LIMIT #{size} OFFSET #{offset}
     </select>
 
-    <select id="selectFAQDetail" resultType="com.project.app.faq.dto.FAQDto">
+    <!-- FAQ 상세 -->
+    <select id="selectFAQDetail"
+            resultType="com.project.app.faq.dto.FAQDto">
         SELECT
             post_id       AS postId,
             post_type     AS postType,
+            category      AS category,
             title         AS title,
             content       AS content,
             writer_id     AS writerId,
@@ -60,20 +64,21 @@
             display_start AS displayStart,
             display_end   AS displayEnd,
             is_visible    AS isVisible,
-            post_visible  AS postVisible,
             created_at    AS createdAt,
             updated_at    AS updatedAt
         FROM community_post
         WHERE post_id = #{postId}
           AND post_type = 'FAQ'
-          AND post_visible = 1
     </select>
 
-    <insert id="insertFAQ" parameterType="com.project.app.faq.dto.FAQDto"
-            useGeneratedKeys="true" keyProperty="postId">
-        INSERT INTO community_post
-        (
+    <!-- FAQ 등록 -->
+    <insert id="insertFAQ"
+            parameterType="com.project.app.faq.dto.FAQDto"
+            useGeneratedKeys="true"
+            keyProperty="postId">
+        INSERT INTO community_post (
             post_type,
+            category,
             title,
             content,
             writer_id,
@@ -81,12 +86,11 @@
             branch_id,
             display_start,
             display_end,
-            is_visible,
-            post_visible
+            is_visible
         )
-        VALUES
-        (
+        VALUES (
             'FAQ',
+            #{category},
             #{title},
             #{content},
             #{writerId},
@@ -94,42 +98,41 @@
             #{branchId},
             #{displayStart},
             #{displayEnd},
-            #{isVisible},
-            #{postVisible}
+            #{isVisible}
         )
     </insert>
 
-    <update id="updateFAQ" parameterType="com.project.app.faq.dto.FAQDto">
+    <!-- FAQ 수정 -->
+    <update id="updateFAQ"
+            parameterType="com.project.app.faq.dto.FAQDto">
         UPDATE community_post
         SET
+            category = #{category},
             title = #{title},
             content = #{content},
             branch_id = #{branchId},
             display_start = #{displayStart},
             display_end = #{displayEnd},
-            updated_at = CURRENT_TIMESTAMP
+            updated_at = NOW()
         WHERE post_id = #{postId}
           AND post_type = 'FAQ'
-          AND post_visible = 1
     </update>
 
+    <!-- FAQ 숨김 / 보이기 -->
     <update id="updateFAQVisible">
         UPDATE community_post
         SET
             is_visible = #{visible},
-            updated_at = CURRENT_TIMESTAMP
+            updated_at = NOW()
         WHERE post_id = #{postId}
           AND post_type = 'FAQ'
-          AND post_visible = 1
     </update>
 
-    <update id="deleteFAQ">
-        UPDATE community_post
-        SET
-            post_visible = 0,
-            updated_at = CURRENT_TIMESTAMP
+    <!-- FAQ 삭제 -->
+    <delete id="deleteFAQ">
+        DELETE FROM community_post
         WHERE post_id = #{postId}
           AND post_type = 'FAQ'
-    </update>
+    </delete>
 
 </mapper>

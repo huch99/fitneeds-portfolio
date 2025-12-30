@@ -9,6 +9,8 @@ public class FAQDto {
 
     private Long postId;
     private String postType;      // FAQ
+    private String category;
+    
     private String title;         // 질문
     private String content;       // 답변
 

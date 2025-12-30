@@ -449,3 +449,32 @@
   color: #666;
   margin-bottom: 6px;
 }
+
+/* 제목 영역을 카드 헤더처럼 */
+.post-header {
+  padding-bottom: 14px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+/* 제목 강조 */
+.post-title {
+  font-size: 24px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+/* 본문 영역을 박스로 */
+.post-body {
+  background: #fafafa;
+  border-radius: 8px;
+  padding: 18px 20px;
+}
+
+/* 본문 가독성 강화 */
+.post-content {
+  white-space: pre-line;
+  line-height: 1.8;
+  font-size: 15px;
+  color: #333;
+}

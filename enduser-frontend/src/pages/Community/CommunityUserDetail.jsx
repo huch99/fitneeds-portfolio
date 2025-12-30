@@ -60,41 +60,50 @@ function CommunityUserDetail() {
           게시글 카드
       ========================= */}
       <div className="community-card post-card">
-        <h2 className="post-title">{post.title}</h2>
 
-        <div className="post-meta">
-          <span>
-            작성자 {post.writerId} · {post.createdAt?.substring(0, 10)}
-          </span>
+  {/* 제목 영역 */}
+  <div className="post-header">
+    <h2 className="post-title">{post.title}</h2>
 
-          {isWriter && (
-            <div>
-              <button
-                className="community-action-btn"
-                onClick={() => navigate(`/community/write?edit=${post.postId}`)}
-              >
-                수정
-              </button>
-              <button
-                className="community-action-btn delete"
-                onClick={async () => {
-                  if (!window.confirm("게시글을 삭제하시겠습니까?")) return;
-                  await axios.delete(`/api/user/community/${post.postId}`, {
-                    params: { userId: loginUserId },
-                  });
-                  navigate("/community");
-                }}
-              >
-                삭제
-              </button>
-            </div>
-          )}
+    <div className="post-meta">
+      <span>
+        작성자 {post.writerId} · {post.createdAt?.substring(0, 10)}
+      </span>
+
+      {isWriter && (
+        <div>
+          <button
+            className="community-action-btn"
+            onClick={() => navigate(`/community/write?edit=${post.postId}`)}
+          >
+            수정
+          </button>
+          <button
+            className="community-action-btn delete"
+            onClick={async () => {
+              if (!window.confirm("게시글을 삭제하시겠습니까?")) return;
+              await axios.delete(`/api/user/community/${post.postId}`, {
+                params: { userId: loginUserId },
+              });
+              navigate("/community");
+            }}
+          >
+            삭제
+          </button>
         </div>
+      )}
+    </div>
+  </div>
 
-        <div className="post-content">
-          {post.content}
-        </div>
-      </div>
+  {/* 본문 영역 */}
+  <div className="post-body">
+    <div className="post-content">
+      {post.content}
+    </div>
+  </div>
+
+</div>
+
 
       {/* =========================
           댓글 작성 카드

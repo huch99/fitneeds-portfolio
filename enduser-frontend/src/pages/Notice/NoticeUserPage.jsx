@@ -24,9 +24,7 @@ function formatDateYmdHm(dateStr) {
 
 function NoticeUserPage() {
   const [notices, setNotices] = useState([]);
-  const [branches, setBranches] = useState([]);
   const [keyword, setKeyword] = useState("");
-  const [branchId, setBranchId] = useState("");
   const [detail, setDetail] = useState(null);
   const [loadingList, setLoadingList] = useState(false);
   const [loadingDetail, setLoadingDetail] = useState(false);
@@ -38,18 +36,8 @@ function NoticeUserPage() {
   const params = useMemo(() => {
     const p = {};
     if (keyword?.trim()) p.keyword = keyword.trim();
-    if (branchId) p.branchId = branchId;
     return p;
-  }, [keyword, branchId]);
-
-  const fetchBranches = async () => {
-    try {
-      const res = await axios.get("/api/user/branches");
-      setBranches(res.data || []);
-    } catch {
-      setBranches([]);
-    }
-  };
+  }, [keyword]);
 
   const fetchNotices = async () => {
     setLoadingList(true);
@@ -81,7 +69,6 @@ function NoticeUserPage() {
   const closePopup = () => setDetail(null);
 
   useEffect(() => {
-    fetchBranches();
     fetchNotices();
   }, []);
 
@@ -101,8 +88,8 @@ function NoticeUserPage() {
           <p className="notice-desc">
             센터 운영 관련 필수 안내 및 이벤트 소식을 확인할 수 있습니다.
           </p>
-
-          <div className="notice-table-wrap">
+        {/* 기존 공지사항 디자인 */}
+          {/* <div className="notice-table-wrap">
             <table className="notice-table">
               <thead>
                 <tr>
@@ -135,7 +122,28 @@ function NoticeUserPage() {
                 ))}
               </tbody>
             </table>
-          </div>
+          </div> */}
+      {/* FAQ 스타일 공지 리스트 */}
+      <div className="notice-faq-list">
+  {pagedNotices.map((n) => (
+    <div
+      key={n.postId}
+      className="notice-faq-row"
+      onClick={() => openNotice(n.postId)}
+    >
+      <div className="notice-faq-left">
+        <span className="notice-faq-branch">{n.branchName}</span>
+        <span className="notice-faq-title">{n.title}</span>
+      </div>
+
+      <div className="notice-faq-right">
+        <span>
+          {n.displayEnd ? formatDateYmd(n.displayEnd) : "상시"}
+        </span>
+      </div>
+    </div>
+  ))}
+</div>
 
           {/* ✅ 페이징 버튼 */}
           <div className="community-pagination" style={{ marginTop: "20px" }}>
@@ -166,11 +174,10 @@ function NoticeUserPage() {
               다음
             </button>
           </div>
-
         </div>
       </section>
 
-      {/* 팝업 */}
+      {/* 공지 상세 팝업 */}
       {detail && (
         <div className="notice-modal-overlay" onClick={closePopup}>
           <div
