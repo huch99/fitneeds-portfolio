@@ -59,7 +59,6 @@ public class UserAdminController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body("회원가입 처리 중 오류가 발생했습니다. : " + e.getMessage());
 		}
-
 	}
 
 	@GetMapping("/userinfo")

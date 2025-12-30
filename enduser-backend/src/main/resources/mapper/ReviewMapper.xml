@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.project.app.review.mapper.ReviewMapper">
+
+    <!-- =========================
+         ResultMap
+    ========================= -->
+    <resultMap id="ReviewResultMap" type="com.project.app.review.dto.ReviewDto">
+        <id property="reviewId" column="review_id"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="userId" column="user_id"/>
+        <result property="userType" column="user_type"/>
+        <result property="reservationId" column="reservation_id"/>
+        <result property="rating" column="rating"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="isVisible" column="is_visible"/>
+    </resultMap>
+
+    <!-- =========================
+         리뷰 등록
+    ========================= -->
+    <insert id="insertReview" parameterType="com.project.app.review.dto.ReviewDto"
+            useGeneratedKeys="true" keyProperty="reviewId">
+        INSERT INTO review (
+            title,
+            content,
+            user_id,
+            user_type,
+            reservation_id,
+            rating,
+            is_visible
+        ) VALUES (
+            #{title},
+            #{content},
+            #{userId},
+            #{userType},
+            #{reservationId},
+            #{rating},
+            1
+        )
+    </insert>
+
+    <!-- =========================
+         내가 쓴 리뷰 목록 조회
+    ========================= -->
+    <select id="selectMyReviewList"
+            resultMap="ReviewResultMap">
+        SELECT *
+        FROM review
+        WHERE user_id = #{userId}
+          AND is_visible = 1
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- =========================
+         예약 ID 기준 리뷰 조회
+    ========================= -->
+    <select id="selectReviewByReservationId"
+            resultMap="ReviewResultMap">
+        SELECT *
+        FROM review
+        WHERE reservation_id = #{reservationId}
+          AND user_id = #{userId}
+          AND is_visible = 1
+    </select>
+
+    <!-- =========================
+         이용내역 ID 기준 리뷰 조회
+         (⚠ history_id 컬럼 없음 → reservation_id 사용)
+    ========================= -->
+    <select id="selectReviewByHistoryId"
+            resultMap="ReviewResultMap">
+        SELECT *
+        FROM review
+        WHERE reservation_id = #{historyId}
+          AND user_id = #{userId}
+          AND is_visible = 1
+    </select>
+
+    <!-- =========================
+         리뷰 상세 조회
+    ========================= -->
+    <select id="selectReviewDetail"
+            resultMap="ReviewResultMap">
+        SELECT *
+        FROM review
+        WHERE review_id = #{reviewId}
+    </select>
+
+    <!-- =========================
+         작성자 본인 체크
+    ========================= -->
+    <select id="countByReviewIdAndUserId"
+            resultType="int">
+        SELECT COUNT(*)
+        FROM review
+        WHERE review_id = #{reviewId}
+          AND user_id = #{userId}
+          AND is_visible = 1
+    </select>
+
+    <!-- =========================
+         리뷰 수정
+    ========================= -->
+    <update id="updateReview">
+        UPDATE review
+        SET
+            title = #{title},
+            content = #{content},
+            rating = #{rating},
+            updated_at = NOW()
+        WHERE review_id = #{reviewId}
+          AND user_id = #{userId}
+          AND is_visible = 1
+    </update>
+
+    <!-- =========================
+         리뷰 삭제 (소프트 삭제)
+    ========================= -->
+    <update id="deleteReview">
+        UPDATE review
+        SET
+            is_visible = 0,
+            updated_at = NOW()
+        WHERE review_id = #{reviewId}
+    </update>
+
+</mapper>
+

@@ -57,6 +57,11 @@ public class UserServiceImpl implements UserService {
 	public boolean existsByUserId(String userId) {
 		return userRepository.existsByUserId(userId);
 	}
+	
+	// email 존재 유무조회
+	public boolean existsByEmail(String email) {
+		return userRepository.existsByEmail(email);
+	}
 
 	// email 존재 유무조회
 	public boolean existsByEmail(String email) {
