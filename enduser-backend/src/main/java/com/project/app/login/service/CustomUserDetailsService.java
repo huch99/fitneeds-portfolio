@@ -10,8 +10,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.project.app.user.entity.User;
-import com.project.app.userAdmin.entity.UserAdmin;
-import com.project.app.userAdmin.repository.UserAdminRepository;
+import com.project.app.user.repository.UserRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,10 +18,10 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private final UserAdminRepository userAdminRepository;
+    private final UserRepository userRepository;
 
-    public CustomUserDetailsService(UserAdminRepository userAdminRepository) {
-        this.userAdminRepository = userAdminRepository;
+    public CustomUserDetailsService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -30,7 +29,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         // --- 핵심 변경 부분 ---
         // JWT 토큰의 subject("admin")가 loadUserByUsername의 인자 'username'으로 들어옵니다.
         // 우리는 이 'username' 값을 가지고 User 엔티티의 'userId' 필드를 조회해야 합니다.
-        UserAdmin user = userAdminRepository.findByUserId(username) // ✨ findByUserId를 사용하여 'username' 인자를 userId로 검색
+        User user = userRepository.findByUserId(username) // ✨ findByUserId를 사용하여 'username' 인자를 userId로 검색
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with userId: " + username));
         // --- 변경 끝 ---
 

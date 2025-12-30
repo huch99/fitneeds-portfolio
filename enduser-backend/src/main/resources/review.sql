@@ -7,7 +7,7 @@ CREATE TABLE review (
     user_id VARCHAR(255) NOT NULL,
     user_type VARCHAR(50),
     reservation_id BIGINT,
-    rating INT,
+    rating DECIMAL(2,1),
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     is_visible TINYINT(1) NOT NULL DEFAULT 1
