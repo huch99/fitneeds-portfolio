@@ -21,7 +21,6 @@ public class UserRequestDto {
 	private String agree_at;
 	private String phone_number;
 	private String user_id;
-	private String user_nam;
 	private boolean success;
 	private String message;
 }

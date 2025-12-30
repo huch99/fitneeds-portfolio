@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.project.app.config.security.JwtTokenProvider;
+import com.project.app.config.util.UserIdGenerator;
 import com.project.app.userAdmin.dto.UserAdminRequestDto;
 import com.project.app.userAdmin.entity.UserAdmin;
 import com.project.app.userAdmin.service.UserAdminService;
@@ -39,20 +40,26 @@ public class UserAdminController {
 	@PostMapping("/register")
 	public ResponseEntity<?> createUser(@RequestBody UserAdminRequestDto userAdminRequestDto) {
 		try {
-			if (userAdminRequestDto.getUserId() == null || userAdminRequestDto.getPassword() == null) {
-				return ResponseEntity.badRequest().body("아이디와 비밀번호는 필수 항목 입니다.");
-			}
-			if (userAdminService.existsByUserId(userAdminRequestDto.getUserId())) {
-				return ResponseEntity.badRequest().body("이미 사용중인 아이디입니다.");
-			}
 
-			userAdminService.createAdminUser(userAdminRequestDto);
+			if (userAdminRequestDto.getUserId().equalsIgnoreCase(null)||userAdminRequestDto.getUserId().equalsIgnoreCase("")) {
+				UserIdGenerator generator = new UserIdGenerator();
+				userAdminRequestDto.setUserId(generator.generateUniqueUserId());
+
+				if (userAdminService.existsByEmail(userAdminRequestDto.getEmail())) {
+					return ResponseEntity.badRequest().body("이미 사용중인 이메일 입니다.");
+				}
+				
+				userAdminService.createAdminUser(userAdminRequestDto);
+			} else {
+				userAdminService.updateAdminUser(userAdminRequestDto);
+			}
 
 			return ResponseEntity.status(HttpStatus.CREATED).body(userAdminRequestDto);
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body("회원가입 처리 중 오류가 발생했습니다. : " + e.getMessage());
 		}
+
 	}
 
 	@GetMapping("/userinfo")

@@ -47,9 +47,9 @@ public class AppApplication {
 		return args -> {
 
 			// 일반 사용자 계정 생성 (아이디: user, 비밀번호: user)
-			if (!userRepository.existsByUserId("user1")) {
+			if (!userRepository.existsByUserId("adeaa7d5174c4be78756651b4dd8c361")) {
 				User testUser = new User();
-				testUser.setUserId(generator.generateUniqueUserId());
+				testUser.setUserId("adeaa7d5174c4be78756651b4dd8c361");
 				testUser.setEmail("user1@naver.com");
 				testUser.setUserName("User1");
 //										testUser.setUserName("일반");
@@ -65,9 +65,9 @@ public class AppApplication {
 				System.out.println("[테스트 계정 생성] 아이디: user1, 비밀번호: user1");
 			}
 
-			if (!userRepository.existsByUserId("user2")) {
+			if (!userRepository.existsByUserId("0ef59f5e0bc54abc891236e3a15e3bda")) {
 				User testUser = new User();
-				testUser.setUserId(generator.generateUniqueUserId());
+				testUser.setUserId("0ef59f5e0bc54abc891236e3a15e3bda");
 				testUser.setEmail("user2@naver.com");
 				testUser.setUserName("User2");
 //										testUser.setUserName("일반");

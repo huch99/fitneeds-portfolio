@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.project.app.user.entity.User;
 import com.project.app.userAdmin.entity.UserAdmin;
 import com.project.app.userAdmin.repository.UserAdminRepository;
 
