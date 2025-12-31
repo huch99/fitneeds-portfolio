@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import './PaymentForReservation.css';
 import api from '../../../api';
+import ReservationComplete from '../ReservationComplete/ReservationComplete';
 
 const PaymentForReservation = () => {
     const location = useLocation();
@@ -39,6 +40,9 @@ const PaymentForReservation = () => {
 
     // 최종 결제 금액: 이용권 사용 시 0, 단건 결제 시 oneTimeAmt
     const [finalAmount, setFinalAmount] = useState(oneTimeAmt);
+
+    // 결제 완료 모달
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     // --- 초기 로드 및 유효성 검사 ---
     useEffect(() => {
@@ -169,9 +173,7 @@ const PaymentForReservation = () => {
             const response = await api.post('/payments/process', requestBody);
 
             if (response.status === 201) { // HTTP 201 Created
-                alert('예약 및 결제가 성공적으로 완료되었습니다!');
-                console.log('결제 완료 정보:', response.data);
-                navigate('/reservation-complete'); // 예약 내역 페이지 등으로 이동
+                setIsModalOpen(true); // 예약 내역 페이지 등으로 이동
             } else {
                 setError('결제 처리 중 예상치 못한 오류가 발생했습니다.');
             }
@@ -329,6 +331,11 @@ const PaymentForReservation = () => {
                     {loading ? '결제 처리 중...' : '결제 확정'}
                 </button>
             </div>
+
+            <ReservationComplete 
+            isOpen={isModalOpen} 
+            onClose={() => setIsModalOpen(false)} 
+        />
         </div>
     );
 };
