@@ -1,8 +1,6 @@
 package com.project.app.userAdmin.dto;
 
-import java.util.Optional;
-
-import com.project.app.userAdmin.entity.UserAdmin;
+import com.project.app.userAdmin.entity.Branch;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,4 +24,5 @@ public class UserAdminRequestDto {
 	private String phoneNumber;
 	private boolean success;
 	private String message;
+	private Branch brchId;
 }

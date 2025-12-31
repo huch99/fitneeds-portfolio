@@ -73,7 +73,6 @@ const ScheduleListPage = () => {
                 return;
             }
 
-
             // Page 객체의 'content' 필드에서 실제 데이터 배열을 추출
             if (apiResponsePage && apiResponsePage.content) {
                 setSchedules(apiResponsePage.content);

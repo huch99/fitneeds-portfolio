@@ -15,8 +15,12 @@ public class UserRequestDto {
 	private String userName;
 	private String password;
 	private String role;
+	
+	//=====포인트 사용X======
 	private String cashPoint;
 	private String gradePoint;
+	//====================
+	
 	private String isActive;
 	private String agreeAt;
 	private String phoneNumber;

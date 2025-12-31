@@ -5,27 +5,36 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.project.app.branch.entity.Branch;
 import com.project.app.payment.entity.Payment;
+import com.project.app.reservation.dto.MyReservationResponseDto;
 import com.project.app.reservation.entity.Reservation;
 import com.project.app.reservation.entity.RsvSttsCd;
 import com.project.app.reservation.repository.ReservationRepository;
 import com.project.app.schedule.entity.Schedule;
+import com.project.app.schedule.repository.ScheduleRepository;
 import com.project.app.user.entity.User;
 import com.project.app.userpass.entity.UserPass;
+import com.project.app.userpass.service.UserPassService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class ReservationService {
 
 	private final ReservationRepository reservationRepository;
+	private final ScheduleRepository scheduleRepository;
+	private final UserPassService userPassService;
 	
 	/**
      * 새로운 예약을 생성하고 저장합니다.
@@ -57,26 +66,7 @@ public class ReservationService {
         return reservationRepository.save(reservation);
     }
     
-    /**
-     * 예약을 취소합니다.
-     * @param rsvId 취소할 예약 ID
-     * @param reason 취소 사유
-     * @param updId 취소 요청자 ID (관리자 또는 사용자)
-     * @return 취소된 예약 엔티티
-     */
-    public Reservation cancelReservation(Long rsvId, String reason, String updId) {
-        Reservation reservation = reservationRepository.findById(rsvId)
-                .orElseThrow(() -> new NoSuchElementException("예약을 찾을 수 없습니다: " + rsvId));
 
-        reservation.cancel(reason, updId); // Reservation 엔티티의 취소 로직 호출
-        
-        // (선택 사항) 취소에 따른 비즈니스 로직 추가:
-        // 1. 스케줄 정원 복원 (scheduleService.increaseCapacity(reservation.getSchedule().getSchdId()))
-        // 2. 이용권 복원 (userPassService.cancelReservationAndUpdateUserPassForR(reservation.getUserPass().getUserPassId(), reason))
-        // 3. 결제 취소 (paymentService.cancelPayment(reservation.getPayment().getPaymentId(), reason)) - Payment 엔티티에 rsvId가 있다면 가능
-
-        return reservationRepository.save(reservation);
-    }
     
     /**
      * 스케줄러가 호출하여 지난 날짜의 예약 (CONFIRMED 상태)을 COMPLETED 상태로 업데이트합니다.
@@ -98,4 +88,32 @@ public class ReservationService {
         }
         return updatedCount;
     }
+
+
+
+	
+	/**
+	 * 로그인한 사용자의 예약 목록을 조회합니다.
+	 * 
+	 * @param userId 사용자 ID
+	 * @return 예약 목록 DTO 리스트
+	 */
+	@Transactional(readOnly = true)
+	public List<MyReservationResponseDto> getMyReservations(String userId) {
+		log.info("[ReservationService] 사용자 예약 목록 조회 시작 - userId: {}", userId);
+
+		// Fetch Join을 사용하여 연관 엔티티를 한 번에 조회
+		List<Reservation> reservations = reservationRepository.findByUserIdWithDetails(userId);
+
+		log.info("[ReservationService] 조회된 예약 개수: {}", reservations.size());
+
+		// Reservation 엔티티를 DTO로 변환
+		List<MyReservationResponseDto> result = reservations.stream()
+				.map(MyReservationResponseDto::from)
+				.collect(Collectors.toList());
+
+		return result;
+	}
+
+	
 }
