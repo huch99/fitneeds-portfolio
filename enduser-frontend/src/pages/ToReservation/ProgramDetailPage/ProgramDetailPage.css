@@ -1,73 +1,113 @@
 /* ProgramDetailPage.css */
 
+:root {
+    --primary-color: #FFC107;
+    --primary-hover: #e0a800;
+    --text-dark: #222;
+    --text-gray: #666;
+    --text-light: #888;
+    --white: #ffffff;
+    --border-soft: #ececec;
+    --shadow-deep: 0 15px 35px rgba(0, 0, 0, 0.1);
+}
+
 .program-detail-container {
-    background-color: #fff;
-    padding: 40px 50px;
-    border-radius: 12px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    background-color: var(--white);
+    padding: 60px; /* 여백을 조금 더 줘서 쾌적하게 */
+    border-radius: 24px;
+    box-shadow: var(--shadow-deep);
     max-width: 900px;
-    margin: 40px auto 80px;
-    font-family: 'Noto Sans KR', sans-serif;
-    color: #333;
+    margin: 60px auto;
+    font-family: 'Pretendard', -apple-system, system-ui, sans-serif;
+    color: var(--text-dark);
 }
 
-/* 모든 p 태그에 일괄 적용되던 스타일을 개별 클래스로 변경 */
-.program-detail-container .program-title { /* p:nth-child(1) 대신 클래스 사용 */
+/* 제목 섹션 */
+.program-detail-container .program-title {
+    font-weight: 800;
+    font-size: 2.5rem; /* 조금 더 크게 강조 */
+    margin-bottom: 35px;
+    color: var(--text-dark);
+    line-height: 1.2;
+    word-break: keep-all;
+}
+
+/* 핵심 정보(강사, 지점, 시간)를 감싸는 영역 (가상으로 그룹화 효과) */
+.program-detail-container .instructor-name,
+.program-detail-container .branch-name,
+.program-detail-container .program-duration,
+.program-detail-container .program-time {
+    display: flex;
+    align-items: center;
+    font-size: 1.15rem;
+    color: var(--text-gray);
+    margin-bottom: 15px;
+    line-height: 1.6;
+}
+
+/* 정보 앞에 강조점 추가 */
+.program-detail-container .instructor-name::before,
+.program-detail-container .branch-name::before,
+.program-detail-container .program-duration::before,
+.program-detail-container .program-time::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background-color: var(--primary-color);
+    border-radius: 50%;
+    margin-right: 15px;
+}
+
+.program-detail-container .instructor-name {
     font-weight: 700;
-    font-size: 2rem;
-    margin-bottom: 30px;
-    color: #FFC107; /* 메인 컨셉 색상 */
+    color: #007bff; /* 강사명은 목록과 통일감 있게 블루톤 유지 */
+    font-size: 1.3rem;
 }
 
-.program-detail-container .instructor-name, /* p:nth-child(2) 대신 클래스 사용 */
-.program-detail-container .branch-name {   /* p:nth-child(3) 대신 클래스 사용 */
-    font-weight: 600;
-    color: #555;
-    font-size: 1.25rem; /* 기본 p 스타일에서 이관 */
-    margin-bottom: 18px; /* 기본 p 스타일에서 이관 */
-    line-height: 1.6; /* 기본 p 스타일에서 이관 */
-}
-
-.program-detail-container .program-duration, /* p:nth-child(4) 대신 클래스 사용 */
-.program-detail-container .program-time {   /* p:nth-child(5) 대신 클래스 사용 */
+/* 구분선 효과 */
+.program-detail-container .program-description {
     font-size: 1.15rem;
-    color: #666;
-    margin-bottom: 18px; /* 기본 p 스타일에서 이관 */
-    line-height: 1.6; /* 기본 p 스타일에서 이관 */
-}
-
-.program-detail-container .program-description { /* p:nth-child(6) 대신 클래스 사용 */
-    font-size: 1.15rem;
-    line-height: 1.8;
+    line-height: 1.9;
     color: #444;
-    white-space: pre-wrap; /* 줄바꿈 유지 */
-    margin-top: 25px;
-    margin-bottom: 30px;
+    white-space: pre-wrap;
+    margin-top: 40px;
+    padding-top: 40px;
+    border-top: 2px solid var(--border-soft); /* 설명 영역 전 구분선 */
+    margin-bottom: 50px;
 }
 
-
-/* 버튼 스타일도 클래스 선택자로 변경 */
-.program-detail-container .reserve-button { /* button 대신 클래스 사용 */
+/* 예약하기 버튼 */
+.program-detail-container .reserve-button {
     display: block;
     width: 100%;
-    max-width: 300px;
-    padding: 14px 0;
-    background-color: #FFC107;
+    max-width: 350px;
+    padding: 20px 0;
+    background-color: var(--primary-color);
     border: none;
-    border-radius: 10px;
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: #222;
+    border-radius: 16px;
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--text-dark);
     cursor: pointer;
-    margin-top: 25px;
-    transition: background-color 0.3s ease;
-    margin-left: auto; /* 버튼 중앙 정렬을 위해 추가 */
-    margin-right: auto; /* 버튼 중앙 정렬을 위해 추가 */
+    margin: 40px auto 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 8px 20px rgba(255, 193, 7, 0.3);
 }
 
 .program-detail-container .reserve-button:hover {
-    background-color: #e0ac06;
+    background-color: var(--primary-hover);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 25px rgba(255, 193, 7, 0.4);
 }
 
-/* 링크는 스타일링을 원치 않으셨으므로 그대로 두거나,
-   필요하다면 .program-detail-container .payment-link { ... } 를 추가 */
+/* 반응형 모바일 대응 */
+@media (max-width: 768px) {
+    .program-detail-container {
+        padding: 40px 25px;
+        margin: 30px 20px;
+    }
+    .program-detail-container .program-title {
+        font-size: 1.8rem;
+    }
+}

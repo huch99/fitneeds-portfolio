@@ -12,12 +12,12 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class BranchService {
 
 	private final BranchRepository branchRepository;
 	
-	@Transactional
 	public List<Branch> getAllBranches() {
-		return branchRepository.findAll();
-	}
+        return branchRepository.findAll();
+    }
 }

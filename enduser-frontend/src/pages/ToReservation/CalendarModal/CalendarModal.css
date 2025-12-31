@@ -202,10 +202,10 @@
 }
 
 /* 토요일과 일요일 색상 */
-.react-calendar-custom .react-calendar__month-view__weekdays__weekday:nth-child(6) { /* 토요일 */
+.react-calendar-custom .react-calendar__month-view__weekdays__weekday:nth-child(7) { /* 토요일 */
     color: #007bff; /* 파란색 */
 }
-.react-calendar-custom .react-calendar__month-view__weekdays__weekday:nth-child(7) { /* 일요일 */
+.react-calendar-custom .react-calendar__month-view__weekdays__weekday:nth-child(1) { /* 일요일 */
     color: #dc3545; /* 빨간색 */
 }
 

@@ -84,7 +84,7 @@ function Navigation() {
             </li>
             <li className="nav-menu-item">
               {/* <Link className="nav-menu-link" to="/contact">예약하기</Link> */}
-              <Link className="nav-menu-link" to="/type-select">예약하기</Link> 
+              <Link className="nav-menu-link" to="/type-select">예약하기</Link>
             </li>
             <li className="nav-menu-item">
               <Link 
