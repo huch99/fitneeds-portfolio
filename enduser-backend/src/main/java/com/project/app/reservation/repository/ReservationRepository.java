@@ -2,12 +2,6 @@ package com.project.app.reservation.repository;
 
 import java.time.LocalDate;
 import java.util.List;
-
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
-import com.project.app.reservation.entity.Reservation;
-import com.project.app.reservation.entity.RsvSttsCd;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,7 +14,6 @@ import com.project.app.reservation.entity.Reservation;
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
 
-	List<Reservation> findByRsvDtBeforeAndSttsCd(LocalDate rsvDt, RsvSttsCd sttsCd);
 	/**
 	 * 사용자 ID로 예약 목록을 조회합니다.
 	 * Fetch Join을 사용하여 N+1 문제를 방지하고, 연관된 엔티티들을 한 번에 로딩합니다.

@@ -6,12 +6,10 @@ import org.hibernate.annotations.ColumnDefault;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
-import com.project.app.branch.entity.Branch;
 import com.project.app.sporttype.entity.SportType;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -39,13 +37,9 @@ public class Program {
 	@Column(name = "prog_nm", nullable = false, length = 255)
 	private String progNm;			// 프로그램 명
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
 	@JoinColumn(name = "sport_id", nullable = false)
 	private SportType sportType;	// 종목 ID, FK
-	
-	@ManyToOne
-	@JoinColumn(name = "brch_id", nullable = false)
-	private Branch branch;
 	
 	@Column(name = "use_yn", nullable = true, columnDefinition = "TINYINT(1)")
 	@ColumnDefault("1")
@@ -60,9 +54,11 @@ public class Program {
 	private Integer rwdGamePnt;		//게이미케이션 포인트
 	
 	@Column(name = "reg_dt", nullable = false)
+	@CreatedDate
 	private LocalDateTime regDt;	// 등록 일시 (로그 확인용)
 	
 	@Column(name = "upd_dt", nullable = false)
+	@LastModifiedDate
 	private LocalDateTime updDt;	// 수정 일지 (로그 확인용)
 	
 }

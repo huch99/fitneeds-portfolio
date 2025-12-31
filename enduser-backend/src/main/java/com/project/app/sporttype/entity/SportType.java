@@ -41,9 +41,11 @@ public class SportType {
 	private boolean useYn;			// 종목 사용 여부
 	
 	@Column(name = "reg_dt", nullable = false)
+	@CreatedDate
 	private LocalDateTime regDt;	// 등록 일시 (로그 확인용)
 	
 	@Column(name = "upd_dt", nullable = false)
+	@LastModifiedDate
 	private LocalDateTime updDt;	// 수정 일시 (로그 확인용)
 	
 	@Column(name = "del_dt", nullable = true)
