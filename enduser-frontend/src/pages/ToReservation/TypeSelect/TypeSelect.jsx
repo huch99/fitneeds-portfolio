@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import api from '../../../api';
 import { Link, useLocation } from 'react-router-dom';
 import './TypeSelect.css';
-import BranchSearchModal from './BranchSearchModal';
+import BranchSearchModal from '../BranchSearchModal/BranchSearchModal';
+
 
 const TypeSelect = () => {
     const [sports, setSports] = useState([]);

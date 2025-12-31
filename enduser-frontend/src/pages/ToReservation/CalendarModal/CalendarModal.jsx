@@ -165,6 +165,7 @@ const CalendarModal = ({ sportId, isOpen, onClose, strtDt, endDt, onSelectDate, 
                         value={calendarValue} // 캘린더가 현재 표시할 날짜 (내부 상태로 관리)
                         minDate={minDate}
                         maxDate={maxDate}
+                        calendarType="gregory"
                         className="react-calendar-custom"
                         formatDay={(locale, date) => date.getDate()}
                         formatShortWeekday={customFormatShortWeekday}

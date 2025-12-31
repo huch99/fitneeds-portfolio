@@ -10,6 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,6 +39,7 @@ public class ScheduleController {
 	@GetMapping("/getSchedulesBySportIdForR/{sportId}")
 	public Page<GroupedScheduleResponseDto> getSchedulesBySportIdForR(@PathVariable("sportId") Long sportId,
 			@RequestParam(value = "searchKeyword", required = false) String searchKeyword,
+			@RequestParam(value = "selectedDate", required = false) @DateTimeFormat(iso = ISO.DATE) LocalDate selectedDate,
 			@PageableDefault(size = 10 /* , sort = "schdId", direction = Sort.Direction.DESC */) Pageable pageable) {
 		// JPQL 내에서 ORDER BY를 직접 지정했으므로, 여기서는 sort를 제거합니다.
 
@@ -45,7 +48,7 @@ public class ScheduleController {
 
 		log.info("API 호출: /getSchedulesBySportIdForR/{}. sportId={}, searchKeyword={}, pageable={}", sportId,
 				searchKeyword, pageable);
-		return scheduleService.getSchedulesBySportIdForR(sportId, searchKeyword, currentDate, currentTime, pageable);
+		return scheduleService.getSchedulesBySportIdForR(sportId, searchKeyword, currentDate, currentTime,selectedDate, pageable);
 	}
 
 	// 스케줄 ID를 통한 조회
@@ -59,6 +62,7 @@ public class ScheduleController {
 	@GetMapping("/getSchedulesByBrchIdForR/{brchId}")
 	public Page<GroupedScheduleResponseDto> getSchedulesByBrchIdForR(@PathVariable("brchId") Long brchId,
 			@RequestParam(value = "searchKeyword", required = false) String searchKeyword,
+			@RequestParam(value = "selectedDate", required = false) @DateTimeFormat(iso = ISO.DATE) LocalDate selectedDate,
 			@PageableDefault(size = 10 /* , sort = "schdId", direction = Sort.Direction.DESC */) Pageable pageable) {
 		// JPQL 내에서 ORDER BY를 직접 지정했으므로, 여기서는 sort를 제거합니다.
 
@@ -67,6 +71,6 @@ public class ScheduleController {
 
 		log.info("API 호출: /getSchedulesByBrchIdForR/{}. brchId={}, searchKeyword={}, pageable={}", brchId,
 				searchKeyword, pageable);
-		return scheduleService.getSchedulesByBrchIdForR(brchId, searchKeyword, currentDate, currentTime, pageable);
+		return scheduleService.getSchedulesByBrchIdForR(brchId, searchKeyword, currentDate, currentTime, selectedDate, pageable);
 	}
 }

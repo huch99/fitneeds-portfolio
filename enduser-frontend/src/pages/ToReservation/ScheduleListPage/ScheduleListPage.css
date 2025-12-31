@@ -198,6 +198,52 @@
     box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
 }
 
+.filter-wrapper {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.date-filter-container {
+    position: relative;
+}
+
+.date-filter-btn {
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 25px;
+    background: #fff;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.date-filter-btn.active {
+    background-color: #FFC107;
+    border-color: #FFC107;
+}
+
+.calendar-popup {
+    position: absolute;
+    top: 50px;
+    left: 0;
+    z-index: 100;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.reset-date-btn {
+    background: none;
+    border: none;
+    color: #888;
+    text-decoration: underline;
+    margin-left: 8px;
+    cursor: pointer;
+    font-size: 0.9em;
+}
+
 /* 반응형 */
 @media (max-width: 600px) {
     .schedule-item-link {

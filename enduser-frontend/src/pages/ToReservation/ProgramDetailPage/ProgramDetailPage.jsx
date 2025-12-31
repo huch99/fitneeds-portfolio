@@ -139,7 +139,7 @@ const ProgramDetailPage = () => {
 
                         {/* 예약하기 버튼 클릭 시 모달 열기 */}
                         <button className="reserve-button" onClick={handleReservationModal}>예약하기</button>
-                        
+
                         {/* LoginModal 렌더링 */}
                         {isLoginModalOpen && (
                             <LoginModal
@@ -150,6 +150,14 @@ const ProgramDetailPage = () => {
                         {/* CalendarModal 렌더링 */}
                         {isReservationModalOpen && (
                             <CalendarModal
+                                calendarType="US"
+                                locale="en-US"
+                                formatShortWeekday={(locale, date) =>
+                                    ['일', '월', '화', '수', '목', '금', '토'][date.getDay()]
+                                }
+                                formatMonthYear={(locale, date) =>
+                                    `${date.getFullYear()}년 ${date.getMonth() + 1}월`
+                                }
                                 isOpen={isReservationModalOpen}
                                 sportId={programDetails.sportId}
                                 onClose={handleCloseModal}
@@ -161,6 +169,8 @@ const ProgramDetailPage = () => {
                             />
                         )}
                     </div>
+
+                    
 
 
                 )

@@ -48,12 +48,12 @@ public class ScheduleService {
 	 * 활용합니다.
 	 */
 	public Page<GroupedScheduleResponseDto> getSchedulesBySportIdForR(Long sportId, String searchKeyword,
-			LocalDate currentDate, LocalTime currentTime, Pageable pageable) {
+			LocalDate currentDate, LocalTime currentTime, LocalDate selectedDate, Pageable pageable) {
 		try {
 			log.info("서비스: 스포츠 ID로 스케줄 조회 요청: sportId={}, searchKeyword={}", sportId, searchKeyword);
 
 			List<Schedule> allSchedules = scheduleRepository.findAvailableSchedulesBySportId(sportId, currentDate,
-					currentTime, searchKeyword, ScheduleSttsCd.AVAILABLE);
+					currentTime, selectedDate, searchKeyword, ScheduleSttsCd.AVAILABLE);
 
 			log.debug("서비스: 스포츠 ID {} 로 조회된 총 스케줄 수: {}", sportId, allSchedules.size());
 			return applyGroupingAndPaging(allSchedules, pageable);
@@ -64,50 +64,50 @@ public class ScheduleService {
 		}
 	}
 
-	/**
-	 * 특정 스포츠 ID 또는 지점 ID 기준으로 스케줄을 조회하고 Huch의 applyGroupingAndPaging 메서드를 사용해
-	 * 그룹핑/페이징 처리합니다. currentDate와 currentTime을 기준으로 과거 스케줄은 제외합니다.
-	 *
-	 * @param sportId       특정 스포츠 ID (null이면 brchId로 조회)
-	 * @param brchId        특정 지점 ID (null이면 sportId로 조회)
-	 * @param searchKeyword 검색어 (프로그램명, 강사이름)
-	 * @param pageable      페이징 정보 (페이지 번호, 페이지 크기 등)
-	 * @return 강사 ID, 프로그램 ID, 시작/종료 시간 기준으로 그룹핑된 스케줄 데이터의 페이징 결과
-	 */
-	public Page<GroupedScheduleResponseDto> getGroupedAndPagedSchedules(Long sportId, Long brchId, String searchKeyword,
-			Pageable pageable) {
-		LocalDate currentDate = LocalDate.now();
-		LocalTime currentTime = LocalTime.now();
-
-		// 조회 상태는 'AVAILABLE'로 고정 (스케줄러가 'CLOSED' 처리)
-		ScheduleSttsCd scheduleStatus = ScheduleSttsCd.AVAILABLE;
-
-		List<Schedule> allAvailableSchedules;
-
-		if (sportId != null) {
-			allAvailableSchedules = scheduleRepository.findAvailableSchedulesBySportId(sportId, currentDate,
-					currentTime, searchKeyword, scheduleStatus);
-		} else if (brchId != null) {
-			allAvailableSchedules = scheduleRepository.findAvailableSchedulesByBrchId(brchId, currentDate, currentTime,
-					searchKeyword, scheduleStatus);
-		} else {
-			throw new IllegalArgumentException("스포츠 ID 또는 지점 ID 중 하나는 필수입니다.");
-		}
-
-		return applyGroupingAndPaging(allAvailableSchedules, pageable);
-	}
+//	/**
+//	 * 특정 스포츠 ID 또는 지점 ID 기준으로 스케줄을 조회하고 Huch의 applyGroupingAndPaging 메서드를 사용해
+//	 * 그룹핑/페이징 처리합니다. currentDate와 currentTime을 기준으로 과거 스케줄은 제외합니다.
+//	 *
+//	 * @param sportId       특정 스포츠 ID (null이면 brchId로 조회)
+//	 * @param brchId        특정 지점 ID (null이면 sportId로 조회)
+//	 * @param searchKeyword 검색어 (프로그램명, 강사이름)
+//	 * @param pageable      페이징 정보 (페이지 번호, 페이지 크기 등)
+//	 * @return 강사 ID, 프로그램 ID, 시작/종료 시간 기준으로 그룹핑된 스케줄 데이터의 페이징 결과
+//	 */
+//	public Page<GroupedScheduleResponseDto> getGroupedAndPagedSchedules(Long sportId, Long brchId, String searchKeyword,
+//			Pageable pageable) {
+//		LocalDate currentDate = LocalDate.now();
+//		LocalTime currentTime = LocalTime.now();
+//
+//		// 조회 상태는 'AVAILABLE'로 고정 (스케줄러가 'CLOSED' 처리)
+//		ScheduleSttsCd scheduleStatus = ScheduleSttsCd.AVAILABLE;
+//
+//		List<Schedule> allAvailableSchedules;
+//
+//		if (sportId != null) {
+//			allAvailableSchedules = scheduleRepository.findAvailableSchedulesBySportId(sportId, currentDate,
+//					currentTime, searchKeyword, scheduleStatus);
+//		} else if (brchId != null) {
+//			allAvailableSchedules = scheduleRepository.findAvailableSchedulesByBrchId(brchId, currentDate, currentTime,
+//					searchKeyword, scheduleStatus);
+//		} else {
+//			throw new IllegalArgumentException("스포츠 ID 또는 지점 ID 중 하나는 필수입니다.");
+//		}
+//
+//		return applyGroupingAndPaging(allAvailableSchedules, pageable);
+//	}
 
 	/**
 	 * 특정 지점 ID 기준으로 스케줄을 조회하고 그룹핑/페이징 처리합니다. 컨트롤러에서 currentDate와 currentTime을 받아
 	 * 활용합니다.
 	 */
 	public Page<GroupedScheduleResponseDto> getSchedulesByBrchIdForR(Long brchId, String searchKeyword,
-			LocalDate currentDate, LocalTime currentTime, Pageable pageable) {
+			LocalDate currentDate, LocalTime currentTime, LocalDate selectedDate, Pageable pageable) {
 		try {
 			log.info("서비스: 지점 ID로 스케줄 조회 요청: brchId={}, searchKeyword={}", brchId, searchKeyword);
 
 			List<Schedule> allSchedules = scheduleRepository.findAvailableSchedulesByBrchId(brchId, currentDate,
-					currentTime, searchKeyword, ScheduleSttsCd.AVAILABLE);
+					currentTime,selectedDate, searchKeyword, ScheduleSttsCd.AVAILABLE);
 
 			log.debug("서비스: 지점 ID {} 로 조회된 총 스케줄 수: {}", brchId, allSchedules.size());
 			return applyGroupingAndPaging(allSchedules, pageable);

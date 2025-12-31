@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import api from '../../../api';
 import { Link, useLocation } from 'react-router-dom';
 import './ScheduleListPage.css';
+import Calendar from 'react-calendar'; // 캘린더 추가
+import 'react-calendar/dist/Calendar.css';
 
 const ScheduleListPage = () => {
     const location = useLocation();
@@ -22,6 +24,9 @@ const ScheduleListPage = () => {
     const [currentPage, setCurrentPage] = useState(0); // Spring Data JPA는 페이지를 0부터 시작
     const [totalPages, setTotalPages] = useState(0);
 
+    const [selectedFilterDate, setSelectedFilterDate] = useState(null); // 날짜 필터 상태
+    const [showCalendar, setShowCalendar] = useState(false); // 캘린더 표시 여부
+
     useEffect(() => {
         const fetchSchedulesBySportId = async () => {
             setLoading(true);
@@ -38,6 +43,7 @@ const ScheduleListPage = () => {
                                 searchKeyword: searchTerm,
                                 page: currentPage,
                                 size: 10,
+                                selectedDate: selectedFilterDate ? selectedFilterDate.toLocaleDateString('sv-SE') : null
                             }
                         }
                     );
@@ -49,6 +55,7 @@ const ScheduleListPage = () => {
                                 searchKeyword: searchTerm,
                                 page: currentPage,
                                 size: 10,
+                                selectedDate: selectedFilterDate ? selectedFilterDate.toLocaleDateString('sv-SE') : null
                             }
                         }
                     );
@@ -79,7 +86,7 @@ const ScheduleListPage = () => {
         };
 
         fetchSchedulesBySportId();
-    }, [sportId, brchId, searchTerm, currentPage, location.search])
+    }, [sportId, brchId, searchTerm, currentPage, location.search, selectedFilterDate])
 
     const handleInputChange = (e) => {
         setInputVal(e.target.value);
@@ -140,21 +147,52 @@ const ScheduleListPage = () => {
                 )}
             </p>
 
+            <div className="filter-wrapper">
+                {/* 검색 폼 영역 */}
+                <form className="search-form" onSubmit={handleSearchSubmit}>
+                    <input
+                        type="search"
+                        placeholder="프로그램명 또는 강사명을 검색하세요"
+                        value={inputVal}
+                        onChange={handleInputChange}
+                        className="search-input"
+                    />
+                    <button type="submit" className="search-button">
+                        <span role="img" aria-label="search">🔍</span> {/* 돋보기 아이콘 */}
+                    </button>
+                </form>
 
-            {/* 검색 폼 영역 */}
-            <form className="search-form" onSubmit={handleSearchSubmit}>
-                <input
-                    type="search"
-                    placeholder="프로그램명 또는 강사명을 검색하세요"
-                    value={inputVal}
-                    onChange={handleInputChange}
-                    className="search-input"
-                />
-                <button type="submit" className="search-button">
-                    <span role="img" aria-label="search">🔍</span> {/* 돋보기 아이콘 */}
-                </button>
-            </form>
+                {/* 날짜 필터 버튼 및 캘린더 */}
+                <div className="date-filter-container">
+                    <button
+                        className={`date-filter-btn ${selectedFilterDate ? 'active' : ''}`}
+                        onClick={() => setShowCalendar(!showCalendar)}
+                    >
+                        📅 {selectedFilterDate ? formatDate(selectedFilterDate.toLocaleDateString('sv-SE')) : '날짜 선택'}
+                    </button>
 
+                    {selectedFilterDate && (
+                        <button className="reset-date-btn" onClick={() => setSelectedFilterDate(null)}>초기화</button>
+                    )}
+
+                    {showCalendar && (
+                        <div className="calendar-popup">
+                            <Calendar
+                                onChange={(date) => {
+                                    setSelectedFilterDate(date);
+                                    setShowCalendar(false);
+                                    setCurrentPage(0); // 날짜 변경 시 첫 페이지로
+                                }}
+                                value={selectedFilterDate || new Date()}
+                                locale="ko-KR"
+                                calendarType="gregory"
+                                formatDay={(locale, date) => date.getDate()}
+                                minDate={new Date()}
+                            />
+                        </div>
+                    )}
+                </div>
+            </div>
 
             <div className='schedules-list'>
                 {loading ? (
