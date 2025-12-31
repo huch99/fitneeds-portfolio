@@ -15,12 +15,10 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
-@Getter @Setter
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -38,14 +36,16 @@ public class Branch {
 	@Column(name = "addr", nullable = false, length = 255)
 	private String addr;			// 지점 주소
 	
-	@Column(name = "oper_yn", nullable = false)
-	@Builder.Default
+	@Column(name = "oper_yn", nullable = false, columnDefinition = "TINYINT(1)")
 	@ColumnDefault("1")
 	private boolean operYn = true;			// 운영 여부
+
 	
 	@Column(name = "reg_dt", nullable = false)
+	@CreatedDate
 	private LocalDateTime regDt;	// 등록 일시 (로그 확인용)
 	
 	@Column(name = "upd_dt", nullable = false)
+	@LastModifiedDate
 	private LocalDateTime updDt;	// 수정 일시 (로그 확인용)
 }

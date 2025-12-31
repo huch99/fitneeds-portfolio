@@ -10,13 +10,10 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.project.app.admin.entity.UserAdmin;
-import com.project.app.branch.entity.Branch;
 import com.project.app.program.entity.Program;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -49,13 +46,13 @@ public class Schedule {
 	@JoinColumn(name = "user_id", nullable = false)
 	private UserAdmin userAdmin;	// 유저(어드민 - 강사) ID
 	
-	@ManyToOne
-	@JoinColumn(name = "brch_id", nullable = false)
-	private Branch branch;
-	
 	@Column(name = "strt_dt", nullable = false)
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	private LocalDate strtDt;		// 시작 날짜
+	
+	@Column(name = "end_dt", nullable = false)
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+	private LocalDate endDt;		// 종료 날짜
 	
 	@Column(name = "strt_tm", nullable = false)
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
@@ -72,12 +69,11 @@ public class Schedule {
 	@ColumnDefault("0")
 	private Integer rsvCnt;			// 현재 인원
 	
-	@Column(name = "stts_cd", nullable = false, columnDefinition = "VARCHAR(20)")
-	@Enumerated(EnumType.STRING)
-	private ScheduleSttsCd sttsCd;			// 상태 코드
+	@Column(name = "stts_cd", nullable = false, length = 20)
+	private String sttsCd;			// 상태 코드
 	
 	@Column(name = "description", nullable = true, columnDefinition = "TEXT")
-	private String description;		
+	private String description;
 	
 	@Column(name = "reg_dt", nullable = false)
 	@CreatedDate
@@ -86,5 +82,9 @@ public class Schedule {
 	@Column(name = "upd_dt", nullable = false)
 	@LastModifiedDate
 	private LocalDateTime updDt;
+	
+	 // 마감 임박 관련 추가 필드
+    @Column(name = "is_notified")
+    private Boolean isNotified;
 	
 }

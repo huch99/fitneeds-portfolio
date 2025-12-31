@@ -1,136 +1,190 @@
 /* TypeSelect.css */
 
 :root {
-    --primary-color: #FFC107;
-    --primary-hover: #e0a800;
-    --text-dark: #222;
-    --text-gray: #666;
-    --bg-light: #f4f4f4; /* 부드러운 배경색 */
-    --white: #ffffff;
-    --border-soft: #e5e5e5;
-    --shadow-sm: 0 2px 8px rgba(0,0,0,0.05);
-    --shadow-md: 0 4px 20px rgba(0,0,0,0.08);
+    --primary-color: #FFC107; /* 메인 컨셉 색상 */
+    --text-color: #333;
+    --sub-text-color: #555;
+    --background-light: #fdfdfd;
+    --background-white: #ffffff;
+    --border-light: #eee;
+    --border-soft: #e0e0e0;
+    --shadow-light: rgba(0, 0, 0, 0.1);
+    --shadow-soft: rgba(0, 0, 0, 0.05);
+    --shadow-hover: rgba(0, 0, 0, 0.15);
 }
 
 .type-select-container {
-    max-width: 900px;
-    margin: 60px auto;
-    padding: 0 20px; /* 컨테이너 자체 패딩보다는 내부 여백 위주 */
-    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
-}
-
-/* 섹션 공통 스타일 */
-.type-section {
-    background-color: var(--white);
-    border-radius: 20px; /* 좀 더 둥글게 해서 세련된 느낌 */
-    padding: 40px;
-    margin-bottom: 30px;
-    box-shadow: var(--shadow-md);
-    position: relative;
-    border: 1px solid var(--border-soft);
-    overflow: hidden;
-}
-
-/* 섹션 타이틀 - 선 대신 왼쪽 포인트로 변경 */
-.section-title {
-    font-size: 1.8em;
-    font-weight: 800;
-    color: var(--text-dark);
-    margin-bottom: 12px;
     display: flex;
-    align-items: center;
-    gap: 10px;
+    flex-direction: column;
+    gap: 20px; /* 각 섹션 간의 간격 */
+    padding: 30px;
+    max-width: 800px;
+    margin: 50px auto; /* 중앙 정렬 및 상하 여백 */
+    background-color: var(--background-light);
+    border-radius: 12px;
+    box-shadow: 0 8px 16px var(--shadow-light); /* 은은한 그림자 효과 */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.section-title::before {
-    content: '';
-    display: inline-block;
-    width: 6px;
-    height: 24px;
-    background-color: var(--primary-color);
+.type-section {
+    background-color: var(--background-white);
     border-radius: 10px;
+    padding: 25px;
+    box-shadow: 0 4px 8px var(--shadow-soft); /* 내부 섹션 그림자 */
+    border: 1px solid var(--border-light);
+    position: relative; /* "더보기"를 절대 위치로 배치하기 위해 추가 */
+    padding-bottom: 50px; /* "더보기" 공간 확보를 위해 패딩 추가 */
+}
+
+.section-title {
+    font-size: 1.6em;
+    font-weight: bold;
+    color: var(--text-color);
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 3px solid var(--primary-color); /* 메인 색상으로 강조 */
 }
 
 .info-text {
-    font-size: 1.05em;
-    color: var(--text-gray);
-    margin-bottom: 30px;
-    line-height: 1.6;
+    font-size: 1.1em;
+    color: var(--sub-text-color);
+    margin-bottom: 8px;
 }
 
-/* 선택 영역 (버튼들이 모이는 곳) */
-.sport-selection-area, 
-.branch-selection-area {
-    display: flex;          /* Grid 대신 Flex 사용 */
-    flex-wrap: wrap;        /* 다음 줄로 넘어가도록 */
-    gap: 12px;
-    justify-content: flex-start; /* 왼쪽부터 차곡차곡 */
-    padding: 0;
-}
-
-/* 버튼(아이템) 스타일 개선 */
-.sport-link-item, 
-.branch-link-item {
-    display: inline-flex;   /* 내부 텍스트에 맞춤 */
-    align-items: center;
-    justify-content: center;
-    padding: 14px 24px;     /* 좌우 여백을 충분히 */
-    
-    /* 핵심 설정: 줄바꿈 방지 */
-    white-space: nowrap;    /* 텍스트가 한 줄로만 나오게 함 */
-    word-break: keep-all;   /* 단어 단위로 끊어지지 않게 함 */
-    
-    min-width: fit-content; /* 콘텐츠 내용물에 너비를 맞춤 */
-    background-color: var(--white);
-    border: 2px solid var(--border-soft);
-    border-radius: 12px;
-    font-weight: 600;
-    transition: all 0.25s ease;
-    color: var(--text-dark);
-    text-decoration: none;
-}
-
-/* 호버 시 메인 색상으로 반전 */
-.sport-link-item:hover, 
-.branch-link-item:hover {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
-    transform: translateY(-4px);
-    box-shadow: 0 8px 15px rgba(255, 193, 7, 0.3);
-}
-
-/* "더보기" 스타일 개선 */
+/* "더보기" 텍스트에 대한 추가 스타일 */
 .info-text.more {
-    position: absolute;
-    top: 45px; /* 제목 옆 우측으로 이동 */
-    right: 40px;
-    font-size: 0.9em;
-    font-weight: 700;
-    color: var(--text-gray);
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    font-weight: 600;
+    color: var(--primary-color);
     cursor: pointer;
-    border-bottom: 2px solid var(--primary-color);
-    padding-bottom: 2px;
+    transition: color 0.2s ease-in-out;
+    width: fit-content; /* 텍스트 너비만큼만 영역 차지 */
+
+    /* 우측 하단 배치 */
+    position: absolute; /* 절대 위치 */
+    bottom: 15px; /* 하단에서 15px */
+    right: 25px; /* 우측에서 25px (type-section의 패딩과 유사하게) */
+    margin: 0; /* 기존 마진 제거 */
 }
 
 .info-text.more:hover {
-    color: var(--text-dark);
-    border-bottom-color: var(--primary-hover);
+    color: #d1a100; /* 호버 시 살짝 어둡게 */
+    text-decoration: underline;
 }
 
-/* 반응형 모바일 대응 */
-@media (max-width: 600px) {
-    .type-section {
-        padding: 25px;
-    }
-    .section-title {
-        font-size: 1.4em;
-    }
-    .info-text.more {
-        position: static;
-        display: block;
-        margin-top: 20px;
-        text-align: right;
-    }
+/* 종목 목록을 감싸는 컨테이너 */
+.sport-selection-area {
+    display: flex;        /* Flexbox를 사용하여 내부 아이템을 가로로 배치 */
+    flex-wrap: wrap;      /* 내용이 넘치면 다음 줄로 자동 넘김 */
+    gap: 12px;            /* 아이템들 사이의 가로, 세로 간격 */
+    justify-content: center; /* 가로 방향 중앙 정렬 */
+    align-items: center;  /* 세로 방향 중앙 정렬 */
+    padding: 20px;
+    background-color: #f9f9f9; /* 배경색으로 영역 강조 */
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    margin-bottom: 30px; /* 다음 섹션 (지점 선택)과의 간격 */
+}
+
+/* 각 종목 항목(링크를 감싸는 div)의 스타일 */
+.sport-item-wrapper {
+    /* 지점과 동일하게 특별한 스타일은 없을 수 있습니다. */
+}
+
+/* 종목 이름 링크 자체의 스타일 (버튼처럼 보이게) */
+.sport-link-item {
+    display: block;
+    padding: 12px 25px;
+    background-color: #FFC107; /* 밝은 오렌지 계열 색상 (coreValues의 designColor #FFC107 사용) */
+    color: #333; /* 글자색 */
+    text-decoration: none;
+    border-radius: 30px; /* 둥근 모서리 */
+    font-size: 1.1em;
+    font-weight: bold;
+    white-space: nowrap; /* 종목명이 길어도 한 줄에 표시 */
+    transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.sport-link-item:hover {
+    background-color: #e0a800; /* 호버 시 색상 변경 */
+    transform: translateY(-2px); /* 살짝 위로 뜨는 효과 */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* 종목명 텍스트 스타일 */
+.sport-name-text {
+    margin: 0; /* p 태그의 기본 마진 제거 */
+}
+
+/* -------------------- 지점 선택 스타일 (기존 코드) -------------------- */
+
+/* 아래부터는 기존 sport-link와 동일 */
+.sport-link {
+    display: block; /* 링크 전체를 클릭할 수 있도록 block으로 설정 */
+    text-decoration: none; /* 밑줄 제거 */
+    color: var(--text-color);
+    background-color: #f7f7f7;
+    padding: 15px 20px;
+    margin-bottom: 12px; /* 각 링크 사이의 간격 */
+    border-radius: 8px;
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, transform 0.2s ease-in-out;
+    border: 1px solid var(--border-soft);
+}
+
+.sport-link p {
+    margin: 0; /* p 태그의 기본 마진 제거 */
+    font-size: 1.2em;
+    font-weight: 500;
+}
+
+.sport-link:hover {
+    background-color: var(--primary-color);
+    color: var(--background-white);
+    transform: translateY(-3px); /* 호버 시 살짝 떠오르는 효과 */
+    box-shadow: 0 6px 12px var(--shadow-hover); /* 더 뚜렷한 그림자 */
+}
+
+/* 지점 목록을 감싸는 컨테이너 */
+.branch-selection-area {
+    display: flex;        /* Flexbox를 사용하여 내부 아이템을 가로로 배치 */
+    flex-wrap: wrap;      /* 내용이 넘치면 다음 줄로 자동 넘김 */
+    gap: 12px;            /* 아이템들 사이의 가로, 세로 간격 */
+    justify-content: center; /* 가로 방향 중앙 정렬 (필요시 'flex-start', 'space-between' 등으로 변경) */
+    align-items: center;  /* 세로 방향 중앙 정렬 */
+    padding: 20px;
+    background-color: #f9f9f9; /* 배경색으로 영역 강조 */
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    margin-bottom: 30px; /* 다음 섹션과의 간격 */
+}
+
+/* 각 지점 항목(링크를 감싸는 div)의 스타일 */
+.branch-item-wrapper {
+    /* 각 항목에 필요한 추가적인 마진이나 패딩이 있다면 여기에 */
+}
+
+/* 지점 이름 링크 자체의 스타일 (버튼처럼 보이게) */
+.branch-link-item {
+    display: block; /* Link 컴포넌트가 블록처럼 동작하여 전체 영역을 차지하고 패딩을 가질 수 있도록 */
+    padding: 12px 25px; /* 내부 패딩 */
+    background-color: #FFC107; /* 밝은 오렌지 계열 색상 (coreValues의 designColor #FFC107 사용) */
+    color: #333; /* 글자색 */
+    text-decoration: none; /* 링크 밑줄 제거 */
+    border-radius: 30px; /* 둥근 모서리 */
+    font-size: 1.1em;
+    font-weight: bold;
+    white-space: nowrap; /* 지점명이 길어도 한 줄에 표시 */
+    transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.branch-link-item:hover {
+    background-color: #e0a800; /* 호버 시 색상 변경 */
+    transform: translateY(-2px); /* 살짝 위로 뜨는 효과 */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* 지점명 텍스트 스타일 */
+.branch-name-text {
+    margin: 0; /* p 태그의 기본 마진 제거 */
 }
