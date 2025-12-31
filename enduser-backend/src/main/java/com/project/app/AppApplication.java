@@ -24,8 +24,8 @@ import com.project.app.user.repository.UserRepository;
  * 제외: @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
  */
 @SpringBootApplication
-@EnableJpaAuditing
 @EnableScheduling
+@EnableJpaAuditing
 public class AppApplication {
 
 	// 애플리케이션 실행 메소드

@@ -2,7 +2,8 @@ package com.project.app.schedule.repository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-
+import java.util.Collection;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,56 +13,71 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.project.app.schedule.dto.GroupedScheduleResponseDto;
 import com.project.app.schedule.entity.Schedule;
+import com.project.app.schedule.entity.ScheduleSttsCd;
 
 @Repository
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
 	// --- 종목 ID를 통한 스케줄 조회 (날짜/시간 필터링, 검색어 필터링 포함) ---
 	@Query("SELECT s FROM Schedule s " +
-	           "LEFT JOIN s.program p " +        // 일반 LEFT JOIN
-	           "LEFT JOIN p.sportType st " +     // 일반 LEFT JOIN (별칭 st 사용)
-	           "LEFT JOIN s.userAdmin ua " +     // 일반 LEFT JOIN
-	           "LEFT JOIN ua.brchId b " +        // 일반 LEFT JOIN (별칭 b 사용)
-	           "WHERE st.sportId = :sportId " +  // <- s.program.sportType.sportId 대신 별칭 st.sportId 사용
-	           "AND (" +
-	           "   s.strtDt > :currentDate OR " +
-	           "   (s.strtDt = :currentDate AND s.strtTm > :currentTime)" +
-	           ") " +
-	           "AND (" +
-	           "   :searchKeyword IS NULL OR :searchKeyword = '' OR " +
-	           "   LOWER(p.progNm) LIKE LOWER(CONCAT('%', :searchKeyword, '%')) OR " +
-	           "   LOWER(ua.userName) LIKE LOWER(CONCAT('%', :searchKeyword, '%'))" +
-	           ")")
-    Page<Schedule> findSchedulesBySportIdAndDateAndTimeFiltered(
-            @Param("sportId") Long sportId,
-            @Param("currentDate") LocalDate currentDate,
-            @Param("currentTime") LocalTime currentTime,
-            @Param("searchKeyword") String searchKeyword,
-            Pageable pageable
-    );
+		       "JOIN s.program p " +
+		       "JOIN p.sportType st " +
+		       "JOIN s.userAdmin ua " +
+		       "JOIN ua.branch b " +
+		       "WHERE st.sportId = :sportId " +
+		       "AND s.sttsCd = :scheduleStatus " +
+		       "AND (" +
+		       "    s.strtDt > :currentDate OR " +
+		       "    (s.strtDt = :currentDate AND s.strtTm > :currentTime)" +
+		       ") " +
+		       // --- 날짜 필터 조건 추가 ---
+		       "AND (:selectedDate IS NULL OR s.strtDt = :selectedDate) " + 
+		       "AND (" +
+		       "    :searchKeyword IS NULL OR :searchKeyword = '' OR " +
+		       "    LOWER(p.progNm) LIKE LOWER(CONCAT('%', :searchKeyword, '%')) OR " +
+		       "    LOWER(ua.userName) LIKE LOWER(CONCAT('%', :searchKeyword, '%')) OR" +
+		       "    LOWER(b.brchNm) LIKE LOWER(CONCAT('%', :searchKeyword, '%'))" +
+		       ") " +
+		       "ORDER BY s.strtDt ASC, s.userAdmin.userId ASC, s.program.progId ASC, s.strtTm ASC, s.endTm ASC")
+	List<Schedule> findAvailableSchedulesBySportId(
+	    		@Param("sportId") Long sportId,
+	            @Param("currentDate") LocalDate currentDate,
+	            @Param("currentTime") LocalTime currentTime,
+	            @Param("selectedDate") LocalDate selectedDate,
+	            @Param("searchKeyword") String searchKeyword,
+	            @Param("scheduleStatus") ScheduleSttsCd scheduleStatus
+	    );
 
     // --- 지점 ID를 통한 스케줄 조회 (날짜/시간 필터링, 검색어 필터링 포함) ---
-	 @Query("SELECT s FROM Schedule s " +
-	           "LEFT JOIN s.program p " +
-	           "LEFT JOIN p.sportType st " +
-	           "LEFT JOIN s.userAdmin ua " +
-	           "LEFT JOIN ua.brchId b " +
-	           "WHERE b.brchId = :brchId " + // <- 별칭 b.brchId 사용
-	           "AND (" +
-	           "   s.strtDt > :currentDate OR " +
-	           "   (s.strtDt = :currentDate AND s.strtTm > :currentTime)" +
-	           ") " +
-	           "AND (" +
-	           "   :searchKeyword IS NULL OR :searchKeyword = '' OR " +
-	           "   LOWER(p.progNm) LIKE LOWER(CONCAT('%', :searchKeyword, '%')) OR " +
-	           "   LOWER(ua.userName) LIKE LOWER(CONCAT('%', :searchKeyword, '%'))" +
-	           ")")      // 검색어 필터링 조건 끝
-    Page<Schedule> findSchedulesByBrchIdAndDateAndTimeFiltered(
-            @Param("brchId") Long brchId,
-            @Param("currentDate") LocalDate currentDate,
-            @Param("currentTime") LocalTime currentTime,
-            @Param("searchKeyword") String searchKeyword,
-            Pageable pageable
-    );
+	@Query("SELECT s FROM Schedule s " +
+		       "JOIN s.program p " +
+		       "JOIN s.userAdmin ua " +
+		       "JOIN ua.branch b " +
+		       "WHERE b.brchId = :brchId " + // sportId 조건이 있다면 제거하세요!
+		       "AND s.sttsCd = :scheduleStatus " +
+		       "AND (" +
+		       "    s.strtDt > :currentDate OR " +
+		       "    (s.strtDt = :currentDate AND s.strtTm > :currentTime)" +
+		       ") " +
+		       "AND (:selectedDate IS NULL OR s.strtDt = :selectedDate) " +
+		       "AND (" +
+		       "    :searchKeyword IS NULL OR :searchKeyword = '' OR " +
+		       "    LOWER(p.progNm) LIKE LOWER(CONCAT('%', :searchKeyword, '%')) OR " +
+		       "    LOWER(ua.userName) LIKE LOWER(CONCAT('%', :searchKeyword, '%')) OR" +
+		       "    LOWER(b.brchNm) LIKE LOWER(CONCAT('%', :searchKeyword, '%'))" +
+		       ") " +
+		       "ORDER BY s.strtDt ASC, s.userAdmin.userId ASC, s.program.progId ASC, s.strtTm ASC, s.endTm ASC")
+	    List<Schedule> findAvailableSchedulesByBrchId(
+	    		@Param("brchId") Long brchId,
+	            @Param("currentDate") LocalDate currentDate,
+	            @Param("currentTime") LocalTime currentTime,
+	            @Param("selectedDate") LocalDate selectedDate,
+	            @Param("searchKeyword") String searchKeyword,
+	            @Param("scheduleStatus") ScheduleSttsCd scheduleStatus
+	    );
+	
+	List<Schedule> findByStrtDtBeforeAndSttsCdIn(LocalDate strtDt, Collection<ScheduleSttsCd> sttsCds);
+
 }
