@@ -69,8 +69,8 @@ public class ReservationHistoryService {
 	private ReservationHistory convertToHistory(Reservation reservation) {
 		// 스케줄 정보에서 필요한 데이터 추출
 		String sportName = reservation.getSchedule().getProgram().getSportType().getSportNm();
-		String brchNm = reservation.getSchedule().getUserAdmin().getBranch() != null
-				? reservation.getSchedule().getUserAdmin().getBranch().getBrchNm()
+		String brchNm = reservation.getSchedule().getUserAdmin().getBrchId() != null
+				? reservation.getSchedule().getUserAdmin().getBrchId().getBrchNm()
 				: null;
 		String trainerName = reservation.getSchedule().getUserAdmin().getUserName();
 		Long scheduleId = reservation.getSchedule().getSchdId();

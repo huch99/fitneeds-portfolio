@@ -45,8 +45,8 @@ public class MyReservationResponseDto {
 				.brchNm(
 						reservation.getSchedule() != null
 								&& reservation.getSchedule().getUserAdmin() != null
-								&& reservation.getSchedule().getUserAdmin().getBranch() != null
-										? reservation.getSchedule().getUserAdmin().getBranch().getBrchNm()
+								&& reservation.getSchedule().getUserAdmin().getBrchId() != null
+										? reservation.getSchedule().getUserAdmin().getBrchId().getBrchNm()
 										: null)
 				.trainerName(
 						reservation.getSchedule() != null

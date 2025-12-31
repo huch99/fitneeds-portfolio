@@ -22,7 +22,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 	           "LEFT JOIN s.program p " +        // 일반 LEFT JOIN
 	           "LEFT JOIN p.sportType st " +     // 일반 LEFT JOIN (별칭 st 사용)
 	           "LEFT JOIN s.userAdmin ua " +     // 일반 LEFT JOIN
-	           "LEFT JOIN ua.branch b " +        // 일반 LEFT JOIN (별칭 b 사용)
+	           "LEFT JOIN ua.brchId b " +        // 일반 LEFT JOIN (별칭 b 사용)
 	           "WHERE st.sportId = :sportId " +  // <- s.program.sportType.sportId 대신 별칭 st.sportId 사용
 	           "AND (" +
 	           "   s.strtDt > :currentDate OR " +
@@ -46,7 +46,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 	           "LEFT JOIN s.program p " +
 	           "LEFT JOIN p.sportType st " +
 	           "LEFT JOIN s.userAdmin ua " +
-	           "LEFT JOIN ua.branch b " +
+	           "LEFT JOIN ua.brchId b " +
 	           "WHERE b.brchId = :brchId " + // <- 별칭 b.brchId 사용
 	           "AND (" +
 	           "   s.strtDt > :currentDate OR " +

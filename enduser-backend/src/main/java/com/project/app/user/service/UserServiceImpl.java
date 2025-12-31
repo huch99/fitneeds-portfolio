@@ -1,5 +1,6 @@
 package com.project.app.user.service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,7 +28,10 @@ public class UserServiceImpl implements UserService{
 	public User createUser(UserRequestDto userRequestDto) {
 		User user = User.builder().userId(userRequestDto.getUserId()).userName(userRequestDto.getUserName())
 				.password(passwordEncoder.encode(userRequestDto.getPassword())) // 비밀번호 암호화
-//	                .auth("USER") // 기본 권한 설정 admin 사용자 관리 에서 수정.
+				.role("USER") // 기본 권한 설정 admin 사용자 관리 에서 수정.
+				.email(userRequestDto.getEmail()).phoneNumber(userRequestDto.getPhoneNumber())
+				.agreeAt(LocalDateTime.now())
+				.isActive(true)
 				.build();
 
 		return userRepository.save(user);

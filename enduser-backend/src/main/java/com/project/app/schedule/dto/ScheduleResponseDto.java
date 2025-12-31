@@ -71,10 +71,10 @@ public class ScheduleResponseDto {
 				.userName(schedule.getUserAdmin().getUserName())
 				.email(schedule.getUserAdmin().getEmail())
 				.phoneNumber(schedule.getUserAdmin().getPhoneNumber())
-				.brchId(schedule.getUserAdmin().getBranch().getBrchId())
-				.brchNm(schedule.getUserAdmin().getBranch().getBrchNm())
-				.addr(schedule.getUserAdmin().getBranch().getAddr())
-				.operYn(schedule.getUserAdmin().getBranch().isOperYn())
+				.brchId(schedule.getUserAdmin().getBrchId().getBrchId())
+				.brchNm(schedule.getUserAdmin().getBrchId().getBrchNm())
+				.addr(schedule.getUserAdmin().getBrchId().getAddr())
+				.operYn(schedule.getUserAdmin().getBrchId().isOperYn())
 				.build();
 	}
 }

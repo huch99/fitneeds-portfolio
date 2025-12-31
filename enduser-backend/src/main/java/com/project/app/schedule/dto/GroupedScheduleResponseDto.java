@@ -29,7 +29,7 @@ public class GroupedScheduleResponseDto {
 	                .schdId(schedule.getSchdId())
 	                .userName(schedule.getUserAdmin().getUserName())
 	                .progNm(schedule.getProgram().getProgNm())
-	                .brchNm(schedule.getUserAdmin().getBranch().getBrchNm())
+	                .brchNm(schedule.getUserAdmin().getBrchId().getBrchNm())
 	                .strtTm(schedule.getStrtTm().toString()) // LocalTime -> String
 	                .endTm(schedule.getEndTm().toString())   // LocalTime -> String
 	                .groupedStrtDt(schedule.getStrtDt().toString()) // LocalDate -> String

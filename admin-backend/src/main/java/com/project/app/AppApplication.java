@@ -1,21 +1,9 @@
 package com.project.app;
 
-import java.time.LocalDateTime;
-
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.client.RestTemplate;
-
-import com.project.app.config.util.UserIdGenerator;
-import com.project.app.user.entity.User;
-import com.project.app.user.repository.UserRepository;
-import com.project.app.userAdmin.entity.Branch;
-import com.project.app.userAdmin.entity.UserAdmin;
-import com.project.app.userAdmin.repository.BranchRepository;
-import com.project.app.userAdmin.repository.UserAdminRepository;
 
 /**
  * Spring Boot 애플리케이션의 시작점 (메인 클래스)
@@ -39,102 +27,6 @@ public class AppApplication {
 	@Bean
 	public RestTemplate restTemplate() {
 		return new RestTemplate();
-	}
-
-	/**
-	 * 애플리케이션 시작 시 테스트용 사용자 계정 자동 생성 개발/테스트 환경에서 편리하게 사용하기 위한 기능 운영 환경에서는 이 메소드를
-	 * 제거하거나 비활성화하세요!
-	 */
-	@Bean
-	public CommandLineRunner createTestUser(UserAdminRepository userAdminRepository, UserRepository userRepository,
-			BranchRepository branchRepository, PasswordEncoder passwordEncoder) {
-		UserIdGenerator generator = new UserIdGenerator();
-		return args -> {
-
-			if (!userAdminRepository.existsByUserId("5eb5bc176d7f4394be3b9f1381f1e398")) {
-				UserAdmin adminUser = new UserAdmin();
-				adminUser.setUserId("5eb5bc176d7f4394be3b9f1381f1e398");
-				adminUser.setEmail("admin@naver.com");
-				adminUser.setUserName("Admin");
-				adminUser.setPassword(passwordEncoder.encode("admin"));
-				adminUser.setRole("ADMIN"); // 관리자 권한
-				adminUser.setPhoneNumber("01011111234");
-				adminUser.setAgreeAt(LocalDateTime.now());
-				adminUser.setIsActive(true);
-				adminUser.setBrchId(1L);
-				userAdminRepository.save(adminUser);
-				System.out.println("[테스트 계정 생성] 아이디: admin, 비밀번호: admin");
-			}
-
-			if (!userAdminRepository.existsByUserId("fcdd1ac36f064893b5b2e090df931c6d")) {
-				UserAdmin adminUser = new UserAdmin();
-				adminUser.setUserId("fcdd1ac36f064893b5b2e090df931c6d");
-				adminUser.setEmail("fitneeds@fitneeds.com");
-				adminUser.setUserName("fitneeds");
-				adminUser.setPassword(passwordEncoder.encode("fullstack2025"));
-				adminUser.setRole("ADMIN"); // 관리자 권한
-				adminUser.setPhoneNumber("01099991234");
-				adminUser.setAgreeAt(LocalDateTime.now());
-				adminUser.setIsActive(true);
-				adminUser.setBrchId(2L);
-				userAdminRepository.save(adminUser);
-				System.out.println("[테스트 계정 생성] 아이디: fitneeds, 비밀번호: fullstack2025");
-			}
-
-			// 일반 사용자 계정 생성 (아이디: user, 비밀번호: user)
-			if (!userRepository.existsByUserId("adeaa7d5174c4be78756651b4dd8c361")) {
-				User testUser = new User();
-				testUser.setUserId("adeaa7d5174c4be78756651b4dd8c361");
-				testUser.setEmail("user1@naver.com");
-				testUser.setUserName("User1");
-				testUser.setPassword(passwordEncoder.encode("user1"));
-				testUser.setRole("USER"); // 일반 사용자 권한
-				testUser.setCashPoint(0);
-				testUser.setGradePoint(0);
-				testUser.setPhoneNumber("01099111234");
-				testUser.setAgreeAt(LocalDateTime.now());
-				testUser.setIsActive(true);
-				userRepository.save(testUser);
-				System.out.println("[테스트 계정 생성] 아이디: user1, 비밀번호: user1");
-			}
-
-			if (!userRepository.existsByUserId("0ef59f5e0bc54abc891236e3a15e3bda")) {
-				User testUser = new User();
-				testUser.setUserId("0ef59f5e0bc54abc891236e3a15e3bda");
-				testUser.setEmail("user2@naver.com");
-				testUser.setUserName("User2");
-				testUser.setPassword(passwordEncoder.encode("user2"));
-				testUser.setRole("USER"); // 일반 사용자 권한
-				testUser.setCashPoint(0);
-				testUser.setGradePoint(0);
-				testUser.setPhoneNumber("01022221234");
-				testUser.setAgreeAt(LocalDateTime.now());
-				testUser.setIsActive(true);
-				userRepository.save(testUser);
-				System.out.println("[테스트 계정 생성] 아이디: user2, 비밀번호: user2");
-			}
-
-			//Branch table insert 
-			Branch branch = new Branch();
-			branch.setBrchId(1L);
-			branch.setBrchNm("수원점");
-			branch.setOperYn(true);
-			branch.setRegDt(LocalDateTime.now());
-			branchRepository.save(branch);			
-
-			branch.setBrchId(2L);
-			branch.setBrchNm("서울점");
-			branch.setOperYn(true);
-			branch.setRegDt(LocalDateTime.now());
-			branchRepository.save(branch);
-			
-			branch.setBrchId(3L);
-			branch.setBrchNm("제주점");
-			branch.setOperYn(true);
-			branch.setRegDt(LocalDateTime.now());
-			branchRepository.save(branch);
-
-		};
 	}
 
 }

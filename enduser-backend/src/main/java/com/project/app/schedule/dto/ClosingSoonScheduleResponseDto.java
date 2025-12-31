@@ -41,8 +41,8 @@ public class ClosingSoonScheduleResponseDto {
 				.scheduleId(schedule.getSchdId())
 				.brchNm(
 						schedule.getUserAdmin() != null
-								&& schedule.getUserAdmin().getBranch() != null
-										? schedule.getUserAdmin().getBranch().getBrchNm()
+								&& schedule.getUserAdmin().getBrchId() != null
+										? schedule.getUserAdmin().getBrchId().getBrchNm()
 										: null)
 				.sportName(
 						schedule.getProgram() != null
