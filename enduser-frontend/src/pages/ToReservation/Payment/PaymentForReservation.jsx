@@ -185,26 +185,44 @@ const PaymentForReservation = () => {
         }
     };
 
+    const formatDate = (dateString) => {
+        if (!dateString) return "";
+        const parts = dateString.split('-');
+        if (parts.length !== 3) return dateString;
+        return `${parseInt(parts[1], 10)}월 ${parseInt(parts[2], 10)}일`;
+    };
+
+    const formatTime = (timeString) => {
+        if (!timeString) return "";
+        const [hours, minutes] = timeString.split(':');
+        const h = parseInt(hours, 10);
+        const m = parseInt(minutes, 10);
+        const ampm = h >= 12 ? '오후' : '오전';
+        const h12 = h % 12 || 12;
+        const minuteStr = m > 0 ? ` ${m}분` : '';
+        return `${ampm} ${h12}시${minuteStr}`;
+    };
+
     return (
         <div className="payment-page-container">
             <div className="reservation-summary">
                 <p><strong>프로그램:</strong> {progNm}</p>
                 <p><strong>강사:</strong> {userName}</p>
                 <p><strong>지점:</strong> {brchNm}</p>
-                <p><strong>예약 날짜:</strong> {selectedDate}</p>
-                <p><strong>예약 시간:</strong> {strtTm} ~ {endTm}</p>
+                <p><strong>예약 날짜:</strong> {formatDate(selectedDate)}</p>
+                <p><strong>예약 시간:</strong> {formatTime(strtTm)} ~ {formatTime(endTm)}</p>
                 <p><strong>결제 금액:</strong> {oneTimeAmt.toLocaleString()}원</p>
             </div>
 
             {/* 결제 유형 선택 버튼 (이용권 결제 / 단건 결제) */}
             <div className="payment-type-selection">
-                <button 
+                <button
                     className={`payment-type-btn ${paymentType === 'pass' ? 'active' : ''}`}
                     onClick={() => handleChangePaymentType('pass')}
                 >
                     이용권 결제
                 </button>
-                <button 
+                <button
                     className={`payment-type-btn ${paymentType === 'pay' ? 'active' : ''}`}
                     onClick={() => handleChangePaymentType('pay')}
                 >
@@ -292,20 +310,25 @@ const PaymentForReservation = () => {
                 <h3>총 결제 금액: <span className="final-amount">{finalAmount.toLocaleString()}원</span></h3>
             </div>
 
-            <button
-                onClick={handleFinalPayment}
-                disabled={
-                    loading || // 결제 처리 중
-                    (paymentType === 'pass' && fetchingUserPasses) || // 이용권 목록 로딩 중
-                    !payMethod || // 결제 수단 미선택
-                    (paymentType === 'pass' && !selectedUserPass) || // 이용권 결제 시 이용권 미선택
-                    (paymentType === 'pay' && finalAmount <= 0) // 단건 결제 시 금액 0원 이하
-                }
-                className="final-payment-button"
-            >
-                {loading ? '결제 처리 중...' : '결제 확정'}
-            </button>
-            <button onClick={() => navigate(-1)} className="back-button">뒤로 가기</button>
+            <div className="payment-actions">
+                <button onClick={() => navigate(-1)} className="back-button">
+                    뒤로 가기
+                </button>
+
+                <button
+                    onClick={handleFinalPayment}
+                    disabled={
+                        loading ||
+                        (paymentType === 'pass' && fetchingUserPasses) ||
+                        !payMethod ||
+                        (paymentType === 'pass' && !selectedUserPass) ||
+                        (paymentType === 'pay' && finalAmount <= 0)
+                    }
+                    className="final-payment-button"
+                >
+                    {loading ? '결제 처리 중...' : '결제 확정'}
+                </button>
+            </div>
         </div>
     );
 };

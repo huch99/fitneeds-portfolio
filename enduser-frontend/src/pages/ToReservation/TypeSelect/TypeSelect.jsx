@@ -68,11 +68,7 @@ const TypeSelect = () => {
                                 <div key={branch.brchId} className="branch-item-wrapper">
                                     <Link
                                         className='branch-link-item'
-                                        to={`/schedule-list?brchId=${branch.brchId}`}
-                                        state={{
-                                            selectedType: "branch",
-                                            selectedBranch: `${branch.brchNm}`,
-                                        }}
+                                        to={`/schedule-list?type=branch&brchId=${branch.brchId}&name=${encodeURIComponent(branch.brchNm)}`}
                                     >
                                         <p className="branch-name-text">{branch.brchNm}</p>
                                     </Link>
@@ -97,11 +93,7 @@ const TypeSelect = () => {
                                     <div key={sport.sportId} className="sport-item-wrapper"> {/* 각 종목 링크를 감싸는 div */}
                                         <Link
                                             className='sport-link-item' // 새로운 클래스명으로 변경
-                                            to={`/schedule-list?sportId=${sport.sportId}`}
-                                            state={{
-                                                selectedType: "sport",
-                                                selectedSport: `${sport.sportNm}`,
-                                            }}
+                                            to={`/schedule-list?type=sport&sportId=${sport.sportId}&name=${encodeURIComponent(sport.sportNm)}`}
                                         >
                                             <p className="sport-name-text">{sport.sportNm}</p> {/* p 태그에도 클래스 부여 */}
                                         </Link>

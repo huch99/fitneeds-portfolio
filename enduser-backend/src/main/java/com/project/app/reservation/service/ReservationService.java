@@ -50,6 +50,8 @@ public class ReservationService {
                 .rsvTime(rsvTime)
                 .sttsCd(RsvSttsCd.CONFIRMED) // 결제 완료 후 확정 상태
                 .updID(user.getUserId()) // (옵션) 처음 생성 시에는 예약한 사용자 ID로 업데이트 ID 설정
+                .regDt(LocalDateTime.now())
+                .updDt(LocalDateTime.now())
                 .build();
 
         return reservationRepository.save(reservation);

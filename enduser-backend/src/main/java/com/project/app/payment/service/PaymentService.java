@@ -43,6 +43,7 @@ public class PaymentService {
      * @param requestDto 결제 요청 DTO
      * @return 생성된 Payment 엔티티 (결제 응답으로 사용)
      */
+	@Transactional
 	public Payment createAndProcessPayment(PaymentRequestDto requestDto) {
         User user = userRepository.findByUserId(requestDto.getUserId())
                 .orElseThrow(() -> new NoSuchElementException("사용자를 찾을 수 없습니다: " + requestDto.getUserId()));
