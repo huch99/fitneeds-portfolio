@@ -123,6 +123,7 @@ public class LoginController {
 				.email(user.getEmail())
 				.userName(user.getUserName())
 				.role(user.getRole())
+				.brchId(user.getBrchId().getBrchId())
 				.success(true)
 				.message("로그인 성공")
 				.build());
