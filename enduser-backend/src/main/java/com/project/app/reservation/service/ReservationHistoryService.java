@@ -69,8 +69,12 @@ public class ReservationHistoryService {
 	private ReservationHistory convertToHistory(Reservation reservation) {
 		// 스케줄 정보에서 필요한 데이터 추출
 		String sportName = reservation.getSchedule().getProgram().getSportType().getSportNm();
-		String brchNm = reservation.getSchedule().getUserAdmin().getBrchId() != null
-				? reservation.getSchedule().getUserAdmin().getBrchId().getBrchNm()
+		// Reservation 엔티티에 직접 연결된 Branch 사용
+		String brchNm = reservation.getBranch() != null
+				? reservation.getBranch().getBrchNm()
+				: null;
+		Long brchId = reservation.getBranch() != null
+				? reservation.getBranch().getBrchId()
 				: null;
 		String trainerName = reservation.getSchedule().getUserAdmin().getUserName();
 		Long scheduleId = reservation.getSchedule().getSchdId();
@@ -80,6 +84,7 @@ public class ReservationHistoryService {
 				.userId(reservation.getUser().getUserId())
 				.scheduleId(scheduleId)
 				.sportName(sportName)
+				.brchId(brchId)
 				.brchNm(brchNm)
 				.trainerName(trainerName)
 				.rsvDt(reservation.getRsvDt())

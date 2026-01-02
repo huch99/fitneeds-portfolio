@@ -41,9 +41,15 @@ public class ReservationHistory {
 
 	@Column(name = "sport_name", nullable = false, length = 100)
 	private String sportName; // 프로그램명 (스냅샷)
+	
+	@Column(name = "brch_id", nullable = false)
+	private Long brchId;
 
 	@Column(name = "brch_nm", nullable = true, length = 50)
 	private String brchNm; // 지점명 (스냅샷)
+	
+	@Column(name = "trainer_id", nullable = false)
+	private Long trainerId;
 
 	@Column(name = "trainer_name", nullable = false, length = 100)
 	private String trainerName; // 강사명 (스냅샷)
