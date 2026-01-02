@@ -124,7 +124,7 @@ function AdminMemberPage() {
                                             {/* <td>{item.gradePoint}</td> */}
 
                                             <td>{item.role}</td>
-                                            <td>{item.brchId}</td>
+                                            <td>{item.brchId.brchId}</td>
                                             <td>{item.agreeAt}</td>
                                             <td>
                                                 <input
