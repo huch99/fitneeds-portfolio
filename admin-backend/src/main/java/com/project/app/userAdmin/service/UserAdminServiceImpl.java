@@ -70,10 +70,6 @@ public class UserAdminServiceImpl implements UserAdminService {
 	public List<UserAdmin> getAllUsers() {
 		return userAdminRepository.findAll();
 	}
-
-	public Optional<UserAdmin> getUserByEmailAdmin(String email) {
-		return userAdminRepository.getUserByEmailAndRole(email, "ADMIN");
-	}
 	
 	public Optional<UserAdmin> getUserByEmail(String email) {
         return userAdminRepository.getUserByEmail(email);

@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.project.app.branch.entity.Branch;
 import com.project.app.reservation.dto.PastHistoryResponseDto;
 import com.project.app.reservation.entity.Reservation;
 import com.project.app.reservation.entity.ReservationHistory;
@@ -69,9 +70,8 @@ public class ReservationHistoryService {
 	private ReservationHistory convertToHistory(Reservation reservation) {
 		// 스케줄 정보에서 필요한 데이터 추출
 		String sportName = reservation.getSchedule().getProgram().getSportType().getSportNm();
-		String brchNm = reservation.getSchedule().getUserAdmin().getBrchId() != null
-				? reservation.getSchedule().getUserAdmin().getBrchId().getBrchNm()
-				: null;
+		// Reservation 엔티티에 직접 연결된 Branch 사용 (오브젝트로 통일)
+		Branch branch = reservation.getBranch();
 		String trainerName = reservation.getSchedule().getUserAdmin().getUserName();
 		Long scheduleId = reservation.getSchedule().getSchdId();
 
@@ -80,7 +80,7 @@ public class ReservationHistoryService {
 				.userId(reservation.getUser().getUserId())
 				.scheduleId(scheduleId)
 				.sportName(sportName)
-				.brchNm(brchNm)
+				.branch(branch) // Branch 오브젝트로 통일
 				.trainerName(trainerName)
 				.rsvDt(reservation.getRsvDt())
 				.rsvTime(reservation.getRsvTime())
@@ -123,8 +123,9 @@ public class ReservationHistoryService {
 					boolean reviewWrittenFlag = "Y".equals(history.getReviewWritten());
 					return PastHistoryResponseDto.builder()
 							.reservationId(history.getReservationId())
+							.scheduleId(history.getScheduleId()) // 스케줄 ID 추가
 							.sportName(history.getSportName())
-							.brchNm(history.getBrchNm())
+							.brchNm(history.getBranch() != null ? history.getBranch().getBrchNm() : null)
 							.trainerName(history.getTrainerName())
 							.rsvDt(history.getRsvDt())
 							.rsvTime(history.getRsvTime())

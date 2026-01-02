@@ -67,9 +67,41 @@ public class ReservationService {
     }
     
 
-    
+    /**
+     * 예약을 취소합니다.
+     * Reservation 엔티티의 cancel() 메서드를 사용하여 상태 변경 로직을 캡슐화합니다.
+     * 
+     * @param rsvId 예약 ID
+     * @param userId 사용자 ID (권한 확인 및 업데이트 ID로 사용)
+     * @param cancelReason 취소 사유 (선택사항)
+     * @throws NoSuchElementException 예약을 찾을 수 없는 경우
+     * @throws IllegalStateException 예약 취소가 불가능한 상태인 경우
+     */
+    public void cancelReservation(Long rsvId, String userId, String cancelReason) {
+        log.info("[ReservationService] 예약 취소 시작 - rsvId: {}, userId: {}", rsvId, userId);
+        
+        // 예약 조회
+        Reservation reservation = reservationRepository.findById(rsvId)
+                .orElseThrow(() -> new NoSuchElementException("예약을 찾을 수 없습니다. rsvId: " + rsvId));
+        
+        // 권한 확인: 예약한 사용자만 취소 가능
+        if (!reservation.getUser().getUserId().equals(userId)) {
+            throw new IllegalArgumentException("본인의 예약만 취소할 수 있습니다.");
+        }
+        
+        // 엔티티의 cancel() 메서드를 사용하여 상태 변경 로직 캡슐화
+        reservation.cancel(cancelReason, userId);
+        
+        // 저장
+        reservationRepository.save(reservation);
+        
+        log.info("[ReservationService] 예약 취소 완료 - rsvId: {}", rsvId);
+    }
+
     /**
      * 스케줄러가 호출하여 지난 날짜의 예약 (CONFIRMED 상태)을 COMPLETED 상태로 업데이트합니다.
+     * Reservation 엔티티의 complete() 메서드를 사용하여 상태 변경 로직을 캡슐화합니다.
+     * 
      * @param batchUser 업데이터 사용자 ID (예: "SYSTEM" 또는 "SCHEDULER")
      * @return 업데이트된 예약의 수
      */
@@ -81,15 +113,14 @@ public class ReservationService {
 
         int updatedCount = 0;
         for (Reservation reservation : pastConfirmedReservations) {
-            reservation.setSttsCd(RsvSttsCd.COMPLETED); // 상태를 COMPLETED로 변경
+            // 엔티티의 complete() 메서드를 사용하여 상태 변경 로직 캡슐화
+            reservation.complete();
             reservation.setUpdID(batchUser); // 스케줄러가 업데이트했음을 기록
             reservationRepository.save(reservation);
             updatedCount++;
         }
         return updatedCount;
     }
-
-
 
 	
 	/**
