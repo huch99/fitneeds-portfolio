@@ -51,8 +51,7 @@ public class UserAdmin {
     @Column(name = "agree_at", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime agreeAt;
 
-    @ColumnDefault("1")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "brch_id", nullable = true)
     private Branch brchId; 
 }
