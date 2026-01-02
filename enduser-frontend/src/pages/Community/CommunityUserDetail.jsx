@@ -1,5 +1,3 @@
-
-
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -47,14 +45,17 @@ function CommunityUserDetail() {
   const checkJoined = async () => {
     if (!loginUserId) return;
 
-    const res = await axios.get(`/api/user/community/${postId}/join/check`, {
-      params: { userId: loginUserId },
-    });
+    const res = await axios.get(
+      `/api/user/community/${postId}/join/check`,
+      { params: { userId: loginUserId } }
+    );
     setAlreadyJoined(res.data.joined === true);
   };
 
   const fetchJoinUsers = async () => {
-    const res = await axios.get(`/api/user/community/${postId}/join/users`);
+    const res = await axios.get(
+      `/api/user/community/${postId}/join/users`
+    );
     setJoinUsers(res.data);
   };
 
@@ -186,7 +187,10 @@ function CommunityUserDetail() {
 
   return (
     <div className="community-detail-page">
-      <button className="community-action-btn" onClick={() => navigate(-1)}>
+      <button
+        className="community-action-btn"
+        onClick={() => navigate(-1)}
+      >
         ← 목록으로
       </button>
 
@@ -204,7 +208,10 @@ function CommunityUserDetail() {
 
             {isWriter && (
               <div>
-                <button className="community-action-btn" onClick={handleEditPost}>
+                <button
+                  className="community-action-btn"
+                  onClick={handleEditPost}
+                >
                   수정
                 </button>
                 <button
@@ -222,7 +229,7 @@ function CommunityUserDetail() {
           <div className="post-content">{post.content}</div>
         </div>
 
-        {/* 모집 영역 (모집 글은 기존 구조 유지) */}
+        {/* 모집 영역 */}
         {isRecruitPost && (
           <div style={{ marginTop: 20 }}>
             <p>모집 인원: {post.recruitMax}</p>
@@ -230,11 +237,17 @@ function CommunityUserDetail() {
             {!isWriter && !isRecruitClosed && (
               <>
                 {!alreadyJoined ? (
-                  <button className="recruit-apply-btn" onClick={handleApplyRecruit}>
+                  <button
+                    className="recruit-apply-btn"
+                    onClick={handleApplyRecruit}
+                  >
                     참여 신청하기
                   </button>
                 ) : (
-                  <button className="recruit-cancel-btn" onClick={handleCancelRecruit}>
+                  <button
+                    className="recruit-cancel-btn"
+                    onClick={handleCancelRecruit}
+                  >
                     참여 취소
                   </button>
                 )}
@@ -242,98 +255,15 @@ function CommunityUserDetail() {
             )}
 
             {isRecruitClosed && (
-              <span className="recruit-status-badge recruit-closed">모집 종료</span>
+              <span className="recruit-status-badge recruit-closed">
+                모집 종료
+              </span>
             )}
-          </div>
-        )}
-
-        {/* =========================
-            ✅ (모집이 아닌 글만) 댓글을 제목/본문 카드 안으로 합치기
-        ========================= */}
-        {!isRecruitPost && (
-          <div className="detail-comment-merged">
-            <div className="detail-divider" />
-
-            <div className="detail-comment-title">댓글</div>
-
-            {/* 댓글 목록 */}
-            <div className="detail-comment-list">
-              {comments.length === 0 ? (
-                <p className="detail-comment-empty">아직 댓글이 없습니다.</p>
-              ) : (
-                comments.map((c) => {
-                  const isMy = String(c.writerId) === String(loginUserId);
-                  const editing = editingCommentId === c.commentId;
-
-                  return (
-                    <div key={c.commentId} className="comment-item">
-                      <div className="comment-meta">
-                        <strong>{c.writerId}</strong>
-
-                        {isMy && !editing && (
-                          <>
-                            <button
-                              className="community-action-btn"
-                              onClick={() => startEditComment(c)}
-                            >
-                              수정
-                            </button>
-                            <button
-                              className="community-action-btn delete"
-                              onClick={() => deleteComment(c.commentId)}
-                            >
-                              삭제
-                            </button>
-                          </>
-                        )}
-                      </div>
-
-                      {editing ? (
-                        <>
-                          <textarea
-                            className="comment-textarea"
-                            value={editingContent}
-                            onChange={(e) => setEditingContent(e.target.value)}
-                          />
-                          <button
-                            className="community-action-btn"
-                            onClick={() => saveEditComment(c.commentId)}
-                          >
-                            저장
-                          </button>
-                          <button
-                            className="community-action-btn delete"
-                            onClick={cancelEditComment}
-                          >
-                            취소
-                          </button>
-                        </>
-                      ) : (
-                        <p className="community-post-content">{c.content}</p>
-                      )}
-                    </div>
-                  );
-                })
-              )}
-            </div>
-
-            {/* 댓글 작성 */}
-            <div className="comment-write-box merged">
-              <textarea
-                className="comment-textarea"
-                value={commentContent}
-                onChange={(e) => setCommentContent(e.target.value)}
-                placeholder="댓글을 입력하세요"
-              />
-              <button className="comment-submit-btn" onClick={submitComment}>
-                댓글 작성
-              </button>
-            </div>
           </div>
         )}
       </div>
 
-      {/* 참여자 목록 (작성자용) - 모집 글은 그대로 */}
+      {/* 참여자 목록 (작성자용) */}
       {isRecruitPost && isWriter && (
         <div className="recruit-join-box">
           <div className="recruit-join-header">
@@ -359,81 +289,80 @@ function CommunityUserDetail() {
       )}
 
       {/* =========================
-          (모집 글일 때만) 댓글은 기존 구조 그대로 유지
+          댓글 목록
       ========================= */}
-      {isRecruitPost && (
-        <>
-          <div className="community-card comment-list-card">
-            <h3>댓글</h3>
+      <div className="community-card comment-list-card">
+        <h3>댓글</h3>
 
-            {comments.map((c) => {
-              const isMy = String(c.writerId) === String(loginUserId);
-              const editing = editingCommentId === c.commentId;
+        {comments.map((c) => {
+          const isMy = String(c.writerId) === String(loginUserId);
+          const editing = editingCommentId === c.commentId;
 
-              return (
-                <div key={c.commentId} className="comment-item">
-                  <div className="comment-meta">
-                    <strong>{c.writerId}</strong>
+          return (
+            <div key={c.commentId} className="comment-item">
+              <div className="comment-meta">
+                <strong>{c.writerId}</strong>
 
-                    {isMy && !editing && (
-                      <>
-                        <button
-                          className="community-action-btn"
-                          onClick={() => startEditComment(c)}
-                        >
-                          수정
-                        </button>
-                        <button
-                          className="community-action-btn delete"
-                          onClick={() => deleteComment(c.commentId)}
-                        >
-                          삭제
-                        </button>
-                      </>
-                    )}
-                  </div>
+                {isMy && !editing && (
+                  <>
+                    <button
+                      className="community-action-btn"
+                      onClick={() => startEditComment(c)}
+                    >
+                      수정
+                    </button>
+                    <button
+                      className="community-action-btn delete"
+                      onClick={() => deleteComment(c.commentId)}
+                    >
+                      삭제
+                    </button>
+                  </>
+                )}
+              </div>
 
-                  {editing ? (
-                    <>
-                      <textarea
-                        className="comment-textarea"
-                        value={editingContent}
-                        onChange={(e) => setEditingContent(e.target.value)}
-                      />
-                      <button
-                        className="community-action-btn"
-                        onClick={() => saveEditComment(c.commentId)}
-                      >
-                        저장
-                      </button>
-                      <button
-                        className="community-action-btn delete"
-                        onClick={cancelEditComment}
-                      >
-                        취소
-                      </button>
-                    </>
-                  ) : (
-                    <p className="community-post-content">{c.content}</p>
-                  )}
-                </div>
-              );
-            })}
-          </div>
+              {editing ? (
+                <>
+                  <textarea
+                    className="comment-textarea"
+                    value={editingContent}
+                    onChange={(e) => setEditingContent(e.target.value)}
+                  />
+                  <button
+                    className="community-action-btn"
+                    onClick={() => saveEditComment(c.commentId)}
+                  >
+                    저장
+                  </button>
+                  <button
+                    className="community-action-btn delete"
+                    onClick={cancelEditComment}
+                  >
+                    취소
+                  </button>
+                </>
+              ) : (
+                <p className="community-post-content">{c.content}</p>
+              )}
+            </div>
+          );
+        })}
+      </div>
 
-          <div className="comment-write-box">
-            <textarea
-              className="comment-textarea"
-              value={commentContent}
-              onChange={(e) => setCommentContent(e.target.value)}
-              placeholder="댓글을 입력하세요"
-            />
-            <button className="comment-submit-btn" onClick={submitComment}>
-              댓글 작성
-            </button>
-          </div>
-        </>
-      )}
+      {/* =========================
+          댓글 작성
+      ========================= */}
+      <div className="comment-write-box">
+        <textarea
+          className="comment-textarea"
+          value={commentContent}
+          onChange={(e) => setCommentContent(e.target.value)}
+          placeholder="댓글을 입력하세요"
+        />
+        <button className="comment-submit-btn" onClick={submitComment}>
+          댓글 작성
+        </button>
+      </div>
     </div>
   );
 }
