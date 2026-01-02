@@ -43,11 +43,9 @@ public class MyReservationResponseDto {
 										? reservation.getSchedule().getProgram().getSportType().getSportNm()
 										: null)
 				.brchNm(
-						reservation.getSchedule() != null
-								&& reservation.getSchedule().getUserAdmin() != null
-								&& reservation.getSchedule().getUserAdmin().getBrchId() != null
-										? reservation.getSchedule().getUserAdmin().getBrchId().getBrchNm()
-										: null)
+						reservation.getBranch() != null
+								? reservation.getBranch().getBrchNm()
+								: null)
 				.trainerName(
 						reservation.getSchedule() != null
 								&& reservation.getSchedule().getUserAdmin() != null

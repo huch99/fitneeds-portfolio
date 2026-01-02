@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { createPortal } from 'react-dom';
 import api from '../../api';
 import '../../components/auth/modalStyles.css';
@@ -46,8 +47,25 @@ const getMyReservations = async () => {
   }
 };
 
+// 스케줄 정보 조회 (scheduleId로)
+const getScheduleById = async (scheduleId) => {
+  try {
+    const response = await api.get(`/schedules/getScheduleBySchdIdForR/${scheduleId}`);
+    
+    if (response.data) {
+      return response.data;
+    } else {
+      throw new Error('스케줄 정보 조회 실패');
+    }
+  } catch (error) {
+    console.error('스케줄 정보 조회 실패:', error);
+    throw error;
+  }
+};
+
 
 function UsageHistorySection({ onRefresh }) {
+  const navigate = useNavigate();
   const [usageHistoryData, setUsageHistoryData] = useState([]);
   const [usageHistoryLoading, setUsageHistoryLoading] = useState(false);
   const [frequentReservations, setFrequentReservations] = useState([]);
@@ -80,7 +98,7 @@ function UsageHistorySection({ onRefresh }) {
         console.log('[UsageHistorySection] 이용내역 API 응답 데이터:', data);
         
         // 백엔드 데이터를 화면에 맞게 변환
-        // 백엔드 응답 필드: reservationId, sportName, brchNm, trainerName, rsvDt, rsvTime, refId, reviewWritten
+        // 백엔드 응답 필드: reservationId, sportName, brchNm, trainerName, rsvDt, rsvTime, refId, reviewWritten, scheduleId
         const transformed = (data || []).map((history) => {
           // 날짜 변환
           let dateStr = '';
@@ -106,6 +124,7 @@ function UsageHistorySection({ onRefresh }) {
             id: history.refId || history.reservationId,
             reservationId: history.reservationId,
             historyId: history.refId,
+            scheduleId: history.scheduleId, // 스케줄 ID (백엔드에서 추가 필요)
             date: dateStr,
             time: timeStr,
             branchName: history.brchNm || '지점',
@@ -118,66 +137,10 @@ function UsageHistorySection({ onRefresh }) {
         
         console.log('[UsageHistorySection] 변환된 이용내역 데이터:', transformed);
         
-        // ===== 더미 데이터 (화면 확인용) =====
-        // TODO: 백엔드 API 연결 후 제거
-        // if (transformed.length === 0) {
-        //   transformed.push({
-        //     id: 999,
-        //     reservationId: 999,
-        //     historyId: 999,
-        //     date: '2024-12-20',
-        //     time: '14:00',
-        //     branchName: '강남점',
-        //     programName: '필라테스',
-        //     trainerName: '김강사',
-        //     reviewWritten: false,
-        //     image: '/images/pilates.png'
-        //   });
-        //   transformed.push({
-        //     id: 998,
-        //     reservationId: 998,
-        //     historyId: 998,
-        //     date: '2024-12-18',
-        //     time: '16:00',
-        //     branchName: '잠실점',
-        //     programName: '요가',
-        //     trainerName: '이강사',
-        //     reviewWritten: true,
-        //     image: '/images/yoga.png'
-        //   });
-        // }
-        // ===== 더미 데이터 끝 =====
-        
         setUsageHistoryData(transformed);
       } catch (error) {
         console.error('[UsageHistorySection] 이용내역 조회 실패:', error);
-        
-        // ===== 더미 데이터 (에러 시 화면 확인용) =====
-        // TODO: 백엔드 API 연결 후 제거
-        // setUsageHistoryData([{
-        //   id: 999,
-        //   reservationId: 999,
-        //   historyId: 999,
-        //   date: '2024-12-20',
-        //   time: '14:00',
-        //   branchName: '강남점',
-        //   programName: '필라테스',
-        //   trainerName: '김강사',
-        //   reviewWritten: false,
-        //   image: '/images/pilates.png'
-        // }, {
-        //   id: 998,
-        //   reservationId: 998,
-        //   historyId: 998,
-        //   date: '2024-12-18',
-        //   time: '16:00',
-        //   branchName: '잠실점',
-        //   programName: '요가',
-        //   trainerName: '이강사',
-        //   reviewWritten: true,
-        //   image: '/images/yoga.png'
-        // }]);
-        // ===== 더미 데이터 끝 =====
+
       } finally {
         setUsageHistoryLoading(false);
       }
@@ -220,36 +183,12 @@ function UsageHistorySection({ onRefresh }) {
           }));
         
         console.log('[UsageHistorySection] 2회 이상 예약한 항목:', frequent);
-        
-        // ===== 더미 데이터 (화면 확인용) =====
-        // TODO: 백엔드 API 연결 후 제거
-        // if (frequent.length === 0) {
-        //   frequent.push({
-        //     programName: '필라테스',
-        //     branchName: '강남점',
-        //     trainerName: '김강사',
-        //     count: 3,
-        //     image: '/images/pilates.png',
-        //     price: '-'
-        //   });
-        // }
-        // ===== 더미 데이터 끝 =====
+
         
         setFrequentReservations(frequent);
       } catch (error) {
         console.error('[UsageHistorySection] 2회 이상 예약한 항목 조회 실패:', error);
         
-        // ===== 더미 데이터 (에러 시 화면 확인용) =====
-        // TODO: 백엔드 API 연결 후 제거
-        // setFrequentReservations([{
-        //   programName: '필라테스',
-        //   branchName: '강남점',
-        //   trainerName: '김강사',
-        //   count: 3,
-        //   image: '/images/pilates.png',
-        //   price: '-'
-        // }]);
-        // ===== 더미 데이터 끝 =====
       } finally {
         setFrequentReservationsLoading(false);
       }
@@ -474,9 +413,58 @@ function UsageHistorySection({ onRefresh }) {
                           marginRight: '4rem'
                         }}>
                           <button
-                            onClick={() => {
-                              // TODO: 상세보기 페이지로 이동하는 로직 추가
-                              console.log('상세보기 클릭:', history);
+                            onClick={async () => {
+                              try {
+                                // scheduleId가 없으면 백엔드 응답에 scheduleId가 포함되지 않은 것
+                                if (!history.scheduleId) {
+                                  alert('스케줄 정보를 찾을 수 없습니다.');
+                                  console.error('[UsageHistorySection] scheduleId가 없음:', history);
+                                  return;
+                                }
+
+                                // 스케줄 정보 조회
+                                const schedule = await getScheduleById(history.scheduleId);
+                                
+                                if (!schedule || !schedule.progId) {
+                                  alert('프로그램 정보를 찾을 수 없습니다.');
+                                  console.error('[UsageHistorySection] 스케줄 정보 조회 실패:', schedule);
+                                  return;
+                                }
+
+                                // 날짜 포맷 변환 (YYYY-MM-DD)
+                                const formatDate = (dateStr) => {
+                                  if (!dateStr) return '';
+                                  if (typeof dateStr === 'string') {
+                                    return dateStr.split('T')[0];
+                                  }
+                                  return dateStr;
+                                };
+
+                                // 시간 포맷 변환 (HH:mm)
+                                const formatTime = (timeStr) => {
+                                  if (!timeStr) return '';
+                                  if (typeof timeStr === 'string') {
+                                    return timeStr.substring(0, 5);
+                                  }
+                                  return String(timeStr).substring(0, 5);
+                                };
+
+                                // ProgramDetailPage로 이동
+                                const params = new URLSearchParams({
+                                  progId: schedule.progId.toString(),
+                                  userName: encodeURIComponent(schedule.userName || history.trainerName || ''),
+                                  brchNm: encodeURIComponent(schedule.brchNm || history.branchName || ''),
+                                  strtDt: formatDate(schedule.strtDt) || history.date || '',
+                                  endDt: formatDate(schedule.strtDt) || history.date || '', // 단일 날짜 스케줄의 경우
+                                  strtTm: formatTime(schedule.strtTm) || history.time || '09:00',
+                                  endTm: formatTime(schedule.endTm) || history.time || '10:00'
+                                });
+                                
+                                navigate(`/program-detail?${params.toString()}`);
+                              } catch (error) {
+                                console.error('[UsageHistorySection] 상세보기 페이지 이동 실패:', error);
+                                alert('상세보기 페이지로 이동하는 중 오류가 발생했습니다.');
+                              }
                             }}
                             style={{
                               padding: '0.75rem 1.5rem',

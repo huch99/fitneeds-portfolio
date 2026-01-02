@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import api from '../../../api';
 import { Link, useLocation } from 'react-router-dom';
 import './TypeSelect.css';
+import BranchSearchModal from '../BranchSearchModal/BranchSearchModal';
+
 
 const TypeSelect = () => {
     const [sports, setSports] = useState([]);
@@ -12,6 +14,9 @@ const TypeSelect = () => {
     const [filteredBranches, setFilteredBranches] = useState([]);
     const [branchloading, setBranchLoading] = useState(true);
     const [branchError, setBranchError] = useState(null);
+
+    // --- 모달 상태 관리 ---
+    const [isBranchModalOpen, setIsBranchModalOpen] = useState(false);
 
     const location = useLocation();
 
@@ -55,34 +60,35 @@ const TypeSelect = () => {
             <div className='type-section'>
                 <p className='section-title'>지점별 예약</p>
                 <div className="branch-selection-area">
-                {branchloading ? (
-                    <div>지점 데이터를 불러오는 중 입니다.</div>
-                ) : (
-                    branchError ? (
-                        <div>{branchError}</div>
+                    {branchloading ? (
+                        <div>지점 데이터를 불러오는 중 입니다.</div>
                     ) : (
-                        branches.length === 0 ? (
-                            <div>등록된 지점이 없습니다.</div>
+                        branchError ? (
+                            <div>{branchError}</div>
                         ) : (
-                            filteredBranches.map(branch => (
-                                <div key={branch.brchId} className="branch-item-wrapper">
-                                    <Link
-                                        className='branch-link-item'
-                                        to={`/schedule-list?brchId=${branch.brchId}`}
-                                        state={{
-                                            selectedType: "branch",
-                                            selectedBranch: `${branch.brchNm}`,
-                                        }}
-                                    >
-                                        <p className="branch-name-text">{branch.brchNm}</p>
-                                    </Link>
-                                </div>
-                            ))
+                            branches.length === 0 ? (
+                                <div>등록된 지점이 없습니다.</div>
+                            ) : (
+                                filteredBranches.map(branch => (
+                                    <div key={branch.brchId} className="branch-item-wrapper">
+                                        <Link
+                                            className='branch-link-item'
+                                            to={`/schedule-list?type=branch&brchId=${branch.brchId}&name=${encodeURIComponent(branch.brchNm)}`}
+                                        >
+                                            <p className="branch-name-text">{branch.brchNm}</p>
+                                        </Link>
+                                    </div>
+                                ))
+                            )
                         )
-                    )
-                )}
+                    )}
                 </div>
-                <p className='info-text more'>더보기</p>
+                <p 
+                    className='info-text more' 
+                    onClick={() => setIsBranchModalOpen(true)}
+                >
+                    더보기
+                </p>
             </div>
 
             <div className='type-section'>
@@ -97,11 +103,7 @@ const TypeSelect = () => {
                                     <div key={sport.sportId} className="sport-item-wrapper"> {/* 각 종목 링크를 감싸는 div */}
                                         <Link
                                             className='sport-link-item' // 새로운 클래스명으로 변경
-                                            to={`/schedule-list?sportId=${sport.sportId}`}
-                                            state={{
-                                                selectedType: "sport",
-                                                selectedSport: `${sport.sportNm}`,
-                                            }}
+                                            to={`/schedule-list?type=sport&sportId=${sport.sportId}&name=${encodeURIComponent(sport.sportNm)}`}
                                         >
                                             <p className="sport-name-text">{sport.sportNm}</p> {/* p 태그에도 클래스 부여 */}
                                         </Link>
@@ -114,6 +116,13 @@ const TypeSelect = () => {
                 }
 
             </div>
+
+            {/* --- 지점 검색 모달 추가 --- */}
+            <BranchSearchModal 
+                isOpen={isBranchModalOpen} 
+                onClose={() => setIsBranchModalOpen(false)} 
+                branches={branches} // 전체 지점 데이터를 전달
+            />
         </div>
     );
 };

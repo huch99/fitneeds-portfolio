@@ -182,7 +182,6 @@ function ReviewWriteModal({ isOpen, onClose, history, onRefresh }) {
           )}
           <form onSubmit={handleSubmit}>
             <div className="form-group">
-              <label htmlFor="review-rating">평점</label>
               <div style={{ display: 'flex', gap: '5px', marginTop: '0.5rem' }}>
                 {[1, 2, 3, 4, 5].map((star) => (
                   <button
@@ -204,7 +203,6 @@ function ReviewWriteModal({ isOpen, onClose, history, onRefresh }) {
               </div>
             </div>
             <div className="form-group">
-              <label htmlFor="review-content">리뷰 내용</label>
               <textarea
                 id="review-content"
                 className="form-control"
@@ -291,7 +289,6 @@ function ReviewEditModal({ isOpen, onClose, reviewId, writtenReviews, onRefresh 
           )}
           <form onSubmit={handleSubmit}>
             <div className="form-group">
-              <label htmlFor="review-rating">평점</label>
               <div style={{ display: 'flex', gap: '5px', marginTop: '0.5rem' }}>
                 {[1, 2, 3, 4, 5].map((star) => (
                   <button
@@ -313,7 +310,6 @@ function ReviewEditModal({ isOpen, onClose, reviewId, writtenReviews, onRefresh 
               </div>
             </div>
             <div className="form-group">
-              <label htmlFor="review-content">리뷰 내용</label>
               <textarea
                 id="review-content"
                 className="form-control"
@@ -361,7 +357,7 @@ function ReviewDetailModal({ isOpen, onClose, review }) {
           </div>
           <div style={{ marginBottom: '1.5rem' }}>
             <label><strong>평점</strong></label>
-            <div style={{ display: 'flex', gap: '5px', marginTop: '0.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '5px', marginTop: '0.5rem' }}>
               {[1, 2, 3, 4, 5].map((star) => (
                 <span
                   key={star}
@@ -479,51 +475,10 @@ function ReviewWriteSection({ reviewTab, setReviewTab }) {
 
       console.log('[ReviewWriteSection] 변환된 리뷰 데이터:', transformedReviews);
       
-      // ===== 더미 데이터 (화면 확인용) =====
-      // TODO: 백엔드 API 연결 후 제거
-      // if (transformedReviews.length === 0) {
-      //   transformedReviews.push({
-      //     id: 999,
-      //     reviewId: 999,
-      //     reservationId: 999,
-      //     historyId: 999,
-      //     programName: '요가',
-      //     productName: '요가',
-      //     branchName: '홍대점',
-      //     facility: '홍대점',
-      //     trainerName: '이강사',
-      //     rating: 5,
-      //     content: '정말 좋은 수업이었습니다! 강사님이 친절하시고 수업 내용도 알차요.',
-      //     reviewText: '정말 좋은 수업이었습니다! 강사님이 친절하시고 수업 내용도 알차요.',
-      //     writtenDate: '2024.12.15',
-      //     image: '/images/yoga.png'
-      //   });
-      // }
-      // ===== 더미 데이터 끝 =====
-      
       setWrittenReviews(transformedReviews);
     } catch (error) {
       console.error('[ReviewWriteSection] 리뷰 목록 조회 실패:', error);
       
-      // ===== 더미 데이터 (에러 시 화면 확인용) =====
-      // TODO: 백엔드 API 연결 후 제거
-      // setWrittenReviews([{
-      //   id: 999,
-      //   reviewId: 999,
-      //   reservationId: 999,
-      //   historyId: 999,
-      //   programName: '요가',
-      //   productName: '요가',
-      //   branchName: '홍대점',
-      //   facility: '홍대점',
-      //   trainerName: '이강사',
-      //   rating: 5,
-      //   content: '정말 좋은 수업이었습니다! 강사님이 친절하시고 수업 내용도 알차요.',
-      //   reviewText: '정말 좋은 수업이었습니다! 강사님이 친절하시고 수업 내용도 알차요.',
-      //   writtenDate: '2024.12.15',
-      //   image: '/images/yoga.png'
-      // }]);
-      // ===== 더미 데이터 끝 =====
     } finally {
       setLoading(false);
     }
@@ -594,24 +549,6 @@ function ReviewWriteSection({ reviewTab, setReviewTab }) {
       });
       
       console.log('[ReviewWriteSection] 변환된 리뷰 미작성 이용내역 데이터:', transformed);
-      
-      // ===== 더미 데이터 (화면 확인용) =====
-      // TODO: 백엔드 API 연결 후 제거
-      // if (transformed.length === 0) {
-      //   transformed.push({
-      //     id: 999,
-      //     reservationId: 999,
-      //     historyId: 999,
-      //     date: '2024-12-20',
-      //     time: '14:00',
-      //     branchName: '강남점',
-      //     programName: '필라테스',
-      //     trainerName: '김강사',
-      //     reviewWritten: false,
-      //     image: '/images/pilates.png'
-      //   });
-      // }
-      // ===== 더미 데이터 끝 =====
       
       setUnwrittenHistories(transformed);
     } catch (error) {
