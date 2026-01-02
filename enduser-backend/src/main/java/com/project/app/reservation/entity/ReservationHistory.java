@@ -6,11 +6,16 @@ import java.time.LocalTime;
 
 import org.springframework.data.annotation.CreatedDate;
 
+import com.project.app.branch.entity.Branch;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -42,11 +47,9 @@ public class ReservationHistory {
 	@Column(name = "sport_name", nullable = false, length = 100)
 	private String sportName; // 프로그램명 (스냅샷)
 	
-	@Column(name = "brch_id", nullable = false)
-	private Long brchId;
-
-	@Column(name = "brch_nm", nullable = true, length = 50)
-	private String brchNm; // 지점명 (스냅샷)
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "brch_id", nullable = false)
+	private Branch branch; // 지점 (오브젝트로 통일)
 	
 	@Column(name = "trainer_id", nullable = false)
 	private Long trainerId;

@@ -67,7 +67,6 @@ public class ReservationService {
     }
     
 
-    
     /**
      * 예약을 취소합니다.
      * Reservation 엔티티의 cancel() 메서드를 사용하여 상태 변경 로직을 캡슐화합니다.

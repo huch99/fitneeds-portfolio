@@ -33,7 +33,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 			"JOIN FETCH s.program p " +
 			"JOIN FETCH p.sportType st " +
 			"JOIN FETCH s.userAdmin ua " +
-			"LEFT JOIN FETCH ua.brchId b " +
+			"LEFT JOIN FETCH ua.branch " +
+			"JOIN FETCH r.branch " +
 			"WHERE r.user.userId = :userId " +
 			"ORDER BY r.rsvDt DESC, r.rsvTime DESC")
 	List<Reservation> findByUserIdWithDetails(@Param("userId") String userId);
@@ -48,6 +49,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 	 */
 	@Query("SELECT r FROM Reservation r " +
 			"JOIN FETCH r.schedule s " +
+			"JOIN FETCH r.branch " +
 			"LEFT JOIN FETCH r.userPass up " +
 			"WHERE r.rsvId = :rsvId AND r.user.userId = :userId")
 	Optional<Reservation> findByRsvIdAndUserId(
@@ -66,7 +68,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 			"JOIN FETCH s.program p " +
 			"JOIN FETCH p.sportType st " +
 			"JOIN FETCH s.userAdmin ua " +
-			"LEFT JOIN FETCH ua.brchId b " +
+			"LEFT JOIN FETCH ua.branch " +
+			"JOIN FETCH r.branch " +
 			"JOIN FETCH r.user u " +
 			"LEFT JOIN FETCH r.userPass up " +
 			"WHERE r.rsvDt < :targetDate " +
