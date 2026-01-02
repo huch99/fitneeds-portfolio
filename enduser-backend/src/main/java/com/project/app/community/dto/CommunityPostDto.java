@@ -18,6 +18,9 @@ public class CommunityPostDto {
     /** 작성자 ID */
     private String writerId;
 
+    /** 🔥 작성자 이름 (JOIN 결과, DB 컬럼 아님) */
+    private String writerName;
+    
     private String writerType;
     private Long branchId;
     private Integer views;

@@ -12,4 +12,7 @@ public class CommunityCommentDto {
     private String writerType;
     private String content;
     private LocalDateTime createdAt;
+    
+    /** 🔥 작성자 이름 (JOIN 결과, 출력용) */
+    private String writerName;
 }

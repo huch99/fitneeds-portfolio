@@ -203,8 +203,10 @@ function CommunityUserDetail() {
 
           <div className="post-meta">
             <span>
-              작성자 {post.writerId} · {post.createdAt?.substring(0, 10)}
+              작성자 {post.writerName || post.writerId || "-"} ·{" "}
+              {post.createdAt?.substring(0, 10)}
             </span>
+
 
             {isWriter && (
               <div>
@@ -301,7 +303,8 @@ function CommunityUserDetail() {
           return (
             <div key={c.commentId} className="comment-item">
               <div className="comment-meta">
-                <strong>{c.writerId}</strong>
+                <strong>{c.writerName || c.writerId || "-"}</strong>
+
 
                 {isMy && !editing && (
                   <>

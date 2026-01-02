@@ -270,7 +270,7 @@
   width: 920px;
   height: 720px;
   background: #fff;
-  border-radius: 10px;
+  /* border-radius: 10px; */
   display: flex;
   flex-direction: column;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
@@ -318,7 +318,7 @@
   overflow-y: auto;
   background: #fffdf2;
   border: 1px solid #f0e6b8;
-  border-radius: 8px;
+  /* border-radius: 8px; */
   padding: 18px;
   line-height: 1.7;
   white-space: pre-line;
