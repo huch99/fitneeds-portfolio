@@ -24,10 +24,10 @@ public interface ClosingSoonScheduleRepository extends JpaRepository<Schedule, L
 			"LEFT JOIN FETCH s.program p " +
 			"LEFT JOIN FETCH p.sportType st " +
 			"LEFT JOIN FETCH s.userAdmin ua " +
-			"LEFT JOIN FETCH ua.brchId b " +
+			"LEFT JOIN FETCH ua.branch " +
 			"WHERE s.strtDt = :targetDate " +
 			"AND s.rsvCnt < s.maxNopCnt " +
-			"AND (:branchId IS NULL OR b.brchId = :branchId) " +
+			"AND (:branchId IS NULL OR ua.branch.brchId = :branchId) " +
 			"ORDER BY s.strtDt ASC, s.endTm ASC")
 	List<Schedule> findClosingSoonSchedules(
 			@Param("targetDate") LocalDate targetDate,

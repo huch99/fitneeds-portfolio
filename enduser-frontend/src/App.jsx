@@ -36,13 +36,6 @@ import PaymentForReservation from './pages/ToReservation/Payment/PaymentForReser
 import ReservationComplete from './pages/ToReservation/ReservationComplete/ReservationComplete';
 
 
-import TypeSelect from './pages/ToReservation/TypeSelect/TypeSelect';
-import ScheduleListPage from './pages/ToReservation/ScheduleListPage/ScheduleListPage';
-import ProgramDetailPage from './pages/ToReservation/ProgramDetailPage/ProgramDetailPage';
-import PaymentForReservation from './pages/ToReservation/Payment/PaymentForReservation';
-import ReservationComplete from './pages/ToReservation/ReservationComplete/ReservationComplete';
-
-
 function App() {
   useEffect(() => {
     // Load Bootstrap JS

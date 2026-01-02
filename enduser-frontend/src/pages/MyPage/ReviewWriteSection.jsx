@@ -182,7 +182,6 @@ function ReviewWriteModal({ isOpen, onClose, history, onRefresh }) {
           )}
           <form onSubmit={handleSubmit}>
             <div className="form-group">
-              <label htmlFor="review-rating">평점</label>
               <div style={{ display: 'flex', gap: '5px', marginTop: '0.5rem' }}>
                 {[1, 2, 3, 4, 5].map((star) => (
                   <button
@@ -204,7 +203,6 @@ function ReviewWriteModal({ isOpen, onClose, history, onRefresh }) {
               </div>
             </div>
             <div className="form-group">
-              <label htmlFor="review-content">리뷰 내용</label>
               <textarea
                 id="review-content"
                 className="form-control"
@@ -291,7 +289,6 @@ function ReviewEditModal({ isOpen, onClose, reviewId, writtenReviews, onRefresh 
           )}
           <form onSubmit={handleSubmit}>
             <div className="form-group">
-              <label htmlFor="review-rating">평점</label>
               <div style={{ display: 'flex', gap: '5px', marginTop: '0.5rem' }}>
                 {[1, 2, 3, 4, 5].map((star) => (
                   <button
@@ -313,7 +310,6 @@ function ReviewEditModal({ isOpen, onClose, reviewId, writtenReviews, onRefresh 
               </div>
             </div>
             <div className="form-group">
-              <label htmlFor="review-content">리뷰 내용</label>
               <textarea
                 id="review-content"
                 className="form-control"
@@ -361,7 +357,7 @@ function ReviewDetailModal({ isOpen, onClose, review }) {
           </div>
           <div style={{ marginBottom: '1.5rem' }}>
             <label><strong>평점</strong></label>
-            <div style={{ display: 'flex', gap: '5px', marginTop: '0.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '5px', marginTop: '0.5rem' }}>
               {[1, 2, 3, 4, 5].map((star) => (
                 <span
                   key={star}

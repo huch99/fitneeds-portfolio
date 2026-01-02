@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 public class PastHistoryResponseDto {
 
 	private Long reservationId;
+	private Long scheduleId; // 스케줄 ID (프로그램 상세 페이지 연동용)
 	private String sportName;
 	private String brchNm;
 	private String trainerName;

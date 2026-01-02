@@ -249,8 +249,7 @@ function MyReservationList() {
         const userId = localStorage.getItem('userId');
         if (!userId) {
           console.log('[MyReservationList] userId가 없어 이용권 조회를 건너뜁니다.');
-          // 더미데이터 설정
-          setTotalPassCount(10); // 결제 API 미구현 상태를 고려한 더미값
+          setTotalPassCount(0);
           return;
         }
 
@@ -266,8 +265,7 @@ function MyReservationList() {
         setTotalPassCount(totalCount);
       } catch (error) {
         console.error('[MyReservationList] 이용권 목록 조회 실패:', error);
-        // 에러 시 더미데이터 설정 (결제 API 미구현 상태 고려)
-        setTotalPassCount(10);
+        setTotalPassCount(0);
       }
     };
 

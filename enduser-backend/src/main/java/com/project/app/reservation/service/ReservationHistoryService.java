@@ -123,6 +123,7 @@ public class ReservationHistoryService {
 					boolean reviewWrittenFlag = "Y".equals(history.getReviewWritten());
 					return PastHistoryResponseDto.builder()
 							.reservationId(history.getReservationId())
+							.scheduleId(history.getScheduleId()) // 스케줄 ID 추가
 							.sportName(history.getSportName())
 							.brchNm(history.getBranch() != null ? history.getBranch().getBrchNm() : null)
 							.trainerName(history.getTrainerName())

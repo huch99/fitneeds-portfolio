@@ -45,17 +45,17 @@ public class ReservationHistory {
 	private Long scheduleId; // 스케줄 ID (참조용)
 
 	@Column(name = "sport_name", nullable = false, length = 100)
-	private String sportName; // 프로그램명 (스냅샷)
+	private String sportName; // 프로그램명 
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "brch_id", nullable = false)
-	private Branch branch; // 지점 (오브젝트로 통일)
+	private Branch branch; // 지점 
 	
 	@Column(name = "trainer_id", nullable = false)
 	private Long trainerId;
 
 	@Column(name = "trainer_name", nullable = false, length = 100)
-	private String trainerName; // 강사명 (스냅샷)
+	private String trainerName; // 강사명 
 
 	@Column(name = "rsv_dt", nullable = false)
 	private LocalDate rsvDt; // 예약 날짜
