@@ -20,6 +20,7 @@ import BlogPost from './pages/BlogPost/BlogPost';
 import PortfolioOverview from './pages/PortfolioOverview/PortfolioOverview';
 import PortfolioItem from './pages/PortfolioItem/PortfolioItem';
 import MyPage from './pages/MyPage/MyPage';
+import MyReservationList from './pages/MyPage/MyReservationList';
 import UsageStatus from './pages/UsageStatus/UsageStatus';
 import CommunityUser from './pages/Community/CommunityUser';
 import CommunityUserDetail from './pages/Community/CommunityUserDetail';
@@ -28,6 +29,18 @@ import CommunityMyRecruitList from './pages/Community/CommunityMyRecruitList';
 import CommunityMyPostList from './pages/Community/CommunityMyPostList';
 
 import NoticeUserPage from "./pages/Notice/NoticeUserPage";
+import TypeSelect from './pages/ToReservation/TypeSelect/TypeSelect';
+import ScheduleListPage from './pages/ToReservation/ScheduleListPage/ScheduleListPage';
+import ProgramDetailPage from './pages/ToReservation/ProgramDetailPage/ProgramDetailPage';
+import PaymentForReservation from './pages/ToReservation/Payment/PaymentForReservation';
+import ReservationComplete from './pages/ToReservation/ReservationComplete/ReservationComplete';
+
+
+import TypeSelect from './pages/ToReservation/TypeSelect/TypeSelect';
+import ScheduleListPage from './pages/ToReservation/ScheduleListPage/ScheduleListPage';
+import ProgramDetailPage from './pages/ToReservation/ProgramDetailPage/ProgramDetailPage';
+import PaymentForReservation from './pages/ToReservation/Payment/PaymentForReservation';
+import ReservationComplete from './pages/ToReservation/ReservationComplete/ReservationComplete';
 
 
 function App() {
@@ -58,6 +71,7 @@ function App() {
             <Route path="/portfolio" element={<PortfolioOverview />} />
             <Route path="/portfolio/item" element={<PortfolioItem />} />
             <Route path="/mypage" element={<MyPage />} />
+            <Route path="/mypage/reservations" element={<MyReservationList />} />
             <Route path="/mypage/usage-status" element={<UsageStatus />} />
             <Route path="*" element={<div>404 Not Found</div>} />
 
@@ -69,6 +83,12 @@ function App() {
 
             <Route path="/notice" element={<NoticeUserPage />} />
 
+             {/* 예약하기 */}
+            <Route path="/type-select" element={<TypeSelect />} />
+            <Route path="/schedule-list" element={<ScheduleListPage />} />
+            <Route path="/program-detail" element={<ProgramDetailPage/>} />
+            <Route path="/payment-reservation" element={<PaymentForReservation/>} />
+            <Route path="/reservation-complete" element={<ReservationComplete/>} />
 
           </Routes>
         </Layout>

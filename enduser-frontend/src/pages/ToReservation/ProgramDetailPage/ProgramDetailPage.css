@@ -1,0 +1,113 @@
+/* ProgramDetailPage.css */
+
+:root {
+    --primary-color: #FFC107;
+    --primary-hover: #e0a800;
+    --text-dark: #222;
+    --text-gray: #666;
+    --text-light: #888;
+    --white: #ffffff;
+    --border-soft: #ececec;
+    --shadow-deep: 0 15px 35px rgba(0, 0, 0, 0.1);
+}
+
+.program-detail-container {
+    background-color: var(--white);
+    padding: 60px; /* 여백을 조금 더 줘서 쾌적하게 */
+    border-radius: 24px;
+    box-shadow: var(--shadow-deep);
+    max-width: 900px;
+    margin: 60px auto;
+    font-family: 'Pretendard', -apple-system, system-ui, sans-serif;
+    color: var(--text-dark);
+}
+
+/* 제목 섹션 */
+.program-detail-container .program-title {
+    font-weight: 800;
+    font-size: 2.5rem; /* 조금 더 크게 강조 */
+    margin-bottom: 35px;
+    color: var(--text-dark);
+    line-height: 1.2;
+    word-break: keep-all;
+}
+
+/* 핵심 정보(강사, 지점, 시간)를 감싸는 영역 (가상으로 그룹화 효과) */
+.program-detail-container .instructor-name,
+.program-detail-container .branch-name,
+.program-detail-container .program-duration,
+.program-detail-container .program-time {
+    display: flex;
+    align-items: center;
+    font-size: 1.15rem;
+    color: var(--text-gray);
+    margin-bottom: 15px;
+    line-height: 1.6;
+}
+
+/* 정보 앞에 강조점 추가 */
+.program-detail-container .instructor-name::before,
+.program-detail-container .branch-name::before,
+.program-detail-container .program-duration::before,
+.program-detail-container .program-time::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background-color: var(--primary-color);
+    border-radius: 50%;
+    margin-right: 15px;
+}
+
+.program-detail-container .instructor-name {
+    font-weight: 700;
+    color: #007bff; /* 강사명은 목록과 통일감 있게 블루톤 유지 */
+    font-size: 1.3rem;
+}
+
+/* 구분선 효과 */
+.program-detail-container .program-description {
+    font-size: 1.15rem;
+    line-height: 1.9;
+    color: #444;
+    white-space: pre-wrap;
+    margin-top: 40px;
+    padding-top: 40px;
+    border-top: 2px solid var(--border-soft); /* 설명 영역 전 구분선 */
+    margin-bottom: 50px;
+}
+
+/* 예약하기 버튼 */
+.program-detail-container .reserve-button {
+    display: block;
+    width: 100%;
+    max-width: 350px;
+    padding: 20px 0;
+    background-color: var(--primary-color);
+    border: none;
+    border-radius: 16px;
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--text-dark);
+    cursor: pointer;
+    margin: 40px auto 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 8px 20px rgba(255, 193, 7, 0.3);
+}
+
+.program-detail-container .reserve-button:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 25px rgba(255, 193, 7, 0.4);
+}
+
+/* 반응형 모바일 대응 */
+@media (max-width: 768px) {
+    .program-detail-container {
+        padding: 40px 25px;
+        margin: 30px 20px;
+    }
+    .program-detail-container .program-title {
+        font-size: 1.8rem;
+    }
+}

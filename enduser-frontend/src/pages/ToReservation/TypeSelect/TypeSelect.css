@@ -1,0 +1,136 @@
+/* TypeSelect.css */
+
+:root {
+    --primary-color: #FFC107;
+    --primary-hover: #e0a800;
+    --text-dark: #222;
+    --text-gray: #666;
+    --bg-light: #f4f4f4; /* 부드러운 배경색 */
+    --white: #ffffff;
+    --border-soft: #e5e5e5;
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+.type-select-container {
+    max-width: 900px;
+    margin: 60px auto;
+    padding: 0 20px; /* 컨테이너 자체 패딩보다는 내부 여백 위주 */
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+}
+
+/* 섹션 공통 스타일 */
+.type-section {
+    background-color: var(--white);
+    border-radius: 20px; /* 좀 더 둥글게 해서 세련된 느낌 */
+    padding: 40px;
+    margin-bottom: 30px;
+    box-shadow: var(--shadow-md);
+    position: relative;
+    border: 1px solid var(--border-soft);
+    overflow: hidden;
+}
+
+/* 섹션 타이틀 - 선 대신 왼쪽 포인트로 변경 */
+.section-title {
+    font-size: 1.8em;
+    font-weight: 800;
+    color: var(--text-dark);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.section-title::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 24px;
+    background-color: var(--primary-color);
+    border-radius: 10px;
+}
+
+.info-text {
+    font-size: 1.05em;
+    color: var(--text-gray);
+    margin-bottom: 30px;
+    line-height: 1.6;
+}
+
+/* 선택 영역 (버튼들이 모이는 곳) */
+.sport-selection-area, 
+.branch-selection-area {
+    display: flex;          /* Grid 대신 Flex 사용 */
+    flex-wrap: wrap;        /* 다음 줄로 넘어가도록 */
+    gap: 12px;
+    justify-content: flex-start; /* 왼쪽부터 차곡차곡 */
+    padding: 0;
+}
+
+/* 버튼(아이템) 스타일 개선 */
+.sport-link-item, 
+.branch-link-item {
+    display: inline-flex;   /* 내부 텍스트에 맞춤 */
+    align-items: center;
+    justify-content: center;
+    padding: 14px 24px;     /* 좌우 여백을 충분히 */
+    
+    /* 핵심 설정: 줄바꿈 방지 */
+    white-space: nowrap;    /* 텍스트가 한 줄로만 나오게 함 */
+    word-break: keep-all;   /* 단어 단위로 끊어지지 않게 함 */
+    
+    min-width: fit-content; /* 콘텐츠 내용물에 너비를 맞춤 */
+    background-color: var(--white);
+    border: 2px solid var(--border-soft);
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.25s ease;
+    color: var(--text-dark);
+    text-decoration: none;
+}
+
+/* 호버 시 메인 색상으로 반전 */
+.sport-link-item:hover, 
+.branch-link-item:hover {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 15px rgba(255, 193, 7, 0.3);
+}
+
+/* "더보기" 스타일 개선 */
+.info-text.more {
+    position: absolute;
+    top: 45px; /* 제목 옆 우측으로 이동 */
+    right: 40px;
+    font-size: 0.9em;
+    font-weight: 700;
+    color: var(--text-gray);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 2px;
+}
+
+.info-text.more:hover {
+    color: var(--text-dark);
+    border-bottom-color: var(--primary-hover);
+}
+
+/* 반응형 모바일 대응 */
+@media (max-width: 600px) {
+    .type-section {
+        padding: 25px;
+    }
+    .section-title {
+        font-size: 1.4em;
+    }
+    .info-text.more {
+        position: static;
+        display: block;
+        margin-top: 20px;
+        text-align: right;
+    }
+}
