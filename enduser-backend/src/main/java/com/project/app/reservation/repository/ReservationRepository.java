@@ -36,6 +36,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 			"LEFT JOIN FETCH ua.branch " +
 			"JOIN FETCH r.branch " +
 			"WHERE r.user.userId = :userId " +
+			"AND r.sttsCd = RsvSttsCd.CONFIRMED " +
 			"ORDER BY r.rsvDt DESC, r.rsvTime DESC")
 	List<Reservation> findByUserIdWithDetails(@Param("userId") String userId);
 
