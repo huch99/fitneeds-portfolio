@@ -16,6 +16,8 @@ import com.project.app.payment.entity.PaymentPayMethod;
 import com.project.app.payment.entity.PaymentPayTypeCd;
 import com.project.app.payment.entity.PaymentSttsCd;
 import com.project.app.payment.repository.PaymentRepository;
+import com.project.app.reservation.entity.RsvSttsCd;
+import com.project.app.reservation.repository.ReservationRepository;
 import com.project.app.reservation.service.ReservationService;
 import com.project.app.schedule.entity.Schedule;
 import com.project.app.schedule.repository.ScheduleRepository;
@@ -36,6 +38,7 @@ public class PaymentService {
 	private final ScheduleRepository scheduleRepository;
 	private final BranchRepository branchRepository; 
 	private final ReservationService reservationService;
+	private final ReservationRepository reservationRepository;
 
 	/**
      * 결제를 생성하고 처리하며, 결제 성공 시 예약을 생성합니다.
@@ -45,31 +48,43 @@ public class PaymentService {
      */
 	@Transactional
 	public Payment createAndProcessPayment(PaymentRequestDto requestDto) {
-        User user = userRepository.findByUserId(requestDto.getUserId())
+		// 1. 기초 데이터 조회
+		User user = userRepository.findByUserId(requestDto.getUserId())
                 .orElseThrow(() -> new NoSuchElementException("사용자를 찾을 수 없습니다: " + requestDto.getUserId()));
         
         Schedule schedule = scheduleRepository.findById(requestDto.getSchdId())
                 .orElseThrow(() -> new NoSuchElementException("스케줄을 찾을 수 없습니다: " + requestDto.getSchdId()));
         
-        // Huch의 Reservation 엔티티에는 Branch 필드가 직접 연결되어 있으므로,
-        // Schedule -> UserAdmin -> Branch 경로로 Branch를 가져옵니다.
-        // 이 부분에서 NullPointerException 발생 가능성이 가장 높습니다.
+        LocalDate rsvDate = LocalDate.parse(requestDto.getReservationDate());
+        LocalTime rsvTime = LocalTime.parse(requestDto.getReservationTime());
+        
+        // A. 동일 스케줄 중복 예약 체크 (현재 상태가 'CONFIRMED'인 것 기준)
+        boolean isAlreadyReserved = reservationRepository.existsByUser_UserIdAndSchedule_SchdIdAndSttsCd(
+                user.getUserId(), schedule.getSchdId(), RsvSttsCd.CONFIRMED);
+        if (isAlreadyReserved) {
+            throw new IllegalStateException("이미 예약된 스케줄입니다.");
+        }
+        
+        // B. 동일 시간대 중복 예약 체크
+        boolean isTimeOverlapping = reservationRepository.existsByUser_UserIdAndRsvDtAndRsvTimeAndSttsCd(
+                user.getUserId(), rsvDate, rsvTime, RsvSttsCd.CONFIRMED);
+        if (isTimeOverlapping) {
+            throw new IllegalStateException("해당 시간에 이미 다른 예약이 있습니다.");
+        }
+        
         Branch branch = null;
         try {
             // schedule.getUserAdmin()이 null인지, 혹은 그 결과의 .getBranch()가 null인지 확인
             if (schedule.getUserAdmin() != null && schedule.getUserAdmin().getBranch() != null) {
                 branch = schedule.getUserAdmin().getBranch();
             } else {
-                // UserAdmin이 없거나 Branch 정보가 없는 경우.
-                // 이 경우 어떤 오류 메시지를 줄지는 팀의 정책에 따릅니다.
-                // 예를 들어, Schedule에 강사(UserAdmin)가 등록되어 있지 않거나, 강사에 지점 정보가 없는 경우.
                 throw new NoSuchElementException("스케줄에 연결된 강사 또는 지점 정보가 유효하지 않습니다. 스케줄 ID: " + requestDto.getSchdId());
             }
         } catch (Exception e) { // 혹시 모를 다른 예외도 함께 catch
             throw new RuntimeException("스케줄에서 지점 정보를 가져오는 중 오류 발생. 스케줄 ID: " + requestDto.getSchdId() + ", 오류: " + e.getMessage(), e);
         }
         
-        // --- 나머지 기존 코드 유지 ---
+        
         UserPass usedUserPass = null; 
         // 1. PayMethod에 따른 이용권 사용 처리 (기존 로직 유지)
         if (requestDto.getPayMethod() == PaymentPayMethod.PASS) {
@@ -98,7 +113,6 @@ public class PaymentService {
         Payment savedPayment = paymentRepository.save(payment);
 
         // 3. 결제 완료 후 Reservation 엔티티 생성 및 저장 (Huch의 Reservation 엔티티에 맞춤)
-        // 여기서 파라미터로 넘겨주는 LocalDate와 LocalTime이 파싱 문제로 실패할 수 있습니다.
         reservationService.createReservation(
             user,
             schedule,
