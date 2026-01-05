@@ -12,6 +12,11 @@ const ProgramDetailPage = () => {
     const navigate = useNavigate();
     const queryParams = new URLSearchParams(location.search);
 
+    const rawSessions = location.state?.sessions || [];
+    const sessions = Array.isArray(rawSessions) 
+        ? rawSessions 
+        : (rawSessions.sessions || []);
+
     // URL 파라미터에서 모든 정보 추출
     const progId = queryParams.get('progId');
     const userName = queryParams.get('userName');
@@ -31,6 +36,8 @@ const ProgramDetailPage = () => {
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
     const [isReservationModalOpen, setIsReservationModalOpen] = useState(false);
 
+    const [selectedSchdId, setSelectedSchdId] = useState(null);
+
     // 모달 닫기
     const handleCloseModal = () => {
         setIsReservationModalOpen(false);
@@ -45,9 +52,21 @@ const ProgramDetailPage = () => {
         }
     };
 
-    // 캘린더 날짜 선택 기능
+    // 캘린더 날짜 선택 기능 수정
     const handleDateSelect = (date) => {
         setSelectedDate(date);
+        
+        // 날짜를 YYYY-MM-DD 형식으로 변환하여 sessions에서 검색
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const formattedDate = `${year}-${month}-${day}`;
+
+        // 해당 날짜의 고유 schdId 찾기
+        const session = sessions.find(s => s.date === formattedDate);
+        if (session) {
+            setSelectedSchdId(session.schdId);
+        }
     };
 
     // 결제 페이지로 이동하는 핸들러
@@ -61,6 +80,7 @@ const ProgramDetailPage = () => {
 
             navigate('/payment-reservation', {
                 state: {
+                    schdId: selectedSchdId,
                     progId: progId, // 프로그램 ID
                     selectedDate: formattedDate, // 선택된 날짜 (YYYY-MM-DD 형식)
                     userName: userName, // 강사명
@@ -150,16 +170,9 @@ const ProgramDetailPage = () => {
                         {/* CalendarModal 렌더링 */}
                         {isReservationModalOpen && (
                             <CalendarModal
-                                calendarType="US"
-                                locale="en-US"
-                                formatShortWeekday={(locale, date) =>
-                                    ['일', '월', '화', '수', '목', '금', '토'][date.getDay()]
-                                }
-                                formatMonthYear={(locale, date) =>
-                                    `${date.getFullYear()}년 ${date.getMonth() + 1}월`
-                                }
                                 isOpen={isReservationModalOpen}
                                 sportId={programDetails.sportId}
+                                sessions={sessions}
                                 onClose={handleCloseModal}
                                 strtDt={strtDt}
                                 endDt={endDt}

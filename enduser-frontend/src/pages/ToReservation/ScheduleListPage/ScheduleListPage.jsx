@@ -208,6 +208,7 @@ const ScheduleListPage = () => {
                                 목록에서 이미 가져온 정보들을 state로 넘겨 API 호출을 최소화합니다. */}
                                     <Link
                                         to={`/program-detail?progId=${schedule.progId}&userName=${encodeURIComponent(schedule.userName)}&brchNm=${encodeURIComponent(schedule.brchNm)}&strtDt=${schedule.groupedStrtDt}&endDt=${schedule.groupedEndDt}&strtTm=${schedule.strtTm}&endTm=${schedule.endTm}`}
+                                        state={{ sessions: schedule.sessions }}
                                         className='schedule-item-link'
                                     >
                                         <div className="item-top-section">

@@ -11,6 +11,7 @@ const PaymentForReservation = () => {
 
     // ProgramDetailPage에서 전달받은 정보 구조분해 할당 (값이 없을 경우 대비하여 기본값 설정)
     const {
+        schdId,
         progId,
         selectedDate, // YYYY-MM-DD 형식 문자열
         userName,
@@ -152,6 +153,10 @@ const PaymentForReservation = () => {
             alert('결제 금액이 0원 이하입니다. 다른 결제 수단을 선택하거나 이용권을 사용해주세요.');
             return;
         }
+        if (!schdId) {
+            alert('스케줄 정보가 올바르지 않습니다.');
+            return;
+        }
 
 
         setLoading(true); // 결제 처리 로딩 시작
@@ -162,7 +167,7 @@ const PaymentForReservation = () => {
                 userId: loggedInUserId,
                 amount: finalAmount,
                 payMethod: payMethod,
-                schdId: progId,
+                schdId: schdId,
                 reservationDate: selectedDate, // YYYY-MM-DD 형식 문자열
                 reservationTime: strtTm, // HH:MM 형식
                 userPassId: payMethod === 'PASS' ? selectedUserPass?.userPassId : null,
