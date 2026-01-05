@@ -1,5 +1,7 @@
 package com.project.app.userpass.service;
 
+import java.time.LocalDateTime;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,7 +41,7 @@ public class PassLogService {
 	        passLog.setChgCnt(chgCnt);
 	        passLog.setChgRsn(chgRsn);
 	        passLog.setUserAdmin(userAdmin); // pocsUsrId가 넘어오지 않으면 userAdmin은 null
-
+	        passLog.setRegDt(LocalDateTime.now());
 	        return passLogRepository.save(passLog);
 	    }
 	 
