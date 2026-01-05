@@ -67,7 +67,7 @@ const PaymentForReservation = () => {
                 setFetchingUserPasses(true);
                 setError(null);
                 try {
-                    const response = await api.get(`/api/userpasses/getUserPassesByUserIdForR/${loggedInUserId}`);
+                    const response = await api.get(`/userpasses/getUserPassesByUserIdForR/${loggedInUserId}`);
                     setUserPasses(response.data);
 
                     if (response.data.length > 0) {
