@@ -1,6 +1,7 @@
 package com.project.app.reservation.repository;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -77,4 +78,10 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 			"AND r.sttsCd = 'RESERVED' " +
 			"ORDER BY r.rsvDt ASC, r.rsvTime ASC")
 	List<Reservation> findPastReservations(@Param("targetDate") LocalDate targetDate);
+
+	// 1. 특정 스케줄에 해당 유저가 이미 예약했는지 확인 (취소된 예약 제외)
+    boolean existsByUser_UserIdAndSchedule_SchdIdAndSttsCd(String userId, Long schdId, RsvSttsCd sttsCd);
+    
+    // 2. 특정 날짜와 시간에 해당 유저의 예약이 이미 존재하는지 확인 (취소된 예약 제외)
+    boolean existsByUser_UserIdAndRsvDtAndRsvTimeAndSttsCd(String userId, LocalDate rsvDt, LocalTime rsvTime, RsvSttsCd sttsCd);
 }
