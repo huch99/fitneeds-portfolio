@@ -95,6 +95,13 @@ public class ReservationService {
         // 저장
         reservationRepository.save(reservation);
         
+        // 이용권을 사용한 예약 일 시 이용권 복원
+        if(reservation.getUserPass() != null && reservation.getUserPass().getUserPassId() != null) {
+        	Long userPassId = reservation.getUserPass().getUserPassId();
+        	userPassService.cancelReservationAndUpdateUserPassForR(userPassId, cancelReason);
+        	log.info("[ReservationService] 이용권 복원 완료 - userPassId: {}", userPassId);
+        }
+        
         log.info("[ReservationService] 예약 취소 완료 - rsvId: {}", rsvId);
     }
 
