@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.project.app.config.security.JwtTokenProvider;
 import com.project.app.config.util.UserIdGenerator;
 import com.project.app.userAdmin.dto.UserAdminRequestDto;
-import com.project.app.userAdmin.entity.Branch;
 import com.project.app.userAdmin.entity.UserAdmin;
 import com.project.app.userAdmin.service.UserAdminService;
 
@@ -49,11 +48,6 @@ public class UserAdminController {
 				if (userAdminService.existsByEmail(userAdminRequestDto.getEmail())) {
 					return ResponseEntity.badRequest().body("이미 사용중인 이메일 입니다.");
 				}
-
-//				if(userAdminRequestDto.getBrchId()==null) {
-//					userAdminRequestDto.setBrchId(new Branch());
-//					userAdminRequestDto.getBrchId().setBrchId(1L);
-//				}
 				
 				userAdminService.createAdminUser(userAdminRequestDto);
 			} else {
