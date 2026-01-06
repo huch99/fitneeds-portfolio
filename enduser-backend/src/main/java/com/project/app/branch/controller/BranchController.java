@@ -22,10 +22,10 @@ public class BranchController {
 	
 	@GetMapping("/getAllBranchesForR")
 	public List<BranchResponseDto> getAllBranchesForR() {
-		List<Branch> branchs = branchService.getAllBranches();
+		List<Branch> branches = branchService.getAllBranches();
 		
-		return branchs.stream()
-				.map(BranchResponseDto::from)
-				.collect(Collectors.toList());
+		return branches.stream()
+                .map(BranchResponseDto::from)
+                .toList();
 	}
 }

@@ -51,11 +51,7 @@ public class UserServiceImpl implements UserService{
     public Optional<User> findByUserId(String userId) {
         return userRepository.findByUserId(userId);
     }
-    
-    public Optional<User> getUserByEmailAdmin(String email) {
-		return userRepository.getUserByEmailAndRole(email, "ADMIN");
-	}
-	
+
 	public Optional<User> getUserByEmail(String email) {
         return userRepository.getUserByEmail(email);
     }

@@ -25,11 +25,11 @@ public interface ReservationHistoryRepository extends JpaRepository<ReservationH
 	 * @return 과거 이용내역 목록
 	 */
 	@Query("SELECT h FROM ReservationHistory h " +
+			"JOIN FETCH h.branch " +
 			"WHERE h.userId = :userId " +
 			"AND (:startDate IS NULL OR h.rsvDt >= :startDate) " +
 			"AND (:endDate IS NULL OR h.rsvDt <= :endDate) " +
-			"AND (:branchId IS NULL OR EXISTS " +
-			"  (SELECT 1 FROM Branch b WHERE b.brchId = :branchId AND b.brchNm = h.brchNm)) " +
+			"AND (:branchId IS NULL OR h.branch.brchId = :branchId) " +
 			"AND (:reviewWritten IS NULL OR h.reviewWritten = :reviewWritten) " +
 			"ORDER BY h.rsvDt DESC, h.rsvTime DESC")
 	List<ReservationHistory> findByUserIdAndDateRange(

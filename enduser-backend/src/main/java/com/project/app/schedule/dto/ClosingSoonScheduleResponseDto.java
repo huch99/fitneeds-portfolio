@@ -16,15 +16,19 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ClosingSoonScheduleResponseDto {
 
-	private Long scheduleId;
-	private String brchNm;
-	private String sportName;
-	private String trainerName;
-	private Integer maxCapacity;
-	private Integer reservedCount;
-	private Integer remainingSeats;
-	private LocalDate endDt;
-	private LocalTime endTm;
+	    private Long scheduleId;
+
+	    private String branchName;      // 지점명
+	    private String sportName;       // 종목명
+	    private String trainerName;     // 강사명
+
+	    private LocalDate scheduleDate; // 수업 날짜 (strtDt)
+	    private LocalTime startTime;    // 시작 시간
+	    private LocalTime endTime;      // 종료 시간
+
+	    private Integer maxCapacity;    // 정원
+	    private Integer reservedCount;  // 예약 인원
+	    private Integer remainingSeats; // 남은 좌석 수
 
 	/**
 	 * Schedule 엔티티를 ClosingSoonScheduleResponseDto로 변환하는 정적 팩토리 메서드
@@ -32,32 +36,26 @@ public class ClosingSoonScheduleResponseDto {
 	 * @param schedule 스케줄 엔티티
 	 * @return ClosingSoonScheduleResponseDto
 	 */
-	public static ClosingSoonScheduleResponseDto from(Schedule schedule) {
-		if (schedule == null) {
-			return null;
-		}
-
-		return ClosingSoonScheduleResponseDto.builder()
-				.scheduleId(schedule.getSchdId())
-				.brchNm(
-						schedule.getUserAdmin() != null
-								&& schedule.getUserAdmin().getBrchId() != null
-										? schedule.getUserAdmin().getBrchId().getBrchNm()
-										: null)
-				.sportName(
-						schedule.getProgram() != null
-								&& schedule.getProgram().getSportType() != null
-										? schedule.getProgram().getSportType().getSportNm()
-										: null)
-				.trainerName(
-						schedule.getUserAdmin() != null
-								? schedule.getUserAdmin().getUserName()
-								: null)
-				.maxCapacity(schedule.getMaxNopCnt())
-				.reservedCount(schedule.getRsvCnt())
-				.remainingSeats(schedule.getMaxNopCnt() - schedule.getRsvCnt())
-				.endDt(schedule.getEndDt())
-				.endTm(schedule.getEndTm())
-				.build();
-	}
+	    public static ClosingSoonScheduleResponseDto from(Schedule s) {
+	        return ClosingSoonScheduleResponseDto.builder()
+	            .scheduleId(s.getSchdId())
+	            .branchName(
+	                s.getBranch() != null ? s.getBranch().getBrchNm() : null
+	            )
+	            .sportName(
+	                s.getProgram() != null && s.getProgram().getSportType() != null
+	                    ? s.getProgram().getSportType().getSportNm()
+	                    : null
+	            )
+	            .trainerName(
+	                s.getUserAdmin() != null ? s.getUserAdmin().getUserName() : null
+	            )
+	            .scheduleDate(s.getStrtDt())
+	            .startTime(s.getStrtTm())
+	            .endTime(s.getEndTm())
+	            .maxCapacity(s.getMaxNopCnt())
+	            .reservedCount(s.getRsvCnt())
+	            .remainingSeats(s.getMaxNopCnt() - s.getRsvCnt())
+	            .build();
+	    }
 }

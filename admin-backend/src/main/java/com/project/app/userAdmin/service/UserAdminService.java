@@ -16,6 +16,5 @@ public interface UserAdminService {
 	boolean existsByEmail(String email);
 	Optional<UserAdmin> findByUserId(String userId);
 	List<UserAdmin> getAllUsers();
-	Optional<UserAdmin> getUserByEmailAdmin(String email);
 	Optional<UserAdmin> getUserByEmail(String email);
 }

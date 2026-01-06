@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.project.app.login.dto.LoginRequestDto;
 import com.project.app.login.dto.LoginResponseDto;
-import com.project.app.user.repository.UserRepository;
+import com.project.app.userAdmin.repository.UserAdminRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -14,15 +14,16 @@ import lombok.extern.slf4j.Slf4j;
 public class LoginService {
 
     @Autowired
-    private UserRepository userRepository;
+    private UserAdminRepository userAdminRepository;
     
     public LoginResponseDto login(LoginRequestDto loginRequestDto) {
-        return userRepository.findByUserId(loginRequestDto.getUserId())
-                .filter(user -> user.getPassword().equals(loginRequestDto.getPassword()))
-                .map(user -> LoginResponseDto.builder()
-                        .userId(user.getUserId())
-                        .userName(user.getUserName())
-                        .role(user.getRole())
+        return userAdminRepository.findByUserId(loginRequestDto.getUserId())
+                .filter(userAdmin -> userAdmin.getPassword().equals(loginRequestDto.getPassword()))
+                .map(userAdmin -> LoginResponseDto.builder()
+                        .userId(userAdmin.getUserId())
+                        .userName(userAdmin.getUserName())
+                        .role(userAdmin.getRole())
+                        .brchId(userAdmin.getBrchId().getBrchId())
                         .success(true)
                         .message("로그인 성공")
                         .build())

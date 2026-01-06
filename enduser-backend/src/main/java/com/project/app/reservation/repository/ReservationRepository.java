@@ -1,7 +1,14 @@
 package com.project.app.reservation.repository;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import com.project.app.reservation.entity.Reservation;
+import com.project.app.reservation.entity.RsvSttsCd;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,6 +21,7 @@ import com.project.app.reservation.entity.Reservation;
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
 
+	List<Reservation> findByRsvDtBeforeAndSttsCd(LocalDate rsvDt, RsvSttsCd sttsCd);
 	/**
 	 * 사용자 ID로 예약 목록을 조회합니다.
 	 * Fetch Join을 사용하여 N+1 문제를 방지하고, 연관된 엔티티들을 한 번에 로딩합니다.
@@ -26,8 +34,10 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 			"JOIN FETCH s.program p " +
 			"JOIN FETCH p.sportType st " +
 			"JOIN FETCH s.userAdmin ua " +
-			"LEFT JOIN FETCH ua.brchId b " +
+			"LEFT JOIN FETCH ua.branch " +
+			"JOIN FETCH r.branch " +
 			"WHERE r.user.userId = :userId " +
+			"AND r.sttsCd = RsvSttsCd.CONFIRMED " +
 			"ORDER BY r.rsvDt DESC, r.rsvTime DESC")
 	List<Reservation> findByUserIdWithDetails(@Param("userId") String userId);
 
@@ -41,6 +51,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 	 */
 	@Query("SELECT r FROM Reservation r " +
 			"JOIN FETCH r.schedule s " +
+			"JOIN FETCH r.branch " +
 			"LEFT JOIN FETCH r.userPass up " +
 			"WHERE r.rsvId = :rsvId AND r.user.userId = :userId")
 	Optional<Reservation> findByRsvIdAndUserId(
@@ -59,11 +70,18 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 			"JOIN FETCH s.program p " +
 			"JOIN FETCH p.sportType st " +
 			"JOIN FETCH s.userAdmin ua " +
-			"LEFT JOIN FETCH ua.brchId b " +
+			"LEFT JOIN FETCH ua.branch " +
+			"JOIN FETCH r.branch " +
 			"JOIN FETCH r.user u " +
 			"LEFT JOIN FETCH r.userPass up " +
 			"WHERE r.rsvDt < :targetDate " +
 			"AND r.sttsCd = 'RESERVED' " +
 			"ORDER BY r.rsvDt ASC, r.rsvTime ASC")
 	List<Reservation> findPastReservations(@Param("targetDate") LocalDate targetDate);
+
+	// 1. 특정 스케줄에 해당 유저가 이미 예약했는지 확인 (취소된 예약 제외)
+    boolean existsByUser_UserIdAndSchedule_SchdIdAndSttsCd(String userId, Long schdId, RsvSttsCd sttsCd);
+    
+    // 2. 특정 날짜와 시간에 해당 유저의 예약이 이미 존재하는지 확인 (취소된 예약 제외)
+    boolean existsByUser_UserIdAndRsvDtAndRsvTimeAndSttsCd(String userId, LocalDate rsvDt, LocalTime rsvTime, RsvSttsCd sttsCd);
 }
