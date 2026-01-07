@@ -12,6 +12,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.project.app.aspect.ApiResponse;
 import com.project.app.schedule.dto.GroupedScheduleResponseDto;
 import com.project.app.schedule.dto.ScheduleResponseDto;
 import com.project.app.schedule.entity.Schedule;
@@ -35,28 +37,32 @@ public class ScheduleController {
 
 	private final ScheduleService scheduleService;
 
-	// 종목 ID를 통한 조회
+	// 종목 ID를 통한 조회	
 	@GetMapping("/getSchedulesBySportIdForR/{sportId}")
-	public Page<GroupedScheduleResponseDto> getSchedulesBySportIdForR(@PathVariable("sportId") Long sportId,
+	public ResponseEntity<ApiResponse<Page<GroupedScheduleResponseDto>>> getSchedulesBySportIdForR(@PathVariable("sportId") Long sportId,
 			@RequestParam(value = "searchKeyword", required = false) String searchKeyword,
 			@RequestParam(value = "selectedDate", required = false) @DateTimeFormat(iso = ISO.DATE) LocalDate selectedDate,
-			@PageableDefault(size = 10 /* , sort = "schdId", direction = Sort.Direction.DESC */) Pageable pageable) {
-		// JPQL 내에서 ORDER BY를 직접 지정했으므로, 여기서는 sort를 제거합니다.
-
-		LocalDate currentDate = LocalDate.now();
-		LocalTime currentTime = LocalTime.now();
-
-		log.info("API 호출: /getSchedulesBySportIdForR/{}. sportId={}, searchKeyword={}, pageable={}", sportId,
-				searchKeyword, pageable);
-		return scheduleService.getSchedulesBySportIdForR(sportId, searchKeyword, currentDate, currentTime,selectedDate, pageable);
+			@PageableDefault(size = 10) Pageable pageable) {
+		try {
+			LocalDate currentDate = LocalDate.now();
+			LocalTime currentTime = LocalTime.now();
+			
+			Page<GroupedScheduleResponseDto> result = scheduleService.getSchedulesBySportIdForR(sportId, searchKeyword, currentDate, currentTime,selectedDate, pageable);
+			log.info("API 호출: /getSchedulesBySportIdForR/{}. sportId={}, searchKeyword={}, pageable={}", sportId,searchKeyword, pageable);
+			return ResponseEntity.ok(ApiResponse.success(result));
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error("조회 중 오류 발생: " + e.getMessage()));
+		}
 	}
 
-	// 스케줄 ID를 통한 조회
-	@GetMapping("/getScheduleBySchdIdForR/{schdId}")
-	public Optional<ScheduleResponseDto> getScheduleBySchdIdForR(@PathVariable("schdId") Long schdId) {
-		log.info("API 호출: /getScheduleBySchdIdForR/{}. schdId={}", schdId);
-		return scheduleService.getScheduleBySchdIdForR(schdId);
-	}
+//	불필요한 항목이기에 삭제 (주석처리)
+//	// 스케줄 ID를 통한 조회
+//	@GetMapping("/getScheduleBySchdIdForR/{schdId}")
+//	public Optional<ScheduleResponseDto> getScheduleBySchdIdForR(@PathVariable("schdId") Long schdId) {
+//		log.info("API 호출: /getScheduleBySchdIdForR/{}. schdId={}", schdId);
+//		return scheduleService.getScheduleBySchdIdForR(schdId);
+//	}
 
 	// 지점 ID를 통한 조회
 	@GetMapping("/getSchedulesByBrchIdForR/{brchId}")

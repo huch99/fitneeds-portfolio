@@ -35,14 +35,6 @@ public class ScheduleService {
 	private final ScheduleRepository scheduleRepository;
 
 	/**
-	 * 스케줄 ID를 통해 단건 스케줄을 조회하여 ScheduleResponseDto로 반환합니다.
-	 */
-	public Optional<ScheduleResponseDto> getScheduleBySchdIdForR(Long schdId) {
-		log.info("서비스: 스케줄 ID로 단건 스케줄 조회 요청: schdId={}", schdId);
-		return scheduleRepository.findById(schdId).map(ScheduleResponseDto::from);
-	}
-
-	/**
 	 * 특정 스포츠 ID 기준으로 스케줄을 조회하고 그룹핑/페이징 처리합니다.
 	 */
 	public Page<GroupedScheduleResponseDto> getSchedulesBySportIdForR(Long sportId, String searchKeyword,
