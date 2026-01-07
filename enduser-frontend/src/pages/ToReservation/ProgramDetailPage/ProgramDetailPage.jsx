@@ -70,12 +70,6 @@ const ProgramDetailPage = () => {
         setIsRegisterModalOpen(true); // 회원가입 모달 열기
     };
 
-    // // 회원가입 모달에서 로그인으로 전환하는 핸들러
-    // const handleSwitchToLogin = () => {
-    //     setIsRegisterModalOpen(false);
-    //     setIsLoginModalOpen(true);
-    // };
-
     // 캘린더 날짜 선택 기능
     const handleDateSelect = (date) => {
         setSelectedDate(date);
@@ -154,7 +148,7 @@ const ProgramDetailPage = () => {
 
             try {
                 const response = await api.get(`/programs/getProgramByProgIdForR/${progId}`);
-                setProgramDetails(response.data);
+                setProgramDetails(response.data.data);
             } catch (err) {
                 setError('프로그램 데이터를 불러오는 중 오류가 발생했습니다.');
                 console.error('Error fetching program data:', err);
@@ -208,7 +202,7 @@ const ProgramDetailPage = () => {
                             <CalendarModal
                                 isOpen={isReservationModalOpen}
                                 sportId={programDetails.sportId}
-                                sessions={sessions}
+                                sessions={rawSessions.data || rawSessions}
                                 onClose={handleCloseModal}
                                 strtDt={strtDt}
                                 endDt={endDt}

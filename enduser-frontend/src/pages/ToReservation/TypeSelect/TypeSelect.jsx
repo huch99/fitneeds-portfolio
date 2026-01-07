@@ -25,7 +25,7 @@ const TypeSelect = () => {
         const fetchSports = async () => {
             try {
                 const response = await api.get('/sporttypes/getAllSportTypesForR');
-                setSports(response.data);
+                setSports(response.data.data);
             } catch (err) {
                 setSportError('스포츠 종목 데이터를 불러오는 데 실패 했습니다.');
                 console.error('Error fetching sport data:', err);
@@ -42,8 +42,8 @@ const TypeSelect = () => {
         const fetchBranchs = async () => {
             try {
                 const response = await api.get('/branches/getAllBranchesForR');
-                setBranches(response.data);
-                setFilteredBranches(response.data.slice(0, 4)); // 가장 앞의 4개의 데이터만 저장
+                setBranches(response.data.data);
+                setFilteredBranches(response.data.data.slice(0, 4)); // 가장 앞의 4개의 데이터만 저장
             } catch (err) {
                 setBranchError('지점 데이터를 불러오는 데 실패 했습니다.');
                 console.error('Error fetching branch data:', err);
