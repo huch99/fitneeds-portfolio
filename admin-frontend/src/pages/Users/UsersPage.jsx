@@ -95,8 +95,8 @@ function AdminMemberPage() {
                                 <th>E-MAIL</th>
                                 <th>PHONE-NUMBER</th>
                                 {/* <th>ROLE</th> */}
-                                <th>CASH POINT</th>
-                                <th>GRADE POINT</th>
+                                {/* <th>CASH POINT</th> */}
+                                {/* <th>GRADE POINT</th> */}
                                 <th>AGREE</th>
                                 <th>ACTIVE</th>
                             </tr>
@@ -121,8 +121,8 @@ function AdminMemberPage() {
                                             <td>{item.phoneNumber}</td>
                                             {/* <td>{item.role}</td> */}
 
-                                            <td>{item.cashPoint}</td>
-                                            <td>{item.gradePoint}</td>
+                                            {/* <td>{item.cashPoint}</td> */}
+                                            {/* <td>{item.gradePoint}</td> */}
                                             <td>{item.agreeAt}</td>
                                             <td>
                                                 <input

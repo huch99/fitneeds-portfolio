@@ -66,7 +66,7 @@ function AdminMemberPage() {
 
     return (
         <div className="container" style={{ padding: '20px' }}>
-            <h1>[관리자] 회원 관리</h1>
+            <h1>[관리자] 관리자 관리</h1>
 
             <div className="content-box" style={{ background: '#fff', padding: '20px', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
 
@@ -124,7 +124,7 @@ function AdminMemberPage() {
                                             {/* <td>{item.gradePoint}</td> */}
 
                                             <td>{item.role}</td>
-                                            <td>{item.brchId.brchId}</td>
+                                            <td>{item.brchId?.brchId || '미지정'}</td>
                                             <td>{item.agreeAt}</td>
                                             <td>
                                                 <input
