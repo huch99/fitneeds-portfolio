@@ -40,14 +40,14 @@ function LoginButtonAndModal() {
     }
 
     const handleMyinfoClick = () => {
-        setIsRegisterModalOpen(true);
+        //setIsRegisterModalOpen(true);
     };
 
     return (
         <div>
             {isAuthenticated ? (
-                <span className="nav-menu-login"> <span onClick={handleMyinfoClick} style={{ cursor: 'pointer' }} >{userName || 'ADMIN'} &nbsp; </span>
-                    {/* <span className="nav-menu-login"> <span>{userName || 'ADMIN'} &nbsp; </span> */}
+                // <span className="nav-menu-login"> <span onClick={handleMyinfoClick} style={{ cursor: 'pointer' }} >{userName || 'ADMIN'} &nbsp; </span>
+                <span className="nav-menu-login"> <span>{userName || 'ADMIN'} &nbsp; </span>
                     <button onClick={handleLogoutClick} style={buttonLogoutButton}>
                         로그아웃
                     </button>

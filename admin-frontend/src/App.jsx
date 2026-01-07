@@ -12,7 +12,6 @@ import AdminCommunityDetailPage from './pages/Community/AdminCommunityDetail';
 import AdminNoticePage from './pages/Notice/AdminNoticePage';
 import UserPage from './pages/Users/UsersPage';
 import UsersAdminPage from './pages/UsersAdmin/UsersAdminPage';
-import AdminSportType from './pages/SportType/AdminSportType.jsx';
 
 // 아직 없는 파일은 import 에러가 날 수 있으니 주석 처리하거나 빈 파일 생성 필요
 // import AdminDashboardPage from './pages/AdminDashboardPage'; 
@@ -47,9 +46,6 @@ function App() {
           <Route path="/Usersadmin" element={<UsersAdminPage />} />
           <Route path="/users" element={<UserPage />} />
           <Route path="/centers" element={<div className="p-4">센터관리(준비중)</div>} />
-
-          {/* 운동 종목 관리 */}
-          <Route path="/sporttype" element={<AdminSportType />} />
 
           {/* 이미 만드신 페이지들 */}
           <Route path="/trades" element={<AdminTradePage />} />

@@ -6,12 +6,38 @@ import SideBar from "./SideBar";
 import '../../components/auth/modalStyles.css';
 import './MyPage.css';
 
+/* =========================
+   useLocalStorage Hook
+========================= */
+function useLocalStorage(key, initialValue) {
+  const [storedValue, setStoredValue] = useState(() => {
+    try {
+      const item = window.localStorage.getItem(key);
+      return item ? JSON.parse(item) : initialValue;
+    } catch (error) {
+      console.log(error);
+      return initialValue;
+    }
+  });
+
+  const setValue = (value) => {
+    try {
+      const valueToStore = value instanceof Function ? value(storedValue) : value;
+      setStoredValue(valueToStore);
+      window.localStorage.setItem(key, JSON.stringify(valueToStore));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  return [storedValue, setValue];
+}
 
 import UsageHistorySection from './UsageHistorySection';
 import ReviewWriteSection from './ReviewWriteSection';
 import PaymentHistorySection from './PaymentHistorySection';
 import InquirySection from './InquirySection';
-import AttendanceSection from './AttendanceSection';
+import SearchSection from './SearchSection';
 import ProfileSection from './ProfileSection';
 
 function MyPage() {
@@ -19,6 +45,8 @@ function MyPage() {
   
   // activeMenu는 세션 상태로 관리 (페이지 새로고침 시 메인 페이지로 초기화)
   const [activeMenu, setActiveMenu] = useState(null);
+  // recentSearches는 localStorage에 저장 (사용자 경험 향상)
+  const [recentSearches, setRecentSearches] = useLocalStorage('recentSearches', []);
 
   // location.state에서 메뉴 정보를 받아서 activeMenu 설정
   useEffect(() => {
@@ -35,6 +63,7 @@ function MyPage() {
   }, [location.state, location.pathname]);
 
   const [reviewTab, setReviewTab] = useState('written'); // 'written' (작성한 리뷰만 표시)
+  const [searchQuery, setSearchQuery] = useState(''); // 검색어
   const [refreshKey, setRefreshKey] = useState(0); // 리뷰 작성 후 새로고침을 위한 키
 
   // Redux에서 로그인한 사용자 정보 가져오기
@@ -110,7 +139,12 @@ function MyPage() {
 
           {/* Content Section */}
           {activeMenu === null ? (
-            <AttendanceSection />
+            <SearchSection
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              recentSearches={recentSearches}
+              setRecentSearches={setRecentSearches}
+            />
           ) : (
             renderContent()
           )}

@@ -11,7 +11,6 @@ const AdminLayout = ({ children }) => {
     { name: '대시보드', path: '/dashboard' },
     { name: '회원 관리', path: '/users' },
     { name: '관리자 관리', path: '/usersAdmin' },
-    { name: '운동 종목 관리', path: '/sporttype' },
     { name: '예약 관리', path: '/reservations' },
     { name: '이용권 거래', path: '/trades' },
     { name: '이용권 관리', path: '/tickets' },

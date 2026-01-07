@@ -3,10 +3,6 @@
 ========================= */
 .community-container {
   padding: 30px;
-
-  /* ✅ 리스트 width는 기존 유지 + 크기만 조절 */
-  max-width: 1100px;
-  margin: 0 auto;
 }
 
 .community-title {
@@ -95,8 +91,6 @@
   padding: 10px;
   font-size: 14px;
   border-bottom: 1px solid #ddd;
-  text-align: center;
-  vertical-align: middle;
 }
 
 .community-table td {
@@ -104,8 +98,6 @@
   font-size: 14px;
   border-bottom: 1px solid #eee;
   text-align: center;
-  text-align: center;
-  vertical-align: middle;
 }
 
 /* 제목 링크 */
@@ -222,18 +214,9 @@
   color: #888;
 }
 
-/* =========================
-   ✅ 댓글 내용 폰트: 작성자와 같은 톤으로
-========================= */
 .community-post-content {
-  white-space: pre-line;
-  /* 🔥 엔터 줄바꿈 반영 */
+  white-space: pre-line; /* 🔥 엔터 줄바꿈 반영 */
   line-height: 1.6;
-
-  /* 작성자(아이디) 톤에 맞춰 가독성 강화 */
-  font-size: 13px;
-  font-weight: 600;
-  color: #333;
 }
 
 /* =========================
@@ -272,11 +255,6 @@
   padding: 12px;
   border: 1px solid #ddd;
   border-radius: 8px;
-  background-color: #fffdf2;
-}
-
-.comment-write-box.merged {
-  margin-top: 12px;
   background-color: #fffdf2;
 }
 
@@ -391,8 +369,7 @@
   padding: 8px 18px;
   border-radius: 8px;
   border: none;
-  background-color: #ffd84d;
-  /* community-action-btn 톤 */
+  background-color: #ffd84d; /* community-action-btn 톤 */
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
@@ -417,142 +394,4 @@
 
 .recruit-cancel-btn:hover {
   background-color: #e0e0e0;
-}
-
-/* =========================
-   상세 페이지 카드 레이아웃
-========================= */
-.community-detail-page {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 30px 20px;
-  background: #f5f6f8;
-  /* display: flex;
-  flex-direction: column; */
-}
-
-.community-page-content {
-  flex: 1;
-}
-
-
-.community-card {
-  background: white;
-  border-radius: 10px;
-  padding: 20px;
-  margin-top: 20px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
-}
-
-/* 게시글 */
-.post-title {
-  font-size: 22px;
-  font-weight: 700;
-  margin-bottom: 10px;
-}
-
-.post-meta {
-  display: flex;
-  justify-content: space-between;
-  font-size: 13px;
-  color: #777;
-  margin-bottom: 15px;
-}
-
-.post-content {
-  white-space: pre-line;
-  line-height: 1.7;
-}
-
-/* 댓글 */
-.comment-item {
-  border-bottom: 1px solid #eee;
-  padding: 12px 0;
-}
-
-.comment-item:last-child {
-  border-bottom: none;
-}
-
-.comment-meta {
-  font-size: 13px;
-  color: #666;
-  margin-bottom: 6px;
-}
-
-/* 제목 영역을 카드 헤더처럼 */
-.post-header {
-  padding-bottom: 14px;
-  margin-bottom: 20px;
-  border-bottom: 1px solid #eee;
-}
-
-/* 제목 강조 */
-.post-title {
-  font-size: 24px;
-  font-weight: 800;
-  margin-bottom: 8px;
-}
-
-/* 본문 영역을 박스로 */
-.post-body {
-  background: #fafafa;
-  border-radius: 8px;
-  padding: 18px 20px;
-}
-
-/* 본문 가독성 강화 */
-.post-content {
-  white-space: pre-line;
-  line-height: 1.8;
-  font-size: 15px;
-  color: #333;
-}
-
-/* =========================
-   ✅ (모집이 아닌 글만) 댓글을 카드 내부로 합친 레이아웃
-========================= */
-.detail-comment-merged {
-  margin-top: 18px;
-}
-
-.detail-divider {
-  height: 1px;
-  background: #eee;
-  margin: 18px 0 14px;
-}
-
-.detail-comment-title {
-  font-size: 16px;
-  font-weight: 800;
-  color: #333;
-  margin-bottom: 10px;
-}
-
-.detail-comment-empty {
-  font-size: 13px;
-  color: #999;
-  margin: 8px 0 0;
-}
-
-/* .detail-comment-list { */
-/* 리스트 느낌 유지 */
-/* } */
-
-/* =========================
-   ✅ 공지사항 상세 팝업 "내용" 배경 흰색 (안전 후보 셀렉터)
-   - 해당 클래스가 존재할 때만 적용됨
-========================= */
-.notice-detail-content,
-.notice-popup-content,
-.notice-content,
-.notice-modal-content,
-.notice-detail-body {
-  background: #ffffff;
-}
-
-/* 제목은 왼쪽으로 정렬, 가운데로 할거면 아래 css 주석처리 하면 됨 */
-.community-table th:nth-child(3),
-.community-table td:nth-child(3) {
-  text-align: left;
 }
