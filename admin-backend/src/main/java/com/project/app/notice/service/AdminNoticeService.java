@@ -18,9 +18,9 @@ public class AdminNoticeService {
     }
 
     /**
-     * ADMIN 공지사항 목록 조회
-     * - 숨김 여부 무관
-     * - 종료 날짜 지난 공지는 자동 숨김 처리 (if문)
+     * =========================
+     * ADMIN 공지사항 목록 조회 (기존, 페이징 없음)
+     * =========================
      */
     public List<NoticeDto> getNoticeList() {
 
@@ -28,7 +28,7 @@ public class AdminNoticeService {
         LocalDateTime now = LocalDateTime.now();
 
         for (NoticeDto notice : list) {
-            // 🔥 종료 날짜가 있고, 현재 시간보다 과거면 자동 숨김
+            // 종료 날짜가 있고, 현재 시간보다 과거면 자동 숨김
             if (
                 notice.getDisplayEnd() != null
                 && notice.getDisplayEnd().isBefore(now)
@@ -41,21 +41,52 @@ public class AdminNoticeService {
     }
 
     /**
+     * =========================
+     * ADMIN 공지사항 목록 조회 (페이징)
+     * - page: 1부터 시작
+     * - size: 페이지당 건수 (기본 10)
+     * =========================
+     */
+    public PagedResult<NoticeDto> getNoticeListPaged(int page, int size) {
+
+        int offset = (page - 1) * size;
+
+        List<NoticeDto> list =
+                adminNoticeMapper.selectNoticeListPaged(offset, size);
+
+        int totalCount = adminNoticeMapper.selectNoticeCount();
+        LocalDateTime now = LocalDateTime.now();
+
+        for (NoticeDto notice : list) {
+            // 종료 날짜가 있고, 현재 시간보다 과거면 자동 숨김
+            if (
+                notice.getDisplayEnd() != null
+                && notice.getDisplayEnd().isBefore(now)
+            ) {
+                notice.setIsVisible(false);
+            }
+        }
+
+        return new PagedResult<>(list, totalCount);
+    }
+
+    /**
+     * =========================
      * ADMIN 공지사항 상세 조회
+     * =========================
      */
     public NoticeDto getNoticeDetail(Long postId) {
         return adminNoticeMapper.selectNoticeDetail(postId);
     }
 
     /**
+     * =========================
      * ADMIN 공지사항 등록
-     * - displayEnd = null → 상시 공지
-     * - displayEnd != null → 종료 날짜 있는 공지
+     * =========================
      */
     @Transactional
     public void createNotice(NoticeDto dto) {
 
-        // 고정 정책
         dto.setPostType("NOTICE");
         dto.setWriterType("STAFF");
         dto.setViews(0);
@@ -64,22 +95,18 @@ public class AdminNoticeService {
         // 🔥 임시 관리자 ID (권한 연동 전)
         dto.setWriterId("1");
 
-        // 필수값 검증
         if (dto.getTitle() == null || dto.getTitle().trim().isEmpty()
                 || dto.getContent() == null || dto.getContent().trim().isEmpty()) {
             throw new IllegalArgumentException("필수값 누락 (title, content)");
         }
 
-        // displayEnd
-        // - null → 상시 공지
-        // - 값 있음 → 종료 날짜 공지
         adminNoticeMapper.insertNotice(dto);
     }
 
     /**
+     * =========================
      * ADMIN 공지사항 수정
-     * - 종료 날짜 수정 가능
-     * - null 전달 시 상시 공지로 변경
+     * =========================
      */
     @Transactional
     public void updateNotice(NoticeDto dto) {
@@ -88,7 +115,9 @@ public class AdminNoticeService {
     }
 
     /**
+     * =========================
      * ADMIN 공지사항 숨김 / 보이기
+     * =========================
      */
     @Transactional
     public void updateVisible(Long postId, boolean visible) {
@@ -96,10 +125,36 @@ public class AdminNoticeService {
     }
 
     /**
+     * =========================
      * ADMIN 공지사항 삭제
+     * =========================
      */
     @Transactional
     public void deleteNotice(Long postId) {
         adminNoticeMapper.deleteNotice(postId);
+    }
+
+    /**
+     * =========================
+     * 페이징 응답용 내부 DTO
+     * (커뮤니티와 동일한 구조)
+     * =========================
+     */
+    public static class PagedResult<T> {
+        private List<T> list;
+        private int totalCount;
+
+        public PagedResult(List<T> list, int totalCount) {
+            this.list = list;
+            this.totalCount = totalCount;
+        }
+
+        public List<T> getList() {
+            return list;
+        }
+
+        public int getTotalCount() {
+            return totalCount;
+        }
     }
 }

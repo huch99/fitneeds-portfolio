@@ -1,13 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import api from "../../api";
 
-function AdminFaqPage() {
-  const [faqs, setFaqs] = useState([
-    { id: 1, category: "이용안내", question: "운영시간이 어떻게 되나요?", answer: "평일 09~22시 운영합니다.", visible: true },
-    { id: 2, category: "결제/환불", question: "환불 규정이 어떻게 되나요?", answer: "환불은 이용 시작 전까지만 가능합니다.", visible: true },
-    { id: 3, category: "시설이용", question: "락커는 유료인가요?", answer: "회원은 무료로 이용할 수 있습니다.", visible: true },
-  ]);
+function AdminFAQPage() {
+  const [faqs, setFaqs] = useState([]);
+  const [openId, setOpenId] = useState(null);
 
-  const [openId, setOpenId] = useState(null); // 펼침 상태 ID
   const [category, setCategory] = useState("이용안내");
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
@@ -15,101 +12,139 @@ function AdminFaqPage() {
 
   const categoryList = ["이용안내", "결제/환불", "시설이용", "기타"];
 
-  const toggleOpen = (id) => {
-    setOpenId(openId === id ? null : id);
+  /* =========================
+     FAQ 목록 조회
+  ========================= */
+  const fetchFaqs = async () => {
+    const res = await api.get("/admin/faq", {
+      params: { page: 1 },
+    });
+    setFaqs(res.data.list);
   };
 
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    fetchFaqs();
+  }, []);
+
+  /* =========================
+     UI 핸들러
+  ========================= */
+  const toggleOpen = (postId) => {
+    setOpenId(openId === postId ? null : postId);
+  };
+
+  const editFaq = (f) => {
+    setEditingId(f.postId);
+    setCategory(f.category);
+    setQuestion(f.title);
+    setAnswer(f.content);
+    setOpenId(null);
+  };
+
+  /* =========================
+     등록 / 수정
+  ========================= */
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const newFaq = {
-      id: editingId || Date.now(),
+    const payload = {
       category,
-      question,
-      answer,
-      visible: true,
+      title: question,
+      content: answer,
+      writerId: localStorage.getItem("userName"), // 임시 writer_id
     };
 
     if (editingId) {
-      setFaqs(faqs.map((f) => (f.id === editingId ? newFaq : f)));
-      setEditingId(null);
+      await api.put(`/admin/faq/${editingId}`, payload);
     } else {
-      setFaqs([...faqs, newFaq]);
+      await api.post("/admin/faq", payload);
     }
 
+    setEditingId(null);
     setCategory("이용안내");
     setQuestion("");
     setAnswer("");
+
+    fetchFaqs();
   };
 
-  const editFaq = (faq) => {
-    setEditingId(faq.id);
-    setCategory(faq.category);
-    setQuestion(faq.question);
-    setAnswer(faq.answer);
-    setOpenId(null); // 수정 시 펼침 닫기
+  /* =========================
+     삭제
+  ========================= */
+  const deleteFaq = async (postId) => {
+    if (!window.confirm("삭제하시겠습니까?")) return;
+    await api.delete(`/admin/faq/${postId}`);
+    fetchFaqs();
   };
 
-  const deleteFaq = (id) => {
-    if (window.confirm("삭제하시겠습니까?")) {
-      setFaqs(faqs.filter((f) => f.id !== id));
-    }
-  };
+  /* =========================
+     숨김 / 보이기 (PUT 방식)
+  ========================= */
+  const toggleVisible = async (f) => {
+    if (!window.confirm("노출 상태를 변경하시겠습니까?")) return;
 
-  const toggleVisible = (id) => {
-    setFaqs(
-      faqs.map((f) =>
-        f.id === id ? { ...f, visible: !f.visible } : f
-      )
-    );
+    await api.put(`/admin/faq/${f.postId}/visible`, null, {
+      params: { visible: !f.isVisible },
+    });
+
+    fetchFaqs();
   };
 
   return (
     <>
       <h1>FAQ 관리</h1>
 
-      {/* FAQ 목록 */}
       <table className="admin-table">
         <thead>
           <tr>
             <th>번호</th>
             <th>카테고리</th>
             <th>질문</th>
-            <th>노출 여부</th>
+            <th>노출</th>
             <th>관리</th>
           </tr>
         </thead>
 
         <tbody>
           {faqs.map((f) => (
-            <React.Fragment key={f.id}>
-              <tr>
-                <td>{f.id}</td>
+            <React.Fragment key={f.postId}>
+              <tr
+                style={{
+                  background: !f.isVisible ? "#f1f1f1" : "white",
+                  color: !f.isVisible ? "#999" : "#000",
+                  opacity: !f.isVisible ? 0.5 : 1,
+                }}
+              >
+                <td>{f.postId}</td>
                 <td>{f.category}</td>
                 <td
-                  onClick={() => toggleOpen(f.id)}
+                  onClick={() => f.isVisible && toggleOpen(f.postId)}
                   style={{ cursor: "pointer", fontWeight: "600" }}
                 >
-                  {f.question}
+                  {f.title}
                 </td>
-                <td>{f.visible ? "노출" : "숨김"}</td>
+                <td>{f.isVisible ? "노출" : "숨김"}</td>
                 <td>
                   <button onClick={() => editFaq(f)}>수정</button>
-                  <button onClick={() => toggleVisible(f.id)}>
-                    {f.visible ? "숨기기" : "보이기"}
+                  <button onClick={() => toggleVisible(f)}>
+                    {f.isVisible ? "숨기기" : "보이기"}
                   </button>
-                  <button onClick={() => deleteFaq(f.id)} style={{ color: "red" }}>
+                  <button
+                    onClick={() => deleteFaq(f.postId)}
+                    style={{ color: "red" }}
+                  >
                     삭제
                   </button>
                 </td>
               </tr>
 
-              {/* 펼침 답변 */}
-              {openId === f.id && (
+              {openId === f.postId && (
                 <tr>
-                  <td colSpan="5" style={{ background: "#f8f8f8", padding: "15px" }}>
-                    <strong>답변:</strong>
-                    <div style={{ marginTop: "10px" }}>{f.answer}</div>
+                  <td colSpan="5" style={{ background: "#fafafa", padding: "15px" }}>
+                    <strong>답변</strong>
+                    <div style={{ marginTop: "10px", whiteSpace: "pre-line" }}>
+                      {f.content}
+                    </div>
                   </td>
                 </tr>
               )}
@@ -118,87 +153,53 @@ function AdminFaqPage() {
         </tbody>
       </table>
 
-      {/* 등록/수정 폼 */}
       <h2 style={{ marginTop: "30px" }}>
         {editingId ? "FAQ 수정" : "FAQ 등록"}
       </h2>
 
-      <form
-        onSubmit={handleSubmit}
-        style={{
-          marginTop: "20px",
-          padding: "20px",
-          background: "#fafafa",
-          borderRadius: "8px",
-          width: "650px"
-        }}
-      >
-        <div style={{ marginBottom: "15px" }}>
-          <label style={{ display: "block", marginBottom: "5px" }}>
-            카테고리
-          </label>
+      <form onSubmit={handleSubmit} style={{ marginTop: "20px" }}>
+        <div>
+          <label>카테고리</label><br />
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            style={{ width: "200px", padding: "6px" }}
+            style={{ width: "200px" }}
           >
             {categoryList.map((c) => (
-              <option key={c} value={c}>{c}</option>
+              <option key={c} value={c}>
+                {c}
+              </option>
             ))}
           </select>
         </div>
 
-        <div style={{ marginBottom: "15px" }}>
-          <label style={{ display: "block", marginBottom: "5px" }}>
-            질문
-          </label>
+        <div>
+          <label>질문</label><br />
           <input
             type="text"
+            required
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
-            required
-            style={{
-              width: "500px",
-              padding: "8px",
-              borderRadius: "4px",
-              border: "1px solid #ccc"
-            }}
+            style={{ width: "500px" }}
           />
         </div>
 
-        <div style={{ marginBottom: "15px" }}>
-          <label style={{ display: "block", marginBottom: "5px" }}>
-            답변
-          </label>
+        <div>
+          <label>답변</label><br />
           <textarea
+            required
             value={answer}
             onChange={(e) => setAnswer(e.target.value)}
-            required
-            style={{
-              width: "500px",
-              height: "180px",
-              padding: "8px",
-              borderRadius: "4px",
-              border: "1px solid #ccc",
-              resize: "none"
-            }}
+            style={{ width: "500px", height: "150px" }}
           />
         </div>
 
-        <button
-          type="submit"
-          style={{
-            padding: "10px 20px",
-            background: "#333",
-            color: "white",
-            borderRadius: "4px"
-          }}
-        >
-          {editingId ? "수정완료" : "등록하기"}
+        <button type="submit" style={{ marginTop: "15px" }}>
+          {editingId ? "수정 완료" : "등록"}
         </button>
       </form>
     </>
   );
 }
 
-export default AdminFaqPage;
+export default AdminFAQPage;
