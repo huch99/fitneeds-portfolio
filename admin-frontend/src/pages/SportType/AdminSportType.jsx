@@ -4,9 +4,16 @@ import "./AdminSportType.css";
 const API_BASE = "/api/sport-types";
 
 export default function SportTypeList() {
+    // 검색 필터
+    const [keyword, setKeyword] = useState("");
+    const [useYnFilter, setUseYnFilter] = useState("ALL"); // "ALL" | "Y" | "N"
+
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+
+    const [mode, setMode] = useState("create");      // "create" | "edit"
+    const [editingId, setEditingId] = useState(null);
 
     // ✅ 모달 표시 여부
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -14,6 +21,28 @@ export default function SportTypeList() {
     // ✅ 등록 폼 상태
     const [form, setForm] = useState({ name: "", memo: "" });
     const [saving, setSaving] = useState(false);
+
+
+    // 검색 필터
+    const filteredItems = useMemo(() => {
+        const k = keyword.trim().toLowerCase();
+
+        return items.filter((it) => {
+            // ✅ 필드명은 너 백엔드 응답에 맞춰 통일
+            const name = (it.sportNm ?? "").toLowerCase();
+            const memo = (it.sportMemo ?? "").toLowerCase();
+
+            const matchKeyword = !k || name.includes(k) || memo.includes(k);
+
+            const matchUseYn =
+                useYnFilter === "ALL" ||
+                (useYnFilter === "Y" && (it.useYn === true || it.useYn === 1)) ||
+                (useYnFilter === "N" && (it.useYn === false || it.useYn === 0));
+
+            return matchKeyword && matchUseYn;
+        });
+    }, [items, keyword, useYnFilter]);
+
 
     // 1) 목록 조회
     const fetchList = async () => {
@@ -33,11 +62,31 @@ export default function SportTypeList() {
 
     useEffect(() => {
         fetchList();
+
+        return () => {
+            // ✅ 컴포넌트 언마운트 시 정리 작업
+            setIsModalOpen(false);
+            document.body.style.overflow = "";
+        };
     }, []);
 
-    // ✅ 모달 열기(등록)
+
+    // 등록 모달
     const openCreateModal = () => {
-        setForm({ name: "", memo: "" }); // 초기화
+        setMode("create");
+        setEditingId(null);
+        setForm({ name: "", memo: "" });
+        setIsModalOpen(true);
+    };
+
+    // ✅ 수정 모달
+    const openEditModal = (item) => {
+        setMode("edit");
+        setEditingId(item.sportId);
+        setForm({
+            name: item.sportNm ?? "",
+            memo: item.sportMemo ?? "",
+        });
         setIsModalOpen(true);
     };
 
@@ -64,13 +113,17 @@ export default function SportTypeList() {
 
         setSaving(true);
         try {
-            const res = await fetch(`${API_BASE}/new`, {
-                method: "POST",
+            const url =
+                mode === "create"
+                    ? `${API_BASE}/new`                 // ✅ 너가 쓰는 등록 URL
+                    : `${API_BASE}/${editingId}`;       // ✅ 수정 URL (백엔드에 맞춰)
+
+            const method = mode === "create" ? "POST" : "PUT";
+
+            const res = await fetch(url, {
+                method,
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    name,
-                    memo: memo === "" ? null : memo,
-                }),
+                body: JSON.stringify({ name, memo: memo === "" ? null : memo }),
             });
 
             if (!res.ok) {
@@ -78,8 +131,8 @@ export default function SportTypeList() {
                 throw new Error(`저장 실패 (${res.status}) ${text}`);
             }
 
-            closeModal();
-            await fetchList(); // ✅ 저장 후 목록 갱신
+            setIsModalOpen(false);
+            await fetchList();
         } catch (e) {
             alert(e?.message ?? "저장 중 오류");
         } finally {
@@ -95,10 +148,45 @@ export default function SportTypeList() {
             <div className="content-box">
                 <div className="toolbar">
                     <div className="toolbar-left">
-                        <input className="input" placeholder="종목명 검색" />
-                        <button className="btn btn-primary">검색</button>
-                    </div>
+                        <input
+                            className="input"
+                            placeholder="종목명/메모 검색"
+                            value={keyword}
+                            onChange={(e) => setKeyword(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter") e.preventDefault(); // 입력 즉시 필터라 Enter는 UX용
+                            }}
+                        />
 
+                        {/* ✅ 상태필터(옵션) */}
+                        <select
+                            className="input"
+                            style={{ width: 160 }}
+                            value={useYnFilter}
+                            onChange={(e) => setUseYnFilter(e.target.value)}
+                        >
+                            <option value="ALL">전체</option>
+                            <option value="Y">활성</option>
+                            <option value="N">비활성</option>
+                        </select>
+
+                        {/* ✅ "검색" 버튼은 사실 필요 없지만, UX상 남겨도 됨 */}
+                        {/*<button className="btn btn-primary" type="button">*/}
+                        {/*    검색*/}
+                        {/*</button>*/}
+
+                        {/* ✅ 초기화 */}
+                        <button
+                            className="btn-sm"
+                            type="button"
+                            onClick={() => {
+                                setKeyword("");
+                                setUseYnFilter("ALL");
+                            }}
+                        >
+                            초기화
+                        </button>
+                    </div>
                     {/* ✅ 등록 버튼 → 모달 오픈 */}
                     <button className="btn btn-register" onClick={openCreateModal}>
                         + 새 운동 종목 등록
@@ -123,11 +211,11 @@ export default function SportTypeList() {
                     {(!loading && items.length === 0) ? (
                         <tr>
                             <td colSpan={6} style={{ textAlign: "center", padding: 16 }}>
-                                등록된 운동 종목이 없습니다.
+                                데이터가 없습니다.
                             </td>
                         </tr>
                     ) : (
-                        items.map((it) => (
+                        filteredItems.map((it) => (
                             <tr key={it.sportId}>
                                 <td>{it.sportId}</td>
                                 <td>{it.sportNm}</td>
@@ -135,8 +223,8 @@ export default function SportTypeList() {
                                 <td>{it.regDt ?? "-"}</td>
                                 <td>{it.updDt ?? "-"}</td>
                                 <td>
-                                    <button className="btn-sm">수정</button>{" "}
-                                    <button className="btn-sm btn-del">비활성화</button>
+                                    <button className="btn-sm" onClick={() => openEditModal(it)}>수정</button>{" "}
+                                    <button className="btn-sm">비활성화</button>
                                 </td>
                             </tr>
                         ))
@@ -147,9 +235,11 @@ export default function SportTypeList() {
 
             {/* ✅ 모달: isModalOpen일 때만 보이게 */}
             {isModalOpen && (
-                <div className="modal-overlay" onClick={onOverlayClick}>
+                <div className="modal-overlay-sporttype" onClick={onOverlayClick}>
                     <div className="content-box modal-area" onClick={(e) => e.stopPropagation()}>
-                        <h2><span className="modal-title">운동 종목 등록</span></h2>
+                        <h2><span className="modal-title">
+                            {mode === "create" ? "운동 종목 등록" : "운동 종목 수정"}
+                        </span></h2>
 
                         <div className="form-grid">
                             <label>
@@ -167,9 +257,10 @@ export default function SportTypeList() {
 
                         <div className="form-grid">
                             <label>메모</label>
-                            <input
-                                className="input"
-                                style={{ width: "80%" }}
+                            <textarea
+                                className="input textarea"
+                                style={{ width: "80%"}}
+                                rows={4}
                                 placeholder="설명(선택)"
                                 value={form.memo}
                                 onChange={(e) => setForm((p) => ({ ...p, memo: e.target.value }))}
