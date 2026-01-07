@@ -75,7 +75,7 @@ function RegisterModal({ isOpen, onClose }) {
                 params: { userId: userId }
             });
             console.log('User Info Response:', response.data);
-            setMessage('정보를 성공적으로 가져왔습니다.');
+            // setMessage('정보를 성공적으로 가져왔습니다.');
 
             setFormState({
                 userId: response.data.userId || '',
@@ -202,7 +202,10 @@ function RegisterModal({ isOpen, onClose }) {
     }
 
     return (
-        <div className="modal-overlay-2">
+
+        <div
+            className={isAuthenticated ? "modal-overlay-3" : "modal-overlay-2"}
+        >
             <div className="modal-content">
                 <button onClick={onClose} className="modal-close-button">X</button>
                 <h2 style={{ marginBottom: '20px', color: 'black' }}>{formTitle}</h2>
@@ -265,7 +268,7 @@ function RegisterModal({ isOpen, onClose }) {
 
                     {isAuthenticated ? (
                         <>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                            {/* <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                                 <label htmlFor="cashPoint" style={{ minWidth: '80px', textAlign: 'right', color: '#333' }}>캐시:</label>
                                 <input
                                     id="cashPoint"
@@ -290,7 +293,7 @@ function RegisterModal({ isOpen, onClose }) {
                                     readOnly
                                     style={{ flexGrow: 1 }}
                                 />
-                            </div>
+                            </div> */}
                             <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                                 <label htmlFor="agreeAt" style={{ minWidth: '80px', textAlign: 'right', color: '#333' }}>개인정보동의:</label>
                                 <input
