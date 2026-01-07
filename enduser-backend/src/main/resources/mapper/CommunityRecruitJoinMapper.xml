@@ -1,5 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.project.app.community.mapper.CommunityRecruitJoinMapper">
 
@@ -51,21 +53,17 @@
   <!-- =========================
        참여 신청자 목록 조회
        (작성자용)
-       🔥 user_id → user_name
   ========================= -->
   <select id="selectJoinUsersByPostId" resultType="string">
-    SELECT u.user_name
-    FROM community_recruit_join j
-    LEFT JOIN users u
-           ON u.user_id = j.user_id
-    WHERE j.post_id = #{postId}
-    ORDER BY j.join_id ASC
+    SELECT user_id
+    FROM community_recruit_join
+    WHERE post_id = #{postId}
+    ORDER BY join_id ASC
   </select>
 
   <!-- =========================
        🔥 내가 참여한 모집 글 목록 조회
        (USER 전용)
-       ※ 기존 로직 유지
   ========================= -->
   <select id="selectMyJoinedRecruitPosts"
           parameterType="string"

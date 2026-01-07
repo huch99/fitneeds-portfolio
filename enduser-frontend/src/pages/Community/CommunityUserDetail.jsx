@@ -150,8 +150,8 @@ function CommunityUserDetail() {
     if (!window.confirm("게시글을 삭제하시겠습니까?")) return;
 
     await axios.delete(`/api/user/community/${post.postId}`, {
-      params: { userId: loginUserId },
-    });
+  params: { userId: loginUserId }
+});
 
     navigate("/community");
   };
@@ -186,7 +186,7 @@ function CommunityUserDetail() {
   const isRecruitClosed = post.recruitStatus === "모집종료";
 
   return (
-    <div className="community-detail-page">
+    <div style={{ padding: "20px", maxWidth: "900px", margin: "0 auto" }}>
       <button
         className="community-action-btn"
         onClick={() => navigate(-1)}
@@ -194,78 +194,71 @@ function CommunityUserDetail() {
         ← 목록으로
       </button>
 
-      {/* =========================
-          게시글 카드
-      ========================= */}
-      <div className="community-card post-card">
-        <div className="post-header">
-          <h2 className="post-title">{post.title}</h2>
 
-          <div className="post-meta">
-            <span>
-              작성자 {post.writerName || post.writerId || "-"} ·{" "}
-              {post.createdAt?.substring(0, 10)}
-            </span>
+      <h2>{post.title}</h2>
 
-
-            {isWriter && (
-              <div>
-                <button
-                  className="community-action-btn"
-                  onClick={handleEditPost}
-                >
-                  수정
-                </button>
-                <button
-                  className="community-action-btn delete"
-                  onClick={handleDeletePost}
-                >
-                  삭제
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="post-body">
-          <div className="post-content">{post.content}</div>
-        </div>
-
-        {/* 모집 영역 */}
-        {isRecruitPost && (
-          <div style={{ marginTop: 20 }}>
-            <p>모집 인원: {post.recruitMax}</p>
-
-            {!isWriter && !isRecruitClosed && (
-              <>
-                {!alreadyJoined ? (
-                  <button
-                    className="recruit-apply-btn"
-                    onClick={handleApplyRecruit}
-                  >
-                    참여 신청하기
-                  </button>
-                ) : (
-                  <button
-                    className="recruit-cancel-btn"
-                    onClick={handleCancelRecruit}
-                  >
-                    참여 취소
-                  </button>
-                )}
-              </>
-            )}
-
-            {isRecruitClosed && (
-              <span className="recruit-status-badge recruit-closed">
-                모집 종료
-              </span>
-            )}
-          </div>
+      <div style={{ fontSize: "13px", color: "#666" }}>
+        작성자 {post.writerId} · {post.createdAt?.substring(0, 10)}
+        {isWriter && (
+          <>
+            <button className="community-action-btn" onClick={handleEditPost}>
+              수정
+            </button>
+            <button
+              className="community-action-btn delete"
+              onClick={handleDeletePost}
+            >
+              삭제
+            </button>
+          </>
         )}
       </div>
 
-      {/* 참여자 목록 (작성자용) */}
+      {/* ✅ 게시글 본문 (추가된 부분) */}
+      <div
+        style={{
+          marginTop: "20px",
+          padding: "20px",
+          borderTop: "1px solid #ddd",
+          borderBottom: "1px solid #ddd",
+          whiteSpace: "pre-line",
+          lineHeight: "1.6",
+        }}
+      >
+        {post.content}
+      </div>
+
+      {/* 모집 영역 */}
+      {isRecruitPost && (
+        <div style={{ marginTop: 20, padding: 15, border: "1px solid #ddd" }}>
+          <p>모집 인원: {post.recruitMax}</p>
+
+          {!isWriter && !isRecruitClosed && (
+            <>
+              {!alreadyJoined ? (
+                <button className="recruit-apply-btn" onClick={handleApplyRecruit}>
+                  참여 신청하기
+                </button>
+              ) : (
+                <button
+                  className="recruit-cancel-btn"
+                  onClick={handleCancelRecruit}
+                >
+                  참여 취소
+                </button>
+              )}
+            </>
+          )}
+
+          {isRecruitClosed && (
+            <span className="recruit-status-badge recruit-closed">
+              모집 종료
+            </span>
+          )}
+        </div>
+      )}
+
+      {/* 참여자 목록 */}
       {isRecruitPost && isWriter && (
         <div className="recruit-join-box">
           <div className="recruit-join-header">
@@ -290,71 +283,61 @@ function CommunityUserDetail() {
         </div>
       )}
 
-      {/* =========================
-          댓글 목록
-      ========================= */}
-      <div className="community-card comment-list-card">
-        <h3>댓글</h3>
+      {/* 댓글 */}
+      <h3 style={{ marginTop: 40 }}>댓글</h3>
 
-        {comments.map((c) => {
-          const isMy = String(c.writerId) === String(loginUserId);
-          const editing = editingCommentId === c.commentId;
+      {comments.map((c) => {
+        const isMy = String(c.writerId) === String(loginUserId);
+        const editing = editingCommentId === c.commentId;
 
-          return (
-            <div key={c.commentId} className="comment-item">
-              <div className="comment-meta">
-                <strong>{c.writerName || c.writerId || "-"}</strong>
+        return (
+          <div key={c.commentId} style={{ borderBottom: "1px solid #ddd" }}>
+            <strong>{c.writerId}</strong>
 
+            {isMy && !editing && (
+              <>
+                <button
+                  className="community-action-btn"
+                  onClick={() => startEditComment(c)}
+                >
+                  수정
+                </button>
+                <button
+                  className="community-action-btn delete"
+                  onClick={() => deleteComment(c.commentId)}
+                >
+                  삭제
+                </button>
+              </>
+            )}
 
-                {isMy && !editing && (
-                  <>
-                    <button
-                      className="community-action-btn"
-                      onClick={() => startEditComment(c)}
-                    >
-                      수정
-                    </button>
-                    <button
-                      className="community-action-btn delete"
-                      onClick={() => deleteComment(c.commentId)}
-                    >
-                      삭제
-                    </button>
-                  </>
-                )}
-              </div>
+            {editing ? (
+              <>
+                <textarea
+                  className="comment-textarea"
+                  value={editingContent}
+                  onChange={(e) => setEditingContent(e.target.value)}
+                />
+                <button
+                  className="community-action-btn"
+                  onClick={() => saveEditComment(c.commentId)}
+                >
+                  저장
+                </button>
+                <button
+                  className="community-action-btn delete"
+                  onClick={cancelEditComment}
+                >
+                  취소
+                </button>
+              </>
+            ) : (
+              <p className="community-post-content">{c.content}</p>
+            )}
+          </div>
+        );
+      })}
 
-              {editing ? (
-                <>
-                  <textarea
-                    className="comment-textarea"
-                    value={editingContent}
-                    onChange={(e) => setEditingContent(e.target.value)}
-                  />
-                  <button
-                    className="community-action-btn"
-                    onClick={() => saveEditComment(c.commentId)}
-                  >
-                    저장
-                  </button>
-                  <button
-                    className="community-action-btn delete"
-                    onClick={cancelEditComment}
-                  >
-                    취소
-                  </button>
-                </>
-              ) : (
-                <p className="community-post-content">{c.content}</p>
-              )}
-            </div>
-          );
-        })}
-      </div>
-
-      {/* =========================
-          댓글 작성
-      ========================= */}
       <div className="comment-write-box">
         <textarea
           className="comment-textarea"

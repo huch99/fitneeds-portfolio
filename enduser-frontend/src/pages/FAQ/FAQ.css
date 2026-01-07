@@ -1,8 +1,39 @@
-/* ===== Layout ===== */
+/* FAQ page specific styles */
+
 .section-container {
-  max-width: 900px;
+  max-width: 1320px;
   margin: 0 auto;
-  padding: 0 1.5rem;
+  padding: 0 3rem;
+}
+
+.section-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -0.75rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.section-col {
+  flex: 1 0 0%;
+  padding: 0 0.75rem;
+}
+
+.section-col-header {
+  flex: 0 0 auto;
+  width: 100%;
+}
+
+@media (min-width: 992px) {
+  .section-col-header {
+    width: 66.66666667%;
+  }
+}
+
+@media (min-width: 1400px) {
+  .section-col-header {
+    width: 50%;
+  }
 }
 
 .page-header {
@@ -11,164 +42,175 @@
 }
 
 .page-title {
-  font-size: 2rem;
   font-weight: 700;
+  margin-bottom: 0.75rem;
 }
 
 .page-subtitle {
-  margin-top: 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 400;
   color: #6c757d;
+  margin-bottom: 1rem;
 }
 
-/* ===== FAQ Board ===== */
-.faq-board {
-  border: 1px solid #dee2e6;
-  border-radius: 8px;
-  background: #fff;
-  overflow: hidden;
+.section-col-text {
+  flex: 0 0 auto;
+  width: 100%;
 }
 
-.faq-header {
+@media (min-width: 992px) {
+  .section-col-text {
+    width: 66.66666667%;
+  }
+}
+
+@media (min-width: 1400px) {
+  .section-col-text {
+    width: 50%;
+  }
+}
+
+/* Board Styles */
+.board-header {
   display: grid;
-  grid-template-columns: 60px 120px 1fr 100px;
-  padding: 1rem;
-  background: #212529;
+  grid-template-columns: 60px 120px 1fr 100px 80px;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background-color: #212529;
   color: #fff;
-  font-weight: 600;
-  font-size: 0.85rem;
-}
-
-/* ===== FAQ Item ===== */
-.faq-item {
-  border-bottom: 1px solid #dee2e6;
-}
-
-.faq-item:last-child {
-  border-bottom: none;
-}
-
-.faq-question {
-  display: grid;
-  grid-template-columns: 60px 120px 1fr 100px;
-  padding: 1rem;
+  font-weight: 700;
+  border-radius: 0.25rem 0.25rem 0 0;
   align-items: center;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
 }
 
-.faq-question:hover {
-  background-color: #f8f9fa;
-}
-
-.faq-number {
+.board-header-item {
   text-align: center;
-  color: #adb5bd;
+  font-size: 0.875rem;
 }
 
-.faq-category {
-  text-align: center;
+.board-header-item.board-title {
+  text-align: left;
 }
 
-.faq-title {
-  font-weight: 600;
-  color: #212529;
-}
-
-.faq-date {
-  text-align: center;
-  font-size: 0.8rem;
-  color: #6c757d;
-}
-
-/* ===== Category Badge ===== */
-.category-badge {
-  display: inline-block;
-  padding: 0.3em 0.7em;
-  font-size: 0.75rem;
-  font-weight: 600;
-  border-radius: 999px;
-  background: #ffc107;
-  color: #212529;
-}
-
-/* ===== Answer ===== */
-.faq-answer {
-  background: #f9fafb;
-  border-left: 4px solid #ffc107;
-  padding: 1.25rem 1.5rem;
-  font-size: 0.95rem;
-  line-height: 1.7;
-  animation: fadeDown 0.25s ease;
-}
-
-.faq-answer p {
-  margin-top: 0.5rem;
-  white-space: pre-wrap;
-}
-
-/* ===== Empty / Loading ===== */
-.faq-empty {
-  padding: 2rem;
-  text-align: center;
-  color: #6c757d;
-}
-
-/* ===== Animation ===== */
-@keyframes fadeDown {
-  from {
-    opacity: 0;
-    transform: translateY(-5px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* ===== Mobile ===== */
 @media (max-width: 768px) {
-  .faq-header,
-  .faq-question {
+  .board-header {
     grid-template-columns: 50px 100px 1fr;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
   }
-
-  .faq-date {
+  
+  .board-header-item.board-date,
+  .board-header-item.board-views {
     display: none;
   }
 }
 
-.section-light {
-  padding-top: 80px;
-  padding-bottom: 80px;
+.board-list {
+  background-color: #fff;
+  border: 1px solid #dee2e6;
+  border-top: none;
+  border-radius: 0 0 0.25rem 0.25rem;
 }
 
-/* FAQ 리스트 자체를 시각적으로 중앙에 */
-.faq-board {
-  margin: 0 auto;
+.board-item {
+  border-bottom: 1px solid #dee2e6;
 }
 
+.board-item:last-child {
+  border-bottom: none;
+}
 
-.page-subtitle .brand {
-  font-weight: 600;
+.board-item-row {
+  display: grid;
+  grid-template-columns: 60px 120px 1fr 100px 80px;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  align-items: center;
+}
+
+.board-item-row:hover {
+  background-color: #f8f9fa;
+}
+
+.board-item-cell {
+  text-align: center;
+  font-size: 0.875rem;
   color: #212529;
 }
 
-/* ===== FAQ 헤더 / 리스트 컬럼 정렬 통일 ===== */
-
-/* 헤더 기본 가운데 정렬 */
-.faq-header span {
-  text-align: center;
-}
-
-/* 질문(제목) 컬럼만 왼쪽 정렬 */
-.faq-header span:nth-child(3),
-.faq-question .faq-title {
+.board-item-cell.board-title {
   text-align: left;
+  font-weight: 500;
+  color: #212529;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-/* 번호 / 카테고리 / 날짜 컬럼 정렬 */
-.faq-number,
-.faq-category,
-.faq-date {
-  text-align: center;
+.board-item-cell.board-number {
+  color: #6c757d;
+}
+
+.board-item-cell.board-date {
+  color: #6c757d;
+  font-size: 0.8125rem;
+}
+
+.board-item-cell.board-views {
+  color: #6c757d;
+  font-size: 0.8125rem;
+}
+
+.category-badge {
+  display: inline-block;
+  padding: 0.25em 0.65em;
+  font-size: 0.75em;
+  font-weight: 600;
+  border-radius: 0.25rem;
+  background-color: #FFC107;
+  color: #212529;
+}
+
+@media (max-width: 768px) {
+  .board-item-row {
+    grid-template-columns: 50px 100px 1fr;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+  }
+  
+  .board-item-cell.board-date,
+  .board-item-cell.board-views {
+    display: none;
+  }
+  
+  .board-item-cell.board-title {
+    font-size: 0.875rem;
+  }
+}
+
+.board-item-content {
+  padding: 1.5rem;
+  background-color: #f8f9fa;
+  border-top: 1px solid #dee2e6;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 500px;
+  }
+}
+
+.board-content-text {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #212529;
+  white-space: pre-wrap;
 }

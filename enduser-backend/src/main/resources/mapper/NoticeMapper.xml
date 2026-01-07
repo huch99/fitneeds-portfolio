@@ -10,29 +10,25 @@
          - 숨김 제외
          - 종료된 공지 제외
          - 상시 공지는 유지
-         - 지점명(branchName) JOIN
     ========================= -->
     <select id="selectNoticeList"
             resultType="com.project.app.notice.dto.NoticeDto">
 
         SELECT
-            cp.post_id      AS postId,
-            cp.title        AS title,
-            cp.content      AS content,
-            cp.views        AS views,
-            cp.display_end  AS displayEnd,
-            cp.created_at   AS createdAt,
-            b.brch_nm       AS branchName
-        FROM community_post cp
-        LEFT JOIN branch b
-            ON cp.branch_id = b.brch_id
-        WHERE cp.post_type = 'NOTICE'
-          AND cp.is_visible = 1
+            post_id     AS postId,
+            title       AS title,
+            content     AS content,
+            views       AS views,
+            display_end AS displayEnd,   <!-- 🔥 추가 -->
+            created_at  AS createdAt
+        FROM community_post
+        WHERE post_type = 'NOTICE'
+          AND is_visible = 1
           AND (
-                cp.display_end IS NULL
-                OR cp.display_end >= NOW()
+                display_end IS NULL
+                OR display_end >= NOW()
           )
-        ORDER BY cp.created_at DESC
+        ORDER BY created_at DESC
 
     </select>
 
@@ -40,29 +36,25 @@
          USER 공지 상세 조회
          - 숨김 제외
          - 종료된 공지 접근 불가
-         - 지점명(branchName) JOIN
     ========================= -->
     <select id="selectNoticeDetail"
             parameterType="long"
             resultType="com.project.app.notice.dto.NoticeDto">
 
         SELECT
-            cp.post_id      AS postId,
-            cp.title        AS title,
-            cp.content      AS content,
-            cp.views        AS views,
-            cp.display_end  AS displayEnd,
-            cp.created_at   AS createdAt,
-            b.brch_nm       AS branchName
-        FROM community_post cp
-        LEFT JOIN branch b
-            ON cp.branch_id = b.brch_id
-        WHERE cp.post_id = #{postId}
-          AND cp.post_type = 'NOTICE'
-          AND cp.is_visible = 1
+            post_id     AS postId,
+            title       AS title,
+            content     AS content,
+            views       AS views,
+            display_end AS displayEnd,   <!-- 🔥 추가 -->
+            created_at  AS createdAt
+        FROM community_post
+        WHERE post_id = #{postId}
+          AND post_type = 'NOTICE'
+          AND is_visible = 1
           AND (
-                cp.display_end IS NULL
-                OR cp.display_end >= NOW()
+                display_end IS NULL
+                OR display_end >= NOW()
           )
 
     </select>

@@ -7,11 +7,11 @@ import api from '../../../api';
 const CalendarModal = ({ sessions: rawSessions = [], isOpen, onClose, strtDt, endDt, onSelectDate, selectedDate, onProceedToPayment }) => {
     if (!isOpen) return null;
 
-    const sessions = Array.isArray(rawSessions)
-        ? rawSessions
-        : (rawSessions?.data || rawSessions?.sessions || []);
+    const sessions = Array.isArray(rawSessions) 
+        ? rawSessions 
+        : (rawSessions?.sessions || []);
 
-    // 2. 이제 sessions.length 체크
+        // 2. 이제 sessions.length 체크
     if (sessions.length === 0) {
         console.log("전달받은 데이터:", rawSessions); // 디버깅용
     }
@@ -101,7 +101,7 @@ const CalendarModal = ({ sessions: rawSessions = [], isOpen, onClose, strtDt, en
         <div className="modal-overlay" onClick={onClose}>
             <div className="modal-container" onClick={e => e.stopPropagation()}>
                 <h2>날짜 선택</h2>
-
+                
                 {/* sessions가 비어있다면 데이터가 없는 것으로 간주 */}
                 {sessions.length === 0 ? (
                     <p className="error-message">선택 가능한 예약 날짜가 없습니다.</p>

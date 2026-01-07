@@ -36,7 +36,7 @@ public class AppApplication {
 	/**
 	 * RestTemplate Bean 등록 외부 API를 호출할 때 사용하는 HTTP 클라이언트 도구
 	 */
-//	@Bean
+	@Bean
 	public RestTemplate restTemplate() {
 		return new RestTemplate();
 	}

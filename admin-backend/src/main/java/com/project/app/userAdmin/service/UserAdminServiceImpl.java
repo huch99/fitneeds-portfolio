@@ -32,7 +32,6 @@ public class UserAdminServiceImpl implements UserAdminService {
 				.role("USER") // 기본 권한 설정 admin 사용자 관리 에서 수정.
 				.email(userAdminRequestDto.getEmail()).phoneNumber(userAdminRequestDto.getPhoneNumber())
 				.agreeAt(LocalDateTime.now())
-				.brchId(userAdminRequestDto.getBrchId())
 				.isActive(true).build();
 		
 		return userAdminRepository.save(user);
