@@ -6,6 +6,7 @@ import './ProgramDetailPage.css';
 import LoginModal from '../../../components/auth/LoginModal';
 import '../../../components/auth/modalStyles.css';
 import { useSelector } from 'react-redux';
+import RegisterModal from '../../../components/auth/RegisterModal';
 
 const ProgramDetailPage = () => {
     const location = useLocation();
@@ -26,16 +27,27 @@ const ProgramDetailPage = () => {
     const strtTm = queryParams.get('strtTm');
     const endTm = queryParams.get('endTm');
 
+    // 프로그램 상세 데이터 상태
     const [programDetails, setProgramDetails] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    const [selectedDate, setSelectedDate] = useState(null); // 선택된 날짜 상태
+    // 선택된 날짜 상태
+    const [selectedDate, setSelectedDate] = useState(null); 
 
+    // 로그인 상태
     const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+    
+    // 로그인 모달 오픈 상태
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+
+    // 회원가입 모달 상태
+    const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
+
+    // 예약버튼 (캘린더) 모달 오픈 상태
     const [isReservationModalOpen, setIsReservationModalOpen] = useState(false);
 
+    // 선택된 스케줄 상태
     const [selectedSchdId, setSelectedSchdId] = useState(null);
 
     // 모달 닫기
@@ -52,7 +64,13 @@ const ProgramDetailPage = () => {
         }
     };
 
-    // 캘린더 날짜 선택 기능 수정
+    // 로그인 모달에서 회원가입으로 전환하는 핸들러
+    const handleSwitchToRegister = () => {
+        setIsLoginModalOpen(false); // 로그인 모달 닫기
+        setIsRegisterModalOpen(true); // 회원가입 모달 열기
+    };
+
+    // 캘린더 날짜 선택 기능
     const handleDateSelect = (date) => {
         setSelectedDate(date);
         
@@ -99,6 +117,7 @@ const ProgramDetailPage = () => {
         }
     };
 
+    // 날짜 형식
     const formatDate = (dateString) => {
         if (!dateString) return "";
         const parts = dateString.split('-');
@@ -106,6 +125,7 @@ const ProgramDetailPage = () => {
         return `${parseInt(parts[1], 10)}월 ${parseInt(parts[2], 10)}일`;
     };
 
+    // 시간 형식
     const formatTime = (timeString) => {
         if (!timeString) return "";
         const [hours, minutes] = timeString.split(':');
@@ -128,7 +148,7 @@ const ProgramDetailPage = () => {
 
             try {
                 const response = await api.get(`/programs/getProgramByProgIdForR/${progId}`);
-                setProgramDetails(response.data);
+                setProgramDetails(response.data.data);
             } catch (err) {
                 setError('프로그램 데이터를 불러오는 중 오류가 발생했습니다.');
                 console.error('Error fetching program data:', err);
@@ -164,7 +184,17 @@ const ProgramDetailPage = () => {
                         {isLoginModalOpen && (
                             <LoginModal
                                 isOpen={isLoginModalOpen}
-                                onClose={() => setIsLoginModalOpen(false)} />
+                                onClose={() => setIsLoginModalOpen(false)} 
+                                onOpenRegister={handleSwitchToRegister}
+                                />
+                        )}
+
+                        {/* 5. RegisterModal 렌더링 추가 */}
+                        {isRegisterModalOpen && (
+                            <RegisterModal
+                                isOpen={isRegisterModalOpen}
+                                onClose={() => setIsRegisterModalOpen(false)}
+                            />
                         )}
 
                         {/* CalendarModal 렌더링 */}
@@ -172,7 +202,7 @@ const ProgramDetailPage = () => {
                             <CalendarModal
                                 isOpen={isReservationModalOpen}
                                 sportId={programDetails.sportId}
-                                sessions={sessions}
+                                sessions={rawSessions.data || rawSessions}
                                 onClose={handleCloseModal}
                                 strtDt={strtDt}
                                 endDt={endDt}

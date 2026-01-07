@@ -3,6 +3,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import api from '../../api';
 import './modalStyles.css';
+import AgreeModal from './AgreeModal';
 
 // 폼 입력 필드를 위한 초기 상태 정의 (컴포넌트 외부)
 const initialFormState = {
@@ -13,7 +14,8 @@ const initialFormState = {
     phoneNumber: '',
     cashPoint: '',
     gradePoint: '',
-    agreeAt: false // agreeAt은 boolean으로 관리
+    agreeAt: false, // agreeAt은 boolean으로 관리
+    agree: false
 };
 
 function RegisterModal({ isOpen, onClose }) {
@@ -26,6 +28,8 @@ function RegisterModal({ isOpen, onClose }) {
 
     const [message, setMessage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+
+    const [isAgreeModalOpen, setIsAgreeModalOpen] = useState(false);
 
     // ⭐⭐ 2. useCallback, useMemo로 감싸진 함수 선언 (훅들이 선언된 이후) ⭐⭐
     // 폼 입력 변경 핸들러
@@ -71,7 +75,7 @@ function RegisterModal({ isOpen, onClose }) {
                 params: { userId: userId }
             });
             console.log('User Info Response:', response.data);
-            setMessage('정보를 성공적으로 가져왔습니다.');
+            // setMessage('정보를 성공적으로 가져왔습니다.');
 
             setFormState({
                 userId: response.data.userId || '',
@@ -190,6 +194,13 @@ function RegisterModal({ isOpen, onClose }) {
         }
     }
 
+    const agreeOpen = () => {
+        if (document.getElementById('agree').checked == true) {
+            setIsAgreeModalOpen(true);
+        }
+
+    }
+
     return (
         <div className="modal-overlay">
             <div className="modal-content">
@@ -254,7 +265,7 @@ function RegisterModal({ isOpen, onClose }) {
 
                     {isAuthenticated ? (
                         <>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                            {/* <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                                 <label htmlFor="cashPoint" style={{ minWidth: '80px', textAlign: 'right' }}>캐시:</label>
                                 <input
                                     id="cashPoint"
@@ -279,7 +290,7 @@ function RegisterModal({ isOpen, onClose }) {
                                     readOnly
                                     style={{ flexGrow: 1 }}
                                 />
-                            </div>
+                            </div> */}
                             <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                                 <label htmlFor="agreeAt" style={{ minWidth: '80px', textAlign: 'right' }}>개인정보동의:</label>
                                 <input
@@ -300,6 +311,7 @@ function RegisterModal({ isOpen, onClose }) {
                             <div style={{ display: 'flex', alignItems: 'center', gap: '5px', margin: '0 auto' }}>
                                 <label htmlFor="agree" style={{ minWidth: '80px', textAlign: 'right' }}>개인정보 사용 및 수신 동의:</label>
                                 <input
+                                    onClick={agreeOpen}
                                     id="agree"
                                     type="checkbox"
                                     style={{ width: '20px', height: '20px', margin: '0 5px' }} // 체크박스 크기 조정
@@ -320,8 +332,14 @@ function RegisterModal({ isOpen, onClose }) {
                     </button>
                 </form>
             </div >
+
+            <AgreeModal
+                isOpen={isAgreeModalOpen}
+                onClose={() => setIsAgreeModalOpen(false)}
+            />
+
         </div>
     );
 }
 
-export default RegisterModal;
+export default RegisterModal; 

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -123,7 +124,9 @@ public class LoginController {
 				.email(user.getEmail())
 				.userName(user.getUserName())
 				.role(user.getRole())
-				.brchId(user.getBrchId().getBrchId())
+				.brchId(Optional.ofNullable(user.getBrchId()) 
+	                    .map(Branch::getBrchId) 
+	                    .orElse(null) )
 				.success(true)
 				.message("로그인 성공")
 				.build());

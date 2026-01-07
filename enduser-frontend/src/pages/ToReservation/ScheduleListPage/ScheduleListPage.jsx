@@ -47,7 +47,7 @@ const ScheduleListPage = () => {
                             }
                         }
                     );
-                    apiResponsePage = response.data;
+                    apiResponsePage = response.data.data;
                 } else if (brchId) {
                     const response = await api.get(`/schedules/getSchedulesByBrchIdForR/${brchId}`,
                         {
@@ -59,7 +59,7 @@ const ScheduleListPage = () => {
                             }
                         }
                     );
-                    apiResponsePage = response.data;
+                    apiResponsePage = response.data.data;
                 } else {
                     setError('유효한 ID가 전달되지 않았습니다.');
                     console.warn('Neither sportId nor brchId is present in query parameters.');
@@ -201,8 +201,8 @@ const ScheduleListPage = () => {
                         <div className='error-message'>{error}</div>
                     ) : (
                         schedules.length > 0 ? (
-                            schedules.map(schedule => (
-                                <div key={schedule.schdId} className='schedule-item-wrapper'>
+                            schedules.map((schedule, index) => (
+                                <div key={`${schedule.progId}-${schedule.strtTm}-${index}`} className='schedule-item-wrapper'>
                                     {/* 2. 상세 페이지 이동: 
                                 상세 페이지에서도 정보를 불러올 수 있도록 progId를 유지하고, 
                                 목록에서 이미 가져온 정보들을 state로 넘겨 API 호출을 최소화합니다. */}
