@@ -64,6 +64,7 @@
             cp.title,
             cp.content,
             cp.writer_id        AS writerId,
+            u.user_name         AS writerName,
             cp.writer_type      AS writerType,
             cp.branch_id        AS branchId,
             cp.views,
@@ -78,6 +79,8 @@
             cp.updated_at       AS updatedAt,
             COUNT(crj.join_id)  AS recruitCount
         FROM community_post cp
+        LEFT JOIN users u
+               ON u.user_id = cp.writer_id
         LEFT JOIN community_recruit_join crj
                ON crj.post_id = cp.post_id
         WHERE cp.post_type = 'COMMUNITY'
@@ -100,6 +103,7 @@
             cp.title,
             cp.content,
             cp.writer_id        AS writerId,
+            u.user_name         AS writerName,
             cp.writer_type      AS writerType,
             cp.branch_id        AS branchId,
             cp.views,
@@ -124,6 +128,7 @@
             LIMIT #{size} OFFSET #{offset}
         ) ids
         JOIN community_post cp ON cp.post_id = ids.post_id
+        LEFT JOIN users u ON u.user_id = cp.writer_id
         LEFT JOIN community_recruit_join crj ON crj.post_id = cp.post_id
         GROUP BY cp.post_id
         ORDER BY cp.created_at DESC
@@ -151,6 +156,7 @@
             cp.title,
             cp.content,
             cp.writer_id        AS writerId,
+            u.user_name         AS writerName,
             cp.writer_type      AS writerType,
             cp.views,
             cp.is_visible       AS isVisible,
@@ -162,6 +168,7 @@
             cp.updated_at       AS updatedAt,
             COUNT(crj.join_id)  AS recruitCount
         FROM community_post cp
+        LEFT JOIN users u ON u.user_id = cp.writer_id
         LEFT JOIN community_recruit_join crj ON crj.post_id = cp.post_id
         WHERE cp.writer_id = #{userId}
           AND cp.post_type = 'COMMUNITY'
@@ -173,43 +180,38 @@
 
     <!-- 상세 조회 -->
     <select id="selectCommunityPostDetail"
-        parameterType="long"
-        resultType="com.project.app.community.dto.CommunityPostDto">
+            parameterType="long"
+            resultType="com.project.app.community.dto.CommunityPostDto">
 
-    SELECT
-        cp.post_id        AS postId,
-        cp.post_type      AS postType,
-        cp.category,
-        cp.title,
-        cp.content,
-        cp.writer_id      AS writerId,
-        cp.writer_type    AS writerType,
-        cp.branch_id      AS branchId,
-        cp.views,
-        cp.is_visible     AS isVisible,
-        cp.post_visible   AS postVisible,
-        cp.sport_type     AS sportType,
-        cp.recruit_max    AS recruitMax,
-        cp.recruit_end_date AS recruitEndDate,
-        cp.display_start  AS displayStart,
-        cp.display_end    AS displayEnd,
-        cp.created_at     AS createdAt,
-        cp.updated_at     AS updatedAt,
-
-        /* 🔥 현재 모집 참여 인원 */
-        COUNT(crj.join_id) AS recruitCount
-
-    FROM community_post cp
-    LEFT JOIN community_recruit_join crj
-           ON crj.post_id = cp.post_id
-
-    WHERE cp.post_id = #{postId}
-      AND cp.post_visible = 1
-      AND (cp.category IS NULL OR cp.category NOT IN ('개인정보동의'))
-
-    GROUP BY cp.post_id
-</select>
-
+        SELECT
+            cp.post_id            AS postId,
+            cp.post_type          AS postType,
+            cp.category,
+            cp.title,
+            cp.content,
+            cp.writer_id          AS writerId,
+            u.user_name           AS writerName,
+            cp.writer_type        AS writerType,
+            cp.branch_id          AS branchId,
+            cp.views,
+            cp.is_visible         AS isVisible,
+            cp.post_visible       AS postVisible,
+            cp.sport_type         AS sportType,
+            cp.recruit_max        AS recruitMax,
+            cp.recruit_end_date   AS recruitEndDate,
+            cp.display_start      AS displayStart,
+            cp.display_end        AS displayEnd,
+            cp.created_at         AS createdAt,
+            cp.updated_at         AS updatedAt,
+            COUNT(crj.join_id)    AS recruitCount
+        FROM community_post cp
+        LEFT JOIN users u ON u.user_id = cp.writer_id
+        LEFT JOIN community_recruit_join crj ON crj.post_id = cp.post_id
+        WHERE cp.post_id = #{postId}
+          AND cp.post_visible = 1
+          AND (cp.category IS NULL OR cp.category NOT IN ('개인정보동의'))
+        GROUP BY cp.post_id
+    </select>
 
     <!-- 작성자 본인 체크 -->
     <select id="countByPostIdAndWriterId" resultType="int">
