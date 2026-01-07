@@ -34,32 +34,14 @@ post_visible TINYINT(1) NOT NULL DEFAULT 1,    -- 커뮤니티/모집 글 노출
 PRIMARY KEY (post_id)                          -- 기본 키
 );
 
-========커뮤니티 모집 전용 테이블========================================
+---------- community_post (커뮤니티 글) ----------
+INSERT INTO community_post (post_type, category, title, content, writer_id, writer_type, branch_id, views, sport_type, recruit_max, recruit_datetime, recruit_end_date, is_visible, post_visible)
+VALUES ('COMMUNITY', '모집', '같이 운동하실 분 모집합니다', '주말에 헬스장에서 같이 운동하실 분 모집합니다.', 'user1', 'USER', 1, 0, '헬스', 5, '2026-01-10 10:00:00', '2026-01-15 23:59:59', 1, 1);
 
-CREATE TABLE community_recruit_join (
-join_id   BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT '모집 참여 PK',
-post_id   BIGINT(20) NOT NULL COMMENT '모집 게시글 ID',
-user_id   VARCHAR(50) NOT NULL COMMENT '참여 사용자 ID',
-join_type VARCHAR(20) NOT NULL COMMENT '참여 타입 (JOIN 등)',
+---------- community_post (공지사항) ----------
+INSERT INTO community_post (post_type, title, content, writer_id, writer_type, branch_id, views, display_start, display_end, is_visible, post_visible)
+VALUES ('NOTICE', '체육센터 설 연휴 휴관 안내', '설 연휴 기간 동안 체육센터가 휴관합니다.', 'admin1', 'ADMIN', 1, 0, '2026-01-20 00:00:00', '2026-01-31 23:59:59', 1, 1);
 
-PRIMARY KEY (join_id),
-KEY idx_post_id (post_id),
-KEY idx_user_id (user_id)
-);
-
-========커뮤니티 댓글 전용 테이블========================================
-
-CREATE TABLE community_comment (
-comment_id      BIGINT(20) NOT NULL AUTO_INCREMENT,
-post_id         BIGINT(20) NOT NULL,
-writer_id       VARCHAR(50) NOT NULL,
-writer_type     VARCHAR(20) NOT NULL,
-content         TEXT NOT NULL,
-created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-comment_visible TINYINT(1) NOT NULL DEFAULT 1,
-
-PRIMARY KEY (comment_id),
-KEY post_id (post_id)
-);
-
-
+---------- community_post (FAQ) ----------
+INSERT INTO community_post (post_type, category, title, content, writer_id, writer_type, views, is_visible, post_visible)
+VALUES ('FAQ', '이용안내', '회원권 환불은 어떻게 하나요?', '회원권 환불은 프론트 데스크를 통해 문의해 주세요.', 'admin1', 'ADMIN', 0, 1, 1);
