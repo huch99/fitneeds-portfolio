@@ -250,17 +250,21 @@ function ScheduleCalendar() {
   const handleOpenModal = (schedule = null, date = null) => {
     if (schedule) {
       setEditingSchedule(schedule)
+      const strtDt = schedule.strtDt || schedule.scheduleDate
+      const endDt = schedule.endDt || schedule.scheduleDate
+      // 시작일과 종료일이 다르면 기간, 같으면 단일
+      const isRange = strtDt !== endDt && endDt
       setFormData({
         progId: schedule.progId || schedule.programId,
         usrId: schedule.usrId || schedule.instructorId || '',
-        scheduleDate: schedule.strtDt || schedule.scheduleDate,
-        startDate: schedule.strtDt || schedule.scheduleDate,
-        endDate: schedule.strtDt || schedule.scheduleDate,
+        scheduleDate: strtDt,
+        startDate: strtDt,
+        endDate: endDt || strtDt,
         startTime: (schedule.strtTm || schedule.startTime)?.substring(0, 5) || '09:00',
         endTime: (schedule.endTm || schedule.endTime)?.substring(0, 5) || '10:00',
         maxCapacity: schedule.maxNopCnt || schedule.maxCapacity
       })
-      setDateMode('single')
+      setDateMode(isRange ? 'range' : 'single')
     } else {
       setEditingSchedule(null)
       const program = programs[0]
@@ -310,19 +314,37 @@ function ScheduleCalendar() {
       const branchIdStr = String(branchId)
       if (editingSchedule) {
         const schdId = editingSchedule.schdId || editingSchedule.scheduleId
-        const data = { 
-          brchId: branchIdStr,
-          progId: parseInt(formData.progId) || 0,
-          usrId: String(formData.usrId || ''),
-          strtDt: formData.scheduleDate,
-          endDt: formData.scheduleDate,
-          strtTm: (formData.startTime || '09:00') + ':00',
-          endTm: (formData.endTime || '10:00') + ':00',
-          maxNopCnt: parseInt(formData.maxCapacity) || 10,
-          sttsCd: formData.sttsCd || 'OPEN',
-          description: formData.description || null
+        // dateMode에 따라 날짜 설정
+        if (dateMode === 'single') {
+          const data = { 
+            brchId: branchIdStr,
+            progId: parseInt(formData.progId) || 0,
+            usrId: String(formData.usrId || ''),
+            strtDt: formData.scheduleDate,
+            endDt: formData.scheduleDate,
+            strtTm: (formData.startTime || '09:00') + ':00',
+            endTm: (formData.endTime || '10:00') + ':00',
+            maxNopCnt: parseInt(formData.maxCapacity) || 10,
+            sttsCd: formData.sttsCd || 'OPEN',
+            description: formData.description || null
+          }
+          await scheduleApi.update(branchIdStr, schdId, data)
+        } else {
+          // 기간 모드일 때는 시작일과 종료일을 다르게 설정
+          const data = { 
+            brchId: branchIdStr,
+            progId: parseInt(formData.progId) || 0,
+            usrId: String(formData.usrId || ''),
+            strtDt: formData.startDate,
+            endDt: formData.endDate,
+            strtTm: (formData.startTime || '09:00') + ':00',
+            endTm: (formData.endTime || '10:00') + ':00',
+            maxNopCnt: parseInt(formData.maxCapacity) || 10,
+            sttsCd: formData.sttsCd || 'OPEN',
+            description: formData.description || null
+          }
+          await scheduleApi.update(branchIdStr, schdId, data)
         }
-        await scheduleApi.update(branchIdStr, schdId, data)
       } else {
         if (dateMode === 'single') {
           const data = { 
@@ -374,14 +396,55 @@ function ScheduleCalendar() {
   }
 
   const handleDelete = async (scheduleId) => {
-    if (!window.confirm('이 스케줄을 삭제하시겠습니까?')) return
-    try {
-      const schdId = scheduleId || editingSchedule?.schdId || editingSchedule?.scheduleId
-      await scheduleApi.delete(String(branchId), schdId)
-      loadSchedules()
-    } catch (error) {
-      console.error('Failed to delete:', error)
-      alert('삭제에 실패했습니다.')
+    if (editingSchedule && dateMode === 'range') {
+      // 기간 모드일 때: 기간 내 모든 스케줄 삭제
+      if (!window.confirm(`${formData.startDate}부터 ${formData.endDate}까지의 모든 스케줄을 삭제하시겠습니까?`)) return
+      try {
+        const start = new Date(formData.startDate)
+        const end = new Date(formData.endDate)
+        
+        // 기간 내 모든 스케줄 찾기
+        const schedulesToDelete = schedules.filter(s => {
+          const strtDt = s.strtDt || s.scheduleDate
+          const endDt = s.endDt || s.scheduleDate
+          
+          const strtDate = new Date(strtDt)
+          const endDate = new Date(endDt)
+          
+          // 스케줄 기간이 선택된 기간과 겹치는지 확인
+          return strtDate <= end && endDate >= start
+        })
+        
+        if (schedulesToDelete.length === 0) {
+          alert('삭제할 스케줄이 없습니다.')
+          return
+        }
+        
+        // 모든 스케줄을 병렬로 삭제
+        const deletePromises = schedulesToDelete.map(s => 
+          scheduleApi.delete(String(branchId), s.schdId || s.scheduleId)
+        )
+        
+        await Promise.all(deletePromises)
+        alert(`${schedulesToDelete.length}개의 스케줄이 삭제되었습니다.`)
+        handleCloseModal()
+        loadSchedules()
+      } catch (error) {
+        console.error('Failed to delete schedules:', error)
+        alert('삭제에 실패했습니다.')
+      }
+    } else {
+      // 단일 스케줄 삭제
+      if (!window.confirm('이 스케줄을 삭제하시겠습니까?')) return
+      try {
+        const schdId = scheduleId || editingSchedule?.schdId || editingSchedule?.scheduleId
+        await scheduleApi.delete(String(branchId), schdId)
+        handleCloseModal()
+        loadSchedules()
+      } catch (error) {
+        console.error('Failed to delete:', error)
+        alert('삭제에 실패했습니다.')
+      }
     }
   }
 
@@ -1573,6 +1636,32 @@ function ScheduleCalendar() {
               >
                 취소
               </button>
+              {editingSchedule && (
+                <button 
+                  onClick={() => handleDelete()}
+                  style={{
+                    padding: '12px 24px',
+                    background: '#dc3545',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: '12px',
+                    fontSize: '15px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = '#c82333'
+                    e.currentTarget.style.transform = 'translateY(-2px)'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = '#dc3545'
+                    e.currentTarget.style.transform = 'translateY(0)'
+                  }}
+                >
+                  🗑️ {dateMode === 'range' ? '기간 삭제' : '삭제'}
+                </button>
+              )}
               <button 
                 onClick={handleSave}
                 style={{

@@ -313,13 +313,16 @@ function AdminSchedulePage() {
 
   const handleScheduleClick = (schedule) => {
     setEditingSchedule(schedule)
-    const dateStr = schedule.strtDt || schedule.scheduleDate || ''
+    const strtDt = schedule.strtDt || schedule.scheduleDate || ''
+    const endDt = schedule.endDt || schedule.scheduleDate || ''
+    // 시작일과 종료일이 다르면 기간, 같으면 단일
+    const isRange = strtDt !== endDt && endDt
     setFormData({
       progId: schedule.progId || '',
       usrId: schedule.usrId || '',
-      scheduleDate: dateStr,
-      startDate: dateStr,
-      endDate: dateStr,
+      scheduleDate: strtDt,
+      startDate: strtDt,
+      endDate: endDt || strtDt,
       startTime: (schedule.strtTm || schedule.startTime)?.substring(0, 5) || '09:00',
       endTime: (schedule.endTm || schedule.endTime)?.substring(0, 5) || '10:00',
       maxCapacity: schedule.maxNopCnt || schedule.maxCapacity || 10,
@@ -328,7 +331,7 @@ function AdminSchedulePage() {
       repeatType: 'none',
       selectedDays: []
     })
-    setDateMode('single')
+    setDateMode(isRange ? 'range' : 'single')
     setShowModal(true)
   }
 
@@ -425,32 +428,60 @@ function AdminSchedulePage() {
       const branchIdStr = String(selectedBranchId)
       
       if (editingSchedule) {
-        const startDate = new Date(formData.scheduleDate)
-        const endDate = new Date(formData.scheduleDate)
-        const dateRanges = getNonHolidayDateRanges(startDate, endDate)
-        if (dateRanges.length === 0) {
-          alert('선택한 기간에 예약 가능한 날짜가 없습니다.')
-          return
-        }
-        
-        await scheduleApi.delete(editingSchedule.schdId)
-        const createPromises = dateRanges.map(async (range) => {
+        // 수정 모드: dateMode에 따라 처리
+        if (dateMode === 'single') {
+          // 단일 날짜 모드
+          const date = new Date(formData.scheduleDate)
+          if (isKoreanHoliday(date)) {
+            alert('명절 날짜에는 스케줄을 수정할 수 없습니다.')
+            return
+          }
+          
           const data = {
             brchId: branchIdStr,
             progId: Number(formData.progId),
             usrId: String(formData.usrId),
-            strtDt: format(range.start, 'yyyy-MM-dd'),
-            endDt: format(range.end, 'yyyy-MM-dd'),
+            strtDt: formData.scheduleDate,
+            endDt: formData.scheduleDate,
             strtTm: String(formData.startTime).length === 5 ? `${formData.startTime}:00` : formData.startTime,
             endTm: String(formData.endTime).length === 5 ? `${formData.endTime}:00` : formData.endTime,
             maxNopCnt: Number(formData.maxCapacity),
             sttsCd: String(formData.sttsCd),
             description: formData.description || null
           }
-          return await scheduleApi.create(data).catch(err => (err.response?.status === 409 ? null : Promise.reject(err)))
-        })
+          
+          await scheduleApi.delete(editingSchedule.schdId)
+          await scheduleApi.create(branchIdStr, data)
+        } else {
+          // 기간 모드
+          const startDate = new Date(formData.startDate)
+          const endDate = new Date(formData.endDate)
+          const dateRanges = getNonHolidayDateRanges(startDate, endDate)
+          if (dateRanges.length === 0) {
+            alert('선택한 기간에 예약 가능한 날짜가 없습니다.')
+            return
+          }
+          
+          await scheduleApi.delete(editingSchedule.schdId)
+          const createPromises = dateRanges.map(async (range) => {
+            const data = {
+              brchId: branchIdStr,
+              progId: Number(formData.progId),
+              usrId: String(formData.usrId),
+              strtDt: format(range.start, 'yyyy-MM-dd'),
+              endDt: format(range.end, 'yyyy-MM-dd'),
+              strtTm: String(formData.startTime).length === 5 ? `${formData.startTime}:00` : formData.startTime,
+              endTm: String(formData.endTime).length === 5 ? `${formData.endTime}:00` : formData.endTime,
+              maxNopCnt: Number(formData.maxCapacity),
+              sttsCd: String(formData.sttsCd),
+              description: formData.description || null
+            }
+            return await scheduleApi.create(branchIdStr, data).catch(err => (err.response?.status === 409 ? null : Promise.reject(err)))
+          })
+          
+          await Promise.all(createPromises)
+        }
         
-        await Promise.all(createPromises)
         alert('수정되었습니다.')
         handleCloseModal()
         if (selectedBranchId === 'ALL') await loadDataForAllBranches()
@@ -515,16 +546,57 @@ function AdminSchedulePage() {
   }
 
   const handleDelete = async () => {
-    if (!confirm('정말 삭제하시겠습니까?')) return
-    try {
-      await scheduleApi.delete(editingSchedule.schdId)
-      alert('삭제되었습니다.')
-      handleCloseModal()
-      if (selectedBranchId === 'ALL') await loadDataForAllBranches()
-      else if (selectedBranch) await loadDataForBranch(selectedBranch)
-    } catch (error) {
-      console.error('Error deleting:', error)
-      alert('삭제 중 오류가 발생했습니다.')
+    if (dateMode === 'range') {
+      // 기간 모드일 때: 기간 내 모든 스케줄 삭제
+      if (!confirm(`${formData.startDate}부터 ${formData.endDate}까지의 모든 스케줄을 삭제하시겠습니까?`)) return
+      try {
+        const start = new Date(formData.startDate)
+        const end = new Date(formData.endDate)
+        
+        // 기간 내 모든 스케줄 찾기
+        const schedulesToDelete = schedules.filter(s => {
+          const strtDt = s.strtDt || s.scheduleDate
+          const endDt = s.endDt || s.scheduleDate
+          
+          const strtDate = new Date(strtDt)
+          const endDate = new Date(endDt)
+          
+          // 스케줄 기간이 선택된 기간과 겹치는지 확인
+          return strtDate <= end && endDate >= start
+        })
+        
+        if (schedulesToDelete.length === 0) {
+          alert('삭제할 스케줄이 없습니다.')
+          return
+        }
+        
+        // 모든 스케줄을 병렬로 삭제
+        const deletePromises = schedulesToDelete.map(s => 
+          scheduleApi.delete(s.schdId || s.scheduleId)
+        )
+        
+        await Promise.all(deletePromises)
+        alert(`${schedulesToDelete.length}개의 스케줄이 삭제되었습니다.`)
+        handleCloseModal()
+        if (selectedBranchId === 'ALL') await loadDataForAllBranches()
+        else if (selectedBranch) await loadDataForBranch(selectedBranch)
+      } catch (error) {
+        console.error('Error deleting schedules:', error)
+        alert('삭제 중 오류가 발생했습니다.')
+      }
+    } else {
+      // 단일 스케줄 삭제
+      if (!confirm('정말 삭제하시겠습니까?')) return
+      try {
+        await scheduleApi.delete(editingSchedule.schdId)
+        alert('삭제되었습니다.')
+        handleCloseModal()
+        if (selectedBranchId === 'ALL') await loadDataForAllBranches()
+        else if (selectedBranch) await loadDataForBranch(selectedBranch)
+      } catch (error) {
+        console.error('Error deleting:', error)
+        alert('삭제 중 오류가 발생했습니다.')
+      }
     }
   }
 
@@ -800,15 +872,13 @@ function AdminSchedulePage() {
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                   <label style={{ fontWeight: '500', color: '#333', fontSize: '14px' }}>날짜 <span style={{ color: '#f5576c' }}>*</span></label>
-                  {!editingSchedule && (
-                    <div style={{ display: 'flex', gap: '4px' }}>
-                      <button type="button" onClick={() => setDateMode('single')} style={{ padding: '2px 8px', fontSize: '11px', borderRadius: '4px', border: '1px solid', borderColor: dateMode === 'single' ? '#007bff' : '#ddd', background: dateMode === 'single' ? '#007bff' : '#fff', color: dateMode === 'single' ? '#fff' : '#666', cursor: 'pointer' }}>단일</button>
-                      <button type="button" onClick={() => setDateMode('range')} style={{ padding: '2px 8px', fontSize: '11px', borderRadius: '4px', border: '1px solid', borderColor: dateMode === 'range' ? '#007bff' : '#ddd', background: dateMode === 'range' ? '#007bff' : '#fff', color: dateMode === 'range' ? '#fff' : '#666', cursor: 'pointer' }}>기간</button>
-                    </div>
-                  )}
+                  <div style={{ display: 'flex', gap: '4px' }}>
+                    <button type="button" onClick={() => setDateMode('single')} style={{ padding: '2px 8px', fontSize: '11px', borderRadius: '4px', border: '1px solid', borderColor: dateMode === 'single' ? '#007bff' : '#ddd', background: dateMode === 'single' ? '#007bff' : '#fff', color: dateMode === 'single' ? '#fff' : '#666', cursor: 'pointer' }}>단일</button>
+                    <button type="button" onClick={() => setDateMode('range')} style={{ padding: '2px 8px', fontSize: '11px', borderRadius: '4px', border: '1px solid', borderColor: dateMode === 'range' ? '#007bff' : '#ddd', background: dateMode === 'range' ? '#007bff' : '#fff', color: dateMode === 'range' ? '#fff' : '#666', cursor: 'pointer' }}>기간</button>
+                  </div>
                 </div>
                 
-                {dateMode === 'single' || editingSchedule ? (
+                {dateMode === 'single' ? (
                   <input type="date" name="scheduleDate" value={formData.scheduleDate} onChange={handleChange} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #ddd', fontSize: '14px', outline: 'none', boxSizing: 'border-box' }} />
                 ) : (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -851,7 +921,9 @@ function AdminSchedulePage() {
 
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '16px' }}>
                 {editingSchedule && (
-                  <button onClick={handleDelete} style={{ padding: '10px 20px', background: '#dc3545', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '600', fontSize: '14px' }}>삭제</button>
+                  <button onClick={handleDelete} style={{ padding: '10px 20px', background: '#dc3545', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '600', fontSize: '14px' }}>
+                    🗑️ {dateMode === 'range' ? '기간 삭제' : '삭제'}
+                  </button>
                 )}
                 <button onClick={handleCloseModal} style={{ padding: '10px 20px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '600', fontSize: '14px' }}>취소</button>
                 <button 
