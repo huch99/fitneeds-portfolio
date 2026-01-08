@@ -40,4 +40,10 @@ public class PaymentRequestDto {
     
     // 기타 결제 정보 (선택 사항)
     private String paymentDetails; // PG사 등 실제 결제에 필요한 상세 정보
+    
+    @NotNull(message = "결제 대상 ID는 필수입니다.")
+    private Long targetId;
+    
+    @NotNull(message = "결제 대상 이름은 필수입니다.")
+    private String targetName;
 }

@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.project.app.branch.entity.Branch;
-import com.project.app.branch.repository.BranchRepository;
 import com.project.app.payment.dto.PaymentRequestDto;
 import com.project.app.payment.entity.Payment;
 import com.project.app.payment.entity.PaymentPayMethod;
@@ -36,7 +35,6 @@ public class PaymentService {
 	private final UserRepository userRepository;
 	private final UserPassService userPassService;
 	private final ScheduleRepository scheduleRepository;
-	private final BranchRepository branchRepository; 
 	private final ReservationService reservationService;
 	private final ReservationRepository reservationRepository;
 
@@ -105,7 +103,10 @@ public class PaymentService {
         Payment payment = Payment.builder()
                 .user(user)
                 .payTypeCd(PaymentPayTypeCd.SCHEDULE_RESERVATION)
+                .refId(schedule.getSchdId())
                 .payMethod(requestDto.getPayMethod())
+                .targetId(requestDto.getTargetId())
+                .targetName(requestDto.getTargetName())
                 .payAmt(requestDto.getAmount())
                 .sttsCd(PaymentSttsCd.PAID)
                 .regDt(LocalDateTime.now())

@@ -175,6 +175,8 @@ const PaymentForReservation = () => {
                 reservationTime: strtTm, // HH:MM 형식
                 userPassId: payMethod === 'PASS' ? selectedUserPass?.userPassId : null,
                 paymentDetails: `스케줄 예약: ${progNm} - ${selectedDate}`,
+                targetId : schdId,
+                targetName : `${progNm}`,
             };
 
             const response = await api.post('/payments/process', requestBody);

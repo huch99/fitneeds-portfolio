@@ -1,11 +1,8 @@
 package com.project.app.userpass.entity;
 
-import java.time.LocalDateTime;
-
 import org.hibernate.annotations.ColumnDefault;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
+import com.project.app.aspect.BaseTimeEntity;
 import com.project.app.sporttype.entity.SportType;
 import com.project.app.user.entity.User;
 
@@ -23,15 +20,17 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
-@Data
+@Getter @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "USER_PASS", uniqueConstraints = { @UniqueConstraint(columnNames = { "user_id", "sport_id" }) })
-public class UserPass {
+public class UserPass extends BaseTimeEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -51,19 +50,12 @@ public class UserPass {
 	private PassStatusCd passStatusCd; // 상태 코드
 
 	@Column(name = "rmn_cnt", nullable = false)
-	@ColumnDefault("0")
-	private Integer rmnCnt = 0; // 잔여 횟수
+    @ColumnDefault("0")
+    @Builder.Default
+    private Integer rmnCnt = 0; // 잔여 횟수
 
 	@Column(name = "lst_prod_id", nullable = true)
 	private Long lstProdId; // 마지막 구매 물품 ID
-
-	@Column(name = "reg_dt", nullable = false)
-	@CreatedDate
-	private LocalDateTime regDt; // 등록 일시 (로그 확인용)
-
-	@Column(name = "upd_dt", nullable = false)
-	@LastModifiedDate
-	private LocalDateTime updDt; // 수정 일시 (로그 확인용)
 
 	@Column(name = "init_cnt", nullable = false)
 	private Long initCnt; // 초기 구매 수량

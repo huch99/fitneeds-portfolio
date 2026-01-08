@@ -1,12 +1,9 @@
 package com.project.app.reservation.entity;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-
+import com.project.app.aspect.BaseTimeEntity;
 import com.project.app.branch.entity.Branch;
 import com.project.app.schedule.entity.Schedule;
 import com.project.app.user.entity.User;
@@ -20,21 +17,26 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
-@Data
+@Getter @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "RESERVATION")
-public class Reservation {
+@Table(name = "RESERVATION", indexes = {
+		@Index(name = "idx_rsv_user_dt", columnList = "user_id, rsv_dt"),
+		@Index(name = "idx_rsv_schd", columnList = "schd_id")
+})
+public class Reservation extends BaseTimeEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -66,12 +68,6 @@ public class Reservation {
 
 	@Column(name = "rsv_time", nullable = false)
 	private LocalTime rsvTime;
-
-	@Column(name = "reg_dt", nullable = false)
-	private LocalDateTime regDt;
-
-	@Column(name = "upd_dt", nullable = false)
-	private LocalDateTime updDt;
 
 	@Column(name = "cncl_rsn", nullable = true, length = 255)
 	private String cnclRsn;
