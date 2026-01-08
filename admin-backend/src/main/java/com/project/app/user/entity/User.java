@@ -44,13 +44,13 @@ public class User {
  @Column(name = "role", nullable = false)
  private String role; //USER, ADMIN, MANAGER, ETC....
 
- @ColumnDefault("0")
- @Column(name = "cash_point", nullable = false)
- private int cashPoint;
-
- @ColumnDefault("0")
- @Column(name = "grade_point", nullable = false)
- private int gradePoint;
+// @ColumnDefault("0")
+// @Column(name = "cash_point", nullable = false)
+// private int cashPoint;
+//
+// @ColumnDefault("0")
+// @Column(name = "grade_point", nullable = false)
+// private int gradePoint;
 
  @Column(name = "agree_at", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
  private LocalDateTime agreeAt;

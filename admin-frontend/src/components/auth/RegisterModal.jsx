@@ -78,13 +78,13 @@ function RegisterModal({ isOpen, onClose }) {
             // setMessage('정보를 성공적으로 가져왔습니다.');
 
             setFormState({
-                userId: response.data.userId || '',
+                // userId: response.data.userId || '',
                 userName: response.data.userName || '',
                 password: '',
                 email: response.data.email || '',
                 phoneNumber: response.data.phoneNumber || '',
-                cashPoint: response.data.cashPoint !== undefined ? response.data.cashPoint : '',
-                gradePoint: response.data.gradePoint !== undefined ? response.data.gradePoint : '',
+                // cashPoint: response.data.cashPoint !== undefined ? response.data.cashPoint : '',
+                // gradePoint: response.data.gradePoint !== undefined ? response.data.gradePoint : '',
                 agreeAt: response.data.agreeAt || false
             });
 

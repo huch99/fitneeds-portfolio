@@ -40,9 +40,9 @@ public class UserAdmin {
     @Column(name = "phone_number", nullable = true, length = 20)
     private String phoneNumber;
 
-    @ColumnDefault("'USER'")
-    @Column(name = "role", nullable = false)
-    private String role;
+	@Column(name = "role", nullable = false, length = 50)
+	@ColumnDefault("'USER'")
+	private String role;
 
     @ColumnDefault("1")
     @Column(name = "is_active", nullable = false, columnDefinition = "TINYINT(1)")

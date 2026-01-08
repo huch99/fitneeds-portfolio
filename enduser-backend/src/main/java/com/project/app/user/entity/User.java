@@ -45,12 +45,12 @@ public class User {
  private String role; //USER, ADMIN, MANAGER, ETC....
 
 //=====포인트 사용X======
- @ColumnDefault("0")
- @Column(name = "cash_point", nullable = false)
- private int cashPoint;
- @ColumnDefault("0")
- @Column(name = "grade_point", nullable = false)
- private int gradePoint;
+// @ColumnDefault("0")
+// @Column(name = "cash_point", nullable = false)
+// private int cashPoint;
+// @ColumnDefault("0")
+// @Column(name = "grade_point", nullable = false)
+// private int gradePoint;
 //====================
  
  @Column(name = "agree_at", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")

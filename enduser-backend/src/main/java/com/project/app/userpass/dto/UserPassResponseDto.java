@@ -23,8 +23,9 @@ public class UserPassResponseDto {
 	private String userName;
 	private String email;
 	private String phoneNumber;
-	private Integer cashPoint;
-	private Integer gradePoint;
+	// cashPoint, gradePoint 필드는 User 엔티티에서 주석 처리됨
+	// private Integer cashPoint;
+	// private Integer gradePoint;
 	
 	private Long sportId;
 	private String sportNm;
@@ -42,8 +43,8 @@ public class UserPassResponseDto {
 				.userName(userPass.getUser().getUserName())
 				.email(userPass.getUser().getEmail())
 				.phoneNumber(userPass.getUser().getPhoneNumber())
-				.cashPoint(userPass.getUser().getCashPoint())
-				.gradePoint(userPass.getUser().getGradePoint())
+				// .cashPoint(userPass.getUser().getCashPoint()) // 주석 처리됨
+				// .gradePoint(userPass.getUser().getGradePoint()) // 주석 처리됨
 				.sportId(userPass.getSportType().getSportId())
 				.sportNm(userPass.getSportType().getSportNm())
 				.sportMemo(userPass.getSportType().getSportMemo())
