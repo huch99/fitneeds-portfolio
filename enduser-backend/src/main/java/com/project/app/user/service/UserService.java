@@ -6,7 +6,9 @@ import com.project.app.user.dto.UserRequestDto;
 import com.project.app.user.entity.User;
 
 public interface UserService {
-	
+
+
+
 	User createUser(UserRequestDto userRequestDto);
 	User updateUser(UserRequestDto userRequestDto);
 	boolean existsByUserId(String userId);

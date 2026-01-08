@@ -35,6 +35,13 @@ import ProgramDetailPage from './pages/ToReservation/ProgramDetailPage/ProgramDe
 import PaymentForReservation from './pages/ToReservation/Payment/PaymentForReservation';
 import ReservationComplete from './pages/ToReservation/ReservationComplete/ReservationComplete';
 
+// PassTrade pages
+import PassTradeLayout from './pages/PassTrade/PassTradeLayout';
+import PassTradePost from './pages/PassTrade/PassTradePost';
+import PassTradeTransaction from './pages/PassTrade/PassTradeTransaction';
+import PassTradeFaq from './pages/PassTrade/PassTradeFaq';
+import PassTradeFavorite from './pages/PassTrade/PassTradeFavorite';
+
 
 function App() {
   useEffect(() => {
@@ -82,6 +89,14 @@ function App() {
             <Route path="/program-detail" element={<ProgramDetailPage/>} />
             <Route path="/payment-reservation" element={<PaymentForReservation/>} />
             <Route path="/reservation-complete" element={<ReservationComplete/>} />
+
+            {/* PassTrade */}
+            <Route path="/pass-trade" element={<PassTradeLayout />}>
+              <Route index element={<PassTradePost />} />
+              <Route path="transactions" element={<PassTradeTransaction />} />
+              <Route path="faq" element={<PassTradeFaq />} />
+              <Route path="favorite" element={<PassTradeFavorite />} />
+            </Route>
 
           </Routes>
         </Layout>

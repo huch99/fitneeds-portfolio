@@ -6,9 +6,17 @@ import LoginButtonAndModal from './auth/LoginButtonAndModal';
 function Navigation() {
   const [blogDropdownOpen, setBlogDropdownOpen] = useState(false);
   const [portfolioDropdownOpen, setPortfolioDropdownOpen] = useState(false);
+
+  // [ADD] 이용권 드롭다운 상태
+  const [passDropdownOpen, setPassDropdownOpen] = useState(false);
+
   const [isScrolled, setIsScrolled] = useState(false);
   const blogDropdownRef = useRef(null);
   const portfolioDropdownRef = useRef(null);
+
+  // [ADD] 이용권 드롭다운 ref
+  const passDropdownRef = useRef(null);
+
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -16,6 +24,9 @@ function Navigation() {
   useEffect(() => {
     setBlogDropdownOpen(false);
     setPortfolioDropdownOpen(false);
+
+    // [ADD] 이용권 드롭다운 닫기
+    setPassDropdownOpen(false);
   }, [location]);
 
   // Handle scroll to change header style - only on home page
@@ -46,6 +57,11 @@ function Navigation() {
       }
       if (portfolioDropdownRef.current && !portfolioDropdownRef.current.contains(event.target)) {
         setPortfolioDropdownOpen(false);
+      }
+
+      // [ADD] 이용권 드롭다운 바깥 클릭 처리
+      if (passDropdownRef.current && !passDropdownRef.current.contains(event.target)) {
+        setPassDropdownOpen(false);
       }
     };
 
@@ -91,12 +107,11 @@ function Navigation() {
                 className="nav-menu-link" 
                 to="/mypage"
                 onClick={(e) => {
-                  // 같은 경로일 때도 강제로 메인 페이지로 이동하도록 처리
                   if (location.pathname.startsWith('/mypage')) {
                     e.preventDefault();
                     navigate('/mypage', { 
                       replace: false,
-                      state: { menu: null } // 메인 페이지로 초기화
+                      state: { menu: null }
                     });
                   }
                 }}
@@ -104,6 +119,32 @@ function Navigation() {
                 나의 운동
               </Link>
             </li>
+
+            {/* ================= 이용권 드롭다운 [ADD] ================= */}
+            <li
+              className="nav-menu-item nav-dropdown"
+              ref={passDropdownRef}
+              onMouseEnter={() => setPassDropdownOpen(true)}
+              onMouseLeave={() => setPassDropdownOpen(false)}
+            >
+              <Link className="nav-menu-link nav-dropdown-toggle" to="/pass-trade">
+                이용권
+              </Link>
+
+              <ul className={`nav-dropdown-menu ${passDropdownOpen ? 'nav-dropdown-show' : ''}`}>
+                <li>
+                  <Link className="nav-dropdown-item" to="/pass-trade">
+                    이용권 거래
+                  </Link>
+                </li>
+                <li>
+                  <Link className="nav-dropdown-item" to="/mypage">
+                    이용권 관리
+                  </Link>
+                </li>
+              </ul>
+            </li>
+            {/* ========================================================= */}
 
             <li
               className="nav-menu-item nav-dropdown"
@@ -134,7 +175,6 @@ function Navigation() {
               </ul>
             </li>
 
-
             <li
               className="nav-menu-item nav-dropdown"
               ref={blogDropdownRef}
@@ -159,6 +199,7 @@ function Navigation() {
             </li>
           </ul>
         </div>
+
         {/* 오른쪽: 로그인/로그아웃 버튼 */}
         <div style={{ flex: 1, textAlign: 'right' }}>
           <LoginButtonAndModal />

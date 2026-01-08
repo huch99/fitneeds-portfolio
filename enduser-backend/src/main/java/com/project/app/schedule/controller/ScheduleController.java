@@ -35,7 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ScheduleController {
 
-	private final ScheduleService scheduleService;
+    private final ScheduleService scheduleService;
 
 	/**
      * 특정 운동 종목 ID에 해당하는 수업 스케줄 목록을 조회합니다.

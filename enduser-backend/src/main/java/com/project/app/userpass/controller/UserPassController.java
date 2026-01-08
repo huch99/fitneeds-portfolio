@@ -28,10 +28,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UserPassController {
 
-	private final UserPassService userPassService;
-	
-	
-	 /**
+    private final UserPassService userPassService;
+
+
+    /**
      * 특정 사용자 ID에 해당하는 모든 이용권 목록을 조회합니다.
      * 이 메서드는 사용자의 현재 예약 가능 또는 사용 완료된 이용권 정보를 프론트엔드에 제공합니다.
      *

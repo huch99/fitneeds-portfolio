@@ -23,12 +23,12 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     public void createReview(ReviewDto reviewDto) {
-        log.info("[ReviewServiceImpl] 리뷰 작성 시작 - historyId: {}, reservationId: {}", 
+        log.info("[ReviewServiceImpl] 리뷰 작성 시작 - historyId: {}, reservationId: {}",
                 reviewDto.getHistoryId(), reviewDto.getReservationId());
-        
+
         // 리뷰 저장
         reviewMapper.insertReview(reviewDto);
-        
+
         // 이용내역의 리뷰 작성 여부 업데이트 (이용내역 ID 우선 사용)
         if (reviewDto.getHistoryId() != null) {
             reservationHistoryService.updateReviewWrittenByHistoryId(reviewDto.getHistoryId(), true);
@@ -38,7 +38,7 @@ public class ReviewServiceImpl implements ReviewService {
             reservationHistoryService.updateReviewWritten(reviewDto.getReservationId(), true);
             log.info("[ReviewServiceImpl] 이용내역 리뷰 작성 여부 업데이트 완료 - reservationId: {}", reviewDto.getReservationId());
         }
-        
+
         log.info("[ReviewServiceImpl] 리뷰 작성 완료");
     }
 
@@ -67,7 +67,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     public void deleteReview(Long reviewId, String userId) {
         log.info("[ReviewServiceImpl] 리뷰 삭제 시작 - reviewId: {}, userId: {}", reviewId, userId);
-        
+
         // 본인 체크
         int count = reviewMapper.countByReviewIdAndUserId(reviewId, userId);
         if (count == 0) {
@@ -90,36 +90,35 @@ public class ReviewServiceImpl implements ReviewService {
             // 이용내역 ID로 리뷰 조회하여 다른 리뷰가 있는지 확인
             List<ReviewDto> remainingReviews = reviewMapper.selectReviewByHistoryId(
                     review.getHistoryId(), userId);
-            
+
             // 남은 리뷰가 없으면 이용내역의 reviewWritten을 'N'으로 업데이트
             if (remainingReviews == null || remainingReviews.isEmpty()) {
                 reservationHistoryService.updateReviewWrittenByHistoryId(review.getHistoryId(), false);
-                log.info("[ReviewServiceImpl] 이용내역 리뷰 작성 여부 업데이트 완료 - historyId: {}, reviewWritten: N", 
+                log.info("[ReviewServiceImpl] 이용내역 리뷰 작성 여부 업데이트 완료 - historyId: {}, reviewWritten: N",
                         review.getHistoryId());
             } else {
-                log.info("[ReviewServiceImpl] 해당 이용내역에 다른 리뷰가 있어 이용내역 상태 유지 - historyId: {}", 
+                log.info("[ReviewServiceImpl] 해당 이용내역에 다른 리뷰가 있어 이용내역 상태 유지 - historyId: {}",
                         review.getHistoryId());
             }
         } else if (review.getReservationId() != null) {
             // 하위 호환성: reservationId로도 처리
             List<ReviewDto> remainingReviews = reviewMapper.selectReviewByReservationId(
                     review.getReservationId(), userId);
-            
+
             if (remainingReviews == null || remainingReviews.isEmpty()) {
                 reservationHistoryService.updateReviewWritten(review.getReservationId(), false);
-                log.info("[ReviewServiceImpl] 이용내역 리뷰 작성 여부 업데이트 완료 - reservationId: {}, reviewWritten: N", 
+                log.info("[ReviewServiceImpl] 이용내역 리뷰 작성 여부 업데이트 완료 - reservationId: {}, reviewWritten: N",
                         review.getReservationId());
             }
         }
-        
+
         log.info("[ReviewServiceImpl] 리뷰 삭제 프로세스 완료");
     }
 
-	@Override
-	public void updateReview(Long reviewId, String userId, ReviewDto reviewDto) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void updateReview(Long reviewId, String userId, ReviewDto reviewDto) {
+        // TODO Auto-generated method stub
+
+    }
 
 }
-

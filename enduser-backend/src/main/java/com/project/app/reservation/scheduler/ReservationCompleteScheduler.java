@@ -17,28 +17,27 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class ReservationCompleteScheduler {
 
-	private final ReservationHistoryService reservationHistoryService;
+    private final ReservationHistoryService reservationHistoryService;
 
-	/**
-	 * 매일 새벽 1시에 실행되는 스케줄링 작업
-	 * cron 표현식: 초 분 시 일 월 요일
-	 * "0 0 1 * * ?" = 매일 01:00:00에 실행
-	 */
-	@Scheduled(cron = "0 0 1 * * ?")
-	public void completePastReservations() {
-		log.info("[ReservationCompleteScheduler] 예약 완료 처리 스케줄러 시작");
+    /**
+     * 매일 새벽 1시에 실행되는 스케줄링 작업
+     * cron 표현식: 초 분 시 일 월 요일
+     * "0 0 1 * * ?" = 매일 01:00:00에 실행
+     */
+    @Scheduled(cron = "0 0 1 * * ?")
+    public void completePastReservations() {
+        log.info("[ReservationCompleteScheduler] 예약 완료 처리 스케줄러 시작");
 
-		try {
-			// 오늘 날짜 기준으로 지난 예약 처리
-			int processedCount = reservationHistoryService.completeReservations(null);
+        try {
+            // 오늘 날짜 기준으로 지난 예약 처리
+            int processedCount = reservationHistoryService.completeReservations(null);
 
-			log.info("[ReservationCompleteScheduler] 예약 완료 처리 완료 - 처리 개수: {}", processedCount);
+            log.info("[ReservationCompleteScheduler] 예약 완료 처리 완료 - 처리 개수: {}", processedCount);
 
-		} catch (Exception e) {
-			log.error("[ReservationCompleteScheduler] 예약 완료 처리 중 오류 발생", e);
-		}
+        } catch (Exception e) {
+            log.error("[ReservationCompleteScheduler] 예약 완료 처리 중 오류 발생", e);
+        }
 
-		log.info("[ReservationCompleteScheduler] 예약 완료 처리 스케줄러 종료");
-	}
+        log.info("[ReservationCompleteScheduler] 예약 완료 처리 스케줄러 종료");
+    }
 }
-

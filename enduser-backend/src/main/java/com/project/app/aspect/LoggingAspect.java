@@ -1,11 +1,8 @@
 package com.project.app.aspect;
 
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.After;
-import org.aspectj.lang.annotation.AfterReturning;
-import org.aspectj.lang.annotation.AfterThrowing;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.*;
 import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +34,7 @@ public class LoggingAspect {
 	@Before("execution(* com.project.app..*.*(..))")
 	public void logbefore(JoinPoint joinPoint) {
 		// 로그가 필요하면 아래 주석을 해제하세요
-//		log.info("[Before] 메소드 실행 전: {}", joinPoint.getSignature());
+		log.info("[Before] 메소드 실행 전: {}", joinPoint.getSignature());
 	}
 
 	/**
@@ -82,7 +79,7 @@ public class LoggingAspect {
 	 * 
 	 * 필요하면 주석을 해제하여 사용하세요:
 	 */
-	/*
+
 	@Around("execution(* com.project.app..*.*(..))")
 	public Object measureTime(ProceedingJoinPoint joinPoint) throws Throwable {
 		// 1. 시작 시간 기록
@@ -91,21 +88,21 @@ public class LoggingAspect {
         Object result = null;
         try {
             // 2. 실제 메소드 실행
-            result = joinPoint.proceed(); 
+            result = joinPoint.proceed();
         } finally {
             // 3. 종료 시간 기록 및 실행 시간 계산
             long endTime = System.currentTimeMillis();
             long executionTime = endTime - startTime;
 
             // 4. 로그 출력
-            log.info("[Performance] {}.{}() 실행 시간: {}ms", 
+            log.info("[Performance] {}.{}() 실행 시간: {}ms",
                      joinPoint.getSignature().getDeclaringTypeName(),
                      joinPoint.getSignature().getName(),
                      executionTime);
         }
         return result;
 	}
-	*/
+
 	
 	/**
 	 * 메소드 실행 중 예외 발생 시 로깅

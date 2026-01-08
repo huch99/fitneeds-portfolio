@@ -38,59 +38,59 @@ import lombok.Setter;
 })
 public class Reservation extends BaseTimeEntity {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "rsv_id", nullable = false)
-	private Long rsvId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "rsv_id", nullable = false)
+    private Long rsvId;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_id", nullable = false)
-	private User user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "schd_id", nullable = false)
-	private Schedule schedule;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "schd_id", nullable = false)
+    private Schedule schedule;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "brch_id", nullable = false)
-	private Branch branch;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "brch_id", nullable = false)
+    private Branch branch;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_pass_id", nullable = true)
-	private UserPass userPass;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_pass_id", nullable = true)
+    private UserPass userPass;
 
-	@Column(name = "stts_cd", nullable = false)
-	@Enumerated(EnumType.STRING)
-	private RsvSttsCd sttsCd;
+    @Column(name = "stts_cd", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private RsvSttsCd sttsCd;
 
-	@Column(name = "rsv_dt", nullable = false)
-	private LocalDate rsvDt;
+    @Column(name = "rsv_dt", nullable = false)
+    private LocalDate rsvDt;
 
-	@Column(name = "rsv_time", nullable = false)
-	private LocalTime rsvTime;
+    @Column(name = "rsv_time", nullable = false)
+    private LocalTime rsvTime;
 
 	@Column(name = "cncl_rsn", nullable = true, length = 255)
 	private String cnclRsn;
 
-	@Column(name = "upd_id", nullable = true)
-	private String updID;
+    @Column(name = "upd_id", nullable = true)
+    private String updID;
 
-	// 예약 취소 등 상태 변경 로직을 여기에 캡슐화 할 수 있습니다.
-	public void cancel(String reason, String updId) {
-		if (this.sttsCd == RsvSttsCd.CONFIRMED) { // 확정 상태일 때만 취소 가능
-			this.sttsCd = RsvSttsCd.CANCELED;
-			this.cnclRsn = reason;
-			this.updID = updId;
-			// updDt는 @LastModifiedDate에 의해 자동으로 업데이트 됩니다.
-		} else {
-			throw new IllegalStateException("확정 상태가 아니므로 예약을 취소할 수 없습니다.");
-		}
-	}
+    // 예약 취소 등 상태 변경 로직을 여기에 캡슐화 할 수 있습니다.
+    public void cancel(String reason, String updId) {
+        if (this.sttsCd == RsvSttsCd.CONFIRMED) { // 확정 상태일 때만 취소 가능
+            this.sttsCd = RsvSttsCd.CANCELED;
+            this.cnclRsn = reason;
+            this.updID = updId;
+            // updDt는 @LastModifiedDate에 의해 자동으로 업데이트 됩니다.
+        } else {
+            throw new IllegalStateException("확정 상태가 아니므로 예약을 취소할 수 없습니다.");
+        }
+    }
 
-	// (옵션) 예약이 완료되었음을 표시하는 로직 (스케줄 시간 경과 후)
-	public void complete() {
-		if (this.sttsCd == RsvSttsCd.CONFIRMED) {
-			this.sttsCd = RsvSttsCd.COMPLETED;
-		}
-	}
+    // (옵션) 예약이 완료되었음을 표시하는 로직 (스케줄 시간 경과 후)
+    public void complete() {
+        if (this.sttsCd == RsvSttsCd.CONFIRMED) {
+            this.sttsCd = RsvSttsCd.COMPLETED;
+        }
+    }
 }
