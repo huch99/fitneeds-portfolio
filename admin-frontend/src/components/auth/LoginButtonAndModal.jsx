@@ -46,7 +46,11 @@ function LoginButtonAndModal() {
     return (
         <div>
             {isAuthenticated ? (
-                <span className="nav-menu-login"> <span onClick={handleMyinfoClick} style={{ cursor: 'pointer' }} >{userName || 'ADMIN'} &nbsp; </span>
+                <span className="nav-menu-login"> <span onClick={handleMyinfoClick} style={{ cursor: 'pointer' }} >{
+                    userName === null || userName === undefined || userName === '' || userName === 'null'
+                        ? 'ADMIN'
+                        : userName
+                } &nbsp; </span>
                     {/* <span className="nav-menu-login"> <span>{userName || 'ADMIN'} &nbsp; </span> */}
                     <button onClick={handleLogoutClick} style={buttonLogoutButton}>
                         로그아웃
