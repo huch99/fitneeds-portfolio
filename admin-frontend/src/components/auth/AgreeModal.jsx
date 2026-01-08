@@ -23,7 +23,7 @@ function LoginModal({ isOpen, onClose, onOpenRegister }) {
     return (
         <>
             {/* 모달 외부 클릭 시 닫히도록 하는 오버레이 */}
-            <div className="modal-overlay-3" onClick={onClose}>X</div>
+            <div className="modal-overlay-2" onClick={onClose}>X</div>
 
             {/* 모달 콘텐츠 */}
             <div className="modal-content-3">

@@ -75,7 +75,7 @@ function RegisterModal({ isOpen, onClose }) {
                 params: { userId: userId }
             });
             console.log('User Info Response:', response.data);
-            setMessage('정보를 성공적으로 가져왔습니다.');
+            // setMessage('정보를 성공적으로 가져왔습니다.');
 
             setFormState({
                 userId: response.data.userId || '',
@@ -265,7 +265,7 @@ function RegisterModal({ isOpen, onClose }) {
 
                     {isAuthenticated ? (
                         <>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                            {/* <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                                 <label htmlFor="cashPoint" style={{ minWidth: '80px', textAlign: 'right' }}>캐시:</label>
                                 <input
                                     id="cashPoint"
@@ -290,7 +290,7 @@ function RegisterModal({ isOpen, onClose }) {
                                     readOnly
                                     style={{ flexGrow: 1 }}
                                 />
-                            </div>
+                            </div> */}
                             <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                                 <label htmlFor="agreeAt" style={{ minWidth: '80px', textAlign: 'right' }}>개인정보동의:</label>
                                 <input

@@ -59,7 +59,7 @@ const ScheduleListPage = () => {
                             }
                         }
                     );
-                    apiResponsePage = response.data;
+                    apiResponsePage = response.data.data;
                 } else {
                     setError('유효한 ID가 전달되지 않았습니다.');
                     console.warn('Neither sportId nor brchId is present in query parameters.');
