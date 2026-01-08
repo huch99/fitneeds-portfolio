@@ -52,6 +52,14 @@ public class UserServiceImpl implements UserService {
 	public List<User> getAllUsers() {
 		return userRepository.findAll();
 	}
+
+	public List<User> getTeachers() {
+		return userRepository.findByRole("TEACHER");
+	}
+
+	public Optional<User> getUserByEmailAdmin(String email) {
+		return userRepository.getUserByEmailAndRole(email, "ADMIN");
+	}
 	
 	public Optional<User> getUserByEmail(String email) {
         return userRepository.getUserByEmail(email);

@@ -15,11 +15,24 @@ public class SportTypeService {
 
     private final SportTypeRepository repo;
 
-    @Transactional
-    public List<Resp> list() {
-        List<SportType> list = repo.findAll();
+    public List<SportType> findAll() {
+        return repo.findAll();
+    }
 
-        return list.stream().map(this::toResp).toList();
+    @Transactional(readOnly = true)
+    public List<Resp> list() {
+        try {
+            List<SportType> entities = repo.findAll();
+            if (entities == null || entities.isEmpty()) {
+                return List.of();
+            }
+            return entities.stream()
+                    .filter(entity -> entity != null)
+                    .map(this::toResp)
+                    .toList();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to retrieve sport types: " + e.getMessage(), e);
+        }
     }
 
     @Transactional
@@ -50,14 +63,17 @@ public class SportTypeService {
     }
 
     private Resp toResp(SportType e) {
+        if (e == null) {
+            throw new IllegalArgumentException("SportType entity is null");
+        }
         return new Resp(
-                e.getSportId(),
-                e.getSportNm(),
-                e.getSportMemo(),
-                Boolean.TRUE.equals(e.getUseYn()),
-                e.getRegDt(),
-                e.getUpdDt(),
-                e.getDelDt()
+            e.getSportId(),
+            e.getSportNm() != null ? e.getSportNm() : "",
+            e.getSportMemo(),
+            Boolean.TRUE.equals(e.getUseYn()) ? 1 : 0,
+            e.getRegDt(),
+            e.getUpdDt(),
+            e.getDelDt()
         );
     }
 }

@@ -13,5 +13,7 @@ public interface UserService {
 	boolean existsByEmail(String email);
 	Optional<User> findByUserId(String userId);
 	List<User> getAllUsers();
+	List<User> getTeachers();
+	Optional<User> getUserByEmailAdmin(String email);
 	Optional<User> getUserByEmail(String email);
 }

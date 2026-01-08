@@ -20,7 +20,7 @@ public class SportTypeDto {
        Long sportId,
        String sportNm,
        String sportMemo,
-       boolean useYn,
+       int useYn,
        LocalDateTime regDt,
        LocalDateTime updDt,
        LocalDateTime delDt

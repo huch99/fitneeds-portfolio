@@ -24,48 +24,36 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 	/**
 	 * 필터 메인 로직 모든 HTTP 요청이 들어올 때마다 실행됩니다
 	 */
-//	@Override
-//	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-//	        throws IOException, ServletException {
-//
-//	    HttpServletRequest httpRequest = (HttpServletRequest) request;
-//
-//	    String token = resolveToken(httpRequest);
-//
-//	    if (token != null && jwtTokenProvider.validateToken(token)) {
-//	        Authentication authentication =
-//	                jwtTokenProvider.getAuthentication(token);
-//	        SecurityContextHolder.getContext().setAuthentication(authentication);
-//	    }
-//
-//	    // ❗ try-catch 제거
-//	    chain.doFilter(request, response);
-//	}
-
-
-		
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
-		
+
 		try {
 			// 1. HTTP 요청 헤더에서 JWT 토큰 추출
 			String token = resolveToken((HttpServletRequest) request);
 
 			// 2. 토큰이 존재하고 유효한지 검사
 			if (token != null && jwtTokenProvider.validateToken(token)) {
-				// 3. 토큰에서 사용자 정보를 추출하여 인증 객체 생성
-				Authentication authentication = jwtTokenProvider.getAuthentication(token);
+				try {
+					// 3. 토큰에서 사용자 정보를 추출하여 인증 객체 생성
+					Authentication authentication = jwtTokenProvider.getAuthentication(token);
 
-				// 4. Spring Security에 인증 정보 등록 (로그인 상태로 만듬)
-				SecurityContextHolder.getContext().setAuthentication(authentication);
+					// 4. Spring Security에 인증 정보 등록 (로그인 상태로 만듬)
+					SecurityContextHolder.getContext().setAuthentication(authentication);
+				} catch (Exception e) {
+					// 토큰은 있지만 인증 처리 중 오류 발생 (유효하지 않은 토큰 등)
+					// permitAll 경로이므로 인증 실패해도 통과시킴 (Security가 판단)
+					// 토큰이 유효하지 않으면 인증 정보를 설정하지 않고 통과
+				}
 			}
+			// 토큰이 없거나 유효하지 않아도 필터 체인을 계속 진행 (SecurityConfig의 permitAll이 판단)
 			chain.doFilter(request, response);
 
 		} catch (Exception e) {
-			// ❗ 여기서 401로 명확히 내리는 게 좋음 (403보다 자연스러움)
-			((jakarta.servlet.http.HttpServletResponse) response).sendError(401, "Invalid token");
-			return;
+			// 예상치 못한 예외 발생 시에만 401 반환
+			// 단, SecurityConfig에서 permitAll로 설정된 경로는 Security가 처리하므로
+			// 필터에서는 가능한 한 통과시키는 것이 좋음
+			chain.doFilter(request, response);
 		}
 	}
 

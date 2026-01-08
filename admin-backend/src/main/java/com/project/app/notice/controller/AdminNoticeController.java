@@ -2,7 +2,6 @@ package com.project.app.notice.controller;
 
 import com.project.app.notice.dto.NoticeDto;
 import com.project.app.notice.service.AdminNoticeService;
-import com.project.app.notice.service.AdminNoticeService.PagedResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,9 +17,7 @@ public class AdminNoticeController {
     }
 
     /**
-     * =========================
-     * ADMIN 공지사항 목록 조회 (기존, 페이징 없음)
-     * =========================
+     * ADMIN 공지사항 목록 조회
      */
     @GetMapping
     public List<NoticeDto> getNoticeList() {
@@ -28,23 +25,7 @@ public class AdminNoticeController {
     }
 
     /**
-     * =========================
-     * ADMIN 공지사항 목록 조회 (페이징)
-     * GET /api/admin/notice/paged?page=1&size=10
-     * =========================
-     */
-    @GetMapping("/paged")
-    public PagedResult<NoticeDto> getNoticeListPaged(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
-        return adminNoticeService.getNoticeListPaged(page, size);
-    }
-
-    /**
-     * =========================
      * ADMIN 공지사항 상세 조회
-     * =========================
      */
     @GetMapping("/{postId}")
     public NoticeDto getNoticeDetail(
@@ -54,21 +35,17 @@ public class AdminNoticeController {
     }
 
     /**
-     * =========================
      * ADMIN 공지사항 등록
      * - DB에서 생성된 postId를 그대로 반환
-     * =========================
      */
     @PostMapping
     public NoticeDto createNotice(@RequestBody NoticeDto dto) {
         adminNoticeService.createNotice(dto);
-        return dto; // useGeneratedKeys로 postId 세팅됨
+        return dto; // ⭐ useGeneratedKeys로 postId 세팅됨
     }
 
     /**
-     * =========================
      * ADMIN 공지사항 수정
-     * =========================
      */
     @PutMapping("/{postId}")
     public void updateNotice(
@@ -80,10 +57,8 @@ public class AdminNoticeController {
     }
 
     /**
-     * =========================
      * ADMIN 공지사항 숨김 / 보이기
      * - is_visible 컬럼만 사용
-     * =========================
      */
     @PutMapping("/{postId}/visible")
     public void updateVisible(
@@ -93,11 +68,10 @@ public class AdminNoticeController {
         adminNoticeService.updateVisible(postId, visible);
     }
 
+
     /**
-     * =========================
      * ADMIN 공지사항 삭제 (논리 삭제)
-     * - is_visible = false
-     * =========================
+     * - is_visible = false 처리
      */
     @DeleteMapping("/{postId}")
     public void deleteNotice(
