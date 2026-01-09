@@ -37,6 +37,7 @@ public class SecurityConfig {
 					"/index.html", // 인덱스 페이지
 
 					// 백엔드 API 경로
+                        "/pass-trade/**",
 					"/api/**", // 모든 API (필요시 세부 경로로 제한 가능)
 					"/api/schedules/**",
 					// 정적 리소스 (CSS, JS, 이미지 등)

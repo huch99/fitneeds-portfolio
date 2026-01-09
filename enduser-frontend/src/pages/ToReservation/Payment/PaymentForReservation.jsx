@@ -68,11 +68,13 @@ const PaymentForReservation = () => {
                 setError(null);
                 try {
                     const response = await api.get(`/userpasses/getUserPassesByUserIdForR/${loggedInUserId}`);
-                    setUserPasses(response.data);
 
-                    if (response.data.length > 0) {
+                    const passes = response.data.data
+                    setUserPasses(passes);
+
+                    if (passes.length > 0) {
                         // 기본적으로 첫 번째 이용권을 선택된 이용권으로 설정
-                        setSelectedUserPass(response.data[0]);
+                        setSelectedUserPass(passes[0]);
                         setPayMethod('PASS'); // 이용권 결제이므로 payMethod를 PASS로 고정
                         setFinalAmount(0); // 이용권 사용 시 금액 0원
                     } else {
@@ -85,12 +87,13 @@ const PaymentForReservation = () => {
 
                 } catch (err) {
                     console.error("이용권 목록 로드 실패:", err);
-                    setError('이용권 목록을 불러오는 데 실패했습니다.');
+                    const msg = err.response?.data?.message || '이용권 목록을 불러오는 데 실패했습니다.';
+                    setError(msg);
                     // 이용권 로드 실패 시에도 단건 결제로 전환
                     setPaymentType('pay');
                     setPayMethod('CARD');
                     setFinalAmount(oneTimeAmt);
-                    alert('이용권 목록 로드 실패로 단건 결제로 전환됩니다.');
+                    alert(`${msg}\n단건 결제로 전환됩니다.`);
                 } finally {
                     setFetchingUserPasses(false);
                 }
@@ -172,21 +175,26 @@ const PaymentForReservation = () => {
                 reservationTime: strtTm, // HH:MM 형식
                 userPassId: payMethod === 'PASS' ? selectedUserPass?.userPassId : null,
                 paymentDetails: `스케줄 예약: ${progNm} - ${selectedDate}`,
-                // Huch의 백엔드 RequestDto에 'reason' 필드가 없으므로 여기선 전달하지 않음
+                targetId : schdId,
+                targetName : `${progNm}`,
             };
 
             const response = await api.post('/payments/process', requestBody);
 
-            if (response.status === 201) { // HTTP 201 Created
-                setIsModalOpen(true); // 예약 내역 페이지 등으로 이동
+            if (response.data.resultCode === "SUCCESS" || response.status === 201) {
+                setIsModalOpen(true);
             } else {
-                setError('결제 처리 중 예상치 못한 오류가 발생했습니다.');
+                // 서버에서 에러는 아니지만 처리에 실패한 경우 (비즈니스 로직 에러)
+                const errorMsg = response.data.message || '결제 처리 중 오류가 발생했습니다.';
+                setError(errorMsg);
+                alert(errorMsg);
             }
         } catch (err) {
             console.error('결제 API 호출 오류:', err);
             // 백엔드에서 보낸 에러 메시지를 사용
-            setError(err.response?.data || '결제 처리 중 오류가 발생했습니다.');
-            alert(`결제 실패: ${err.response?.data || err.message}`);
+            const serverErrorMsg = err.response?.data?.message || '결제 서버와 통신 중 오류가 발생했습니다.';
+            setError(serverErrorMsg);
+            alert(`결제 실패: ${serverErrorMsg}`);
         } finally {
             setLoading(false); // 결제 처리 로딩 완료
         }
@@ -337,10 +345,10 @@ const PaymentForReservation = () => {
                 </button>
             </div>
 
-            <ReservationComplete 
-            isOpen={isModalOpen} 
-            onClose={() => setIsModalOpen(false)} 
-        />
+            <ReservationComplete
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+            />
         </div>
     );
 };

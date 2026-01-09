@@ -19,5 +19,3 @@ public class ReservationReviewDto {
 
     private LocalDateTime registrationDateTime;
 }
-
-

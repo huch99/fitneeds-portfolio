@@ -1,5 +1,6 @@
 package com.project.app.program.dto;
 
+import com.project.app.admin.dto.TeacherInfoResponseDto;
 import com.project.app.program.entity.Program;
 
 import lombok.AllArgsConstructor;
@@ -22,7 +23,9 @@ public class ProgramResponseDto {
 	private String sportNm;
 	private String sportMemo;
 	
-	public static ProgramResponseDto from(Program program) {
+	private TeacherInfoResponseDto teacherInfo;
+	
+	public static ProgramResponseDto from(Program program, TeacherInfoResponseDto teacherInfo) {
 		return ProgramResponseDto.builder()
 				.progId(program.getProgId())
 				.progNm(program.getProgNm())
@@ -32,6 +35,7 @@ public class ProgramResponseDto {
 				.sportId(program.getSportType().getSportId())
 				.sportNm(program.getSportType().getSportNm())
 				.sportMemo(program.getSportType().getSportMemo())
+				.teacherInfo(teacherInfo)
 				.build();
 	}
 

@@ -18,7 +18,6 @@ import com.project.app.login.dto.LoginRequestDto;
 import com.project.app.login.dto.LoginResponseDto;
 import com.project.app.login.service.LoginService;
 import com.project.app.user.service.UserService;
-import com.project.app.userAdmin.entity.Branch;
 import com.project.app.userAdmin.entity.UserAdmin;
 import com.project.app.userAdmin.service.UserAdminService;
 
@@ -121,9 +120,9 @@ public class LoginController {
 		response.put("user", LoginResponseDto.builder()
 				.userId(user.getUserId())
 				.email(user.getEmail())
+				.brchId(user.getBrchId())
 				.userName(user.getUserName())
 				.role(user.getRole())
-				.brchId(user.getBrchId().getBrchId())
 				.success(true)
 				.message("로그인 성공")
 				.build());

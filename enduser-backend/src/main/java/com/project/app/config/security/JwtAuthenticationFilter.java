@@ -11,6 +11,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
+
+
 public class JwtAuthenticationFilter extends GenericFilterBean {
 
 	// JWT 토큰을 처리하는 클래스
@@ -27,6 +29,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
+
 
 		try {
 			// 1. HTTP 요청 헤더에서 JWT 토큰 추출

@@ -1,3 +1,4 @@
+// Fixed @PathVariable name issue
 package com.project.app.user.controller;
 
 import java.util.List;
@@ -16,6 +17,8 @@ import com.project.app.config.security.JwtTokenProvider;
 import com.project.app.user.dto.UserRequestDto;
 import com.project.app.user.entity.User;
 import com.project.app.user.service.UserService;
+import com.project.app.userAdmin.entity.UserAdmin;
+import com.project.app.userAdmin.service.UserAdminService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,15 +28,23 @@ import lombok.extern.slf4j.Slf4j;
 public class UserController {
 
 	private final UserService userService;
+	private final UserAdminService userAdminService;
 
-	public UserController(UserService userService, JwtTokenProvider jwtTokenProvider, PasswordEncoder passwordEncoder) {
+	public UserController(UserService userService, UserAdminService userAdminService, JwtTokenProvider jwtTokenProvider, PasswordEncoder passwordEncoder) {
 		this.userService = userService;
+		this.userAdminService = userAdminService;
 	}
 
 	@GetMapping("/all")
 	public ResponseEntity<List<User>> getAllUsers(){
 		List<User> users = userService.getAllUsers();
 		return ResponseEntity.ok(users);
+	}
+	
+	@GetMapping("/teachers")
+	public ResponseEntity<List<UserAdmin>> getAllTeachers(){
+		List<UserAdmin> teachers = userAdminService.getTeachers();
+		return ResponseEntity.ok(teachers);
 	}
 	
 	@PostMapping("/register")
@@ -55,15 +66,11 @@ public class UserController {
 		}
 	}
 
-	@GetMapping("/userinfo")
-	public ResponseEntity<?> userinfo(@PathVariable String userId) {
+	@GetMapping("/userinfo/{userId}")
+	public ResponseEntity<?> userinfo(@PathVariable("userId") String userId) {
 		try {
-			userService.findByUserId(userId);
-
 			return ResponseEntity.ok(userService.findByUserId(userId)); // 200 OK와 사용자 정보 반환
 		} catch (Exception e) {
-			// 로깅 후 클라이언트에 에러 메시지 반환
-			// Logger.error("사용자 정보 조회 중 오류 발생: " + e.getMessage());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body("사용자 정보 조회 처리 중 오류가 발생했습니다. : " + e.getMessage());
 		}

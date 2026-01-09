@@ -166,7 +166,8 @@ function CommunityUser() {
                 {post.title}
                 {getRecruitStatusBadge(post)}
               </td>
-              <td>{post.writerId || '-'}</td>
+              <td>{post.writerName || post.writerId || '-'}</td>
+
               <td>{post.createdAt?.substring(0, 10)}</td>
               <td>{post.views}</td>
             </tr>

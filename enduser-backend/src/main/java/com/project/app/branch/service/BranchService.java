@@ -15,9 +15,9 @@ import lombok.RequiredArgsConstructor;
 @Transactional(readOnly = true)
 public class BranchService {
 
-	private final BranchRepository branchRepository;
-	
-	public List<Branch> getAllBranches() {
+    private final BranchRepository branchRepository;
+
+    public List<Branch> getAllBranches() {
         return branchRepository.findAll();
     }
 }

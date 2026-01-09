@@ -11,30 +11,30 @@ import lombok.Data;
 @Builder
 public class ReservationResponseDto {
 
-	private Long rsvId;
-	private String sttsCd;
-	private LocalDate rsvDt;
-	private LocalTime rsvTime;
-	private LocalDateTime regDt;
-	private LocalDateTime updDt;
-	private String cnclRsn;
-	private String updId;
-	
-	private String userId;
-	private String userName;
-	private String email;
-	
-	private Long schdId;
-	private String schdNm;
-	
-	private LocalDate strtDt;
-	private LocalDate endDt;
-	private LocalTime strtTm;
-	private LocalTime endTm;
-	private Integer maxNopcnt;
-	private Integer rsvCnt;
-	private String SchdSttsCd;
-	private String description;
-		
-	private String instructorId;
+    private Long rsvId;
+    private String sttsCd;
+    private LocalDate rsvDt;
+    private LocalTime rsvTime;
+    private LocalDateTime regDt;
+    private LocalDateTime updDt;
+    private String cnclRsn;
+    private String updId;
+
+    private String userId;
+    private String userName;
+    private String email;
+
+    private Long schdId;
+    private String schdNm;
+
+    private LocalDate strtDt;
+    private LocalDate endDt;
+    private LocalTime strtTm;
+    private LocalTime endTm;
+    private Integer maxNopcnt;
+    private Integer rsvCnt;
+    private String SchdSttsCd;
+    private String description;
+
+    private String instructorId;
 }

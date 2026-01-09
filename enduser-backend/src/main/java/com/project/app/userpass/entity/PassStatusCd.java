@@ -6,6 +6,6 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum PassStatusCd {
-	AVAILABLE,
-	UNAVAILABLE;		
+    AVAILABLE,
+    UNAVAILABLE;
 }
