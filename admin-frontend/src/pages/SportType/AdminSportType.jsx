@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import {useEffect, useMemo, useState} from "react";
 import "./AdminSportType.css";
 
 const API_BASE = "/api/sport-types";
@@ -140,6 +140,35 @@ export default function SportTypeList() {
         }
     };
 
+    // ✅ 비활성화
+    const deactivateSportType = async (item) => {
+        const name = item.sportNm ?? "해당 종목";
+
+        if (!window.confirm(`'${name}' 종목을 비활성화 하시겠습니까?`)) {
+            return; // ❌ 취소
+        }
+
+        try {
+            const res = await fetch(`${API_BASE}/${item.sportId}/deactivate`, {
+                method: "PATCH",
+            });
+
+            if (!res.ok) {
+                const text = await res.text().catch(() => "");
+                throw new Error(`비활성화 실패 (${res.status}) ${text}`);
+            }
+            else {
+                alert(`'${name} 종목이 비활성화 되었습니다.`);
+            }
+
+            // ✅ 성공 시 목록 다시 조회
+            await fetchList();
+        } catch (e) {
+            alert(e?.message ?? "비활성화 중 오류가 발생했습니다.");
+        }
+    };
+
+
     return (
         <>
             <h1 className="page-title">[관리자] 운동 종목 관리</h1>
@@ -200,6 +229,7 @@ export default function SportTypeList() {
                     <thead>
                     <tr>
                         <th>ID</th>
+                        <th>사용</th>
                         <th>종목명</th>
                         <th>메모</th>
                         <th>등록일</th>
@@ -218,13 +248,24 @@ export default function SportTypeList() {
                         filteredItems.map((it) => (
                             <tr key={it.sportId}>
                                 <td>{it.sportId}</td>
+                                <td>
+                                    {it.useYn ? (
+                                        <span style={{ color: "green", fontWeight: 600 }}>Y</span>
+                                    ) : (
+                                        <span style={{ color: "gray" }}>N</span>
+                                    )}
+                                </td>
                                 <td>{it.sportNm}</td>
                                 <td>{it.sportMemo ?? "-"}</td>
                                 <td>{it.regDt ?? "-"}</td>
                                 <td>{it.updDt ?? "-"}</td>
                                 <td>
                                     <button className="btn-sm" onClick={() => openEditModal(it)}>수정</button>{" "}
-                                    <button className="btn-sm">비활성화</button>
+                                    <button className="btn-sm"
+                                            disabled={it.useYn === false || it.useYn === 0}
+                                            onClick={() => deactivateSportType(it)}>
+                                        비활성화
+                                    </button>
                                 </td>
                             </tr>
                         ))
