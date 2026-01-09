@@ -4,10 +4,14 @@ import com.project.app.sportTypes.dto.SportTypeDto.*;
 import com.project.app.sportTypes.service.SportTypeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/sport-types")
@@ -16,8 +20,15 @@ public class SportTypeController {
     private final SportTypeService sportTypeService;
 
     @GetMapping
-    public List<Resp> list() {
-        return sportTypeService.list();
+    public ResponseEntity<List<Resp>> list() {
+        try {
+            List<Resp> result = sportTypeService.list();
+            log.info("Successfully retrieved {} sport types", result.size());
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            log.error("Error retrieving sport types", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @PostMapping("/new")

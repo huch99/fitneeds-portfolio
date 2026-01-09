@@ -1,3 +1,4 @@
+// Fixed @PathVariable name issue
 package com.project.app.userAdmin.controller;
 
 import java.util.List;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.project.app.config.security.JwtTokenProvider;
 import com.project.app.config.util.UserIdGenerator;
 import com.project.app.userAdmin.dto.UserAdminRequestDto;
-import com.project.app.userAdmin.entity.Branch;
 import com.project.app.userAdmin.entity.UserAdmin;
 import com.project.app.userAdmin.service.UserAdminService;
 
@@ -42,18 +42,13 @@ public class UserAdminController {
 	public ResponseEntity<?> createUser(@RequestBody UserAdminRequestDto userAdminRequestDto) {
 		try {
 
-			if (userAdminRequestDto.getUserId().equalsIgnoreCase(null)||userAdminRequestDto.getUserId().equalsIgnoreCase("")) {
+			if (userAdminRequestDto.getUserId() == null || userAdminRequestDto.getUserId().equalsIgnoreCase("")) {
 				UserIdGenerator generator = new UserIdGenerator();
 				userAdminRequestDto.setUserId(generator.generateUniqueUserId());
 
 				if (userAdminService.existsByEmail(userAdminRequestDto.getEmail())) {
 					return ResponseEntity.badRequest().body("이미 사용중인 이메일 입니다.");
 				}
-
-//				if(userAdminRequestDto.getBrchId()==null) {
-//					userAdminRequestDto.setBrchId(new Branch());
-//					userAdminRequestDto.getBrchId().setBrchId(1L);
-//				}
 				
 				userAdminService.createAdminUser(userAdminRequestDto);
 			} else {
@@ -65,17 +60,14 @@ public class UserAdminController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body("회원가입 처리 중 오류가 발생했습니다. : " + e.getMessage());
 		}
+
 	}
 
-	@GetMapping("/userinfo")
-	public ResponseEntity<?> userinfo(@PathVariable String userId) {
+	@GetMapping("/userinfo/{userId}")
+	public ResponseEntity<?> userinfo(@PathVariable("userId") String userId) {
 		try {
-			userAdminService.findByUserId(userId);
-
 			return ResponseEntity.ok(userAdminService.findByUserId(userId)); // 200 OK와 사용자 정보 반환
 		} catch (Exception e) {
-			// 로깅 후 클라이언트에 에러 메시지 반환
-			// Logger.error("사용자 정보 조회 중 오류 발생: " + e.getMessage());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body("사용자 정보 조회 처리 중 오류가 발생했습니다. : " + e.getMessage());
 		}

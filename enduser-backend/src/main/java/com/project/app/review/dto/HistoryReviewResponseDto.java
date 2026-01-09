@@ -14,11 +14,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class HistoryReviewResponseDto {
 
-	private Long reviewId;
-	private Long reservationId;
-	private Integer rating;
-	private String content;
-	private Long instructorId;
-	private String registrationDateTime; // ISO 8601 형식 문자열
+    private Long reviewId;
+    private Long reservationId;
+    private Integer rating;
+    private String content;
+    private Long instructorId;
+    private String registrationDateTime; // ISO 8601 형식 문자열
 }
-

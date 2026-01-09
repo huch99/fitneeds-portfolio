@@ -16,7 +16,7 @@ CREATE TABLE user_pass (
                            PRIMARY KEY (user_pass_id),
                            UNIQUE KEY uk_userpass_usr_sport (usr_id, sport_id),
                            CONSTRAINT fk_userpass_user
-                               FOREIGN KEY (usr_id) REFERENCES `USER` (user_id),
+                               FOREIGN KEY (usr_id) REFERENCES `USERS` (user_id),
                            CONSTRAINT fk_userpass_sport
                                FOREIGN KEY (sport_id) REFERENCES sport_type (sport_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4

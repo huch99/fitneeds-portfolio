@@ -12,25 +12,25 @@ import lombok.Data;
 @Builder
 public class PaymentResponseDto {
 
-	private Long payId;
-	private String ordNo;
-	private String userId;
-	private PaymentPayTypeCd payTypeCd;
-	private Long refId;
-	private Integer payAmt;
-	private PaymentPayMethod payMethod;
-	private PaymentSttsCd sttsCd;
-	
-	public static PaymentResponseDto from(Payment payment) {
-		return PaymentResponseDto.builder()
-				.payId(payment.getPayId())
-				.ordNo(payment.getOrdNo())
-				.userId(payment.getUser().getUserId())
-				.payTypeCd(payment.getPayTypeCd())
-				.refId(payment.getRefId())
-				.payAmt(payment.getPayAmt())
-				.payMethod(payment.getPayMethod())
-				.sttsCd(payment.getSttsCd())
-				.build();
-	}
+    private Long payId;
+    private String ordNo;
+    private String userId;
+    private PaymentPayTypeCd payTypeCd;
+    private Long refId;
+    private Integer payAmt;
+    private PaymentPayMethod payMethod;
+    private PaymentSttsCd sttsCd;
+
+    public static PaymentResponseDto from(Payment payment) {
+        return PaymentResponseDto.builder()
+                .payId(payment.getPayId())
+                .ordNo(payment.getOrdNo())
+                .userId(payment.getUser().getUserId())
+                .payTypeCd(payment.getPayTypeCd())
+                .refId(payment.getRefId())
+                .payAmt(payment.getPayAmt())
+                .payMethod(payment.getPayMethod())
+                .sttsCd(payment.getSttsCd())
+                .build();
+    }
 }

@@ -1,0 +1,66 @@
+/* passtrade */
+.tabs {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.tabs button {
+  padding: 10px 20px;
+  border: 1px solid #dee2e6;
+  background: white;
+  cursor: pointer;
+}
+
+.tabs button.active {
+  background: #007bff;
+  color: white;
+}
+
+.pass-trade-transaction .transaction-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pass-trade-transaction .transaction-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+}
+
+.pass-trade-transaction .transaction-type {
+  font-weight: bold;
+}
+
+.pass-trade-transaction .transaction-type.buy {
+  color: green;
+}
+
+.pass-trade-transaction .transaction-type.sell {
+  color: blue;
+}
+
+.status {
+  padding: 4px 8px;
+  border-radius: 4px;
+  color: white;
+}
+
+.status.green {
+  background: green;
+}
+
+.status.yellow {
+  background: yellow;
+  color: black;
+}
+
+.status.red {
+  background: red;
+}
+
+.status.gray {
+  background: gray;
+}

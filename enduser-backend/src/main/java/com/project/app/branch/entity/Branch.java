@@ -1,20 +1,18 @@
 package com.project.app.branch.entity;
 
-import java.time.LocalDateTime;
-
 import org.hibernate.annotations.ColumnDefault;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
+
+import com.project.app.aspect.BaseTimeEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,8 +22,11 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "BRANCH")
-public class Branch {
+@Table(name = "BRANCH", indexes = {
+		@Index(name = "idx_branch_nm", columnList = "brch_nm"),
+		@Index(name = "idx_branch_oper", columnList = "oper_yn")
+})
+public class Branch extends BaseTimeEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,10 +43,5 @@ public class Branch {
 	@Builder.Default
 	@ColumnDefault("1")
 	private boolean operYn = true;			// 운영 여부
-	
-	@Column(name = "reg_dt", nullable = false)
-	private LocalDateTime regDt;	// 등록 일시 (로그 확인용)
-	
-	@Column(name = "upd_dt", nullable = false)
-	private LocalDateTime updDt;	// 수정 일시 (로그 확인용)
+
 }

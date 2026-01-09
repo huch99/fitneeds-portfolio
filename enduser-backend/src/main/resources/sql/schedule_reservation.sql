@@ -1,30 +1,32 @@
 
 -- 스케줄 테이블 생성
-CREATE TABLE SCHEDULE (
-    schd_id      BIGINT          NOT NULL AUTO_INCREMENT,
-    prog_id      BIGINT          NOT NULL,
-    user_id      VARCHAR(50)    NOT NULL,  -- UserAdmin의 PK 타입에 따라 변경 가능
-    brch_id      BIGINT          NOT NULL,
-    strt_dt      DATE            NOT NULL,
-    strt_tm      TIME            NOT NULL,
-    end_tm       TIME            NOT NULL,
-    max_nop_cnt  INT             NOT NULL,
-    rsv_cnt      INT             NOT NULL DEFAULT 0,
-    stts_cd      VARCHAR(20)     NOT NULL,
-    description  TEXT,
-    reg_dt       DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    upd_dt       DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (schd_id),
+CREATE TABLE `SCHEDULE` (
+    `schd_id`      BIGINT          NOT NULL AUTO_INCREMENT,
+    `prog_id`      BIGINT          NOT NULL COMMENT '프로그램 ID',
+    `user_id`      VARCHAR(50)     NOT NULL COMMENT '담당 강사 ID',
+    `brch_id`      BIGINT          NOT NULL COMMENT '지점 ID',
+    `strt_dt`      DATE            NOT NULL COMMENT '수업 날짜',
+    `strt_tm`      TIME            NOT NULL COMMENT '시작 시간',
+    `end_tm`       TIME            NOT NULL COMMENT '종료 시간',
+    `max_nop_cnt`  INT             NOT NULL COMMENT '최대 정원',
+    `rsv_cnt`      INT             NOT NULL DEFAULT 0 COMMENT '현재 예약 인원',
+    `stts_cd`      VARCHAR(20)     NOT NULL COMMENT '상태(AVAILABLE, FULL, CANCELED 등)',
+    `description`  TEXT            NULL     COMMENT '스케줄 설명',
+    `reg_dt`       DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `upd_dt`       DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     
-    INDEX idx_schd_strtdt (strt_dt),        -- 날짜별 스케줄 조회 시 필수
-    INDEX idx_schd_sttscd (stts_cd),        -- 예약 가능(AVAILABLE) 상태 필터링용
-    INDEX idx_schd_brch_prog (brch_id, prog_id), -- 지점별/프로그램별 복합 조회용
+    PRIMARY KEY (`schd_id`),
     
-    -- 외래키 제약 조건 (참조 테이블명은 엔티티 설정 기준)
-    CONSTRAINT FK_SCHEDULE_PROGRAM FOREIGN KEY (prog_id) REFERENCES PROGRAM(prog_id),
-    CONSTRAINT FK_SCHEDULE_USER    FOREIGN KEY (user_id) REFERENCES USERS_ADMIN(user_id),
-    CONSTRAINT FK_SCHEDULE_BRANCH  FOREIGN KEY (brch_id) REFERENCES BRANCH(brch_id)
-);
+    -- 인덱스 설정
+    INDEX `idx_schd_strtdt` (`strt_dt`),
+    INDEX `idx_schd_sttscd` (`stts_cd`),
+    INDEX `idx_schd_brch_prog` (`brch_id`, `prog_id`),
+    
+    -- 외래 키 설정
+    CONSTRAINT `fk_schd_prog` FOREIGN KEY (`prog_id`) REFERENCES `PROGRAM` (`prog_id`),
+    CONSTRAINT `fk_schd_user` FOREIGN KEY (`user_id`) REFERENCES `USERS_ADMIN` (`user_id`),
+    CONSTRAINT `fk_schd_brch` FOREIGN KEY (`brch_id`) REFERENCES `BRANCH` (`brch_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- 스케줄 예시 데이터
 -- 2026-01-01 ~ 2026-01-20 기간의 데이터

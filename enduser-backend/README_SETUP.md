@@ -1,5 +1,7 @@
 # 프로젝트 설정 가이드
 
+## 스웨거 주소 http://localhost:8020/swagger-ui/index.html
+
 ## 1. 설정 파일 준비
 
 ### application.properties 생성

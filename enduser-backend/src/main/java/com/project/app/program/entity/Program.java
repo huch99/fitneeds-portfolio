@@ -1,11 +1,8 @@
 package com.project.app.program.entity;
 
-import java.time.LocalDateTime;
-
 import org.hibernate.annotations.ColumnDefault;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
+import com.project.app.aspect.BaseTimeEntity;
 import com.project.app.branch.entity.Branch;
 import com.project.app.sporttype.entity.SportType;
 
@@ -20,16 +17,17 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
-@Data
+@Getter @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "PROGRAM")
-public class Program {
+public class Program extends BaseTimeEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,22 +45,20 @@ public class Program {
 	@JoinColumn(name = "brch_id", nullable = false)
 	private Branch branch;
 	
-	@Column(name = "use_yn", nullable = true, columnDefinition = "TINYINT(1)")
-	@ColumnDefault("1")
-	private boolean useYn;			// 사용 여부
+	@Column(name = "use_yn", nullable = false)
+    @ColumnDefault("1")
+    @Builder.Default
+    private boolean useYn = true;			// 사용 여부
 	
 	@Column(name = "one_time_amt", nullable = false)
-	@ColumnDefault("0")
-	private Integer oneTimeAmt;		// 단건 결제 금액
+    @ColumnDefault("0")
+    @Builder.Default
+    private Integer oneTimeAmt = 0;		// 단건 결제 금액
 	
 	@Column(name = "rwd_game_pnt", nullable = false)
-	@ColumnDefault("0")
-	private Integer rwdGamePnt;		//게이미케이션 포인트
+    @ColumnDefault("0")
+    @Builder.Default
+    private Integer rwdGamePnt = 0;		//게이미케이션 포인트
 	
-	@Column(name = "reg_dt", nullable = false)
-	private LocalDateTime regDt;	// 등록 일시 (로그 확인용)
-	
-	@Column(name = "upd_dt", nullable = false)
-	private LocalDateTime updDt;	// 수정 일지 (로그 확인용)
 	
 }

@@ -1,0 +1,21 @@
+/* passtrade */
+/* Bootstrap classes used, additional styles if needed */
+
+.category-filter {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.category-filter button {
+  padding: 8px 16px;
+  border: 1px solid #dee2e6;
+  background: white;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.category-filter button.active {
+  background: #007bff;
+  color: white;
+}

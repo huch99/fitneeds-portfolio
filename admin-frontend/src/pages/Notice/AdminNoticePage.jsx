@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import api from "../../api";
+import axios from "axios";
 
 function AdminNoticePage() {
   const [notices, setNotices] = useState([]);
@@ -10,37 +10,46 @@ function AdminNoticePage() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
 
-  // 종료 날짜 / 상시 게시
+  // 🔥 종료 날짜 / 상시 게시
   const [displayEnd, setDisplayEnd] = useState("");
   const [alwaysDisplay, setAlwaysDisplay] = useState(true);
 
-  // ✅ 페이징 (프론트 전용)
-  const [page, setPage] = useState(1);
-  const size = 10;
+  /* =========================
+     지점명 매핑 (Mock)
+  ========================= */
+  const branchName = (id) => {
+    if (id === null) return "전체";
+    if (id === 1) return "강남점";
+    if (id === 2) return "부산점";
+    if (id === 3) return "평택점";
+    return `지점#${id}`;
+  };
 
   /* =========================
-     공지 목록 조회 (기존 API 유지)
+     공지 목록 조회
   ========================= */
   useEffect(() => {
     fetchNotices();
   }, []);
 
   const fetchNotices = async () => {
-    const res = await api.get("/admin/notice");
+    const res = await axios.get("/api/admin/notice");
 
     const converted = res.data.map((n) => ({
       id: n.postId,
       title: n.title,
       content: n.content,
       visible: n.isVisible,
-      endDate: n.displayEnd ? n.displayEnd.split("T")[0] : "상시",
+      pinned: false,
+      endDate: n.displayEnd
+        ? n.displayEnd.split("T")[0]
+        : "상시",
       createdAt: n.createdAt?.split("T")[0],
-      branchName: n.branchName,
+      branch_id: n.branchId,
       rawDisplayEnd: n.displayEnd,
     }));
 
     setNotices(converted);
-    setPage(1); // 조회 시 첫 페이지로
   };
 
   /* =========================
@@ -73,7 +82,7 @@ function AdminNoticePage() {
     const payload = {
       title,
       content,
-      branchId: Number(localStorage.getItem("brchId")),
+      branchId: null,
       displayEnd: alwaysDisplay ? null : `${displayEnd}T23:59:59`,
     };
 
@@ -83,9 +92,9 @@ function AdminNoticePage() {
     }
 
     if (editingId) {
-      await api.put(`/admin/notice/${editingId}`, payload);
+      await axios.put(`/api/admin/notice/${editingId}`, payload);
     } else {
-      await api.post("/admin/notice", payload);
+      await axios.post("/api/admin/notice", payload);
     }
 
     setEditingId(null);
@@ -102,7 +111,7 @@ function AdminNoticePage() {
   ========================= */
   const deleteNotice = async (id) => {
     if (!window.confirm("공지사항을 삭제하시겠습니까?")) return;
-    await api.delete(`/admin/notice/${id}`);
+    await axios.delete(`/api/admin/notice/${id}`);
     fetchNotices();
   };
 
@@ -111,24 +120,24 @@ function AdminNoticePage() {
   ========================= */
   const toggleVisible = async (n) => {
     if (!window.confirm("노출 상태를 변경하시겠습니까?")) return;
-    await api.put(`/admin/notice/${n.id}/visible`, null, {
-      params: { visible: !n.visible },
-    });
+
+    await axios.put(
+      `/api/admin/notice/${n.id}/visible`,
+      null,
+      { params: { visible: !n.visible } }
+    );
+
     fetchNotices();
   };
 
   /* =========================
-     검색 + 페이징
+     검색 & 정렬
   ========================= */
-  const filtered = notices.filter((n) =>
+  const filteredNotices = notices.filter((n) =>
     n.title.includes(searchKeyword)
   );
 
-  const totalPages = Math.ceil(filtered.length / size);
-  const pagedNotices = filtered.slice(
-    (page - 1) * size,
-    page * size
-  );
+  const sortedNotices = [...filteredNotices].sort((a, b) => b.id - a.id);
 
   return (
     <>
@@ -138,10 +147,7 @@ function AdminNoticePage() {
         type="text"
         placeholder="제목 검색"
         value={searchKeyword}
-        onChange={(e) => {
-          setSearchKeyword(e.target.value);
-          setPage(1);
-        }}
+        onChange={(e) => setSearchKeyword(e.target.value)}
         style={{ width: "250px", padding: "6px", marginBottom: "20px" }}
       />
 
@@ -157,17 +163,15 @@ function AdminNoticePage() {
           </tr>
         </thead>
         <tbody>
-          {pagedNotices.map((n) => (
+          {sortedNotices.map((n) => (
             <React.Fragment key={n.id}>
-              <tr
-                style={{
-                  background: !n.visible ? "#f1f1f1" : "white",
-                  color: !n.visible ? "#999" : "#000",
-                  opacity: !n.visible ? 0.5 : 1,
-                }}
-              >
+              <tr style={{
+                background: !n.visible ? "#f1f1f1" : "white",
+                color: !n.visible ? "#999" : "#000",
+                opacity: !n.visible ? 0.5 : 1,
+              }}>
                 <td>{n.id}</td>
-                <td>{n.branchName}</td>
+                <td>{branchName(n.branch_id)}</td>
                 <td
                   onClick={() => n.visible && toggleOpen(n.id)}
                   style={{ cursor: "pointer", fontWeight: "600" }}
@@ -207,22 +211,6 @@ function AdminNoticePage() {
           ))}
         </tbody>
       </table>
-
-      {/* 페이징 */}
-      <div style={{ marginTop: "20px" }}>
-        <button disabled={page === 1} onClick={() => setPage(page - 1)}>
-          이전
-        </button>
-        <span style={{ margin: "0 10px" }}>
-          {page} / {totalPages || 1}
-        </span>
-        <button
-          disabled={page === totalPages || totalPages === 0}
-          onClick={() => setPage(page + 1)}
-        >
-          다음
-        </button>
-      </div>
 
       <h2 style={{ marginTop: "30px" }}>
         {editingId ? "공지 수정" : "공지 등록"}

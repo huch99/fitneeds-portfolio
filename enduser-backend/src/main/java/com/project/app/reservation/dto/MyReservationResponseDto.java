@@ -16,43 +16,43 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class MyReservationResponseDto {
 
-	private Long reservationId;
-	private String sportName;
-	private String brchNm;
-	private String trainerName;
-	private LocalDate rsvDt;
-	private LocalTime rsvTime;
+    private Long reservationId;
+    private String sportName;
+    private String brchNm;
+    private String trainerName;
+    private LocalDate rsvDt;
+    private LocalTime rsvTime;
 
-	/**
-	 * Reservation 엔티티를 MyReservationResponseDto로 변환하는 정적 팩토리 메서드
-	 * 
-	 * @param reservation 예약 엔티티
-	 * @return MyReservationResponseDto
-	 */
-	public static MyReservationResponseDto from(Reservation reservation) {
-		if (reservation == null) {
-			return null;
-		}
+    /**
+     * Reservation 엔티티를 MyReservationResponseDto로 변환하는 정적 팩토리 메서드
+     *
+     * @param reservation 예약 엔티티
+     * @return MyReservationResponseDto
+     */
+    public static MyReservationResponseDto from(Reservation reservation) {
+        if (reservation == null) {
+            return null;
+        }
 
-		return MyReservationResponseDto.builder()
-				.reservationId(reservation.getRsvId())
-				.sportName(
-						reservation.getSchedule() != null
-								&& reservation.getSchedule().getProgram() != null
-								&& reservation.getSchedule().getProgram().getSportType() != null
-										? reservation.getSchedule().getProgram().getSportType().getSportNm()
-										: null)
-				.brchNm(
-						reservation.getBranch() != null
-								? reservation.getBranch().getBrchNm()
-								: null)
-				.trainerName(
-						reservation.getSchedule() != null
-								&& reservation.getSchedule().getUserAdmin() != null
-										? reservation.getSchedule().getUserAdmin().getUserName()
-										: null)
-				.rsvDt(reservation.getRsvDt())
-				.rsvTime(reservation.getRsvTime())
-				.build();
-	}
+        return MyReservationResponseDto.builder()
+                .reservationId(reservation.getRsvId())
+                .sportName(
+                        reservation.getSchedule() != null
+                                && reservation.getSchedule().getProgram() != null
+                                && reservation.getSchedule().getProgram().getSportType() != null
+                                ? reservation.getSchedule().getProgram().getSportType().getSportNm()
+                                : null)
+                .brchNm(
+                        reservation.getBranch() != null
+                                ? reservation.getBranch().getBrchNm()
+                                : null)
+                .trainerName(
+                        reservation.getSchedule() != null
+                                && reservation.getSchedule().getUserAdmin() != null
+                                ? reservation.getSchedule().getUserAdmin().getUserName()
+                                : null)
+                .rsvDt(reservation.getRsvDt())
+                .rsvTime(reservation.getRsvTime())
+                .build();
+    }
 }

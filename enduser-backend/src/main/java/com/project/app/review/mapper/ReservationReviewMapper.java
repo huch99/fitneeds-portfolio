@@ -14,4 +14,3 @@ public interface ReservationReviewMapper {
             @Param("userId") String userId
     );
 }
-

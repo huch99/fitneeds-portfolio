@@ -64,4 +64,3 @@ public interface ReviewMapper {
             @Param("reviewId") Long reviewId
     );
 }
-

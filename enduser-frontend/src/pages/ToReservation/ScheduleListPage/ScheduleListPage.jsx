@@ -78,7 +78,7 @@ const ScheduleListPage = () => {
                 setSchedules(apiResponsePage.content);
                 setTotalPages(apiResponsePage.totalPages);
             } else {
-                setSchedules([]);
+                setSchedules([]);                
                 setTotalPages(0);
             }
             setLoading(false);
@@ -207,7 +207,7 @@ const ScheduleListPage = () => {
                                 상세 페이지에서도 정보를 불러올 수 있도록 progId를 유지하고, 
                                 목록에서 이미 가져온 정보들을 state로 넘겨 API 호출을 최소화합니다. */}
                                     <Link
-                                        to={`/program-detail?progId=${schedule.progId}&userName=${encodeURIComponent(schedule.userName)}&brchNm=${encodeURIComponent(schedule.brchNm)}&strtDt=${schedule.groupedStrtDt}&endDt=${schedule.groupedEndDt}&strtTm=${schedule.strtTm}&endTm=${schedule.endTm}`}
+                                        to={`/program-detail?progId=${schedule.progId}&userName=${encodeURIComponent(schedule.userName)}&brchNm=${encodeURIComponent(schedule.brchNm)}&strtDt=${schedule.groupedStrtDt}&endDt=${schedule.groupedEndDt}&strtTm=${schedule.strtTm}&endTm=${schedule.endTm}&userId=${schedule.userId}`}
                                         state={{ sessions: schedule.sessions }}
                                         className='schedule-item-link'
                                     >
