@@ -16,7 +16,7 @@ public class PaymentResponseDto {
     private String ordNo;
     private String userId;
     private PaymentPayTypeCd payTypeCd;
-    private Long refId;
+//    private Long refId;
     private Integer payAmt;
     private PaymentPayMethod payMethod;
     private PaymentSttsCd sttsCd;
@@ -27,7 +27,7 @@ public class PaymentResponseDto {
                 .ordNo(payment.getOrdNo())
                 .userId(payment.getUser().getUserId())
                 .payTypeCd(payment.getPayTypeCd())
-                .refId(payment.getRefId())
+//                .refId(payment.getRefId())
                 .payAmt(payment.getPayAmt())
                 .payMethod(payment.getPayMethod())
                 .sttsCd(payment.getSttsCd())

@@ -95,8 +95,6 @@ public class AppApplication {
 				testUser.setUserName("User1");
 				testUser.setPassword(passwordEncoder.encode("user1"));
 				testUser.setRole("USER"); // 일반 사용자 권한
-				testUser.setCashPoint(0);
-				testUser.setGradePoint(0);
 				testUser.setPhoneNumber("01099111234");
 				testUser.setAgreeAt(LocalDateTime.now());
 				testUser.setIsActive(true);
@@ -111,8 +109,6 @@ public class AppApplication {
 				testUser.setUserName("User2");
 				testUser.setPassword(passwordEncoder.encode("user2"));
 				testUser.setRole("USER"); // 일반 사용자 권한
-				testUser.setCashPoint(0);
-				testUser.setGradePoint(0);
 				testUser.setPhoneNumber("01022221234");
 				testUser.setAgreeAt(LocalDateTime.now());
 				testUser.setIsActive(true);

@@ -19,8 +19,6 @@ public class UserAdminRequestDto {
 	private String userName;
 	private String password;
 	private String role;
-	private String cashPoint;
-	private String gradePoint;
 	private String isActive;
 	private String agreeAt;
 	private String phoneNumber;
