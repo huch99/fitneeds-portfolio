@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../api';          // 🔥 axios → api
 import './Community.css';
 
 function CommunityUser() {
@@ -21,7 +21,7 @@ function CommunityUser() {
   const fetchPosts = async (pageNumber = 1) => {
     setLoading(true);
     try {
-      const res = await axios.get('/api/user/community', {
+      const res = await api.get('/user/community', {   // 🔥 변경
         params: { page: pageNumber },
       });
 
@@ -167,7 +167,6 @@ function CommunityUser() {
                 {getRecruitStatusBadge(post)}
               </td>
               <td>{post.writerName || post.writerId || '-'}</td>
-
               <td>{post.createdAt?.substring(0, 10)}</td>
               <td>{post.views}</td>
             </tr>

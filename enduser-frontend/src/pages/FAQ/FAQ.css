@@ -1,174 +1,143 @@
-/* ===== Layout ===== */
-.section-container {
-  max-width: 900px;
+/* ===================== 전체 프레임 (Notice와 동일) ===================== */
+.faq-wrap {
+  width: 100%;
+  padding: 30px;
+  min-height: calc(100vh - 120px);
+  background: #f9fafb;
+}
+
+.faq-wrap .section-container {
+  max-width: 1100px;
   margin: 0 auto;
   padding: 0 1.5rem;
 }
 
-.page-header {
+/* ===================== 타이틀 ===================== */
+.faq-page-header {
   text-align: center;
-  margin: 3rem 0;
+  margin-bottom: 36px;
 }
 
-.page-title {
-  font-size: 2rem;
-  font-weight: 700;
-}
-
-.page-subtitle {
-  margin-top: 0.5rem;
-  color: #6c757d;
-}
-
-/* ===== FAQ Board ===== */
-.faq-board {
-  border: 1px solid #dee2e6;
-  border-radius: 8px;
-  background: #fff;
-  overflow: hidden;
-}
-
-.faq-header {
-  display: grid;
-  grid-template-columns: 60px 120px 1fr 100px;
-  padding: 1rem;
-  background: #212529;
-  color: #fff;
-  font-weight: 600;
-  font-size: 0.85rem;
-}
-
-/* ===== FAQ Item ===== */
-.faq-item {
-  border-bottom: 1px solid #dee2e6;
-}
-
-.faq-item:last-child {
-  border-bottom: none;
-}
-
-.faq-question {
-  display: grid;
-  grid-template-columns: 60px 120px 1fr 100px;
-  padding: 1rem;
-  align-items: center;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.faq-question:hover {
-  background-color: #f8f9fa;
-}
-
-.faq-number {
-  text-align: center;
-  color: #adb5bd;
-}
-
-.faq-category {
-  text-align: center;
-}
-
-.faq-title {
-  font-weight: 600;
+.faq-page-header .page-title {
+  font-size: 32px;
+  font-weight: 800;
   color: #212529;
 }
 
-.faq-date {
-  text-align: center;
-  font-size: 0.8rem;
-  color: #6c757d;
+.faq-page-header .page-subtitle {
+  font-size: 17px;
+  line-height: 1.75;
+  color: #555;
 }
 
-/* ===== Category Badge ===== */
+.faq-page-header .brand-highlight {
+  font-weight: 800;
+  color: #f0c84b;
+  margin: 0 2px;
+}
+
+/* ===================== FAQ GRID ===================== */
+.faq-board {
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.faq-header,
+.faq-question {
+  display: grid;
+  grid-template-columns: 60px 140px 1fr 120px;
+  padding: 14px 10px;
+  align-items: center;
+}
+
+.faq-header {
+  background: #212529;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.faq-question {
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+}
+
+.faq-question:hover {
+  background: #f8f9fa;
+}
+
+.faq-header span:nth-child(3),
+.faq-title {
+  text-align: left;
+}
+
+/* ===================== 배지 ===================== */
 .category-badge {
-  display: inline-block;
   padding: 0.3em 0.7em;
   font-size: 0.75rem;
   font-weight: 600;
   border-radius: 999px;
   background: #ffc107;
-  color: #212529;
 }
 
-/* ===== Answer ===== */
+/* ===================== 답변 ===================== */
 .faq-answer {
-  background: #f9fafb;
-  border-left: 4px solid #ffc107;
-  padding: 1.25rem 1.5rem;
-  font-size: 0.95rem;
+  background: #fffdf2;
+  border-left: 4px solid #f0c84b;
+  padding: 16px 24px;
   line-height: 1.7;
-  animation: fadeDown 0.25s ease;
 }
 
-.faq-answer p {
-  margin-top: 0.5rem;
-  white-space: pre-wrap;
+/* ===================== 페이징 (Notice와 동일) ===================== */
+.community-pagination {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 30px;
 }
 
-/* ===== Empty / Loading ===== */
-.faq-empty {
-  padding: 2rem;
-  text-align: center;
-  color: #6c757d;
+.community-pagination button {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  background: #fff;
 }
 
-/* ===== Animation ===== */
-@keyframes fadeDown {
-  from {
-    opacity: 0;
-    transform: translateY(-5px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.community-pagination button.active {
+  background: #ffd84d;
+  border: none;
+  font-weight: 700;
 }
 
-/* ===== Mobile ===== */
-@media (max-width: 768px) {
-  .faq-header,
-  .faq-question {
-    grid-template-columns: 50px 100px 1fr;
-  }
+/* =========================
+   FAQ th/td 느낌으로 컬럼 정렬 강제
+   - 전체 가운데
+   - 3번째(질문/제목)만 왼쪽
+========================= */
 
-  .faq-date {
-    display: none;
-  }
-}
-
-.section-light {
-  padding-top: 80px;
-  padding-bottom: 80px;
-}
-
-/* FAQ 리스트 자체를 시각적으로 중앙에 */
-.faq-board {
-  margin: 0 auto;
-}
-
-
-.page-subtitle .brand {
-  font-weight: 600;
-  color: #212529;
-}
-
-/* ===== FAQ 헤더 / 리스트 컬럼 정렬 통일 ===== */
-
-/* 헤더 기본 가운데 정렬 */
+/* 헤더(=th 역할) */
 .faq-header span {
   text-align: center;
 }
 
-/* 질문(제목) 컬럼만 왼쪽 정렬 */
-.faq-header span:nth-child(3),
-.faq-question .faq-title {
+/* 바디 한 줄(=td 역할) */
+.faq-question > div {
+  text-align: center;
+}
+
+/* 제목(질문) 컬럼만 왼쪽 정렬 (3번째 컬럼) */
+.faq-header span:nth-child(3) {
   text-align: left;
 }
 
-/* 번호 / 카테고리 / 날짜 컬럼 정렬 */
-.faq-number,
-.faq-category,
-.faq-date {
-  text-align: center;
+.faq-question > div:nth-child(3) {
+  text-align: left;
+}
+
+/* 제목 영역 안의 텍스트까지 확실히 왼쪽 기준으로 */
+.faq-title {
+  text-align: left;
 }

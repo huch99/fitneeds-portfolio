@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../../api";            // 🔥 axios → api
 
 function CommunityUserDetail() {
   const { postId } = useParams();
@@ -26,7 +26,7 @@ function CommunityUserDetail() {
      게시글 상세 조회
   ========================= */
   const fetchPostDetail = async () => {
-    const res = await axios.get(`/api/user/community/${postId}`);
+    const res = await api.get(`/user/community/${postId}`);    // 🔥 변경
     setPost(res.data);
     setLoading(false);
   };
@@ -35,7 +35,7 @@ function CommunityUserDetail() {
      댓글 목록 조회
   ========================= */
   const fetchComments = async () => {
-    const res = await axios.get(`/api/user/community/${postId}/comments`);
+    const res = await api.get(`/user/community/${postId}/comments`); // 🔥 변경
     setComments(res.data);
   };
 
@@ -45,16 +45,16 @@ function CommunityUserDetail() {
   const checkJoined = async () => {
     if (!loginUserId) return;
 
-    const res = await axios.get(
-      `/api/user/community/${postId}/join/check`,
+    const res = await api.get(                             // 🔥 변경
+      `/user/community/${postId}/join/check`,
       { params: { userId: loginUserId } }
     );
     setAlreadyJoined(res.data.joined === true);
   };
 
   const fetchJoinUsers = async () => {
-    const res = await axios.get(
-      `/api/user/community/${postId}/join/users`
+    const res = await api.get(                             // 🔥 변경
+      `/user/community/${postId}/join/users`
     );
     setJoinUsers(res.data);
   };
@@ -66,7 +66,7 @@ function CommunityUserDetail() {
     if (!commentContent.trim()) return alert("댓글 내용을 입력해주세요.");
     if (!loginUserId) return alert("로그인이 필요합니다.");
 
-    await axios.post(`/api/user/community/${postId}/comments`, {
+    await api.post(`/user/community/${postId}/comments`, {   // 🔥 변경
       content: commentContent,
       writerId: loginUserId,
     });
@@ -91,7 +91,7 @@ function CommunityUserDetail() {
   const saveEditComment = async (commentId) => {
     if (!editingContent.trim()) return;
 
-    await axios.put(`/api/community/comments/${commentId}`, {
+    await api.put(`/community/comments/${commentId}`, {      // 🔥 변경
       userId: loginUserId,
       content: editingContent,
     });
@@ -103,7 +103,7 @@ function CommunityUserDetail() {
   const deleteComment = async (commentId) => {
     if (!window.confirm("댓글을 삭제하시겠습니까?")) return;
 
-    await axios.delete(`/api/community/comments/${commentId}`, {
+    await api.delete(`/community/comments/${commentId}`, {   // 🔥 변경
       data: { userId: loginUserId },
     });
 
@@ -118,7 +118,7 @@ function CommunityUserDetail() {
     if (String(post.writerId) === String(loginUserId))
       return alert("작성자는 참여할 수 없습니다.");
 
-    await axios.post(`/api/user/community/${postId}/join`, {
+    await api.post(`/user/community/${postId}/join`, {       // 🔥 변경
       userId: loginUserId,
     });
 
@@ -130,7 +130,7 @@ function CommunityUserDetail() {
   const handleCancelRecruit = async () => {
     if (!window.confirm("참여 신청을 취소하시겠습니까?")) return;
 
-    await axios.delete(`/api/user/community/${postId}/join`, {
+    await api.delete(`/user/community/${postId}/join`, {     // 🔥 변경
       data: { userId: loginUserId },
     });
 
@@ -149,7 +149,7 @@ function CommunityUserDetail() {
   const handleDeletePost = async () => {
     if (!window.confirm("게시글을 삭제하시겠습니까?")) return;
 
-    await axios.delete(`/api/user/community/${post.postId}`, {
+    await api.delete(`/user/community/${post.postId}`, {    // 🔥 변경
       params: { userId: loginUserId },
     });
 
@@ -206,7 +206,6 @@ function CommunityUserDetail() {
               작성자 {post.writerName || post.writerId || "-"} ·{" "}
               {post.createdAt?.substring(0, 10)}
             </span>
-
 
             {isWriter && (
               <div>
@@ -304,7 +303,6 @@ function CommunityUserDetail() {
             <div key={c.commentId} className="comment-item">
               <div className="comment-meta">
                 <strong>{c.writerName || c.writerId || "-"}</strong>
-
 
                 {isMy && !editing && (
                   <>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../api';        // 🔥 axios → api
 
 function CommunityMyRecruitList() {
     const navigate = useNavigate();
@@ -16,8 +16,8 @@ function CommunityMyRecruitList() {
         if (!loginUserId) return;
 
         try {
-            const res = await axios.get(
-                '/api/user/community/recruit/my',
+            const res = await api.get(                 // 🔥 변경
+                '/user/community/recruit/my',
                 { params: { userId: loginUserId } }
             );
             setPosts(res.data);
@@ -35,7 +35,7 @@ function CommunityMyRecruitList() {
         if (!window.confirm('해당 모집 참여를 취소하시겠습니까?')) return;
 
         try {
-            await axios.delete(`/api/user/community/${postId}/join`, {
+            await api.delete(`/user/community/${postId}/join`, {   // 🔥 변경
                 data: { userId: loginUserId }
             });
 

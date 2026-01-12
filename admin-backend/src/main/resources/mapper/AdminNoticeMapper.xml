@@ -28,7 +28,7 @@
             cp.updated_at,
 
             -- 지점명 표시용
-            b.brch_nm AS branchName
+            b.brch_nm AS branch_name
 
         FROM community_post cp
         LEFT JOIN branch b
@@ -61,7 +61,7 @@
             cp.updated_at,
 
             -- 지점명 표시용
-            b.brch_nm AS branchName
+            b.brch_nm AS branch_name
 
         FROM community_post cp
         LEFT JOIN branch b
