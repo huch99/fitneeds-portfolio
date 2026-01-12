@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import org.springframework.data.annotation.CreatedDate;
 
 import com.project.app.admin.entity.UserAdmin;
+import com.project.app.reservation.entity.Reservation;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -56,4 +57,9 @@ public class PassLog {
     @Column(name = "reg_dt", nullable = false)
     @CreatedDate
     private LocalDateTime regDt;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "rsv_id")
+    private Reservation reservation;
+    
 }

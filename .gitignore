@@ -2,3 +2,6 @@
 sqldeveloper - 바로 가기.lnk
 SpringToolSuite4 - 바로 가기.lnk
 admin-frontend/.env.development
+
+# 스프링 로컬 개발 환경 설정 제외
+/src/main/resources/application-dev.properties

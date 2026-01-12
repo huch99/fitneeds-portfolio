@@ -3,6 +3,7 @@ package com.project.app.reservation.dto;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import com.project.app.reservation.entity.AttendanceStatus;
 import com.project.app.reservation.entity.Reservation;
 
 import lombok.AllArgsConstructor;
@@ -22,6 +23,7 @@ public class MyReservationResponseDto {
     private String trainerName;
     private LocalDate rsvDt;
     private LocalTime rsvTime;
+    private AttendanceStatus attendanceStatus;
 
     /**
      * Reservation 엔티티를 MyReservationResponseDto로 변환하는 정적 팩토리 메서드
@@ -53,6 +55,7 @@ public class MyReservationResponseDto {
                                 : null)
                 .rsvDt(reservation.getRsvDt())
                 .rsvTime(reservation.getRsvTime())
+                .attendanceStatus(reservation.getAttendanceStatus())
                 .build();
     }
 }

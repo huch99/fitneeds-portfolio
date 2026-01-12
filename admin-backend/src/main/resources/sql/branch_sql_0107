@@ -46,7 +46,7 @@ CREATE TABLE schedule (
     schd_id BIGINT AUTO_INCREMENT PRIMARY KEY,
     brch_id BIGINT,
     prog_id BIGINT NOT NULL,
-    usr_id VARCHAR(50) NOT NULL,
+    user_id VARCHAR(50) NOT NULL,
     strt_dt DATE NOT NULL,
     end_dt DATE NOT NULL,
     strt_tm TIME NOT NULL,
@@ -58,7 +58,7 @@ CREATE TABLE schedule (
     reg_dt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     upd_dt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (prog_id) REFERENCES program(prog_id),
-    FOREIGN KEY (usr_id) REFERENCES users_admin(user_id),
+    FOREIGN KEY (user_id) REFERENCES users_admin(user_id),
     INDEX idx_schedule_date (strt_dt)
 );
 
@@ -110,7 +110,7 @@ INSERT INTO program (prog_nm, sport_id, type_cd, detail_type_cd, one_time_amt, r
 
 
 -- 스케줄 데이터
-INSERT INTO schedule (brch_id, prog_id, usr_id, strt_dt, end_dt, strt_tm, end_tm, max_nop_cnt, rsv_cnt, stts_cd, description) VALUES
+INSERT INTO schedule (brch_id, prog_id, user_id, strt_dt, end_dt, strt_tm, end_tm, max_nop_cnt, rsv_cnt, stts_cd, description) VALUES
 (1, 1, 'teacher001', '2026-02-01', '2026-02-01', '09:00:00', '10:30:00', 8, 2, 'OPEN', '초보자 환영'),
 (2, 2, 'teacher002', '2026-02-01', '2026-02-01', '13:00:00', '15:00:00', 10, 0, 'OPEN', NULL),
 (3, 4, 'teacher003', '2026-02-01', '2026-02-01', '14:00:00', '15:30:00', 12, 5, 'OPEN', '요가매트 제공'),

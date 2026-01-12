@@ -10,7 +10,6 @@ import './MyPage.css';
 import UsageHistorySection from './UsageHistorySection';
 import ReviewWriteSection from './ReviewWriteSection';
 import PaymentHistorySection from './PaymentHistorySection';
-import InquirySection from './InquirySection';
 import AttendanceSection from './AttendanceSection';
 import ProfileSection from './ProfileSection';
 
@@ -75,9 +74,6 @@ function MyPage() {
             setReviewTab={setReviewTab}
           />
         );
-
-      case 'inquiry':
-        return <InquirySection />;
 
       case 'payment-history':
         return <PaymentHistorySection />;

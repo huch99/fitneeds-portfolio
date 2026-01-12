@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.project.app.reservation.dto.MyReservationResponseDto;
+import com.project.app.reservation.dto.PastHistoryResponseDto;
 import com.project.app.reservation.service.ReservationService;
 
 import lombok.RequiredArgsConstructor;
@@ -137,4 +138,20 @@ public class ReservationController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
+    
+    @GetMapping("/completedReservations")
+    public ResponseEntity<Map<String,Object>> getCompletedReservations() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userId = authentication.getName();
+
+        List<PastHistoryResponseDto> data = reservationService.getCompletedReservations(userId);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("resultCode", "SUCCESS");
+        response.put("message", "조회 성공");
+        response.put("data", data);
+
+        return ResponseEntity.ok(response);
+    }
+
 }

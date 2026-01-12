@@ -16,7 +16,7 @@ const getPastHistory = async (startDate = null, endDate = null, branchId = null,
     if (branchId) params.branchId = branchId;
     if (reviewWritten) params.reviewWritten = reviewWritten;
     
-    const response = await api.get('/reservations/pastHistory', { params });
+    const response = await api.get('/reservations/completedReservations', { params });
     
     // 백엔드 응답 구조: { status, message, data }
     if (response.data.status === 'SUCCESS' && response.data.data) {
