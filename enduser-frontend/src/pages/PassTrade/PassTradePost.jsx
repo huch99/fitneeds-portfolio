@@ -5,15 +5,21 @@ import api from '../../api';
 import './PassTradePost.css'; // CSS 파일 생성 필요
 
 const PassTradePost = () => {
-  const { isAuthenticated, userId } = useSelector((state) => state.auth);
-  const [posts, setPosts] = useState([]);
-  const [favorites, setFavorites] = useState(new Set());
-  const [showRegisterModal, setShowRegisterModal] = useState(false);
-  const [showBuyModal, setShowBuyModal] = useState(false);
-  const [selectedPost, setSelectedPost] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const { isAuthenticated, userId } = useSelector((state) => state.auth); //로그인 여부
+  const [posts, setPosts] = useState([]);      //거래 게시글 목록
+  const [favorites, setFavorites] = useState(new Set());    //즐겨찾기한 게시글 ID 집합, (Set을 쓴 이유: 포함 여부 체크 빠름)
 
-  // 게시글 목록 조회
+  const [showRegisterModal, setShowRegisterModal] = useState(false);   //등록 / 구매 / 수정 모달 열림 여부
+  const [showBuyModal, setShowBuyModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedPost, setSelectedPost] = useState(null);     //구매 모달용 선택된 게시글
+  const [editPost, setEditPost] = useState(null);         //수정 모달용 선택된 게시글
+  const [loading, setLoading] = useState(false);           //API 중복 요청 방지 + 버튼 비활성화용
+
+
+  // ===============================
+  // 1. 게시글 목록 조회 기능
+  // ===============================
   const fetchPosts = async () => {
     try {
       const response = await api.get('/api/pass-trade/posts');
@@ -23,7 +29,9 @@ const PassTradePost = () => {
     }
   };
 
-  // 즐겨찾기 목록 조회
+  // ===============================
+  // 2. 즐겨찾기 목록 조회 기능
+  // ===============================
   const fetchFavorites = async () => {
     if (!isAuthenticated) return;
     try {
@@ -40,140 +48,220 @@ const PassTradePost = () => {
     fetchFavorites();
   }, [isAuthenticated]);
 
-  // 즐겨찾기 토글
-  const toggleFavorite = async (postId) => {
-    if (!isAuthenticated) return;
+ 
+
+  // ===============================
+  // 5. 게시글 삭제 기능
+  // ===============================
+  const handleDelete = async (postId) => {
+    if (!confirm('정말 삭제하시겠습니까?')) return;
     try {
-      if (favorites.has(postId)) {
-        await api.delete(`/api/pass-trade-favorite/${postId}`);
-        setFavorites(prev => new Set([...prev].filter(id => id !== postId)));
-      } else {
-        await api.post('/api/pass-trade-favorite', { postId });
-        setFavorites(prev => new Set([...prev, postId]));
-      }
+      await api.delete(`/api/pass-trade/posts/${postId}`);
+      alert('삭제 완료');
+      fetchPosts(); // 게시글 목록 즉시 갱신
     } catch (error) {
-      console.error('즐겨찾기 토글 실패:', error);
+      console.error('게시글 삭제 실패:', error);
+      alert('삭제 실패');
     }
   };
 
-  // 카드 클릭 시 구매 모달 오픈
-  const handleCardClick = (post) => {
-    if (!isAuthenticated) return;
-    setSelectedPost(post);
-    setShowBuyModal(true);
+  // ===============================
+  // 6. 게시글 수정 기능
+  // ===============================
+  const handleEdit = (post) => {
+    setEditPost(post);
+    setShowEditModal(true);
   };
 
-  // 등록 모달 컴포넌트
-  const RegisterModal = () => {
-    const [quantity, setQuantity] = useState('');
-    const [price, setPrice] = useState('');
+  // ===============================
+// 7. 등록/수정 모달 컴포넌트 (RegisterModal 패턴 재사용)
+// ===============================
+const RegisterModal = ({ isEdit = false }) => {
+  // ===============================
+  // 상태 정의 영역 (JS 로직)
+  // ===============================
+  const [title, setTitle] = useState(isEdit ? editPost?.title || '' : '');
+  const [content, setContent] = useState(isEdit ? editPost?.content || '' : '');
+  const [sellCount, setSellCount] = useState(isEdit ? editPost?.sellCount || '' : '');
+  const [saleAmount, setSaleAmount] = useState(isEdit ? editPost?.saleAmount || '' : '');
 
-    const handleSubmit = async (e) => {
-      e.preventDefault();
-      if (!quantity || !price || quantity <= 0 || price <= 0) {
-        alert('유효한 수량과 가격을 입력하세요.');
+  const [quantity, setQuantity] = useState('');
+  const [price, setPrice] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // ===============================
+    // 수정 모드
+    // ===============================
+    if (isEdit) {
+      if (!title || !content || sellCount <= 0 || saleAmount <= 0) {
+        alert('유효한 제목, 내용, 판매 수량, 판매 금액을 입력하세요.');
         return;
       }
+
       setLoading(true);
       try {
-        await api.post('/api/pass-trade/posts', {
-          sellerId: userId,
-          quantity: parseInt(quantity),
-          price: parseInt(price),
+        await api.patch(`/api/pass-trade/posts/${editPost.id}`, {
+          title,
+          content,
+          sellCount: Number(sellCount),
+          saleAmount: Number(saleAmount),
         });
-        setShowRegisterModal(false);
-        setQuantity('');
-        setPrice('');
-        fetchPosts(); // 목록 갱신
+
+        alert('수정 완료');
+        setShowEditModal(false);
+        setEditPost(null);
+        fetchPosts();
       } catch (error) {
-        console.error('게시글 등록 실패:', error);
-        alert('등록 실패');
+        console.error('게시글 수정 실패:', error);
+        alert('수정 실패');
       } finally {
         setLoading(false);
       }
-    };
+      return;
+    }
 
-    return (
-      <div className="modal-overlay" onClick={() => setShowRegisterModal(false)}>
-        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-          <h2>거래 게시글 등록</h2>
-          <form onSubmit={handleSubmit}>
-            <div>
-              <label>수량:</label>
-              <input
-                type="number"
-                value={quantity}
-                onChange={(e) => setQuantity(e.target.value)}
-                min="1"
-                required
-              />
-            </div>
-            <div>
-              <label>가격:</label>
-              <input
-                type="number"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                min="1"
-                required
-              />
-            </div>
-            <button type="submit" disabled={loading}>등록</button>
-          </form>
-        </div>
-      </div>
-    );
+    // ===============================
+    // 등록 모드
+    // ===============================
+    if (!quantity || !price || quantity <= 0 || price <= 0) {
+      alert('유효한 수량과 가격을 입력하세요.');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await api.post('/api/pass-trade/posts', {
+        sellerId: userId,
+        quantity: Number(quantity),
+        price: Number(price),
+      });
+
+      alert('등록 완료');
+      setShowRegisterModal(false);
+      setQuantity('');
+      setPrice('');
+      fetchPosts();
+    } catch (error) {
+      console.error('게시글 등록 실패:', error);
+      alert('등록 실패');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // 구매 모달 컴포넌트
-  const BuyModal = () => {
-    const [quantity, setQuantity] = useState(1);
-    const totalPrice = selectedPost ? selectedPost.price * quantity : 0;
+  const closeModal = () => {
+    if (isEdit) {
+      setShowEditModal(false);
+      setEditPost(null);
+    } else {
+      setShowRegisterModal(false);
+    }
+  };
 
-    const handleBuy = async () => {
-      if (quantity > selectedPost.remaining) {
-        alert('수량이 부족합니다.');
-        return;
-      }
-      setLoading(true);
-      try {
-        await api.post(`/api/pass-trade/posts/${selectedPost.id}/buy`, {
-          buyerId: userId,
-          quantity: parseInt(quantity),
-        });
-        alert('구매 완료');
-        setShowBuyModal(false);
-        fetchPosts(); // 목록 갱신
-      } catch (error) {
-        console.error('구매 실패:', error);
-        alert('구매 실패');
-      } finally {
-        setLoading(false);
-      }
-    };
+  // ===============================
+  // JSX 렌더링 영역 (화면)
+  // ===============================
+  return (
+    <div className="modal-overlay" onClick={closeModal}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <h2>{isEdit ? '거래 게시글 수정' : '거래 게시글 등록'}</h2>
 
-    return (
-      <div className="modal-overlay" onClick={() => setShowBuyModal(false)}>
-        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-          <h2>구매 확인</h2>
-          <p>이용권: {selectedPost?.type}</p>
-          <p>가격: {selectedPost?.price}원</p>
-          <div>
-            <label>수량:</label>
-            <input
-              type="number"
-              value={quantity}
-              onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value)))}
-              min="1"
-              max={selectedPost?.remaining}
-            />
+        {/* ===== 보유 이용권 정보 표시 영역 (등록 시만 노출) ===== */}
+        {!isEdit && (
+          <div className="user-pass-summary">
+            <p>종목: 헬스</p>
+            <p>이용권명: 헬스 이용권</p>
+            <p>지점: 강남점</p>
+            <p>유효기간: 2026.05.30</p>
+            <p>잔여 횟수: 5회</p>
           </div>
-          <p>총 금액: {totalPrice}원</p>
-          <button onClick={handleBuy} disabled={loading}>구매</button>
-        </div>
+        )}
+
+        <form onSubmit={handleSubmit}>
+          {isEdit ? (
+            <>
+              <div>
+                <label>제목:</label>
+                <input
+                  type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div>
+                <label>내용:</label>
+                <textarea
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div>
+                <label>판매 수량:</label>
+                <input
+                  type="number"
+                  value={sellCount}
+                  onChange={(e) => setSellCount(e.target.value)}
+                  min="1"
+                  required
+                />
+              </div>
+
+              <div>
+                <label>판매 금액:</label>
+                <input
+                  type="number"
+                  value={saleAmount}
+                  onChange={(e) => setSaleAmount(e.target.value)}
+                  min="1"
+                  required
+                />
+              </div>
+            </>
+          ) : (
+            <>
+              <div>
+                <label>수량:</label>
+                <input
+                  type="number"
+                  value={quantity}
+                  onChange={(e) => setQuantity(e.target.value)}
+                  min="1"
+                  required
+                />
+              </div>
+
+              <div>
+                <label>가격:</label>
+                <input
+                  type="number"
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                  min="1"
+                  required
+                />
+              </div>
+            </>
+          )}
+
+          <button type="submit" disabled={loading}>
+            {isEdit ? '수정' : '등록'}
+          </button>
+        </form>
       </div>
-    );
-  };
+    </div>
+  );
+};
+
+
+  // ===============================
+  // 9. 메인 렌더링
+  // ===============================
 
   return (
     <div className="pass-trade-post">
@@ -196,10 +284,17 @@ const PassTradePost = () => {
                 ♥
               </button>
             )}
+            {post.sellerId === userId && (
+              <>
+                <button onClick={(e) => { e.stopPropagation(); handleEdit(post); }}>수정</button>
+                <button onClick={(e) => { e.stopPropagation(); handleDelete(post.id); }}>삭제</button>
+              </>
+            )}
           </div>
         ))}
       </div>
       {showRegisterModal && <RegisterModal />}
+      {showEditModal && <RegisterModal isEdit={true} />}
       {showBuyModal && <BuyModal />}
     </div>
   );

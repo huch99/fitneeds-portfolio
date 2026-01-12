@@ -1,9 +1,10 @@
-package com.project.app.pass_trade.domain;
+package com.project.app.pass_trade.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -29,8 +30,14 @@ public class PassTradeTransaction {
     @Column(name = "trade_count", nullable = false)
     private Integer tradeCount;
 
-    @Column(name = "total_amount", nullable = false)
-    private Integer totalAmount;
+    @Column(
+            name = "total_amount",
+            nullable = false,
+            precision = 19,
+            scale = 4
+    )
+    private BigDecimal totalAmount;
+
 
     @Enumerated(EnumType.STRING)
     @Column(name = "transaction_status", nullable = false)

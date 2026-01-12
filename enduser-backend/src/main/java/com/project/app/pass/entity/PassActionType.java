@@ -1,4 +1,4 @@
-package com.project.app.pass.domain;
+package com.project.app.pass.entity;
 
 /**
  * 이용권 로그 액션 타입

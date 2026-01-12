@@ -1,5 +1,6 @@
 package com.project.app.payment.entity;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -58,7 +59,7 @@ public class Payment {
 	private Long refId;
 	
 	@Column(name = "pay_amt", nullable = false, columnDefinition = "DECIMAL(19,4)")
-	private Integer payAmt;
+	private BigDecimal payAmt;
 	
 	@Column(name = "pay_method", nullable = false, length = 20 )
 	@Enumerated(EnumType.STRING)

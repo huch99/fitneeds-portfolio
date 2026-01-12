@@ -1,5 +1,6 @@
 package com.project.app.payment.service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -49,7 +50,7 @@ public class PaymentService {
     @Transactional
     public Payment createPassTradePayment(
             String buyerId,
-            Integer amount,
+            BigDecimal amount,
             Long refTransactionId
     ) {
         User buyer = userRepository.findByUserId(buyerId)
@@ -120,11 +121,11 @@ public class PaymentService {
                 throw new IllegalArgumentException("이용권 결제 시 userPassId는 필수입니다.");
             }
             usedUserPass = userPassService.usePassForR(requestDto.getUserPassId(), "스케줄 예약(" + schedule.getSchdId() + ")");
-            if (requestDto.getAmount() != 0) {
+            if (requestDto.getAmount().compareTo(BigDecimal.ZERO) != 0) {
                 throw new IllegalArgumentException("이용권 결제 시 금액은 0원이어야 합니다.");
             }
         } else {
-            if (requestDto.getAmount() <= 0) {
+            if (requestDto.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
                 throw new IllegalArgumentException("이용권 결제가 아닌 경우 결제 금액은 0보다 커야 합니다.");
             }
         }

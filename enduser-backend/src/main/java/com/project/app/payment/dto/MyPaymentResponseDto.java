@@ -1,5 +1,6 @@
 package com.project.app.payment.dto;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import com.project.app.payment.entity.Payment;
@@ -23,8 +24,8 @@ public class MyPaymentResponseDto {
     private String programName;
     private String productName;  // 프론트엔드 호환성
     private String option;
-    private Integer paymentAmount;
-    private Integer price;  // 프론트엔드 호환성
+    private BigDecimal paymentAmount;
+    private BigDecimal price;  // 프론트엔드 호환성
     private String paymentStatus;
     private String cancelRefundStatus;
 
