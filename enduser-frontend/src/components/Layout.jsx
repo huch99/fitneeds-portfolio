@@ -10,10 +10,14 @@ function Layout({ children }) {
 
   return (
     <div className="layout-wrapper">
-      <Navigation />
+      <div className="layout-header">
+        <Navigation />
+      </div>
+
       <main className={`layout-main ${isHomePage ? 'layout-main-home' : ''}`}>
         {children}
       </main>
+
       <Footer />
     </div>
   );

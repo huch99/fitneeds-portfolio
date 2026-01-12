@@ -1,24 +1,20 @@
 package com.project.app.reservation.service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.project.app.branch.entity.Branch;
-import com.project.app.payment.entity.Payment;
 import com.project.app.reservation.dto.MyReservationResponseDto;
 import com.project.app.reservation.entity.Reservation;
 import com.project.app.reservation.entity.RsvSttsCd;
 import com.project.app.reservation.repository.ReservationRepository;
 import com.project.app.schedule.entity.Schedule;
-import com.project.app.schedule.repository.ScheduleRepository;
 import com.project.app.user.entity.User;
 import com.project.app.userpass.entity.UserPass;
 import com.project.app.userpass.service.UserPassService;
@@ -33,7 +29,6 @@ import lombok.extern.slf4j.Slf4j;
 public class ReservationService {
 
 	private final ReservationRepository reservationRepository;
-	private final ScheduleRepository scheduleRepository;
 	private final UserPassService userPassService;
 	
 	/**
@@ -59,8 +54,6 @@ public class ReservationService {
                 .rsvTime(rsvTime)
                 .sttsCd(RsvSttsCd.CONFIRMED) // 결제 완료 후 확정 상태
                 .updID(user.getUserId()) // (옵션) 처음 생성 시에는 예약한 사용자 ID로 업데이트 ID 설정
-                .regDt(LocalDateTime.now())
-                .updDt(LocalDateTime.now())
                 .build();
 
         return reservationRepository.save(reservation);

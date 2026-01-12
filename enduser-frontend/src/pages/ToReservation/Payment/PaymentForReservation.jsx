@@ -172,7 +172,8 @@ const PaymentForReservation = () => {
                 reservationTime: strtTm, // HH:MM 형식
                 userPassId: payMethod === 'PASS' ? selectedUserPass?.userPassId : null,
                 paymentDetails: `스케줄 예약: ${progNm} - ${selectedDate}`,
-                // Huch의 백엔드 RequestDto에 'reason' 필드가 없으므로 여기선 전달하지 않음
+                targetId : schdId,
+                targetName : `${progNm}`,
             };
 
             const response = await api.post('/payments/process', requestBody);

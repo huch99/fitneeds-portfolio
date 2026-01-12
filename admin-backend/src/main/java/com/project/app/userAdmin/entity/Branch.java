@@ -2,10 +2,9 @@ package com.project.app.userAdmin.entity; // 패키지 변경
 
 import java.time.LocalDateTime;
 
-import org.hibernate.annotations.ColumnDefault;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -21,8 +20,9 @@ import lombok.NoArgsConstructor;
 @Builder // Builder 패턴 제공
 public class Branch {
 
-	// brch_id (BIGINT, PRIMARY KEY)
+	// brch_id (VARCHAR(50), PRIMARY KEY)
     @Id // 기본 키로 지정
+    @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
     @Column(name = "brch_id", nullable = false) // 컬럼 이름 명시, NULL 허용 안함
     private Long brchId;
 
@@ -30,7 +30,7 @@ public class Branch {
     private String brchNm;
 
     // addr (VARCHAR(255))
-    @Column(name = "addr", length = 255) // 컬럼 이름, 길이 255, NULL 허용 (정보에 명시되지 않아 기본적으로 NULL 허용)
+    @Column(name = "addr", length = 255, nullable = false) // 컬럼 이름, 길이 255, NULL 허용 안함 (데이터베이스 제약 조건에 맞춤)
     private String addr;
 
     @Column(name = "oper_yn", columnDefinition = "TINYINT(1)", nullable = false) // TINYINT(1)은 Java에서 boolean으로 매핑

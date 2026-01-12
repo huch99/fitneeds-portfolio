@@ -33,7 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ScheduleController {
 
-	private final ScheduleService scheduleService;
+    private final ScheduleService scheduleService;
 
 	// 종목 ID를 통한 조회
 	@GetMapping("/getSchedulesBySportIdForR/{sportId}")

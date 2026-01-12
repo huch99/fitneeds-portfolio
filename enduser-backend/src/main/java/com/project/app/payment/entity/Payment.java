@@ -15,21 +15,27 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "PAYMENT")
+@Table(name = "PAYMENT", indexes = {
+		@Index(name = "idx_payment_user_stts", columnList = "user_id, stts_cd"),
+		@Index(name = "idx_payment_pay_type_ref", columnList = "pay_type_cd, ref_id")
+})
 public class Payment {
 
 	@Id
@@ -37,11 +43,11 @@ public class Payment {
 	@Column(name = "pay_id", nullable = false)
 	private Long payId;
 	
-	@Column(name = "ord_no", nullable = false, length = 100)
+	@Column(name = "ord_no", nullable = false, length = 100, unique = true)
 	private String ordNo;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "usr_id", nullable = false)
+	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
 	
 	@Column(name = "pay_type_cd", nullable = false, length = 20)
@@ -62,9 +68,15 @@ public class Payment {
 	@Enumerated(EnumType.STRING)
 	private PaymentSttsCd sttsCd;
 	
-	@Column(name = "reg_dt", nullable = false)
 	@CreatedDate
-	private LocalDateTime regDt;
+    @Column(name = "REG_DT", updatable = false)
+    private LocalDateTime regDt;
+	
+	@Column(name = "target_id", nullable = false)
+	private Long targetId;
+	
+	@Column(name = "target_name", nullable = false, length = 100)
+	private String targetName;
 	
 	// --- ordNo 자동 생성 로직 (핵심) ---
     @PrePersist
@@ -73,5 +85,5 @@ public class Payment {
             this.ordNo = "PAYMENT-" + UUID.randomUUID().toString();
         }
     }
-	
+
 }

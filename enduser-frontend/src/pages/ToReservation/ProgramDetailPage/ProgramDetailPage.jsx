@@ -13,8 +13,8 @@ const ProgramDetailPage = () => {
     const queryParams = new URLSearchParams(location.search);
 
     const rawSessions = location.state?.sessions || [];
-    const sessions = Array.isArray(rawSessions) 
-        ? rawSessions 
+    const sessions = Array.isArray(rawSessions)
+        ? rawSessions
         : (rawSessions.sessions || []);
 
     // URL 파라미터에서 모든 정보 추출
@@ -25,14 +25,18 @@ const ProgramDetailPage = () => {
     const endDt = queryParams.get('endDt');
     const strtTm = queryParams.get('strtTm');
     const endTm = queryParams.get('endTm');
+    const userId = queryParams.get('userId');
 
     const [programDetails, setProgramDetails] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    const [selectedDate, setSelectedDate] = useState(null); // 선택된 날짜 상태
+    // 선택된 날짜 상태
+    const [selectedDate, setSelectedDate] = useState(null);
 
     const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+
+    // 로그인 모달 오픈 상태
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
     const [isReservationModalOpen, setIsReservationModalOpen] = useState(false);
 
@@ -55,7 +59,7 @@ const ProgramDetailPage = () => {
     // 캘린더 날짜 선택 기능 수정
     const handleDateSelect = (date) => {
         setSelectedDate(date);
-        
+
         // 날짜를 YYYY-MM-DD 형식으로 변환하여 sessions에서 검색
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -127,8 +131,13 @@ const ProgramDetailPage = () => {
             }
 
             try {
-                const response = await api.get(`/programs/getProgramByProgIdForR/${progId}`);
-                setProgramDetails(response.data);
+                const response = await api.get(`/programs/getProgramByProgIdForR/${progId}`, {
+                    params: {
+                        userId: userId,
+                    }
+                });
+                setProgramDetails(response.data.data);
+                console.log(programDetails);
             } catch (err) {
                 setError('프로그램 데이터를 불러오는 중 오류가 발생했습니다.');
                 console.error('Error fetching program data:', err);
@@ -149,13 +158,34 @@ const ProgramDetailPage = () => {
                     <div>{error}</div>
                 ) : (
                     <div className="program-detail-container">
-                        <p className="program-title">{programDetails.progNm}</p>
-                        <p className="instructor-name">{userName} 강사</p>
-                        <p className="branch-name">{brchNm}</p>
-                        <p className="program-duration">기간 : {strtDt === endDt ? formatDate(strtDt) : `${formatDate(strtDt)} ~ ${formatDate(endDt)}`}</p>
-                        <p className="program-time">진행 시간 : {formatTime(strtTm)} ~ {formatTime(endTm)}</p>
+                        <div className="detail-top-wrapper">
+                            <div className="instructor-section"> {/* 강사정보 */}
+                                <img className="instructor-image" src={`${programDetails.teacherInfo.profileImgUrl}`} alt={`${userName}`} />
+                                <p className="instructor-name">{userName} 강사</p>
+                                <p className="instructor-intro">{programDetails.teacherInfo.intro}</p>
+                                <div className="certificate-container">
+                                    <p className="certificate-title">보유 자격증</p>
+                                    {programDetails.teacherInfo.certificates.length === 0 ? (
+                                        <div className="no-certificate"> 등록된 자격증이 없습니다. </div>
+                                    ) : (
+                                        programDetails.teacherInfo.certificates.map((certificate, index) => (
+                                            <div key={index} className="certificate-item">
+                                                <p>{certificate.certNm} - {certificate.issuer}</p>
+                                            </div>
+                                        ))
+                                    )}
+                                </div>
+                            </div>
 
-                        <p className="program-description">{programDetails.description}dsadsa</p>
+
+                            <div className="program-info-section"> {/* 프로그램 정보 */}
+                                <p className="program-title">{programDetails.progNm}</p>
+                                <p className="branch-name">{brchNm}</p>
+                                <p className="program-duration">기간 : {strtDt === endDt ? formatDate(strtDt) : `${formatDate(strtDt)} ~ ${formatDate(endDt)}`}</p>
+                                <p className="program-time">진행 시간 : {formatTime(strtTm)} ~ {formatTime(endTm)}</p>
+                                <p className="program-description">{programDetails.description}</p>
+                            </div>
+                        </div>
 
                         {/* 예약하기 버튼 클릭 시 모달 열기 */}
                         <button className="reserve-button" onClick={handleReservationModal}>예약하기</button>
@@ -164,7 +194,17 @@ const ProgramDetailPage = () => {
                         {isLoginModalOpen && (
                             <LoginModal
                                 isOpen={isLoginModalOpen}
-                                onClose={() => setIsLoginModalOpen(false)} />
+                                onClose={() => setIsLoginModalOpen(false)}
+                                onOpenRegister={handleSwitchToRegister}
+                            />
+                        )}
+
+                        {/* 5. RegisterModal 렌더링 추가 */}
+                        {isRegisterModalOpen && (
+                            <RegisterModal
+                                isOpen={isRegisterModalOpen}
+                                onClose={() => setIsRegisterModalOpen(false)}
+                            />
                         )}
 
                         {/* CalendarModal 렌더링 */}
@@ -182,10 +222,6 @@ const ProgramDetailPage = () => {
                             />
                         )}
                     </div>
-
-                    
-
-
                 )
             )}
         </div>

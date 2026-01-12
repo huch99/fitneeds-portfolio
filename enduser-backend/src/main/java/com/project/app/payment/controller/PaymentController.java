@@ -23,9 +23,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PaymentController {
 
-	private final PaymentService paymentService;
-	
-	/**
+    private final PaymentService paymentService;
+
+    /**
      * 클라이언트로부터 결제 요청을 받아 결제를 처리합니다.
      *
      * @param requestDto 결제 요청 상세 정보를 담은 DTO

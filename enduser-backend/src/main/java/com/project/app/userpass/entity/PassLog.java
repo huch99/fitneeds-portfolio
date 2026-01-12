@@ -30,30 +30,30 @@ import lombok.NoArgsConstructor;
 @Table(name = "PASS_LOG")
 public class PassLog {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "pass_log_id", nullable = false)
-	private Long passLogId;
-	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_pass_id", nullable = false)
-	private UserPass userPass;
-	
-	@Column(name = "chg_type_cd", nullable = false, length = 30)
-	@Enumerated(EnumType.STRING)
-	private PassLogChgTypeCd chgTypeCd;
-	
-	@Column(name = "chg_cnt", nullable = false)
-	private Integer chgCnt;
-	
-	@Column(name = "chg_rsn", nullable = true, length = 255)
-	private String chgRsn;
-	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "pocs_usr_id", nullable = true)
-	private UserAdmin userAdmin;
-	
-	@Column(name = "reg_dt", nullable = false)
-	@CreatedDate
-	private LocalDateTime regDt;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "pass_log_id", nullable = false)
+    private Long passLogId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_pass_id", nullable = false)
+    private UserPass userPass;
+
+    @Column(name = "chg_type_cd", nullable = false, length = 30)
+    @Enumerated(EnumType.STRING)
+    private PassLogChgTypeCd chgTypeCd;
+
+    @Column(name = "chg_cnt", nullable = false)
+    private Integer chgCnt;
+
+    @Column(name = "chg_rsn", nullable = true, length = 255)
+    private String chgRsn;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pocs_usr_id", nullable = true)
+    private UserAdmin userAdmin;
+
+    @Column(name = "reg_dt", nullable = false)
+    @CreatedDate
+    private LocalDateTime regDt;
 }

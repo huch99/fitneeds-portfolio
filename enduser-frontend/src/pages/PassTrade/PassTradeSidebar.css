@@ -1,0 +1,59 @@
+/* PassTrade Sidebar Styles */
+
+/* 폰트 */
+@font-face {
+  font-family: 'UbuntuBold';
+  src: url('../../fonts/Ubuntu-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+/* Sidebar */
+.pass-trade-sidebar {
+  width: 320px;
+  background-color: #fff;
+  padding: 2rem 0;
+  border-right: 1px solid #e9ecef;
+  flex-shrink: 0;
+  font-family: 'UbuntuBold', sans-serif;
+}
+
+/* Menu */
+.sidebar-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-menu-item {
+  margin: 0;
+}
+
+/* NavLink = 버튼처럼 보이게 */
+.sidebar-menu-button {
+  display: block;
+  width: 100%;
+  padding: 0.75rem 1.5rem;
+  text-decoration: none;
+  text-align: left;
+
+  font-size: 1.25rem;
+  color: #495057;
+
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+/* Hover */
+.sidebar-menu-button:hover {
+  background-color: #f8f9fa;
+  color: #212529;
+}
+
+/* Active (즉시 반영됨) */
+.sidebar-menu-button.active {
+  background-color: #FFC107 !important;
+  color: #212529;
+  font-weight: 700;
+}

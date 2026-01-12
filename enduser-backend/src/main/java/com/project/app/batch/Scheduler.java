@@ -16,15 +16,15 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class Scheduler {
 
-	private final ReservationService reservationService;
+    private final ReservationService reservationService;
     private final ScheduleService scheduleService;
-    
+
     // 매일 새벽 1시에 실행 (UTC 기준으로 설정되므로, 서버 시간대 고려)
     // cron 표현식: "초 분 시 일 월 요일"
     // "0 0 1 * * *" = 매일 새벽 1시 0분 0초
     // fixedDelayString = "3600000" (1시간마다): 특정 간격마다 실행
     // initialDelayString = "60000" (앱 시작 후 1분 뒤 첫 실행)
-    
+
     @Scheduled(cron = "0 0 1 * * *") // 매일 새벽 1시에 실행
     public void updateExpiredData() {
         String batchUser = "SCHEDULER_BATCH"; // 스케줄러가 업데이트했음을 기록할 사용자 ID

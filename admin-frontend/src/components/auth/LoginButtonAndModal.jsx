@@ -10,7 +10,7 @@ import '../Navigation.css';
 function LoginButtonAndModal() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { isAuthenticated, userName, userId, role, brchId } = useSelector((state) => state.auth); // Redux 상태 가져오기
+    const { isAuthenticated, userName, userId, role } = useSelector((state) => state.auth); // Redux 상태 가져오기
 
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
     const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);

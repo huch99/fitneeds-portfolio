@@ -43,8 +43,9 @@ public class JwtTokenProvider {
 
     @PostConstruct
     protected void init() {
-        // secretKeySource를 UTF-8 바이트로 변환 후 HMAC-SHA 키 생성
-        byte[] keyBytes = secretKeySource.getBytes(StandardCharsets.UTF_8);
+        // secretKeySource가 Base64로 인코딩된 문자열이라고 가정합니다.
+        // Base64 디코딩 후 Key 객체로 생성 (HS256에 적합한 HMAC-SHA 키)
+        byte[] keyBytes = Base64.getDecoder().decode(secretKeySource);
         secretKey = Keys.hmacShaKeyFor(keyBytes);
     }
 

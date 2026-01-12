@@ -25,36 +25,36 @@ import lombok.NoArgsConstructor;
 @Table(name = "BRACH_INFO")
 public class BranchInfo {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "br_info_id", nullable = false)
-	private Long brInfoId;			// 지점 정보 ID
-	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "brch_id", nullable = false)
-	private Branch branch;			// 지점 ID
-	
-	@Column(name = "open_time", nullable = false)
-	private LocalTime openTime;		// 오픈시간
-	
-	@Column(name = "close_time", nullable = false)
-	private LocalTime closeTime;	// 마감 시간
-	
-	@Column(name = "break_start_time", nullable = true)
-	private LocalTime breakStartTime;	// 휴게 시작 시간
-	
-	@Column(name = "break_end_time", nullable = true)
-	private LocalTime breakEndTime;		// 휴게 종료 시간
-	
-	@Column(name = "holiday_info", nullable = true, columnDefinition = "TEXT")
-	private String holidayInfo;			// 휴일 정보
-	
-	@Column(name = "policy_info", nullable = true, columnDefinition = "TEXT")
-	private String policyInfo;			// 정책 정보
-	
-	@Column(name = "create_at", nullable = false)
-	private LocalDateTime createAt;		// 생성 일시
-	
-	@Column(name = "upd_at", nullable = false)
-	private LocalDateTime updAt;		// 수정 일시
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "br_info_id", nullable = false)
+    private Long brInfoId;			// 지점 정보 ID
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "brch_id", nullable = false)
+    private Branch branch;			// 지점 ID
+
+    @Column(name = "open_time", nullable = false)
+    private LocalTime openTime;		// 오픈시간
+
+    @Column(name = "close_time", nullable = false)
+    private LocalTime closeTime;	// 마감 시간
+
+    @Column(name = "break_start_time", nullable = true)
+    private LocalTime breakStartTime;	// 휴게 시작 시간
+
+    @Column(name = "break_end_time", nullable = true)
+    private LocalTime breakEndTime;		// 휴게 종료 시간
+
+    @Column(name = "holiday_info", nullable = true, columnDefinition = "TEXT")
+    private String holidayInfo;			// 휴일 정보
+
+    @Column(name = "policy_info", nullable = true, columnDefinition = "TEXT")
+    private String policyInfo;			// 정책 정보
+
+    @Column(name = "create_at", nullable = false)
+    private LocalDateTime createAt;		// 생성 일시
+
+    @Column(name = "upd_at", nullable = false)
+    private LocalDateTime updAt;		// 수정 일시
 }

@@ -25,10 +25,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserPassController {
 
-	private final UserPassService userPassService;
-	
-	
-	 /**
+    private final UserPassService userPassService;
+
+
+    /**
      * 특정 사용자 ID에 해당하는 모든 이용권 목록을 조회합니다.
      * 이 메서드는 사용자의 현재 예약 가능 또는 사용 완료된 이용권 정보를 프론트엔드에 제공합니다.
      *
@@ -44,53 +44,6 @@ public class UserPassController {
 				.collect(Collectors.toList());
 	}
 	
-	/**
-     * 이용권을 사용 처리합니다.
-     * 잔여 횟수를 1 감소시키고, 0이 되면 상태를 '사용 불가'로 업데이트합니다.
-     *
-     * @param userPassId 사용할 UserPass의 ID
-     * @param requestBody 사용 사유를 포함하는 JSON 요청 바디 (예: {"reason": "스케줄 예약"})
-     * @return 업데이트된 UserPass 정보를 담은 응답 DTO
-     * @throws IllegalArgumentException 이용권을 찾을 수 없거나 이미 잔여 횟수가 없는 경우
-     */
-    @PostMapping("/useUserPassForR/{userPassId}")
-    public ResponseEntity<UserPassResponseDto> useUserPassForR(
-            @PathVariable("userPassId") Long userPassId,
-            @RequestBody Map<String, String> requestBody) { // <--- RequestBody를 통해 사유를 받음
-        
-        String reason = requestBody.get("reason"); // "reason" 키의 값을 가져옴
-        if (reason == null || reason.trim().isEmpty()) {
-            reason = "스케줄 예약"; // 사유가 없으면 기본값 설정
-        }
-
-    	UserPass updatedUserPass = userPassService.usePassForR(userPassId, reason); // <--- reason 전달
-    	
-    	return ResponseEntity.ok(UserPassResponseDto.from(updatedUserPass));
-    }
-    
-    /**
-     * 예약 취소 처리 시 이용권의 잔여 횟수를 복원합니다.
-     * 잔여 횟수를 1 증가시키고, 상태를 '사용 가능'으로 업데이트합니다.
-     *
-     * @param userPassId 복원할 UserPass의 ID
-     * @param requestBody 복원 사유를 포함하는 JSON 요청 바디 (예: {"reason": "예약 취소"})
-     * @return 업데이트된 UserPass 정보를 담은 응답 DTO
-     * @throws IllegalArgumentException 이용권을 찾을 수 없거나 복원할 수 없는 경우 (초기 구매 수량 초과 등)
-     */
-    @PostMapping("/cancelUserPassForR/{userPassId}") 
-    public ResponseEntity<UserPassResponseDto> cancelUserPassForR(
-            @PathVariable("userPassId") Long userPassId,
-            @RequestBody Map<String, String> requestBody) { // <--- RequestBody를 통해 사유를 받음
-        
-        String reason = requestBody.get("reason"); // "reason" 키의 값을 가져옴
-        if (reason == null || reason.trim().isEmpty()) {
-            reason = "예약 취소로 이용권 복원"; // 사유가 없으면 기본값 설정
-        }
-
-    	UserPass updatedUserPass = userPassService.cancelReservationAndUpdateUserPassForR(userPassId, reason); // <--- reason 전달
-    	
-    	return ResponseEntity.ok(UserPassResponseDto.from(updatedUserPass));
-    }
 
     // 서비스 계층에서 발생한 IllegalArgumentException을 받아서 400 Bad Request로 응답합니다.
     @ExceptionHandler(IllegalArgumentException.class)

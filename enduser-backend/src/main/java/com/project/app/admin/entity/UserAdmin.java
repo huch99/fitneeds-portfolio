@@ -12,18 +12,26 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
-@Data
+@Getter
+@Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "USERS_ADMIN")
+@Table(name = "USERS_ADMIN", indexes = {
+		@Index(name = "idx_user_name", columnList = "user_name"),
+		@Index(name = "idx_user_branch", columnList = "brch_id")
+})
 public class UserAdmin {
 
 	@Id
@@ -42,17 +50,18 @@ public class UserAdmin {
 	@Column(name = "phone_number", nullable = true, length = 20)
 	private String phoneNumber;
 	
-	@Column(name = "role", nullable = false, length = 50)
 	@Enumerated(EnumType.STRING)
-	@ColumnDefault("'USER'")
-	private UserAdminRole role;
+    @Column(name = "role", length = 50, nullable = false)
+    @Builder.Default
+    private UserAdminRole role = UserAdminRole.USER;
 	
-	@Column(name = "is_active", nullable = false, columnDefinition = "TINYINT(1)")
-	@ColumnDefault("1")
-	private boolean isActive = true;
+	@Column(name = "is_active", nullable = false)
+    @ColumnDefault("1")
+    private boolean isActive = true;
 	
-	@Column(name = "agree_at", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-	private LocalDateTime agreeAt;
+	@Column(name = "agree_at", nullable = false, updatable = false)
+    @Builder.Default
+    private LocalDateTime agreeAt = LocalDateTime.now();
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "brch_id", nullable = true)

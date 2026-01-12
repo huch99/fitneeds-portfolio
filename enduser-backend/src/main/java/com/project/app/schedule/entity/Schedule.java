@@ -1,15 +1,12 @@
 package com.project.app.schedule.entity;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import org.hibernate.annotations.ColumnDefault;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.project.app.admin.entity.UserAdmin;
+import com.project.app.aspect.BaseTimeEntity;
 import com.project.app.branch.entity.Branch;
 import com.project.app.program.entity.Program;
 
@@ -17,39 +14,46 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
-@Data
+@Getter @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "SCHEDULE")
-public class Schedule {
+@Table(name = "SCHEDULE", indexes = {
+		@Index(name = "idx_schd_strtdt", columnList = "strt_dt"),
+		@Index(name = "idx_schd_sttscd", columnList = "stts_cd"),
+		@Index(name = "idx_schd_brch_prog", columnList = "brch_id, prog_id")
+})
+public class Schedule extends BaseTimeEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "schd_id", nullable = false)
 	private Long schdId;			// 스케줄 ID
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "prog_id", nullable = false)
 	private Program program;		// 프로그램 ID
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id", nullable = false)
 	private UserAdmin userAdmin;	// 유저(어드민 - 강사) ID
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "brch_id", nullable = false)
 	private Branch branch;
 	
@@ -69,8 +73,9 @@ public class Schedule {
 	private Integer maxNopCnt;		// 최대 정원
 	
 	@Column(name = "rsv_cnt", nullable = false)
-	@ColumnDefault("0")
-	private Integer rsvCnt;			// 현재 인원
+    @ColumnDefault("0")
+    @Builder.Default
+    private Integer rsvCnt = 0;			// 현재 인원
 	
 	@Column(name = "stts_cd", nullable = false, columnDefinition = "VARCHAR(20)")
 	@Enumerated(EnumType.STRING)
@@ -78,13 +83,5 @@ public class Schedule {
 	
 	@Column(name = "description", nullable = true, columnDefinition = "TEXT")
 	private String description;		
-	
-	@Column(name = "reg_dt", nullable = false)
-	@CreatedDate
-	private LocalDateTime regDt;
-	
-	@Column(name = "upd_dt", nullable = false)
-	@LastModifiedDate
-	private LocalDateTime updDt;
 	
 }
