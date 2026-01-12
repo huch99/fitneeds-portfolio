@@ -22,11 +22,9 @@ public class BranchInfo {
     private String openTime;
     private String closeTime;
     private String breakStartTime;
-    private String breakEndTime;
-    
+    private String breakEndTime;    
     private String holidayInfo;
-    private String policyInfo;
-    
+    private String policyInfo;    
     private String creatAt;
     private String updAt;
 }
