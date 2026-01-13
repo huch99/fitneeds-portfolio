@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import SideBar from "./SideBar";
 import '../../components/auth/modalStyles.css';
 import './MyPage.css';
 
