@@ -95,7 +95,13 @@ public class AdminNoticeService {
     public void updateVisible(Long postId, boolean visible) {
         adminNoticeMapper.updateVisible(postId, visible);
     }
-
+    
+//    ADMIN 공지사항 상단 고정 / 해제
+    @Transactional
+    public void updatePinned(Long postId, boolean pinned) {
+        adminNoticeMapper.updatePinned(postId, pinned);
+    }
+    
     /**
      * ADMIN 공지사항 삭제
      */

@@ -28,7 +28,7 @@ function AdminNoticePage() {
       title: n.title,
       content: n.content,
       visible: n.isVisible,
-      pinned: false,
+      pinned: n.isPinned,
       endDate: n.displayEnd ? n.displayEnd.split("T")[0] : "상시",
       createdAt: n.createdAt?.split("T")[0],
       branchId: n.branchId,
@@ -118,12 +118,27 @@ function AdminNoticePage() {
   };
 
   /* =========================
+     📌 상단 고정
+  ========================= */
+  const togglePinned = async (n) => {
+    await api.put(`/admin/notice/${n.id}/pin`, null, {
+      params: { pinned: !n.pinned },
+    });
+    fetchNotices();
+  };
+
+  /* =========================
      검색 & 정렬
   ========================= */
   const filteredNotices = notices.filter((n) =>
     n.title.includes(searchKeyword)
   );
-  const sortedNotices = [...filteredNotices].sort((a, b) => b.id - a.id);
+
+  // DB에서도 정렬되지만, UI에서도 한 번 더 안전하게 처리
+  const sortedNotices = [...filteredNotices].sort((a, b) => {
+    if (a.pinned !== b.pinned) return b.pinned - a.pinned; // pinned 먼저
+    return b.id - a.id;
+  });
 
   return (
     <>
@@ -156,7 +171,11 @@ function AdminNoticePage() {
               <tr
                 key={n.id}
                 style={{
-                  background: !n.visible ? "#f1f1f1" : "white",
+                  background: n.pinned
+                    ? "#fff9e6"
+                    : !n.visible
+                    ? "#f1f1f1"
+                    : "white",
                   color: !n.visible ? "#999" : "#000",
                   opacity: !n.visible ? 0.5 : 1,
                 }}
@@ -167,6 +186,7 @@ function AdminNoticePage() {
                   onClick={() => n.visible && toggleOpen(n.id)}
                   style={{ cursor: "pointer", fontWeight: "600" }}
                 >
+                  {n.pinned && "📌 "}
                   {n.title}
                 </td>
                 <td>{n.endDate}</td>
@@ -175,6 +195,9 @@ function AdminNoticePage() {
                   <button onClick={() => editNotice(n)}>수정</button>
                   <button onClick={() => toggleVisible(n)}>
                     {n.visible ? "숨기기" : "보이기"}
+                  </button>
+                  <button onClick={() => togglePinned(n)}>
+                    {n.pinned ? "고정해제" : "상단고정"}
                   </button>
                   <button
                     onClick={() => deleteNotice(n.id)}

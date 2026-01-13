@@ -28,6 +28,7 @@ public class NoticeDto {
     private Integer views;
 
     private Boolean isVisible;   // 공지사항 숨김/보이기
+    private Boolean isPinned;
 
     /**
      * 🔥 공지 종료 날짜
