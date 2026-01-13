@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.project.app.aspect.ApiResponse;
@@ -30,6 +31,24 @@ public class UserPassController {
 
     private final UserPassService userPassService;
 
+    /**
+     * 특정 사용자의 이용권 목록 조회 (쿼리 파라미터 방식)
+     * @param userId 사용자 ID
+     * @return 이용권 목록
+     */
+    @GetMapping("/my-pass")
+    public ResponseEntity<List<UserPassResponseDto>> getMyPasses(@RequestParam("userId") String userId) {
+        try {
+            List<UserPass> userPasses = userPassService.getUserPassesByUserIdForR(userId);
+            List<UserPassResponseDto> result = userPasses.stream()
+                    .map(UserPassResponseDto::from)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            log.error("사용자 이용권 조회 실패 - userId: {}, error: {}", userId, e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
 
     /**
      * 특정 사용자 ID에 해당하는 모든 이용권 목록을 조회합니다.

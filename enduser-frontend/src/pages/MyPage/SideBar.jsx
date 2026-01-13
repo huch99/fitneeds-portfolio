@@ -11,6 +11,7 @@ function SideBar({ activeMenu, onMenuClick }) {
   // 현재 경로에 따라 active 상태 결정
   const isReservationListActive = location.pathname === '/mypage/reservations';
   const isMyPageActive = location.pathname === '/mypage';
+  const isMyPassActive = location.pathname === '/mypage/my-pass';
 
   // /mypage/reservations일 때 예약목록 섹션 열기
   useEffect(() => {
@@ -46,6 +47,16 @@ function SideBar({ activeMenu, onMenuClick }) {
             </button>
             {isMyExerciseOpen && (
               <ul className="sidebar-submenu">
+                <li 
+                  className={`sidebar-submenu-item ${isMyPassActive ? 'active' : ''}`}
+                >
+                  <Link 
+                    to="/mypage/my-pass" 
+                    style={{ textDecoration: 'none', color: 'inherit', display: 'block', width: '100%' }}
+                  >
+                    내 이용권
+                  </Link>
+                </li>
                 <li 
                   className={`sidebar-submenu-item ${isMyPageActive && activeMenu === 'usage-history' ? 'active' : ''}`}
                   onClick={() => handleMenuClick('usage-history')}
