@@ -1,19 +1,10 @@
 package com.project.app;
 
-import java.time.LocalDateTime;
-
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.client.RestTemplate;
-
-import com.project.app.config.util.UserIdGenerator;
-import com.project.app.user.entity.User;
-import com.project.app.user.repository.UserRepository;
 
 /**
  * Spring Boot 애플리케이션의 시작점 (메인 클래스)

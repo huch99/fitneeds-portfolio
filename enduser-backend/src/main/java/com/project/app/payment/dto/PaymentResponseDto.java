@@ -8,6 +8,8 @@ import com.project.app.payment.entity.PaymentSttsCd;
 import lombok.Builder;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 @Builder
 public class PaymentResponseDto {
@@ -17,7 +19,7 @@ public class PaymentResponseDto {
     private String userId;
     private PaymentPayTypeCd payTypeCd;
 //    private Long refId;
-    private Integer payAmt;
+    private BigDecimal payAmt;
     private PaymentPayMethod payMethod;
     private PaymentSttsCd sttsCd;
 

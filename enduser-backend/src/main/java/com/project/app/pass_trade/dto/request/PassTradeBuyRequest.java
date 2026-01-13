@@ -8,5 +8,6 @@ import lombok.Data;
 public class PassTradeBuyRequest {
     
     // 구매할 수량
-    private Integer tradeCount;
+    private Integer buyQty;
+
 }

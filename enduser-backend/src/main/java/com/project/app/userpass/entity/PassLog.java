@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import org.springframework.data.annotation.CreatedDate;
 
 import com.project.app.admin.entity.UserAdmin;
+import com.project.app.reservation.entity.Reservation;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -50,7 +51,7 @@ public class PassLog {
     private String chgRsn;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pocs_usr_id", nullable = true)
+    @JoinColumn(name = "pocs_user_id", nullable = true)
     private UserAdmin userAdmin;
 
     @Column(name = "reg_dt", nullable = false)

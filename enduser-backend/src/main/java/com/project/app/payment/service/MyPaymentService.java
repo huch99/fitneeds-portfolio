@@ -35,12 +35,15 @@ public class MyPaymentService {
      * @param userId 사용자 ID
      * @return 결제 목록 DTO 리스트
      */
+    
+    //20260112 수정요함.
+    
     @Transactional(readOnly = true)
     public List<MyPaymentResponseDto> getMyPayments(String userId) {
         log.info("[MyPaymentService] 사용자 결제 목록 조회 시작 - userId: {}", userId);
 
         // 사용자의 결제 목록 조회
-        List<Payment> payments = myPaymentRepository.findByUserId(userId);
+        List<Payment> payments = myPaymentRepository.findByUserIdWithDetails(userId);
 
         log.info("[MyPaymentService] 조회된 결제 개수: {}", payments.size());
 
@@ -51,8 +54,8 @@ public class MyPaymentService {
                     String option = "그룹 레슨";
 
                     // Payment의 refId로 Reservation 찾기
-                    if (payment.getRefId() != null) {
-                        Reservation reservation = reservationRepository.findById(payment.getRefId())
+                    if (payment.getTargetId() != null) {
+                        Reservation reservation = reservationRepository.findById(payment.getTargetId())
                                 .orElse(null);
 
                         if (reservation != null && reservation.getSchedule() != null) {
@@ -107,18 +110,18 @@ public class MyPaymentService {
         myPaymentRepository.save(payment);
 
         // 연결된 예약이 있으면 예약도 취소
-        if (payment.getRefId() != null) {
+        if (payment.getTargetId() != null) {
             try {
-                log.info("[MyPaymentService] 연결된 예약 취소 시작 - reservationId: {}", payment.getRefId());
+                log.info("[MyPaymentService] 연결된 예약 취소 시작 - reservationId: {}", payment.getTargetId());
                 reservationService.cancelReservation(
-                        payment.getRefId(),
+                        payment.getTargetId(),
                         userId,
                         cancelReason != null ? cancelReason : "결제 취소"
                 );
-                log.info("[MyPaymentService] 연결된 예약 취소 완료 - reservationId: {}", payment.getRefId());
+                log.info("[MyPaymentService] 연결된 예약 취소 완료 - reservationId: {}", payment.getTargetId());
             } catch (Exception e) {
                 // 예약 취소 실패해도 결제 취소는 완료된 상태이므로 로그만 남기고 계속 진행
-                log.error("[MyPaymentService] 결제 취소 시 예약 취소 실패 - reservationId: {}", payment.getRefId(), e);
+                log.error("[MyPaymentService] 결제 취소 시 예약 취소 실패 - reservationId: {}", payment.getTargetId(), e);
             }
         }
 

@@ -25,6 +25,8 @@ import AdminSchedulePage from './pages/AdminSchedulePage';
 import PaymentManagement from './pages/payment/PaymentManagement';
 // Center page
 import CenterInfo from './pages/center/CenterInfo';
+// Attendance page
+import AdminAttendancePage from './pages/AdminAttendancePage';
 
 // 아직 없는 파일은 import 에러가 날 수 있으니 주석 처리하거나 빈 파일 생성 필요
 // import AdminDashboardPage from './pages/AdminDashboardPage'; 
@@ -87,6 +89,9 @@ function App() {
 
           {/* 결제 관리 */}
           <Route path="/payment" element={<PaymentManagement />} />
+
+          {/* 출결관리 */}
+          <Route path="/attendance" element={<AdminAttendancePage />} />
 
         </Route>
       </Routes>

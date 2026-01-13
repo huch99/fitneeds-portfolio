@@ -72,7 +72,7 @@ CREATE TABLE `TEACHER_CERTIFICATE`
     `USER_ID`     varchar(50)           NOT NULL,
     `CERT_NM`     varchar(255)          NOT NULL,
     `ISSUER`      varchar(255)          NULL,
-    `ISSUE_DT`    date                  NULL,
+    `ACQ_DT`    date                  NULL,
     `REG_DT`      datetime              NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `UPD_DT`      datetime              NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `UPD_USER_ID` varchar(50)           NULL,
@@ -327,7 +327,7 @@ VALUES
     (@T2, '더미요가원', '요가 강사', '2021-03-01', NULL, @BAD);
 
 -- 4-4) teacher_certificate
-INSERT IGNORE INTO teacher_certificate (USER_ID, CERT_NM, ISSUER, ISSUE_DT, UPD_USER_ID)
+INSERT IGNORE INTO teacher_certificate (USER_ID, CERT_NM, ISSUER, ACQ_DT, UPD_USER_ID)
 VALUES
     (@T1, '더미자격증1', '더미기관', '2021-06-10', @BAD),
     (@T1, '더미자격증2', '더미기관', '2023-02-15', @BAD),

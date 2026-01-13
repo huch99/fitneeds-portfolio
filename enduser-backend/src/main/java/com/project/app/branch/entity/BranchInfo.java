@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "BRACH_INFO")
+@Table(name = "BRANCH_INFO")
 public class BranchInfo {
 
     @Id
@@ -52,8 +52,8 @@ public class BranchInfo {
     @Column(name = "policy_info", nullable = true, columnDefinition = "TEXT")
     private String policyInfo;			// 정책 정보
 
-    @Column(name = "create_at", nullable = false)
-    private LocalDateTime createAt;		// 생성 일시
+    @Column(name = "creat_at", nullable = false)
+    private LocalDateTime creatAt;		// 생성 일시
 
     @Column(name = "upd_at", nullable = false)
     private LocalDateTime updAt;		// 수정 일시

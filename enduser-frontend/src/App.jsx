@@ -21,7 +21,6 @@ import PortfolioOverview from './pages/PortfolioOverview/PortfolioOverview';
 import PortfolioItem from './pages/PortfolioItem/PortfolioItem';
 import MyPage from './pages/MyPage/MyPage';
 import MyReservationList from './pages/MyPage/MyReservationList';
-import UsageStatus from './pages/UsageStatus/UsageStatus';
 import CommunityUser from './pages/Community/CommunityUser';
 import CommunityUserDetail from './pages/Community/CommunityUserDetail';
 import CommunityUserWrite from './pages/Community/CommunityUserWrite';
@@ -72,7 +71,6 @@ function App() {
             <Route path="/portfolio/item" element={<PortfolioItem />} />
             <Route path="/mypage" element={<MyPage />} />
             <Route path="/mypage/reservations" element={<MyReservationList />} />
-            <Route path="/mypage/usage-status" element={<UsageStatus />} />
             <Route path="*" element={<div>404 Not Found</div>} />
 
             <Route path="/community" element={<CommunityUser />} />

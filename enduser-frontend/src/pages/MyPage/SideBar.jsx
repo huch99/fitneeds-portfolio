@@ -60,13 +60,6 @@ function SideBar({ activeMenu, onMenuClick }) {
                 >
                   리뷰쓰기
                 </li>
-                <li 
-                  className={`sidebar-submenu-item ${isMyPageActive && activeMenu === 'inquiry' ? 'active' : ''}`}
-                  onClick={() => handleMenuClick('inquiry')}
-                  style={{ cursor: 'pointer' }}
-                >
-                  이용권 거래
-                </li>
               </ul>
             )}
           </li>

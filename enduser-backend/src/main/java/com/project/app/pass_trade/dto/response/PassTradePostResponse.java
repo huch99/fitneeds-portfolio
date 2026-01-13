@@ -1,8 +1,9 @@
 package com.project.app.pass_trade.dto.response;
 
-import com.project.app.pass_trade.domain.TradeStatus;
+import com.project.app.pass_trade.entity.TradeStatus;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 // 거래 게시글 응답 DTO
@@ -24,7 +25,7 @@ public class PassTradePostResponse {
     private Integer sellCount;
     
     // 전체 판매 금액 (pricePerUnit 제거)
-    private Integer saleAmount;
+    private BigDecimal saleAmount;
     
     // 게시글 제목
     private String title;

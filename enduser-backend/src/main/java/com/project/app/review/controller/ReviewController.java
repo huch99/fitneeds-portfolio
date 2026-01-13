@@ -1,5 +1,6 @@
 package com.project.app.review.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -105,7 +106,9 @@ public class ReviewController {
             log.info("[ReviewController] 내 리뷰 목록 조회 요청 - userId: {}", userId);
 
             List<ReviewDto> result = reviewService.getMyReviewList(userId);
-
+            
+            if (result == null) result = new ArrayList<>();
+            
             // 응답 데이터 구성
             Map<String, Object> response = new HashMap<>();
             response.put("status", "SUCCESS");

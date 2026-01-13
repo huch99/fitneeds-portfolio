@@ -18,6 +18,6 @@ public class HistoryReviewResponseDto {
     private Long reservationId;
     private Integer rating;
     private String content;
-    private Long instructorId;
+    private String instructorId;
     private String registrationDateTime; // ISO 8601 형식 문자열
 }

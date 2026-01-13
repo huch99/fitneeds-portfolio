@@ -12,6 +12,7 @@ const AdminLayout = ({ children }) => {
     { name: '회원 관리', path: '/users' },
     { name: '관리자 관리', path: '/usersAdmin' },
     { name: '예약 관리', path: '/reservations' },
+    { name: '출결 관리', path: '/attendance' },
     { name: '이용권 거래', path: '/trades' },
     { name: '이용권 관리', path: '/tickets' },
     { name: '지점 관리', path: '/branches' },

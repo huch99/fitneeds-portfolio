@@ -84,4 +84,16 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     
     // 2. 특정 날짜와 시간에 해당 유저의 예약이 이미 존재하는지 확인 (취소된 예약 제외)
     boolean existsByUser_UserIdAndRsvDtAndRsvTimeAndSttsCd(String userId, LocalDate rsvDt, LocalTime rsvTime, RsvSttsCd sttsCd);
+    
+    // 3. 사용자 ID와 상태로 예약 목록 조회 (리뷰 대상 수업 조회용)
+    @Query("SELECT r FROM Reservation r " +
+           "JOIN FETCH r.schedule s " +
+           "JOIN FETCH s.program p " +
+           "JOIN FETCH p.sportType st " +
+           "JOIN FETCH s.userAdmin ua " +
+           "JOIN FETCH r.branch " +
+           "WHERE r.user.userId = :userId " +
+           "AND r.sttsCd = :sttsCd " +
+           "ORDER BY r.rsvDt DESC, r.rsvTime DESC")
+    List<Reservation> findByUser_UserIdAndSttsCd(@Param("userId") String userId, @Param("sttsCd") RsvSttsCd sttsCd);
 }

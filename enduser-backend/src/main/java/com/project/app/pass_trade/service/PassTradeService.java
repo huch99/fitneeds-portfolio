@@ -1,11 +1,14 @@
 package com.project.app.pass_trade.service;
 
-import com.project.app.pass_trade.domain.PassTradePost;
-import com.project.app.pass_trade.domain.PassTradeTransaction;
-import com.project.app.pass_trade.domain.TradeStatus;
-import com.project.app.pass_trade.domain.TransactionStatus;
+import com.project.app.pass_trade.entity.PassTradePost;
+import com.project.app.pass_trade.entity.PassTradeTransaction;
+import com.project.app.pass_trade.entity.TradeStatus;
+import com.project.app.pass_trade.entity.TransactionStatus;
 import com.project.app.pass_trade.dto.request.PassTradeBuyRequest;
 import com.project.app.pass_trade.dto.request.PassTradePostCreateRequest;
+
+import com.project.app.pass_trade.dto.request.PassTradePostUpdateRequest;
+
 import com.project.app.pass_trade.dto.response.PassTradePostResponse;
 import com.project.app.pass_trade.dto.response.PassTradeTransactionResponse;
 import com.project.app.pass_trade.repository.PassTradePostRepository;
@@ -21,6 +24,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -62,7 +67,7 @@ public class PassTradeService {
         }
 
         //   판매 금액 검증
-        if (request.getSaleAmount() == null || request.getSaleAmount() <= 0) {
+        if (request.getSaleAmount() == null ||  request.getSaleAmount().compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("판매 금액은 1원 이상이어야 합니다.");
         }
 
@@ -79,11 +84,59 @@ public class PassTradeService {
         return convertToPostResponse(savedPost);
     }
 
+
+    // 본인 게시글 삭제
+    @Transactional
+    public void deleteMyPost(Long postId, String sellerId) {
+        PassTradePost post = passTradePostRepository
+                .findByPostIdAndSellerIdAndDeletedFalse(postId, sellerId)
+                .orElseThrow(() -> new RuntimeException("삭제할 수 없는 게시글입니다."));
+
+        // SELLING 상태만 삭제 가능
+        if (post.getTradeStatus() != TradeStatus.SELLING) {
+            throw new IllegalStateException("판매 중인 게시글만 삭제할 수 있습니다.");
+        }
+
+        post.setDeleted(true);
+        passTradePostRepository.save(post);
+    }
+
+
+    // 본인 게시글 수정
+    @Transactional
+    public PassTradePostResponse updateMyPost(
+            Long postId,
+            String sellerId,
+            PassTradePostUpdateRequest request
+    ) {
+        PassTradePost post = passTradePostRepository
+                .findByPostIdAndSellerIdAndDeletedFalse(postId, sellerId)
+                .orElseThrow(() -> new RuntimeException("수정할 수 없는 게시글입니다."));
+
+        if (post.getTradeStatus() != TradeStatus.SELLING) {
+            throw new IllegalStateException("판매 중인 게시글만 수정할 수 있습니다.");
+        }
+
+        post.setTitle(request.getTitle());
+        post.setContent(request.getContent());
+        post.setSellCount(request.getSellCount());
+        post.setSaleAmount(request.getSaleAmount());
+
+        PassTradePost saved = passTradePostRepository.save(post);
+        return convertToPostResponse(saved);
+    }
+
+
+
+
     // 활성 거래 게시글 목록 조회
     @Transactional(readOnly = true)
     public List<PassTradePostResponse> getActiveTradePosts() {
         return passTradePostRepository
-                .findByTradeStatusOrderByRegDtDesc(TradeStatus.SELLING)
+
+
+                .findByTradeStatusAndDeletedFalseOrderByRegDtDesc(TradeStatus.SELLING)
+
                 .stream()
                 .map(this::convertToPostResponse)
                 .collect(Collectors.toList());
@@ -108,14 +161,14 @@ public class PassTradeService {
             throw new RuntimeException("본인의 게시글은 구매할 수 없습니다.");
         }
 
-        Integer tradeCount = request.getTradeCount();
+        Integer buyQty = request.getBuyQty();
 
         // 4) 구매 수량 검증
-        if (tradeCount == null || tradeCount <= 0) {
+        if (buyQty == null || buyQty <= 0) {
             throw new IllegalArgumentException("구매 수량은 1 이상이어야 합니다.");
         }
 
-        if (tradeCount > post.getSellCount()) {
+        if (buyQty > post.getSellCount()) {
             throw new RuntimeException("구매 수량이 판매 수량을 초과합니다.");
         }
 
@@ -124,16 +177,28 @@ public class PassTradeService {
         }
 
         // 5) 금액 계산
-        Integer tradeAmount = (post.getSaleAmount() / post.getSellCount()) * tradeCount;
+        // 단가 = 총판매금액 / 총판매수량
+        BigDecimal unitPrice =
+                post.getSaleAmount()
+                        .divide(
+                                BigDecimal.valueOf(post.getSellCount()),
+                                4,
+                                RoundingMode.HALF_UP
+                        );
+
+// 거래 금액 = 단가 * 구매 수량
+        BigDecimal tradeAmt =
+                unitPrice.multiply(BigDecimal.valueOf(buyQty));
+
 
         // 6) 거래 트랜잭션 생성 (결제는 나중에 → paymentId는 null)
         PassTradeTransaction transaction = new PassTradeTransaction();
         transaction.setPostId(postId);
         transaction.setBuyerId(buyerId);
         transaction.setSellerId(post.getSellerId());
-        transaction.setTradeCount(tradeCount);
-        transaction.setTotalAmount(tradeAmount);
-        transaction.setTransactionStatus(TransactionStatus.COMPLETED);
+        transaction.setBuyQty(buyQty);
+        transaction.setTradeAmt(tradeAmt);
+        transaction.setSttsCd(TransactionStatus.COMPLETED);
         transaction.setPaymentId(null);
 
         PassTradeTransaction savedTransaction = passTradeTransactionRepository.save(transaction);
@@ -142,7 +207,7 @@ public class PassTradeService {
         UserPass sellerPassAfter = userPassTradeService.decreaseForTrade(
                 post.getUserPassId(),
                 post.getSellerId(),
-                tradeCount,
+                buyQty,
                 "이용권 거래 판매 (거래ID: " + savedTransaction.getTransactionId() + ")"
         );
 
@@ -153,7 +218,7 @@ public class PassTradeService {
         userPassTradeService.increaseOrCreateForTrade(
                 buyerId,
                 sportId,
-                tradeCount,
+                buyQty,
                 lstProdId,
                 "이용권 거래 구매 (거래ID: " + savedTransaction.getTransactionId() + ")"
         );
@@ -187,9 +252,9 @@ public class PassTradeService {
         response.setPostId(transaction.getPostId());
         response.setBuyerId(transaction.getBuyerId());
         response.setSellerId(transaction.getSellerId());
-        response.setTradeCount(transaction.getTradeCount());
-        response.setTotalAmount(transaction.getTotalAmount());
-        response.setTransactionStatus(transaction.getTransactionStatus());
+        response.setBuyQty(transaction.getBuyQty());
+        response.setTradeAmt(transaction.getTradeAmt());
+        response.setSttsCd(transaction.getSttsCd());
         response.setPaymentId(transaction.getPaymentId());
         response.setRegDt(transaction.getRegDt());
         response.setUpdDt(transaction.getUpdDt());

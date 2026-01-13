@@ -1,13 +1,14 @@
-package com.project.app.pass_trade.domain;
+package com.project.app.pass_trade.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "pass_trade_post")
+@Table(name = "PASS_TRADE_POST")
 @Data
 @NoArgsConstructor
 public class PassTradePost {
@@ -38,8 +39,14 @@ public class PassTradePost {
     private Integer sellCount;
 
     // 판매 금액 (총 판매 금액 기준)
-    @Column(name = "sale_amt", nullable = false)
-    private Integer saleAmount;
+    @Column(
+            name = "sale_amt",
+            nullable = false,
+            precision = 19,
+            scale = 4
+    )
+    private BigDecimal saleAmount;
+
 
     /* =========================
      * 게시글 정보
@@ -66,8 +73,8 @@ public class PassTradePost {
 
 
     // 판매 사유
-    @Column(name = "reason", nullable = false, length = 300)
-    private String reason;
+//    @Column(name = "reason", nullable = false, length = 300)
+//    private String reason;
 
     /* =========================
      * 삭제 여부

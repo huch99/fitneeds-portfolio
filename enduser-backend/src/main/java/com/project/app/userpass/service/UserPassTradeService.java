@@ -1,7 +1,5 @@
 package com.project.app.userpass.service;
 
-
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,9 +29,9 @@ public class UserPassTradeService {
      * - 감소 후 로그 남김(TRADE_SELL)
      */
     @Transactional
-    public UserPass decreaseForTrade(Long userPassId, String sellerId, int tradeCount, String reason) {
-        if (tradeCount <= 0) {
-            throw new IllegalArgumentException("tradeCount는 1 이상이어야 합니다.");
+    public UserPass decreaseForTrade(Long userPassId, String sellerId, int buyQty, String reason) {
+        if (buyQty <= 0) {
+            throw new IllegalArgumentException("buyQty는 1 이상이어야 합니다.");
         }
 
         UserPass sellerPass = userPassRepository
@@ -45,12 +43,12 @@ public class UserPassTradeService {
         }
 
         Integer rmn = sellerPass.getRmnCnt();
-        if (rmn == null || rmn < tradeCount) {
+        if (rmn == null || rmn < buyQty) {
             throw new IllegalStateException("판매자의 이용권 수량이 부족합니다.");
         }
 
         // ✅ 엔티티 비즈니스 메서드 사용 (팩트 기반)
-        for (int i = 0; i < tradeCount; i++) {
+        for (int i = 0; i < buyQty; i++) {
             boolean ok = sellerPass.decreaseRmnCnt();
             if (!ok) {
                 throw new IllegalStateException("판매자 이용권 차감 실패(잔여 부족).");
@@ -65,7 +63,7 @@ public class UserPassTradeService {
         passLogService.createPassLog(
                 saved,
                 PassLogChgTypeCd.TRADE_SELL,
-                -tradeCount,
+                -buyQty,
                 (reason != null ? reason : "이용권 거래 판매"),
                 null
         );
@@ -80,9 +78,9 @@ public class UserPassTradeService {
      * - 로그 남김(TRADE_BUY)
      */
     @Transactional
-    public UserPass increaseOrCreateForTrade(String buyerId, Long sportId, int tradeCount, Long lstProdId, String reason) {
-        if (tradeCount <= 0) {
-            throw new IllegalArgumentException("tradeCount는 1 이상이어야 합니다.");
+    public UserPass increaseOrCreateForTrade(String buyerId, Long sportId, int buyQty, Long lstProdId, String reason) {
+        if (buyQty <= 0) {
+            throw new IllegalArgumentException("buyQty는 1 이상이어야 합니다.");
         }
 
         User buyer = userRepository.findById(buyerId)
@@ -100,14 +98,14 @@ public class UserPassTradeService {
                     created.setSportType(sportType);
                     created.setPassStatusCd(PassStatusCd.AVAILABLE);
                     created.setRmnCnt(0);
-                    created.setInitCnt(0L); // 아래에서 증가분 반영
+                    created.setInitCnt(0); // 아래에서 증가분 반영
                     created.setLstProdId(lstProdId);
 
                     return created;
                 });
 
         // 증가 처리
-        for (int i = 0; i < tradeCount; i++) {
+        for (int i = 0; i < buyQty; i++) {
             boolean ok = buyerPass.increaseRmnCnt();
             if (!ok) {
                 throw new IllegalStateException("구매자 이용권 증가 실패(초기 수량 제한 등).");
@@ -117,8 +115,8 @@ public class UserPassTradeService {
         // initCnt 정책:
         // - 거래는 "추가 횟수" 개념이므로, initCnt를 누적시키는 게 가장 자연스럽고 안전함
         // - ( 프로젝트가 initCnt를 '최초 구매'로만 쓰려면 이 부분만 팀 규칙에 맞춰 조정)
-        long currentInit = (buyerPass.getInitCnt() == null) ? 0L : buyerPass.getInitCnt();
-        buyerPass.setInitCnt(currentInit + tradeCount);
+        int currentInit = (buyerPass.getInitCnt() == null) ? 0 : buyerPass.getInitCnt();
+        buyerPass.setInitCnt(currentInit + buyQty);
 
         buyerPass.setLstProdId(lstProdId);
 
@@ -128,7 +126,7 @@ public class UserPassTradeService {
         passLogService.createPassLog(
                 saved,
                 PassLogChgTypeCd.TRADE_BUY,
-                tradeCount,
+                buyQty,
                 (reason != null ? reason : "이용권 거래 구매"),
                 null
         );

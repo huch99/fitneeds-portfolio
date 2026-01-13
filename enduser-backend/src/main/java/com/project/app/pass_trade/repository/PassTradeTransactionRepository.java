@@ -1,7 +1,7 @@
 package com.project.app.pass_trade.repository;
 
-import com.project.app.pass_trade.domain.PassTradeTransaction;
-import com.project.app.pass_trade.domain.TransactionStatus;
+import com.project.app.pass_trade.entity.PassTradeTransaction;
+import com.project.app.pass_trade.entity.TransactionStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,6 +13,6 @@ public interface PassTradeTransactionRepository extends JpaRepository<PassTradeT
 
     List<PassTradeTransaction> findByPostIdOrderByRegDtDesc(Long postId);
 
-    Optional<PassTradeTransaction> findByPostIdAndTransactionStatusIn(
+    Optional<PassTradeTransaction> findByPostIdAndSttsCdIn(
             Long postId, List<TransactionStatus> statuses);
 }
