@@ -85,7 +85,7 @@
       COUNT(crj.join_id)   AS recruitCount
 
     FROM community_recruit_join j
-    JOIN community_post p
+    JOIN COMMUNITY_POST p
       ON j.post_id = p.post_id
     LEFT JOIN community_recruit_join crj
       ON crj.post_id = p.post_id

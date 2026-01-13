@@ -14,8 +14,8 @@
     SELECT
       p.*,
       COUNT(c.comment_id) AS commentCount
-    FROM community_post p
-    LEFT JOIN community_comment c
+    FROM COMMUNITY_POST p
+    LEFT JOIN COMMUNITY_COMMENT c
       ON p.post_id = c.post_id
      AND c.comment_visible = 1
 
@@ -61,8 +61,8 @@
   =============================== -->
   <select id="selectCommunityPostCount" resultType="int">
     SELECT COUNT(DISTINCT p.post_id)
-    FROM community_post p
-    LEFT JOIN community_comment c
+    FROM COMMUNITY_POST p
+    LEFT JOIN COMMUNITY_COMMENT c
       ON p.post_id = c.post_id
      AND c.comment_visible = 1
 
@@ -99,7 +99,7 @@
   <select id="selectCommunityPostDetail"
           resultType="com.project.app.community.dto.CommunityPostDto">
     SELECT p.*
-    FROM community_post p
+    FROM COMMUNITY_POST p
     WHERE p.post_id = #{postId}
       AND p.post_type = 'COMMUNITY'
   </select>
@@ -108,7 +108,7 @@
        숨김 / 보이기
   =============================== -->
   <update id="updatePostVisible">
-    UPDATE community_post
+    UPDATE COMMUNITY_POST
     SET post_visible = #{postVisible},
         updated_at = NOW()
     WHERE post_id = #{postId}
@@ -140,7 +140,7 @@
        ADMIN 게시글 삭제
   =============================== -->
   <delete id="deleteCommunityPost">
-    DELETE FROM community_post
+    DELETE FROM COMMUNITY_POST
     WHERE post_id = #{postId}
       AND post_type = 'COMMUNITY'
   </delete>

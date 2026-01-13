@@ -23,7 +23,7 @@
             cp.display_end  AS displayEnd,
             cp.created_at   AS createdAt,
             b.brch_nm       AS branchName
-        FROM community_post cp
+        FROM COMMUNITY_POST cp
         LEFT JOIN branch b
             ON cp.branch_id = b.brch_id
         WHERE cp.post_type = 'NOTICE'
@@ -54,7 +54,7 @@
             cp.display_end  AS displayEnd,
             cp.created_at   AS createdAt,
             b.brch_nm       AS branchName
-        FROM community_post cp
+        FROM COMMUNITY_POST cp
         LEFT JOIN branch b
             ON cp.branch_id = b.brch_id
         WHERE cp.post_id = #{postId}
@@ -73,7 +73,7 @@
     ========================= -->
     <update id="increaseViews" parameterType="long">
 
-        UPDATE community_post
+        UPDATE COMMUNITY_POST
         SET views = IFNULL(views, 0) + 1,
             updated_at = NOW()
         WHERE post_id = #{postId}

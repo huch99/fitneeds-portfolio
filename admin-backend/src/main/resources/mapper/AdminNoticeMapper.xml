@@ -31,8 +31,8 @@
             s.staff_nm   AS writerName,
             b.brch_nm    AS branchName
 
-        FROM community_post cp
-        LEFT JOIN staff s
+        FROM COMMUNITY_POST cp
+        LEFT JOIN STAFF s
                ON cp.writer_id = s.staff_id
         LEFT JOIN branch b
                ON cp.branch_id = b.brch_id
@@ -67,8 +67,8 @@
             s.staff_nm   AS writerName,
             b.brch_nm    AS branchName
 
-        FROM community_post cp
-        LEFT JOIN staff s
+        FROM COMMUNITY_POST cp
+        LEFT JOIN STAFF s
                ON cp.writer_id = s.staff_id
         LEFT JOIN branch b
                ON cp.branch_id = b.brch_id
@@ -87,7 +87,7 @@
             useGeneratedKeys="true"
             keyProperty="postId">
 
-        INSERT INTO community_post
+        INSERT INTO COMMUNITY_POST
         (
             post_type,
             title,
@@ -125,7 +125,7 @@
     <update id="updateNotice"
             parameterType="com.project.app.notice.dto.NoticeDto">
 
-        UPDATE community_post
+        UPDATE COMMUNITY_POST
         SET
             title = #{title},
             content = #{content},
@@ -143,7 +143,7 @@
     ========================= -->
     <update id="updateVisible">
 
-        UPDATE community_post
+        UPDATE COMMUNITY_POST
         SET
             is_visible = #{visible},
             updated_at = NOW()
@@ -158,7 +158,7 @@
     ========================= -->
     <delete id="deleteNotice">
 
-        DELETE FROM community_post
+        DELETE FROM COMMUNITY_POST
         WHERE post_id = #{postId}
           AND post_type = 'NOTICE'
 

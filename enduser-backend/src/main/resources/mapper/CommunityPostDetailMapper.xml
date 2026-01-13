@@ -24,7 +24,7 @@
       cp.sport_type       AS sportType,
       cp.recruit_max      AS recruitMax,
       cp.recruit_end_date AS recruitEndDate
-    FROM community_post cp
+    FROM COMMUNITY_POST cp
     LEFT JOIN users u
            ON u.user_id = cp.writer_id
     WHERE cp.post_id = #{postId}
@@ -33,7 +33,7 @@
 
   <!-- 🔥 커뮤니티 게시글 조회수 증가 (USER 전용, 중복 허용) -->
   <update id="increaseViewCount">
-    UPDATE community_post
+    UPDATE COMMUNITY_POST
     SET views = views + 1
     WHERE post_id = #{postId}
       AND post_visible = 1
@@ -50,7 +50,7 @@
 		c.writer_type AS writerType,
 		c.content,
 		c.created_at AS createdAt
-		FROM community_comment c
+		FROM COMMUNITY_COMMENT c
 		LEFT JOIN users u
 		ON u.user_id = c.writer_id
 		WHERE c.post_id = #{postId}
@@ -61,7 +61,7 @@
 
   <!-- 커뮤니티 댓글 작성 (USER) -->
   <insert id="insertComment">
-    INSERT INTO community_comment (
+    INSERT INTO COMMUNITY_COMMENT (
       post_id,
       writer_id,
       writer_type,

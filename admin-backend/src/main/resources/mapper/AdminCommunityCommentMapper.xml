@@ -16,7 +16,7 @@
       content,
       created_at      AS createdAt,
       comment_visible AS commentVisible
-    FROM community_comment
+    FROM COMMUNITY_COMMENT
     WHERE post_id = #{postId}
     ORDER BY comment_id DESC
   </select>
@@ -24,25 +24,25 @@
   <!-- ADMIN 댓글 전체 개수 -->
   <select id="selectCommentCountByPostId" resultType="int">
     SELECT COUNT(*)
-    FROM community_comment
+    FROM COMMUNITY_COMMENT
     WHERE post_id = #{postId}
   </select>
 
   <!-- 숨김 / 보이기 -->
   <update id="updateCommentVisible">
-    UPDATE community_comment
+    UPDATE COMMUNITY_COMMENT
     SET comment_visible = #{commentVisible}
     WHERE comment_id = #{commentId}
   </update>
 
   <!-- 삭제 -->
   <delete id="deleteComment">
-    DELETE FROM community_comment
+    DELETE FROM COMMUNITY_COMMENT
     WHERE comment_id = #{commentId}
   </delete>
 	
    <delete id="deleteByPostId" parameterType="long">
-    DELETE FROM community_comment
+    DELETE FROM COMMUNITY_COMMENT
     WHERE post_id = #{postId}
    </delete>	
 	
