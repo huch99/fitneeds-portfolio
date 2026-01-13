@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import api from "../../api";
+import { Link } from "react-router-dom";
 
 function AdminCommunityPage() {
   const [posts, setPosts] = useState([]);
 
   // 🔍 필터 상태
-  const [category, setCategory] = useState('');
-  const [keyword, setKeyword] = useState('');
-  const [visibleFilter, setVisibleFilter] = useState('');
-  const [orderType, setOrderType] = useState('latest');
+  const [category, setCategory] = useState("");
+  const [keyword, setKeyword] = useState("");
+  const [visibleFilter, setVisibleFilter] = useState("");
+  const [orderType, setOrderType] = useState("latest");
 
   // 📄 페이징 상태
   const [currentPage, setCurrentPage] = useState(1);
@@ -22,7 +22,7 @@ function AdminCommunityPage() {
 
   const fetchPosts = async () => {
     try {
-      const res = await axios.get('/api/admin/community', {
+      const res = await api.get("/admin/community", {
         params: {
           category: category || null,
           keyword: keyword || null,
@@ -36,7 +36,7 @@ function AdminCommunityPage() {
       setTotalCount(res.data.totalCount || 0);
       setTotalPages(res.data.totalPages || 0);
     } catch (e) {
-      alert('커뮤니티 목록 조회 실패');
+      alert("커뮤니티 목록 조회 실패");
     }
   };
 
@@ -44,48 +44,49 @@ function AdminCommunityPage() {
     setCurrentPage(1);
   };
 
+  /* =========================
+     숨김 / 보이기
+  ========================= */
   const toggleVisible = async (postId, postVisible) => {
-    if (!window.confirm('노출 상태를 변경하시겠습니까?')) return;
+    if (!window.confirm("노출 상태를 변경하시겠습니까?")) return;
 
     try {
-      await axios.put(`/api/admin/community/${postId}/visible`, null, {
+      await api.put(`/admin/community/${postId}/visible`, null, {
         params: { postVisible: !postVisible },
       });
       fetchPosts();
     } catch (e) {
-      alert('숨김/보이기 업데이트 실패');
+      alert("숨김/보이기 업데이트 실패");
     }
   };
 
+  /* =========================
+     삭제
+  ========================= */
   const deletePost = async (postId) => {
-  if (!window.confirm('정말 삭제하시겠습니까?')) return;
+    if (!window.confirm("정말 삭제하시겠습니까?")) return;
 
-  try {
-    const res = await axios.delete(`/api/admin/community/${postId}`);
+    try {
+      const res = await api.delete(`/admin/community/${postId}`);
 
-    // ❗ 댓글 또는 모집 참여자가 있는 경우
-    if (res.data === false) {
-      alert('댓글 또는 모집 참여자를 먼저 삭제하세요.');
-      return;
+      if (res.data === false) {
+        alert("댓글 또는 모집 참여자를 먼저 삭제하세요.");
+        return;
+      }
+
+      alert("삭제되었습니다.");
+      fetchPosts();
+    } catch (e) {
+      alert("삭제 처리 중 오류가 발생했습니다.");
     }
-
-    // ✅ 삭제 성공
-    alert('삭제되었습니다.');
-    fetchPosts();
-
-  } catch (e) {
-    alert('삭제 처리 중 오류가 발생했습니다.');
-  }
-};
-
-
+  };
 
   return (
     <div>
       <h1>커뮤니티 관리</h1>
 
       {/* 🔍 필터 영역 */}
-      <div style={{ marginBottom: '16px', display: 'flex', gap: '8px' }}>
+      <div style={{ marginBottom: "16px", display: "flex", gap: "8px" }}>
         <select value={category} onChange={(e) => setCategory(e.target.value)}>
           <option value="">카테고리 전체</option>
           <option value="모집">모집</option>
@@ -95,7 +96,10 @@ function AdminCommunityPage() {
           <option value="개인정보동의">개인정보동의</option>
         </select>
 
-        <select value={visibleFilter} onChange={(e) => setVisibleFilter(e.target.value)}>
+        <select
+          value={visibleFilter}
+          onChange={(e) => setVisibleFilter(e.target.value)}
+        >
           <option value="">전체 글</option>
           <option value="1">보이기 글</option>
           <option value="0">숨긴 글</option>
@@ -135,12 +139,12 @@ function AdminCommunityPage() {
           {posts.map((p) => (
             <tr key={p.postId} style={{ opacity: p.postVisible ? 1 : 0.4 }}>
               <td>{p.postId}</td>
-              <td>{p.category || '-'}</td>
+              <td>{p.category || "-"}</td>
 
               <td>
                 <Link
                   to={`/community/detail/${p.postId}`}
-                  style={{ textDecoration: 'none', color: '#333' }}
+                  style={{ textDecoration: "none", color: "#333" }}
                 >
                   {p.title}
                 </Link>
@@ -151,13 +155,13 @@ function AdminCommunityPage() {
 
               <td>
                 <button onClick={() => toggleVisible(p.postId, p.postVisible)}>
-                  {p.postVisible ? '숨김' : '보이기'}
+                  {p.postVisible ? "숨김" : "보이기"}
                 </button>
               </td>
 
               <td>
                 <button
-                  style={{ color: 'red' }}
+                  style={{ color: "red" }}
                   onClick={() => deletePost(p.postId)}
                 >
                   삭제
@@ -169,7 +173,7 @@ function AdminCommunityPage() {
       </table>
 
       {/* 📄 페이징 */}
-      <div style={{ marginTop: '16px', display: 'flex', gap: '6px' }}>
+      <div style={{ marginTop: "16px", display: "flex", gap: "6px" }}>
         <button
           disabled={currentPage === 1}
           onClick={() => setCurrentPage(currentPage - 1)}
@@ -182,7 +186,7 @@ function AdminCommunityPage() {
             key={page}
             onClick={() => setCurrentPage(page)}
             style={{
-              fontWeight: page === currentPage ? 'bold' : 'normal',
+              fontWeight: page === currentPage ? "bold" : "normal",
             }}
           >
             {page}

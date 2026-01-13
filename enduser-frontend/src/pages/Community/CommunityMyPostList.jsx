@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../api';            // 🔥 axios → api
 import './Community.css';
 
 function CommunityMyPostList() {
@@ -27,8 +27,8 @@ function CommunityMyPostList() {
     }
 
     try {
-      const res = await axios.get(
-        '/api/user/community/my-posts',
+      const res = await api.get(           // 🔥 변경
+        '/user/community/my-posts',
         { params: { userId: loginUserId } }
       );
       setPosts(res.data);
@@ -82,22 +82,21 @@ function CommunityMyPostList() {
   };
 
   const getRecruitStatusBadge = (post) => {
-  if (post.category !== '모집') return null;
-  if (!post.recruitStatus) return null;
+    if (post.category !== '모집') return null;
+    if (!post.recruitStatus) return null;
 
-  const isClosed = post.recruitStatus === '모집종료';
+    const isClosed = post.recruitStatus === '모집종료';
 
-  return (
-    <span
-      className={`recruit-status-badge ${
-        isClosed ? 'recruit-closed' : 'recruit-open'
-      }`}
-    >
-      {post.recruitStatus}
-    </span>
-  );
-};
-
+    return (
+      <span
+        className={`recruit-status-badge ${
+          isClosed ? 'recruit-closed' : 'recruit-open'
+        }`}
+      >
+        {post.recruitStatus}
+      </span>
+    );
+  };
 
   if (loading) {
     return <div className="community-container">로딩 중...</div>;

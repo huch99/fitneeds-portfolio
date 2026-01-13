@@ -9,7 +9,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 
-@Component
+// @Component - DB 연결 과다로 인해 비활성화
 public class DatabaseConnectionTester implements CommandLineRunner {
 
     @Autowired

@@ -2,6 +2,8 @@ package com.project.app.faq.service;
 
 import com.project.app.faq.dto.FAQDto;
 import com.project.app.faq.mapper.AdminFAQMapper;
+import com.project.app.userAdmin.entity.UserAdmin;
+import com.project.app.userAdmin.repository.UserAdminRepository;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,11 +16,17 @@ import java.util.List;
 public class AdminFAQService {
 
     private final AdminFAQMapper adminFAQMapper;
+    private final UserAdminRepository userAdminRepository;
 
-    public AdminFAQService(AdminFAQMapper adminFAQMapper) {
+    public AdminFAQService(AdminFAQMapper adminFAQMapper,
+                           UserAdminRepository userAdminRepository) {
         this.adminFAQMapper = adminFAQMapper;
+        this.userAdminRepository = userAdminRepository;
     }
 
+    /* =========================
+       FAQ 목록 조회 (페이징)
+    ========================= */
     @Transactional(readOnly = true)
     public PagedResult<FAQDto> getFAQListPaged(String keyword, Boolean visible, int page) {
         int size = 10;
@@ -38,51 +46,62 @@ public class AdminFAQService {
         return adminFAQMapper.selectFAQDetail(postId);
     }
 
+    /* =========================
+       FAQ 등록
+    ========================= */
     @Transactional
     public Long createFAQ(FAQDto dto) {
+
+        // 게시글 기본 정보
         dto.setPostType("FAQ");
         dto.setWriterType("ADMIN");
 
-        // 기본값 방어 (DB default가 있더라도 null 방지)
+        // 🔥 현재 로그인 관리자
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String adminUserId = auth.getName();   // users_admin.user_id
+        dto.setWriterId(adminUserId);
+
+        // 🔥 관리자 소속 지점
+        UserAdmin admin = userAdminRepository
+                .findByUserId(adminUserId)
+                .orElseThrow(() -> new RuntimeException("관리자 정보 없음"));
+        dto.setBranchId(admin.getBrchId());
+
+        // 기본 노출값
         if (dto.getIsVisible() == null) dto.setIsVisible(true);
         if (dto.getPostVisible() == null) dto.setPostVisible(true);
 
         adminFAQMapper.insertFAQ(dto);
         return dto.getPostId();
     }
-    
-//    @Transactional
-//    public Long createFAQ(FAQDto dto) {
-//        dto.setPostType("FAQ");
-//        dto.setWriterType("ADMIN");
-//
-//        // ✅ 현재 로그인한 관리자 ID
-//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//        String adminId = auth.getName();   // ← 이게 user_id
-//        dto.setWriterId(adminId);
-//
-//        if (dto.getIsVisible() == null) dto.setIsVisible(true);
-//        if (dto.getPostVisible() == null) dto.setPostVisible(true);
-//
-//        adminFAQMapper.insertFAQ(dto);
-//        return dto.getPostId();
-//    }
-    
+
+    /* =========================
+       FAQ 수정
+    ========================= */
     @Transactional
     public void updateFAQ(FAQDto dto) {
         adminFAQMapper.updateFAQ(dto);
     }
 
+    /* =========================
+       노출 여부 변경
+    ========================= */
     @Transactional
     public void updateFAQVisible(Long postId, boolean visible) {
         adminFAQMapper.updateFAQVisible(postId, visible);
     }
 
+    /* =========================
+       FAQ 삭제 (논리삭제)
+    ========================= */
     @Transactional
     public void deleteFAQ(Long postId) {
         adminFAQMapper.deleteFAQ(postId);
     }
 
+    /* =========================
+       페이징 DTO
+    ========================= */
     public static class PagedResult<T> {
         private final List<T> list;
         private final int totalCount;

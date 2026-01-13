@@ -89,7 +89,7 @@
   =============================== -->
   <select id="selectRecruitJoinCountByPostId" resultType="int">
     SELECT COUNT(*)
-    FROM community_recruit_join
+    FROM COMMUNITY_RECRUIT_JOIN
     WHERE post_id = #{postId}
   </select>
 
@@ -123,7 +123,7 @@
     SELECT
       crj.join_id AS joinId,
       crj.user_id AS userId
-    FROM community_recruit_join crj
+    FROM COMMUNITY_RECRUIT_JOIN crj
     WHERE crj.post_id = #{postId}
     ORDER BY crj.join_id ASC
   </select>
@@ -132,7 +132,7 @@
        ADMIN 모집 참여자 삭제
   =============================== -->
   <delete id="deleteRecruitJoin">
-    DELETE FROM community_recruit_join
+    DELETE FROM COMMUNITY_RECRUIT_JOIN
     WHERE join_id = #{joinId}
   </delete>
 
