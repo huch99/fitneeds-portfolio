@@ -1,268 +1,207 @@
-/* =====================================================
-   [1️⃣ 공지사항용 CSS - 기존 테이블 디자인]
-   table / th / td 기반
-===================================================== */
-
-/* 공통 래퍼 */
+/* ===================================================== [1️⃣ 공지사항 기본 레이아웃] ===================================================== */
 .notice-wrap {
   width: 100%;
   padding: 30px;
   margin: 0 auto;
   min-height: calc(100vh - 120px);
+  background: #f9fafb;
+  /* 외부 페이지 배경과 분리 */
 }
 
-/* 섹션 박스 (노란 테두리) */
-.notice-section {
-  border: 2px solid #f0c84b;
-  border-radius: 8px;
-  background: #fff;
-  padding: 24px;
+/* 중앙 컨테이너 */
+.notice-wrap .section-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
 }
 
-.notice-section-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 14px;
+/* ===================================================== [2️⃣ 페이지 헤더] ===================================================== */
+.notice-page-header {
+  text-align: center;
+  margin-bottom: 36px;
+  padding: 0 16px;
 }
 
-.notice-section-left {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.notice-page-header .page-title {
+  font-size: 32px;
+  font-weight: 800;
+  color: #212529;
+  margin-bottom: 10px;
 }
 
-.notice-dot {
-  width: 10px;
-  height: 10px;
+.notice-page-header .page-subtitle {
+  font-size: 17px;
+  line-height: 1.75;
+  color: #555;
+}
+
+.notice-page-header .brand-highlight {
+  font-weight: 800;
+  color: #f0c84b;
+  margin: 0 2px;
+}
+
+.notice-page-header .brand-highlight::after {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
   background: #f0c84b;
   border-radius: 50%;
+  margin-left: 4px;
+  vertical-align: middle;
 }
 
-/* 본문 */
-.notice-section-body {
-  padding: 0;
-}
-
-.notice-h2 {
-  font-size: 22px;
-  font-weight: 800;
-  margin-bottom: 6px;
-}
-
-.notice-desc {
-  font-size: 14px;
-  color: #777;
-  margin-bottom: 20px;
-}
-
-/* 필터 라인 */
-.notice-filter-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-.notice-search-group {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex: 1;
-}
-
-.notice-filter-label {
-  font-size: 14px;
-  font-weight: 700;
-  color: #555;
-  min-width: 48px;
-}
-
-.notice-input {
-  width: 100%;
-  height: 36px;
-  padding: 0 10px;
-  border-radius: 6px;
-  border: 1px solid #ddd;
-  background: #fffdf3;
-}
-
-.notice-right-group {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.notice-select {
-  height: 36px;
-  min-width: 160px;
-  border-radius: 6px;
-  border: 1px solid #f0c84b;
-  background: #fffdf3;
-  padding: 0 10px;
-}
-
-.notice-search-btn {
-  height: 36px;
-  padding: 0 16px;
-  background: #f0c84b;
-  font-weight: 700;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-/* 테이블 */
-.notice-table-wrap {
+/* ===================================================== [3️⃣ 테이블 영역] ===================================================== */
+.notice-list-section {
+  /* padding: 60px 0; */
   border-top: 1px solid #eee;
+}
+
+.notice-table-wrap {
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
 }
 
 .notice-table {
   width: 100%;
   border-collapse: collapse;
+  background: #fff;
 }
 
+/* 헤더 */
 .notice-table thead th {
-  background: #f3f3f3;
-  font-size: 14px;
-  padding: 10px;
-  border-bottom: 1px solid #ddd;
+  background: #212529;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 14px 10px;
   text-align: center;
+  border-bottom: 1px solid #dee2e6;
 }
 
-.notice-table thead th:nth-child(3) {
+/* 제목 컬럼만 좌측 정렬 */
+.notice-table thead th:nth-child(3),
+.notice-table tbody td:nth-child(3) {
   text-align: left;
 }
 
+/* 바디 */
 .notice-table tbody td {
+  padding: 14px 10px;
   font-size: 14px;
-  padding: 12px 10px;
+  color: #212529;
   border-bottom: 1px solid #eee;
   text-align: center;
 }
 
-.notice-td-title {
-  text-align: left !important;
-}
-
-.notice-row:nth-child(even) {
-  background: #fafafa;
-}
-
 .notice-row:hover {
-  background: #f5f5f5;
+  background: #f8f9fa;
   cursor: pointer;
 }
 
-/* 페이징 */
+/* 컬럼 폭 */
+.notice-table thead th:nth-child(1),
+.notice-table tbody td:nth-child(1) {
+  width: 60px;
+}
+
+.notice-table thead th:nth-child(2),
+.notice-table tbody td:nth-child(2) {
+  width: 140px;
+}
+
+.notice-table thead th:nth-child(4),
+.notice-table tbody td:nth-child(4) {
+  width: 120px;
+}
+
+.notice-table thead th:nth-child(5),
+.notice-table tbody td:nth-child(5) {
+  width: 120px;
+}
+
+/* ===================================================== [4️⃣ 종료일 표시] ===================================================== */
+.notice-end-date {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 14px;
+  white-space: nowrap;
+}
+
+.notice-end-date.deadline {
+  /* background: #eef4ff; */
+  color: #1e3a8a;
+  font-variant-numeric: tabular-nums;
+  font-weight: 900;
+}
+
+.notice-end-date.always {
+  /* background: #fff3c4; */
+  color: #ff9800;
+  font-weight: 900;
+}
+
+/* ===================================================== [5️⃣ 지점 뱃지 — 현재 쓰시는 색 유지] ===================================================== */
+/* Notice 전용으로 외부 CSS 차단 */
+.notice-wrap .category-badge {
+  display: inline-block;
+  padding: 0.3em 0.7em;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 999px;
+}
+
+/* 지점 공지 */
+.notice-wrap .notice-branch-normal {
+  background: rgb(255, 219, 113);
+  /* ✅ 사용자가 지정한 색 */
+  color: #212529;
+}
+
+/* 전체 공지 */
+.notice-wrap .notice-branch-all {
+  background: #ffc107;
+  /* ✅ 사용자가 지정한 색 */
+  color: #212529;
+  font-weight: 800;
+  box-shadow: 0 0 0 1px rgba(185, 28, 28, 0.15);
+}
+
+/* ===================================================== [6️⃣ 페이징] ===================================================== */
 .community-pagination {
   display: flex;
-  gap: 6px;
-  align-items: center;
   justify-content: center;
+  gap: 6px;
+  margin-top: 30px;
 }
 
 .community-pagination button {
   padding: 6px 10px;
   border-radius: 6px;
   border: 1px solid #ddd;
-  background-color: white;
+  background: white;
   cursor: pointer;
 }
 
 .community-pagination button.active {
-  background-color: #ffd84d;
+  background: #ffd84d;
   border: none;
   font-weight: 700;
 }
 
-
-/* =====================================================
-   [2️⃣ FAQ 디자인 공지사항 CSS - 리스트 전용]
-   grid 기반 / FAQ 스타일
-===================================================== */
-
-.notice-faq-board {
-  border: 1px solid #dee2e6;
-  border-radius: 8px;
-  background: #fff;
-  overflow: hidden;
-  margin-top: 20px;
-}
-
-.notice-faq-header {
-  display: grid;
-  grid-template-columns: 60px 140px 1fr 120px;
-  padding: 1rem;
-  background: #212529;
-  color: #fff;
-  font-weight: 600;
-  font-size: 0.85rem;
-}
-
-.notice-faq-item {
-  display: grid;
-  grid-template-columns: 60px 140px 1fr 120px;
-  padding: 1rem;
-  align-items: center;
-  cursor: pointer;
-  border-bottom: 1px solid #dee2e6;
-}
-
-.notice-faq-item:hover {
-  background: #f8f9fa;
-}
-
-.notice-faq-number {
-  text-align: center;
-  color: #adb5bd;
-}
-
-.notice-faq-branch {
-  text-align: center;
-}
-
-.notice-faq-title {
-  font-weight: 600;
-  color: #212529;
-}
-
-.notice-faq-date {
-  text-align: center;
-  font-size: 0.8rem;
-  color: #6c757d;
-}
-
-/* 모바일 */
-@media (max-width: 768px) {
-  .notice-faq-header,
-  .notice-faq-item {
-    grid-template-columns: 50px 100px 1fr;
-  }
-
-  .notice-faq-date {
-    display: none;
-  }
-}
-
-
-/* =====================================================
-   [3️⃣ 공지 상세 팝업 CSS - 공통]
-   리스트 스타일과 무관
-===================================================== */
-
+/* ===================================================== [7️⃣ 상세 팝업] ===================================================== */
 .notice-modal-overlay {
   position: fixed;
   inset: 0;
-  background: transparent;
+  background: rgba(0, 0, 0, 0.35);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 9999;
-}
-
-.notice-modal-stage {
-  background: transparent;
-  padding: 0;
 }
 
 .notice-modal {
@@ -270,24 +209,9 @@
   width: 920px;
   height: 720px;
   background: #fff;
-  /* border-radius: 10px; */
   display: flex;
   flex-direction: column;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-  overflow: hidden;
-}
-
-.notice-modal-close {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
-  border: 1px solid #ddd;
-  background: #fff;
-  font-size: 18px;
-  cursor: pointer;
 }
 
 .notice-modal-title {
@@ -309,7 +233,6 @@
 
 .notice-modal-content {
   flex: 1;
-  overflow: hidden;
   padding: 24px;
 }
 
@@ -318,234 +241,57 @@
   overflow-y: auto;
   background: #fffdf2;
   border: 1px solid #f0e6b8;
-  /* border-radius: 8px; */
   padding: 18px;
   line-height: 1.7;
   white-space: pre-line;
 }
 
+.notice-ok-btn {
+  background: #f0c84b;
+  border: none;
+  padding: 10px 28px;
+  border-radius: 6px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.notice-faq-only {
+  position: relative;
+  top: -80px;
+}
+
+/* X 닫기 버튼 */
+.notice-modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  background: #fff;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 하단 버튼 영역 */
 .notice-modal-actions {
   padding: 16px 24px 20px;
   border-top: 1px solid #eee;
   display: flex;
-  justify-content: center;
+  justify-content: center;   /* 가운데 정렬 */
 }
 
+/* 확인 버튼 */
 .notice-ok-btn {
+  background: #f0c84b;
   border: none;
-  background: #f0c84b;
-  font-weight: 700;
+  padding: 10px 32px;
   border-radius: 6px;
-  padding: 10px 28px;
-  cursor: pointer;
-}
-
-.section-container {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 0 1.5rem;
-}
-
-.page-header {
-  text-align: center;
-  margin: 3rem 0;
-}
-
-.page-title {
-  font-size: 2rem;
-  font-weight: 700;
-}
-
-.page-subtitle {
-  color: #6c757d;
-}
-
-/* FAQ 느낌의 레이어 배경 추가 */
-.notice-list-section {
-  background: #f9fafb;
-  padding: 80px 0;
-  border-top: 1px solid #eee;
-}
-
-
-/* 리스트 카드 자체는 흰색 유지 */
-.notice-faq-board {
-  background: #fff;
-}
-
-.page-brand {
-  display: block;
-  margin-top: 6px;
-  font-size: 12px;
-  letter-spacing: 0.08em;
-  color: #999;
-}
-
-/* =========================
-   공지사항 페이지 헤더 (브랜드 강조)
-========================= */
-
-.notice-page-header {
-  text-align: center;
-  margin-bottom: 36px;   /* 여백도 살짝 증가 */
-  padding: 28px 0 16px;  /* 상단 존재감 강화 */
-}
-
-
-.notice-page-header .page-title {
-  font-size: 32px;
   font-weight: 800;
-  color: #212529;
-  margin-bottom: 10px;
-}
-
-.notice-page-header .page-subtitle {
-  font-size: 17px;
-  line-height: 1.75;
-  color: #555;
-}
-
-/* 🔥 FITNEEDS 브랜드 강조 (강요 X, 자연스러운 주목) */
-.notice-page-header .brand-highlight {
-  font-weight: 800;
-  color: #f0c84b; /* 기존 포인트 컬러 */
-  margin: 0 2px;
-}
-
-/* 살짝 브랜드 느낌을 주는 장식 (선택사항) */
-.notice-page-header .brand-highlight::after {
-  content: "";
-  display: inline-block;
-  width: 6px;
-  height: 6px;
-  background: #f0c84b;
-  border-radius: 50%;
-  margin-left: 4px;
-  vertical-align: middle;
-}
-
-
-/* ---------table 방식----------- */
-/* =====================================================
-   [4️⃣ FAQ 톤 공지사항 테이블 보완 CSS]
-   table / th / td 기반
-   (기존 CSS 유지 + 하단에 추가)
-===================================================== */
-
-/* 테이블 기본 */
-.notice-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: #fff;
-}
-
-/* 헤더 */
-.notice-table thead th {
-  background: #212529;        /* FAQ 헤더 톤 */
-  color: #fff;
-  font-weight: 600;
-  font-size: 13px;
-  padding: 14px 10px;
-  text-align: center;
-  border-bottom: 1px solid #dee2e6;
-}
-
-/* 제목 컬럼만 좌측 정렬 */
-.notice-table thead th:nth-child(3),
-.notice-table tbody td:nth-child(3) {
-  text-align: left;
-}
-
-/* 바디 */
-.notice-table tbody td {
-  padding: 14px 10px;
-  font-size: 14px;
-  color: #212529;
-  border-bottom: 1px solid #eee;
-  text-align: center;
-}
-
-/* 행 hover (FAQ item 느낌) */
-.notice-table tbody tr:hover {
-  background: #f8f9fa;
   cursor: pointer;
-}
-
-/* 종료일 표시 */
-.notice-end-date {
-  font-size: 13px;
-  color: #6c757d;
-  white-space: nowrap;
-}
-
-/* 상시 공지 강조 */
-.notice-end-date.always {
-  font-weight: 700;
-  color: #ff9800;
-}
-
-/* =====================================================
-   공지사항 테이블 컬럼 폭 (FAQ 비율 맞춤)
-   colgroup 미사용 / nth-child 방식
-===================================================== */
-
-/* 번호 */
-.notice-table thead th:nth-child(1),
-.notice-table tbody td:nth-child(1) {
-  width: 60px;
-}
-
-/* 지점 */
-.notice-table thead th:nth-child(2),
-.notice-table tbody td:nth-child(2) {
-  width: 140px;
-}
-
-/* 제목 (가변) */
-.notice-table thead th:nth-child(3),
-.notice-table tbody td:nth-child(3) {
-  width: auto;
-}
-
-/* 게시일 */
-.notice-table thead th:nth-child(4),
-.notice-table tbody td:nth-child(4) {
-  width: 120px;
-}
-
-/* 종료일 */
-.notice-table thead th:nth-child(5),
-.notice-table tbody td:nth-child(5) {
-  width: 120px;
-}
-
-/* =========================
-   공지 종료일 강조 (USER)
-========================= */
-
-/* 종료일 있는 경우 */
-.notice-end-date.deadline {
-  display: inline-block;
-  padding: 4px 10px;
-  border-radius: 14px;
-  font-size: 12px;
-  font-weight: 700;
-  background: #eef4ff;      /* FAQ 블루 계열 */
-  color: #1e3a8a;
-}
-
-/* 상시 게시글 (기존 강조 유지, 약간만 정제) */
-.notice-end-date.always {
-  display: inline-block;
-  padding: 4px 10px;
-  border-radius: 14px;
-  font-size: 12px;
-  font-weight: 700;
-  background: #fff3c4;
-  color: #ff9800;
-}
-
-.notice-end-date.deadline {
-  font-variant-numeric: tabular-nums;
-  font-weight: 900;          /* 숫자 가독성 최고 */
 }

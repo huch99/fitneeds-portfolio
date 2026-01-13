@@ -22,6 +22,7 @@
             cp.views        AS views,
             cp.display_end  AS displayEnd,
             cp.created_at   AS createdAt,
+            cp.branch_id    AS branchId,
             b.brch_nm       AS branchName
         FROM COMMUNITY_POST cp
         LEFT JOIN branch b
@@ -53,6 +54,7 @@
             cp.views        AS views,
             cp.display_end  AS displayEnd,
             cp.created_at   AS createdAt,
+            cp.branch_id    AS branchId, 
             b.brch_nm       AS branchName
         FROM COMMUNITY_POST cp
         LEFT JOIN branch b

@@ -81,7 +81,7 @@
         FROM COMMUNITY_POST cp
         LEFT JOIN users u
                ON u.user_id = cp.writer_id
-        LEFT JOIN community_recruit_join crj
+        LEFT JOIN COMMUNITY_RECRUIT_JOIN crj
                ON crj.post_id = cp.post_id
         WHERE cp.post_type = 'COMMUNITY'
           AND cp.is_visible = 1
@@ -129,7 +129,7 @@
         ) ids
         JOIN COMMUNITY_POST cp ON cp.post_id = ids.post_id
         LEFT JOIN users u ON u.user_id = cp.writer_id
-        LEFT JOIN community_recruit_join crj ON crj.post_id = cp.post_id
+        LEFT JOIN COMMUNITY_RECRUIT_JOIN crj ON crj.post_id = cp.post_id
         GROUP BY cp.post_id
         ORDER BY cp.created_at DESC
     </select>
@@ -169,7 +169,7 @@
             COUNT(crj.join_id)  AS recruitCount
         FROM COMMUNITY_POST cp
         LEFT JOIN users u ON u.user_id = cp.writer_id
-        LEFT JOIN community_recruit_join crj ON crj.post_id = cp.post_id
+        LEFT JOIN COMMUNITY_RECRUIT_JOIN crj ON crj.post_id = cp.post_id
         WHERE cp.writer_id = #{userId}
           AND cp.post_type = 'COMMUNITY'
           AND cp.post_visible = 1
@@ -206,7 +206,7 @@
             COUNT(crj.join_id)    AS recruitCount
         FROM COMMUNITY_POST cp
         LEFT JOIN users u ON u.user_id = cp.writer_id
-        LEFT JOIN community_recruit_join crj ON crj.post_id = cp.post_id
+        LEFT JOIN COMMUNITY_RECRUIT_JOIN crj ON crj.post_id = cp.post_id
         WHERE cp.post_id = #{postId}
           AND cp.post_visible = 1
           AND (cp.category IS NULL OR cp.category NOT IN ('개인정보동의'))
