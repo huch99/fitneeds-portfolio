@@ -27,7 +27,7 @@ display_start DATETIME,                        -- 게시글 노출 시작일
 display_end DATETIME,                          -- 게시글 노출 종료일
 
 is_visible TINYINT(1) NOT NULL DEFAULT 1,       -- 공지사항 노출 여부 (1: 노출, 0: 숨김)
-attachment_path VARCHAR(255),                  -- 첨부파일 경로
+is_pinned  TINYINT(1) NOT NULL DEFAULT 0, 	   -- 공지사항 상단 고정
 
 post_visible TINYINT(1) NOT NULL DEFAULT 1,    -- 커뮤니티/모집 글 노출 여부
 
