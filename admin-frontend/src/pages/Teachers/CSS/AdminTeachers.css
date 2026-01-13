@@ -1,0 +1,129 @@
+/* file: src/pages/Teachers/CSS/AdminTeachers.css */
+
+/* 페이지 공통 */
+.admin-teachers-page {
+    width: 100%;
+}
+
+.admin-teachers-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.admin-teachers-header h2 {
+    margin: 0;
+}
+
+/* 상단 버튼 그룹 */
+.admin-teachers-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* 필터 영역 */
+.admin-teachers-filters {
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+.admin-teachers-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 180px;
+}
+
+.admin-teachers-field .label {
+    font-size: 13px;
+    opacity: 0.85;
+}
+
+/* 테이블 래퍼 */
+.admin-teachers-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.admin-teachers-row-actions {
+    display: flex;
+    gap: 8px;
+}
+
+/* 상세 정보 그리드 */
+.admin-teachers-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+/* 퇴직 폼 */
+.admin-teachers-retire {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+}
+
+.admin-teachers-retire .admin-teachers-field {
+    min-width: 220px;
+}
+
+/* 등록/수정 폼 */
+.admin-teachers-form-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.admin-teachers-form-row {
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+}
+
+.admin-teachers-form-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 18px;
+    flex-wrap: wrap;
+}
+
+/* 자격증/경력 입력 그리드 */
+.admin-teachers-cert-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 170px 200px 80px;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.admin-teachers-career-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 170px 170px 80px;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+/* 반응형 */
+@media (max-width: 900px) {
+    .admin-teachers-grid-2,
+    .admin-teachers-form-grid-2 {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-teachers-field {
+        min-width: 160px;
+    }
+
+    .admin-teachers-cert-grid,
+    .admin-teachers-career-grid {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,0 +1,162 @@
+USE fitneedsdb;
+
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- =========================================================
+-- 1) 고정 USER_ID (UUID)
+-- =========================================================
+SET @ADMIN_EMAIL := 'admin@naver.com';
+SET @T1 := '3A1C1111-2222-3333-4444-555555555555';
+SET @T2 := '7B2D1111-2222-3333-4444-555555555555';
+
+SET @PW_ADMIN  := '$2b$10$3zFdrHolW/N.cCLAf1ix.eLsbXbRqeDpsmeeh7C0mFzKsrTNXqsMO';
+SET @PW_TEACHER := '$2b$10$8U.ayeu6Fqex1abqiHE8uuXXzpwnDGNTNYMiFaM7TB9npimB5gz8m';
+
+-- =========================================================
+-- 2) ADMIN 계정 USER_ID 확보 (없으면 생성)
+-- =========================================================
+SET @ADMIN_ID_NEW := '11111111-1111-1111-1111-111111111111';
+INSERT INTO USERS_ADMIN (USER_ID, USER_NAME, EMAIL, PASSWORD, PHONE_NUMBER, ROLE, BRCH_ID, IS_ACTIVE, AGREE_AT)
+SELECT @ADMIN_ID_NEW, 'ADMIN', @ADMIN_EMAIL, @PW_ADMIN, '010-0000-0000', 'SYSTEM_ADMIN', NULL, 1, NOW()
+WHERE NOT EXISTS (SELECT 1 FROM USERS_ADMIN WHERE EMAIL = @ADMIN_EMAIL);
+
+SET @ADMIN_ID := (SELECT USER_ID FROM USERS_ADMIN WHERE EMAIL = @ADMIN_EMAIL LIMIT 1);
+
+-- =========================================================
+-- 3) 부모 테이블: BRANCH / SPORT_TYPE
+-- =========================================================
+INSERT INTO BRANCH (BRCH_NM, ADDR, OPER_YN, REG_DT, UPD_DT, PHONE)
+SELECT 'DUMMY_강남점', '서울 강남구', 1, NOW(), NOW(), '02-0000-0001'
+WHERE NOT EXISTS (SELECT 1 FROM BRANCH WHERE BRCH_NM = 'DUMMY_강남점');
+
+INSERT INTO BRANCH (BRCH_NM, ADDR, OPER_YN, REG_DT, UPD_DT, PHONE)
+SELECT 'DUMMY_홍대점', '서울 마포구', 1, NOW(), NOW(), '02-0000-0002'
+WHERE NOT EXISTS (SELECT 1 FROM BRANCH WHERE BRCH_NM = 'DUMMY_홍대점');
+
+SET @BR1 := (SELECT BRCH_ID FROM BRANCH WHERE BRCH_NM='DUMMY_강남점' ORDER BY BRCH_ID DESC LIMIT 1);
+SET @BR2 := (SELECT BRCH_ID FROM BRANCH WHERE BRCH_NM='DUMMY_홍대점' ORDER BY BRCH_ID DESC LIMIT 1);
+
+INSERT INTO SPORT_TYPE (SPORT_NM, SPORT_MEMO, USE_YN, REG_DT, UPD_DT, DEL_DT)
+SELECT 'DUMMY_PT', '더미 종목', 1, NOW(), NOW(), NULL
+WHERE NOT EXISTS (SELECT 1 FROM SPORT_TYPE WHERE SPORT_NM = 'DUMMY_PT');
+
+INSERT INTO SPORT_TYPE (SPORT_NM, SPORT_MEMO, USE_YN, REG_DT, UPD_DT, DEL_DT)
+SELECT 'DUMMY_필라테스', '더미 종목', 1, NOW(), NOW(), NULL
+WHERE NOT EXISTS (SELECT 1 FROM SPORT_TYPE WHERE SPORT_NM = 'DUMMY_필라테스');
+
+INSERT INTO SPORT_TYPE (SPORT_NM, SPORT_MEMO, USE_YN, REG_DT, UPD_DT, DEL_DT)
+SELECT 'DUMMY_요가', '더미 종목', 1, NOW(), NOW(), NULL
+WHERE NOT EXISTS (SELECT 1 FROM SPORT_TYPE WHERE SPORT_NM = 'DUMMY_요가');
+
+SET @SP1 := (SELECT SPORT_ID FROM SPORT_TYPE WHERE SPORT_NM='DUMMY_PT' ORDER BY SPORT_ID DESC LIMIT 1);
+SET @SP2 := (SELECT SPORT_ID FROM SPORT_TYPE WHERE SPORT_NM='DUMMY_필라테스' ORDER BY SPORT_ID DESC LIMIT 1);
+SET @SP3 := (SELECT SPORT_ID FROM SPORT_TYPE WHERE SPORT_NM='DUMMY_요가' ORDER BY SPORT_ID DESC LIMIT 1);
+
+-- =========================================================
+-- 4) USERS_ADMIN: 강사 2명 생성/갱신
+-- =========================================================
+INSERT INTO USERS_ADMIN (USER_ID, USER_NAME, EMAIL, PASSWORD, PHONE_NUMBER, ROLE, BRCH_ID, IS_ACTIVE, AGREE_AT)
+VALUES
+    (@T1, '더미강사1', 'dummy_teacher1@test.com', @PW_TEACHER, '010-8000-1001', 'TEACHER', @BR1, 1, NOW()),
+    (@T2, '더미강사2', 'dummy_teacher2@test.com', @PW_TEACHER, '010-8000-1002', 'TEACHER', @BR2, 1, NOW())
+ON DUPLICATE KEY UPDATE
+    USER_NAME     = VALUES(USER_NAME),
+    PASSWORD      = VALUES(PASSWORD),
+    PHONE_NUMBER  = VALUES(PHONE_NUMBER),
+    ROLE          = VALUES(ROLE),
+    BRCH_ID       = VALUES(BRCH_ID),
+    IS_ACTIVE     = VALUES(IS_ACTIVE);
+
+-- =========================================================
+-- 5) 강사관리 하위 테이블 (COLLATE 명시)
+-- =========================================================
+
+-- 5-1) TEACHER_PROFILE
+INSERT INTO TEACHER_PROFILE
+(USER_ID, BRCH_ID, STTS_CD, HIRE_DT, LEAVE_DT, LEAVE_RSN, INTRO, PROFILE_IMG_URL, REG_DT, UPD_DT, UPD_USER_ID)
+VALUES
+    (@T1, @BR1, 'ACTIVE', '2025-10-01', NULL, NULL, '더미강사1 소개', NULL, NOW(), NOW(), @ADMIN_ID),
+    (@T2, @BR2, 'ACTIVE', '2025-11-01', NULL, NULL, '더미강사2 소개', NULL, NOW(), NOW(), @ADMIN_ID)
+ON DUPLICATE KEY UPDATE
+    BRCH_ID         = VALUES(BRCH_ID),
+    STTS_CD         = VALUES(STTS_CD),
+    HIRE_DT         = VALUES(HIRE_DT),
+    LEAVE_DT        = VALUES(LEAVE_DT),
+    LEAVE_RSN       = VALUES(LEAVE_RSN),
+    INTRO           = VALUES(INTRO),
+    PROFILE_IMG_URL = VALUES(PROFILE_IMG_URL),
+    UPD_DT          = NOW(),
+    UPD_USER_ID     = VALUES(UPD_USER_ID);
+
+-- 5-2) TEACHER_SPORT (COLLATE 명시)
+DELETE FROM TEACHER_SPORT 
+WHERE USER_ID COLLATE utf8mb4_unicode_ci = @T1 COLLATE utf8mb4_unicode_ci
+   OR USER_ID COLLATE utf8mb4_unicode_ci = @T2 COLLATE utf8mb4_unicode_ci;
+
+INSERT INTO TEACHER_SPORT (USER_ID, SPORT_ID, MAIN_YN, SORT_NO, REG_DT, UPD_DT)
+VALUES
+    (@T1, @SP1, 1, 1, NOW(), NOW()),
+    (@T1, @SP2, 0, 2, NOW(), NOW()),
+    (@T2, @SP3, 1, 1, NOW(), NOW());
+
+-- 5-3) TEACHER_CAREER (COLLATE 명시)
+DELETE FROM TEACHER_CAREER 
+WHERE USER_ID COLLATE utf8mb4_unicode_ci = @T1 COLLATE utf8mb4_unicode_ci
+   OR USER_ID COLLATE utf8mb4_unicode_ci = @T2 COLLATE utf8mb4_unicode_ci;
+
+INSERT INTO TEACHER_CAREER (USER_ID, ORG_NM, ROLE_NM, STRT_DT, END_DT, REG_DT, UPD_DT, UPD_USER_ID)
+VALUES
+    (@T1, '더미센터A', '트레이너',      '2022-01-01', '2024-12-31', NOW(), NOW(), @ADMIN_ID),
+    (@T1, '더미센터B', '헤드 트레이너', '2025-01-01', NULL,         NOW(), NOW(), @ADMIN_ID),
+    (@T2, '더미요가원', '요가 강사',     '2021-03-01', NULL,         NOW(), NOW(), @ADMIN_ID);
+
+-- 5-4) TEACHER_CERTIFICATE (COLLATE 명시)
+DELETE FROM TEACHER_CERTIFICATE 
+WHERE USER_ID COLLATE utf8mb4_unicode_ci = @T1 COLLATE utf8mb4_unicode_ci
+   OR USER_ID COLLATE utf8mb4_unicode_ci = @T2 COLLATE utf8mb4_unicode_ci;
+
+INSERT INTO TEACHER_CERTIFICATE (USER_ID, CERT_NM, ISSUER, ACQ_DT, CERT_NO, REG_DT, UPD_DT, UPD_USER_ID)
+VALUES
+    (@T1, '더미자격증1', '더미기관', '2021-06-10', 'CERT-T1-001', NOW(), NOW(), @ADMIN_ID),
+    (@T1, '더미자격증2', '더미기관', '2023-02-15', 'CERT-T1-002', NOW(), NOW(), @ADMIN_ID),
+    (@T2, '더미자격증3', '더미기관', '2020-09-01', 'CERT-T2-001', NOW(), NOW(), @ADMIN_ID);
+
+SET FOREIGN_KEY_CHECKS = 1;
+
+-- =========================================================
+-- 6) 검증 (COLLATE 명시)
+-- =========================================================
+SELECT 'ADMIN' AS WHO, USER_ID, EMAIL, ROLE, BRCH_ID
+FROM USERS_ADMIN
+WHERE EMAIL = @ADMIN_EMAIL;
+
+SELECT 'TEACHERS' AS WHO, USER_ID, EMAIL, ROLE, BRCH_ID
+FROM USERS_ADMIN
+WHERE USER_ID COLLATE utf8mb4_unicode_ci = @T1 COLLATE utf8mb4_unicode_ci
+   OR USER_ID COLLATE utf8mb4_unicode_ci = @T2 COLLATE utf8mb4_unicode_ci;
+
+SELECT 'PROFILE' AS T, COUNT(*) CNT 
+FROM TEACHER_PROFILE 
+WHERE USER_ID COLLATE utf8mb4_unicode_ci = @T1 COLLATE utf8mb4_unicode_ci
+   OR USER_ID COLLATE utf8mb4_unicode_ci = @T2 COLLATE utf8mb4_unicode_ci
+UNION ALL
+SELECT 'SPORT', COUNT(*) 
+FROM TEACHER_SPORT 
+WHERE USER_ID COLLATE utf8mb4_unicode_ci = @T1 COLLATE utf8mb4_unicode_ci
+   OR USER_ID COLLATE utf8mb4_unicode_ci = @T2 COLLATE utf8mb4_unicode_ci
+UNION ALL
+SELECT 'CAREER', COUNT(*) 
+FROM TEACHER_CAREER 
+WHERE USER_ID COLLATE utf8mb4_unicode_ci = @T1 COLLATE utf8mb4_unicode_ci
+   OR USER_ID COLLATE utf8mb4_unicode_ci = @T2 COLLATE utf8mb4_unicode_ci
+UNION ALL
+SELECT 'CERT', COUNT(*) 
+FROM TEACHER_CERTIFICATE 
+WHERE USER_ID COLLATE utf8mb4_unicode_ci = @T1 COLLATE utf8mb4_unicode_ci
+   OR USER_ID COLLATE utf8mb4_unicode_ci = @T2 COLLATE utf8mb4_unicode_ci;
+
+SELECT TP.USER_ID, UA.USER_NAME, UA.EMAIL, TP.STTS_CD, TP.HIRE_DT
+FROM TEACHER_PROFILE TP
+JOIN USERS_ADMIN UA ON UA.USER_ID COLLATE utf8mb4_unicode_ci = TP.USER_ID COLLATE utf8mb4_unicode_ci
+WHERE TP.USER_ID COLLATE utf8mb4_unicode_ci = @T1 COLLATE utf8mb4_unicode_ci
+   OR TP.USER_ID COLLATE utf8mb4_unicode_ci = @T2 COLLATE utf8mb4_unicode_ci;

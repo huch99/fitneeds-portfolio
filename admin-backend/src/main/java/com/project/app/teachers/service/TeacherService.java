@@ -1,0 +1,489 @@
+// file: src/main/java/com/project/app/teachers/service/TeacherService.java
+package com.project.app.teachers.service;
+
+import com.project.app.config.util.UserIdGenerator;
+import com.project.app.sportTypes.entity.SportType;
+import com.project.app.sportTypes.repository.SportTypeRepository;
+import com.project.app.teachers.dto.TeacherDto;
+import com.project.app.teachers.entity.*;
+import com.project.app.teachers.repository.*;
+import com.project.app.userAdmin.entity.Branch;
+import com.project.app.userAdmin.entity.UserAdmin;
+import com.project.app.userAdmin.repository.BranchRepository;
+import com.project.app.userAdmin.repository.UserAdminRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+public class TeacherService {
+
+    private final TeacherProfileRepository profileRepo;
+    private final TeacherSportRepository sportRepo;
+    private final TeacherCertificateRepository certRepo;
+    private final TeacherCareerRepository careerRepo;
+
+    private final UserAdminRepository userAdminRepo;
+    private final BranchRepository branchRepo;
+    private final SportTypeRepository sportTypeRepo;
+
+    private final PasswordEncoder passwordEncoder;
+
+    // ------------------------
+    // Public APIs (권한 포함)
+    // ------------------------
+
+    @Transactional(readOnly = true)
+    public List<TeacherDto.Resp> list(String requesterId, Long requestedBranchId, Long sportId, String status) {
+        UserAdmin requester = requireRequester(requesterId);
+
+        String role = safe(requester.getRole());
+
+        // status 정규화 + 허용값 검증 (RETIRED 호환: RESIGNED로 치환)
+        String resolvedStatus = normalizeStatus(status);
+
+        // 권한에 따라 branch/user scope 강제
+        if ("TEACHER".equals(role)) {
+            // 본인만
+            return listAsTeacher(requesterId, sportId, resolvedStatus);
+        }
+
+        Long effectiveBranchId = requestedBranchId;
+        if ("BRANCH_ADMIN".equals(role)) {
+            if (requester.getBrchId() == null) {
+                throw new IllegalStateException("BRANCH_ADMIN has no brchId");
+            }
+            effectiveBranchId = requester.getBrchId();
+        }
+        // SYSTEM_ADMIN: requestedBranchId 그대로 사용
+
+        List<TeacherProfile> profiles;
+        if (sportId != null) {
+            List<String> userIds = sportRepo.findUserIdsBySportId(sportId);
+            if (userIds == null || userIds.isEmpty()) return List.of();
+            profiles = profileRepo.findByUserIdInAndFilters(userIds, effectiveBranchId, resolvedStatus);
+        } else {
+            profiles = (effectiveBranchId == null)
+                    ? profileRepo.findBySttsCd(resolvedStatus)
+                    : profileRepo.findByBrchIdAndSttsCd(effectiveBranchId, resolvedStatus);
+        }
+
+        if (profiles == null || profiles.isEmpty()) return List.of();
+        return profiles.stream().filter(Objects::nonNull).map(this::toSummaryResp).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public TeacherDto.Resp detail(String requesterId, String targetUserId) {
+        UserAdmin requester = requireRequester(requesterId);
+        String role = safe(requester.getRole());
+
+        TeacherProfile target = profileRepo.findById(targetUserId)
+                .orElseThrow(() -> new IllegalArgumentException("TeacherProfile not found: " + targetUserId));
+
+        enforceAccessToTarget(role, requester, target);
+        return toFullResp(target);
+    }
+
+    @Transactional
+    public TeacherDto.Resp create(String requesterId, TeacherDto.CreateReq req) {
+        UserAdmin requester = requireRequester(requesterId);
+        String role = safe(requester.getRole());
+
+        // TEACHER 생성 금지
+        if ("TEACHER".equals(role)) throw new AccessDeniedException("TEACHER cannot create teachers");
+
+        // BRANCH_ADMIN은 본인 지점으로만 생성
+        if ("BRANCH_ADMIN".equals(role)) {
+            if (requester.getBrchId() == null) throw new IllegalStateException("BRANCH_ADMIN has no brchId");
+            if (req.brchId() == null) {
+                req = new TeacherDto.CreateReq(
+                        req.userId(),
+                        req.userName(),
+                        req.email(),
+                        req.password(),
+                        req.phoneNumber(),
+                        requester.getBrchId(),
+                        req.hireDt(),
+                        req.intro(),
+                        req.profileImgUrl(),
+                        req.updUserId(),
+                        req.sports(),
+                        req.certificates(),
+                        req.careers()
+                );
+            } else if (!Objects.equals(req.brchId(), requester.getBrchId())) {
+                throw new AccessDeniedException("BRANCH_ADMIN can only create teachers in own branch");
+            }
+        }
+
+        // FK 확인 (branch 존재)
+        requireBranch(req.brchId());
+
+        String userId = (req.userId() == null || req.userId().isBlank())
+                ? new UserIdGenerator().generateUniqueUserId()
+                : req.userId();
+
+        if (userAdminRepo.existsByUserId(userId)) throw new IllegalArgumentException("UserAdmin already exists: " + userId);
+        if (userAdminRepo.existsByEmail(req.email())) throw new IllegalArgumentException("Email already exists: " + req.email());
+
+        // USERS_ADMIN 생성 (role='TEACHER')
+        UserAdmin userAdmin = UserAdmin.builder()
+                .userId(userId)
+                .userName(req.userName())
+                .email(req.email())
+                .password(passwordEncoder.encode(req.password()))
+                .phoneNumber(req.phoneNumber())
+                .role("TEACHER")
+                .agreeAt(LocalDateTime.now())
+                .isActive(true)
+                .brchId(req.brchId())
+                .build();
+        userAdminRepo.save(userAdmin);
+
+        // TEACHER_PROFILE 생성 (ENUM 안전하게 ACTIVE 명시)
+        TeacherProfile profile = TeacherProfile.builder()
+                .userId(userId)
+                .brchId(req.brchId())
+                .sttsCd("ACTIVE") // ✅ ENUM 허용값
+                .hireDt(req.hireDt())
+                .leaveRsn("")     // 빈 문자열로 통일(선택)
+                .intro(req.intro())
+                .profileImgUrl(req.profileImgUrl())
+                .updUserId(req.updUserId())
+                .build();
+        profileRepo.save(profile);
+
+        // TEACHER_SPORT / CERT / CAREER
+        upsertChildren(userId, req.updUserId(), req.sports(), req.certificates(), req.careers());
+
+        return detail(requesterId, userId);
+    }
+
+    @Transactional
+    public TeacherDto.Resp update(String requesterId, String targetUserId, TeacherDto.UpdateReq req) {
+        UserAdmin requester = requireRequester(requesterId);
+        String role = safe(requester.getRole());
+
+        TeacherProfile targetProfile = profileRepo.findById(targetUserId)
+                .orElseThrow(() -> new IllegalArgumentException("TeacherProfile not found: " + targetUserId));
+
+        enforceAccessToTarget(role, requester, targetProfile);
+
+        // TEACHER는 지점 변경 금지
+        if ("TEACHER".equals(role) && req.brchId() != null && !Objects.equals(req.brchId(), targetProfile.getBrchId())) {
+            throw new AccessDeniedException("TEACHER cannot change branch");
+        }
+
+        UserAdmin targetUser = userAdminRepo.findByUserId(targetUserId)
+                .orElseThrow(() -> new IllegalArgumentException("UserAdmin not found: " + targetUserId));
+
+        // BRCH 변경 시 존재 확인
+        if (req.brchId() != null) requireBranch(req.brchId());
+
+        // USERS_ADMIN 수정
+        if (req.userName() != null) targetUser.setUserName(req.userName());
+        if (req.phoneNumber() != null) targetUser.setPhoneNumber(req.phoneNumber());
+        if (req.email() != null && !req.email().equals(targetUser.getEmail())) {
+            if (userAdminRepo.existsByEmail(req.email())) throw new IllegalArgumentException("Email already exists: " + req.email());
+            targetUser.setEmail(req.email());
+        }
+        if (req.brchId() != null) targetUser.setBrchId(req.brchId());
+        userAdminRepo.save(targetUser);
+
+        // TEACHER_PROFILE 수정
+        targetProfile.update(req.brchId(), req.intro(), req.profileImgUrl(), req.updUserId());
+        profileRepo.save(targetProfile);
+
+        // 하위 테이블 교체(요청이 null이면 변경 없음, 빈 리스트면 전체 삭제)
+        if (req.sports() != null) {
+            sportRepo.deleteByUserId(targetUserId);
+            sportRepo.saveAll(req.sports().stream().filter(Objects::nonNull).map(s ->
+                    TeacherSport.builder()
+                            .userId(targetUserId)
+                            .sportId(s.sportId())
+                            .mainYn(Boolean.TRUE.equals(s.mainYn()))
+                            .sortNo(s.sortNo() == null ? 1 : s.sortNo())
+                            .build()
+            ).toList());
+        }
+        if (req.certificates() != null) {
+            certRepo.deleteByUserId(targetUserId);
+            certRepo.saveAll(req.certificates().stream().filter(Objects::nonNull).map(c ->
+                    TeacherCertificate.builder()
+                            .userId(targetUserId)
+                            .certNm(c.certNm())
+                            .issuer(c.issuer())
+                            .acqDt(c.acqDt())
+                            .certNo(c.certNo())
+                            .updUserId(req.updUserId())
+                            .build()
+            ).toList());
+        }
+        if (req.careers() != null) {
+            careerRepo.deleteByUserId(targetUserId);
+            careerRepo.saveAll(req.careers().stream().filter(Objects::nonNull).map(c ->
+                    TeacherCareer.builder()
+                            .userId(targetUserId)
+                            .orgNm(c.orgNm())
+                            .roleNm(c.roleNm())
+                            .strtDt(c.strtDt())
+                            .endDt(c.endDt())
+                            .updUserId(req.updUserId())
+                            .build()
+            ).toList());
+        }
+
+        return detail(requesterId, targetUserId);
+    }
+
+    @Transactional
+    public void retire(String requesterId, String targetUserId, TeacherDto.RetireReq req) {
+        UserAdmin requester = requireRequester(requesterId);
+        String role = safe(requester.getRole());
+
+        if ("TEACHER".equals(role)) throw new AccessDeniedException("TEACHER cannot retire teachers");
+
+        TeacherProfile targetProfile = profileRepo.findById(targetUserId)
+                .orElseThrow(() -> new IllegalArgumentException("TeacherProfile not found: " + targetUserId));
+        enforceAccessToTarget(role, requester, targetProfile);
+
+        UserAdmin targetUser = userAdminRepo.findByUserId(targetUserId)
+                .orElseThrow(() -> new IllegalArgumentException("UserAdmin not found: " + targetUserId));
+
+        // ✅ DB ENUM 허용값으로 퇴직 처리: RESIGNED
+        // (leave_dt/leave_rsn 반영 + users_admin.is_active=0)
+        String updaterId = req.updaterId();
+        String leaveRsn = (req.leaveRsn() == null) ? "" : req.leaveRsn();
+
+        targetProfile.retire(req.leaveDt(), leaveRsn, updaterId); // 내부에서 sttsCd=RESIGNED로 세팅되도록
+        profileRepo.save(targetProfile);
+
+        targetUser.setIsActive(false);
+        userAdminRepo.save(targetUser);
+    }
+
+    // ------------------------
+    // 권한/유틸
+    // ------------------------
+
+    private UserAdmin requireRequester(String requesterId) {
+        return userAdminRepo.findByUserId(requesterId)
+                .orElseThrow(() -> new AccessDeniedException("Requester not found"));
+    }
+
+    private void enforceAccessToTarget(String role, UserAdmin requester, TeacherProfile targetProfile) {
+        if ("SYSTEM_ADMIN".equals(role)) return;
+
+        if ("BRANCH_ADMIN".equals(role)) {
+            if (requester.getBrchId() == null) throw new IllegalStateException("BRANCH_ADMIN has no brchId");
+            if (!Objects.equals(requester.getBrchId(), targetProfile.getBrchId())) {
+                throw new AccessDeniedException("BRANCH_ADMIN can only manage own branch teachers");
+            }
+            return;
+        }
+
+        if ("TEACHER".equals(role)) {
+            if (!Objects.equals(requester.getUserId(), targetProfile.getUserId())) {
+                throw new AccessDeniedException("TEACHER can only access own profile");
+            }
+            return;
+        }
+
+        throw new AccessDeniedException("Unknown role: " + role);
+    }
+
+    private List<TeacherDto.Resp> listAsTeacher(String requesterId, Long sportId, String status) {
+        Optional<TeacherProfile> op = profileRepo.findById(requesterId);
+        if (op.isEmpty()) return List.of();
+
+        TeacherProfile p = op.get();
+        if (status != null && !status.isBlank() && !status.equals(p.getSttsCd())) return List.of();
+
+        if (sportId != null) {
+            boolean hasSport = sportRepo.findByUserId(requesterId).stream()
+                    .anyMatch(s -> s != null && Objects.equals(s.getSportId(), sportId));
+            if (!hasSport) return List.of();
+        }
+        return List.of(toSummaryResp(p));
+    }
+
+    private void requireBranch(Long brchId) {
+        if (brchId == null) throw new IllegalArgumentException("brchId is null");
+        if (!branchRepo.existsById(brchId)) throw new IllegalArgumentException("Branch not found: " + brchId);
+    }
+
+    private String safe(String s) { return (s == null) ? "" : s; }
+
+    /**
+     * status 정규화:
+     * - null/blank => ACTIVE
+     * - 대문자 변환
+     * - RETIRED(과거값) => RESIGNED
+     * - 허용값: ACTIVE / LEAVE / RESIGNED
+     */
+    private String normalizeStatus(String status) {
+        String s = (status == null || status.isBlank()) ? "ACTIVE" : status.trim().toUpperCase();
+        if ("RETIRED".equals(s)) s = "RESIGNED";
+        if (!Set.of("ACTIVE", "LEAVE", "RESIGNED").contains(s)) {
+            throw new IllegalArgumentException("Invalid status: " + status);
+        }
+        return s;
+    }
+
+    private void upsertChildren(
+            String userId,
+            String updUserId,
+            List<TeacherDto.SportReq> sports,
+            List<TeacherDto.CertificateReq> certs,
+            List<TeacherDto.CareerReq> careers
+    ) {
+        if (sports != null) {
+            sportRepo.saveAll(sports.stream().filter(Objects::nonNull).map(s ->
+                    TeacherSport.builder()
+                            .userId(userId)
+                            .sportId(s.sportId())
+                            .mainYn(Boolean.TRUE.equals(s.mainYn()))
+                            .sortNo(s.sortNo() == null ? 1 : s.sortNo())
+                            .build()
+            ).toList());
+        }
+
+        if (certs != null) {
+            certRepo.saveAll(certs.stream().filter(Objects::nonNull).map(c ->
+                    TeacherCertificate.builder()
+                            .userId(userId)
+                            .certNm(c.certNm())
+                            .issuer(c.issuer())
+                            .acqDt(c.acqDt())
+                            .certNo(c.certNo())
+                            .updUserId(updUserId)
+                            .build()
+            ).toList());
+        }
+
+        if (careers != null) {
+            careerRepo.saveAll(careers.stream().filter(Objects::nonNull).map(c ->
+                    TeacherCareer.builder()
+                            .userId(userId)
+                            .orgNm(c.orgNm())
+                            .roleNm(c.roleNm())
+                            .strtDt(c.strtDt())
+                            .endDt(c.endDt())
+                            .updUserId(updUserId)
+                            .build()
+            ).toList());
+        }
+    }
+
+    // ------------------------
+    // Mapping helpers (기존 그대로)
+    // ------------------------
+
+    private TeacherDto.Resp toSummaryResp(TeacherProfile profile) {
+        UserAdmin ua = userAdminRepo.findByUserId(profile.getUserId()).orElse(null);
+        Branch br = branchRepo.findById(profile.getBrchId()).orElse(null);
+
+        List<TeacherSport> sports = sportRepo.findByUserId(profile.getUserId());
+        List<TeacherDto.SportResp> sportResps = toSportResps(sports);
+
+        return new TeacherDto.Resp(
+                profile.getUserId(),
+                ua != null ? safe(ua.getUserName()) : "",
+                ua != null ? safe(ua.getEmail()) : "",
+                ua != null ? safe(ua.getPhoneNumber()) : "",
+                profile.getBrchId(),
+                br != null ? safe(br.getBrchNm()) : "",
+                ua != null ? safe(ua.getRole()) : "",
+                ua != null && Boolean.TRUE.equals(ua.getIsActive()) ? 1 : 0,
+                safe(profile.getSttsCd()),
+                profile.getHireDt(),
+                profile.getLeaveDt(),
+                safe(profile.getLeaveRsn()),
+                safe(profile.getIntro()),
+                safe(profile.getProfileImgUrl()),
+                sportResps,
+                List.of(),
+                List.of(),
+                profile.getRegDt(),
+                profile.getUpdDt(),
+                safe(profile.getUpdUserId())
+        );
+    }
+
+    private TeacherDto.Resp toFullResp(TeacherProfile profile) {
+        UserAdmin ua = userAdminRepo.findByUserId(profile.getUserId()).orElse(null);
+        Branch br = branchRepo.findById(profile.getBrchId()).orElse(null);
+
+        List<TeacherSport> sports = sportRepo.findByUserId(profile.getUserId());
+        List<TeacherCertificate> certs = certRepo.findByUserIdOrderByCertIdAsc(profile.getUserId());
+        List<TeacherCareer> careers = careerRepo.findByUserIdOrderByCareerIdAsc(profile.getUserId());
+
+        List<TeacherDto.SportResp> sportResps = toSportResps(sports);
+
+        List<TeacherDto.CertificateResp> certResps = (certs == null ? List.<TeacherCertificate>of() : certs).stream()
+                .filter(Objects::nonNull)
+                .map(c -> new TeacherDto.CertificateResp(
+                        c.getCertId(), safe(c.getCertNm()), safe(c.getIssuer()), c.getAcqDt(), safe(c.getCertNo())))
+                .toList();
+
+        List<TeacherDto.CareerResp> careerResps = (careers == null ? List.<TeacherCareer>of() : careers).stream()
+                .filter(Objects::nonNull)
+                .map(c -> new TeacherDto.CareerResp(
+                        c.getCareerId(), safe(c.getOrgNm()), safe(c.getRoleNm()), c.getStrtDt(), c.getEndDt()))
+                .toList();
+
+        return new TeacherDto.Resp(
+                profile.getUserId(),
+                ua != null ? safe(ua.getUserName()) : "",
+                ua != null ? safe(ua.getEmail()) : "",
+                ua != null ? safe(ua.getPhoneNumber()) : "",
+                profile.getBrchId(),
+                br != null ? safe(br.getBrchNm()) : "",
+                ua != null ? safe(ua.getRole()) : "",
+                ua != null && Boolean.TRUE.equals(ua.getIsActive()) ? 1 : 0,
+                safe(profile.getSttsCd()),
+                profile.getHireDt(),
+                profile.getLeaveDt(),
+                safe(profile.getLeaveRsn()),
+                safe(profile.getIntro()),
+                safe(profile.getProfileImgUrl()),
+                sportResps,
+                certResps,
+                careerResps,
+                profile.getRegDt(),
+                profile.getUpdDt(),
+                safe(profile.getUpdUserId())
+        );
+    }
+
+    private List<TeacherDto.SportResp> toSportResps(List<TeacherSport> sports) {
+        if (sports == null || sports.isEmpty()) return List.of();
+
+        List<Long> sportIds = sports.stream()
+                .filter(Objects::nonNull)
+                .map(TeacherSport::getSportId)
+                .distinct()
+                .toList();
+
+        Map<Long, String> sportNameMap = sportTypeRepo.findAllById(sportIds).stream()
+                .filter(Objects::nonNull)
+                .collect(Collectors.toMap(SportType::getSportId, s -> safe(s.getSportNm()), (a, b) -> a));
+
+        return sports.stream()
+                .filter(Objects::nonNull)
+                .map(s -> new TeacherDto.SportResp(
+                        s.getSportId(),
+                        sportNameMap.getOrDefault(s.getSportId(), ""),
+                        Boolean.TRUE.equals(s.getMainYn()) ? 1 : 0,
+                        s.getSortNo() == null ? 1 : s.getSortNo()
+                ))
+                .toList();
+    }
+}
