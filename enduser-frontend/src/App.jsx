@@ -11,14 +11,7 @@ import Layout from './components/Layout';
 
 // Pages
 import Home from './pages/Home/Home';
-// import About from './pages/About/About';
-// import Contact from './pages/Contact/Contact';
-import Pricing from './pages/Pricing/Pricing';
 import FAQ from './pages/FAQ/FAQ';
-// import BlogHome from './pages/BlogHome/BlogHome';
-// import BlogPost from './pages/BlogPost/BlogPost';
-import PortfolioOverview from './pages/PortfolioOverview/PortfolioOverview';
-import PortfolioItem from './pages/PortfolioItem/PortfolioItem';
 import MyPage from './pages/MyPage/MyPage';
 import MyReservationList from './pages/MyPage/MyReservationList';
 import MyPassPage from './pages/MyPage/MyPassPage';
@@ -62,14 +55,7 @@ function App() {
         <Layout>
           <Routes>
             <Route path="/" element={<Home />} />
-            {/* <Route path="/about" element={<About />} /> */}
-            {/* <Route path="/contact" element={<Contact />} /> */}
-            <Route path="/pricing" element={<Pricing />} />
             <Route path="/faq" element={<FAQ />} />
-            {/* <Route path="/blog" element={<BlogHome />} /> */}
-            {/* <Route path="/blog/post" element={<BlogPost />} /> */}
-            <Route path="/portfolio" element={<PortfolioOverview />} />
-            <Route path="/portfolio/item" element={<PortfolioItem />} />
             <Route path="/mypage" element={<MyPage />} />
             <Route path="/mypage/reservations" element={<MyReservationList />} />
             <Route path="/mypage/my-pass" element={<MyPassPage />} />

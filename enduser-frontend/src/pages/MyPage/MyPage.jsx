@@ -11,6 +11,7 @@ import ReviewWriteSection from './ReviewWriteSection';
 import PaymentHistorySection from './PaymentHistorySection';
 import AttendanceSection from './AttendanceSection';
 import ProfileSection from './ProfileSection';
+import SideBar from './SideBar';
 
 function MyPage() {
   const location = useLocation();
