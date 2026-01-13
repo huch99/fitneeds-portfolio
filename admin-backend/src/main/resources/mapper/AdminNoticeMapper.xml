@@ -27,13 +27,10 @@
             cp.created_at,
             cp.updated_at,
 
-            -- 작성자 / 지점 표시용
-            s.staff_nm   AS writerName,
-            b.brch_nm    AS branchName
+            -- 지점명 표시용
+            b.brch_nm AS branch_name
 
         FROM COMMUNITY_POST cp
-        LEFT JOIN STAFF s
-               ON cp.writer_id = s.staff_id
         LEFT JOIN branch b
                ON cp.branch_id = b.brch_id
 
@@ -63,13 +60,10 @@
             cp.created_at,
             cp.updated_at,
 
-            -- 작성자 / 지점 표시용
-            s.staff_nm   AS writerName,
-            b.brch_nm    AS branchName
+            -- 지점명 표시용
+            b.brch_nm AS branch_name
 
         FROM COMMUNITY_POST cp
-        LEFT JOIN STAFF s
-               ON cp.writer_id = s.staff_id
         LEFT JOIN branch b
                ON cp.branch_id = b.brch_id
 
@@ -120,7 +114,6 @@
 
     <!-- =========================
          공지사항 수정 (ADMIN)
-         - 종료 날짜 수정 가능
     ========================= -->
     <update id="updateNotice"
             parameterType="com.project.app.notice.dto.NoticeDto">
@@ -139,7 +132,6 @@
 
     <!-- =========================
          공지사항 숨김 / 보이기 (ADMIN)
-         - is_visible만 사용
     ========================= -->
     <update id="updateVisible">
 
@@ -154,7 +146,6 @@
 
     <!-- =========================
          공지사항 삭제 (ADMIN)
-         - 실제 DELETE
     ========================= -->
     <delete id="deleteNotice">
 

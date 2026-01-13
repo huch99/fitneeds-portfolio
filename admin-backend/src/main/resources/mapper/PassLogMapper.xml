@@ -4,7 +4,7 @@
 
     <resultMap id="PassLogResultMap" type="com.project.app.payment.domain.PassLog">
         <id property="passLogId" column="pass_log_id" />
-        <result property="userPassId" column="user_pass_id" />
+        <result property="passId" column="pass_id" />
         <result property="brchId" column="brch_id" />
         <result property="chgTypeCd" column="chg_type_cd" />
         <result property="chgCnt" column="chg_cnt" />
@@ -23,7 +23,7 @@
 
     <insert id="insert" parameterType="com.project.app.payment.domain.PassLog" useGeneratedKeys="true" keyProperty="passLogId">
         INSERT INTO pass_log (
-            user_pass_id,
+            pass_id,
             brch_id,
             chg_type_cd,
             chg_cnt,
@@ -31,7 +31,7 @@
             usr_id,
             reg_dt
         ) VALUES (
-            #{userPassId},
+            #{passId},
             #{brchId},
             #{chgTypeCd},
             #{chgCnt},
@@ -44,7 +44,7 @@
     <update id="update" parameterType="com.project.app.payment.domain.PassLog">
         UPDATE pass_log
         SET
-            user_pass_id = #{userPassId},
+            pass_id = #{passId},
             brch_id = #{brchId},
             chg_type_cd = #{chgTypeCd},
             chg_cnt = #{chgCnt},

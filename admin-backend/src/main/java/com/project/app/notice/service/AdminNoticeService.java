@@ -63,7 +63,7 @@ public class AdminNoticeService {
 
         // 🔥 임시 관리자 ID (권한 연동 전)
         dto.setWriterId("1");
-
+             
         // 필수값 검증
         if (dto.getTitle() == null || dto.getTitle().trim().isEmpty()
                 || dto.getContent() == null || dto.getContent().trim().isEmpty()) {
@@ -84,6 +84,7 @@ public class AdminNoticeService {
     @Transactional
     public void updateNotice(NoticeDto dto) {
         dto.setPostType("NOTICE");
+        
         adminNoticeMapper.updateNotice(dto);
     }
 
