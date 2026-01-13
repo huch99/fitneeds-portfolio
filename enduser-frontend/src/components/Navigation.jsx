@@ -93,32 +93,10 @@ function Navigation() {
             </li>
 
             <li className="nav-menu-item">
-              <Link className="nav-menu-link" to="/about">센터안내</Link>
-            </li>
-            <li className="nav-menu-item">
-              <Link className="nav-menu-link" to="/pricing">수강안내</Link>
-            </li>
-            <li className="nav-menu-item">
               {/* <Link className="nav-menu-link" to="/contact">예약하기</Link> */}
               <Link className="nav-menu-link" to="/type-select">예약하기</Link>
             </li>
-            <li className="nav-menu-item">
-              <Link 
-                className="nav-menu-link" 
-                to="/mypage"
-                onClick={(e) => {
-                  if (location.pathname.startsWith('/mypage')) {
-                    e.preventDefault();
-                    navigate('/mypage', { 
-                      replace: false,
-                      state: { menu: null }
-                    });
-                  }
-                }}
-              >
-                나의 운동
-              </Link>
-            </li>
+
 
             {/* ================= 이용권 드롭다운 [ADD] ================= */}
             <li
@@ -174,29 +152,25 @@ function Navigation() {
                 </li>
               </ul>
             </li>
-
-            <li
-              className="nav-menu-item nav-dropdown"
-              ref={blogDropdownRef}
-              onMouseEnter={() => setBlogDropdownOpen(true)}
-              onMouseLeave={() => setBlogDropdownOpen(false)}
-            >
-              <Link className="nav-menu-link nav-dropdown-toggle" to="/blog">
-                블로그
+            
+            <li className="nav-menu-item">
+              <Link 
+                className="nav-menu-link" 
+                to="/mypage"
+                onClick={(e) => {
+                  if (location.pathname.startsWith('/mypage')) {
+                    e.preventDefault();
+                    navigate('/mypage', { 
+                      replace: false,
+                      state: { menu: null }
+                    });
+                  }
+                }}
+              >
+                나의 운동
               </Link>
-              <ul className={`nav-dropdown-menu ${blogDropdownOpen ? 'nav-dropdown-show' : ''}`}>
-                <li>
-                  <Link className="nav-dropdown-item" to="/blog">
-                    블로그 목록
-                  </Link>
-                </li>
-                <li>
-                  <Link className="nav-dropdown-item" to="/blog/post">
-                    블로그 상세
-                  </Link>
-                </li>
-              </ul>
             </li>
+         
           </ul>
         </div>
 
