@@ -1,8 +1,7 @@
 /* Layout component specific styles */
 
 .layout-wrapper {
-  display: flex;
-  flex-direction: column;
+  display: block;
   min-height: 100vh;
   overflow-x: hidden;
 }
@@ -20,7 +19,6 @@
 .layout-main {
   padding-top: 80px; /* Add padding to prevent content from being hidden under fixed header */
   overflow-x: hidden;
-  flex: 1;
 }
 
 /* Home page doesn't need padding-top as header is transparent initially */
@@ -29,10 +27,5 @@
   overflow-x: hidden;
   overflow-y: auto;
   height: auto;
-}
-
-.layout-header {
-  height: 80px; /* 지금 padding-top이랑 동일한 값 */
-  flex-shrink: 0;
 }
 
