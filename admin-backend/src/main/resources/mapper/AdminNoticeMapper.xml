@@ -30,7 +30,7 @@
             -- 지점명 표시용
             b.brch_nm AS branch_name
 
-        FROM community_post cp
+        FROM COMMUNITY_POST cp
         LEFT JOIN branch b
                ON cp.branch_id = b.brch_id
 
@@ -63,7 +63,7 @@
             -- 지점명 표시용
             b.brch_nm AS branch_name
 
-        FROM community_post cp
+        FROM COMMUNITY_POST cp
         LEFT JOIN branch b
                ON cp.branch_id = b.brch_id
 
@@ -81,7 +81,7 @@
             useGeneratedKeys="true"
             keyProperty="postId">
 
-        INSERT INTO community_post
+        INSERT INTO COMMUNITY_POST
         (
             post_type,
             title,
@@ -118,7 +118,7 @@
     <update id="updateNotice"
             parameterType="com.project.app.notice.dto.NoticeDto">
 
-        UPDATE community_post
+        UPDATE COMMUNITY_POST
         SET
             title = #{title},
             content = #{content},
@@ -135,7 +135,7 @@
     ========================= -->
     <update id="updateVisible">
 
-        UPDATE community_post
+        UPDATE COMMUNITY_POST
         SET
             is_visible = #{visible},
             updated_at = NOW()
@@ -149,7 +149,7 @@
     ========================= -->
     <delete id="deleteNotice">
 
-        DELETE FROM community_post
+        DELETE FROM COMMUNITY_POST
         WHERE post_id = #{postId}
           AND post_type = 'NOTICE'
 
