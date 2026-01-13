@@ -1,15 +1,16 @@
 package com.project.app.config.util;
 
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+
+import javax.sql.DataSource;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-
-// @Component - DB 연결 과다로 인해 비활성화
+@Component
 public class DatabaseConnectionTester implements CommandLineRunner {
 
     @Autowired
