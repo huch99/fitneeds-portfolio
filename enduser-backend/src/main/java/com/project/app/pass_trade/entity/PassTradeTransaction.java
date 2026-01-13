@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "pass_trade_transaction")
+@Table(name = "PASS_TRADE_TRANSACTION")
 @Data
 @NoArgsConstructor
 public class PassTradeTransaction {
@@ -27,21 +27,21 @@ public class PassTradeTransaction {
     @Column(name = "seller_id", nullable = false)
     private String sellerId;
 
-    @Column(name = "trade_count", nullable = false)
-    private Integer tradeCount;
+    @Column(name = "buy_qty", nullable = false)
+    private Integer buyQty;
 
     @Column(
-            name = "total_amount",
+            name = "trade_amt",
             nullable = false,
             precision = 19,
             scale = 4
     )
-    private BigDecimal totalAmount;
+    private BigDecimal tradeAmt;
 
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "transaction_status", nullable = false)
-    private TransactionStatus transactionStatus = TransactionStatus.REQUESTED;
+    @Column(name = "stts_cd", nullable = false)
+    private TransactionStatus sttsCd = TransactionStatus.REQUESTED;
 
     @Column(name = "payment_id")
     private Long paymentId;

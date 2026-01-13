@@ -58,7 +58,7 @@ public class UserPass extends BaseTimeEntity {
     private Long lstProdId; // 마지막 구매 물품 ID
 
 	@Column(name = "init_cnt", nullable = false)
-	private Long initCnt; // 초기 구매 수량
+	private Integer initCnt; // 초기 구매 수량
 
     /**
      * 이용권 잔여 횟수를 1 감소시키고 상태를 업데이트합니다. 엔티티의 비즈니스 로직을 캡슐화합니다.

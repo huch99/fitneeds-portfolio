@@ -13,9 +13,10 @@ public class PassTradeTransactionResponse {
     private Long postId;
     private String buyerId;
     private String sellerId;
-    private Integer tradeCount;
-    private BigDecimal totalAmount;
-    private TransactionStatus transactionStatus;
+    private Integer buyQty;
+//    private BigDecimal totalAmount;
+    private BigDecimal tradeAmt;
+    private TransactionStatus sttsCd;
     private Long paymentId;
     private LocalDateTime regDt;
     private LocalDateTime updDt;

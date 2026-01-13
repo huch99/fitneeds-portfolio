@@ -59,7 +59,7 @@ public class PaymentService {
         Payment payment = Payment.builder()
                 .user(buyer)
                 .payTypeCd(PaymentPayTypeCd.PASS_TRADE)   //  거래 결제
-                .refId(refTransactionId)                  // 거래 ID 참조
+                .targetId(refTransactionId)                  // 거래 ID 참조
                 .payAmt(amount)
                 .payMethod(PaymentPayMethod.CARD)        // 현재는 카드 고정
                 .sttsCd(PaymentSttsCd.PAID)               // 즉시 결제 완료

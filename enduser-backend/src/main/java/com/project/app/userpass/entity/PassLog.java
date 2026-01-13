@@ -51,15 +51,10 @@ public class PassLog {
     private String chgRsn;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pocs_usr_id", nullable = true)
+    @JoinColumn(name = "pocs_user_id", nullable = true)
     private UserAdmin userAdmin;
 
     @Column(name = "reg_dt", nullable = false)
     @CreatedDate
     private LocalDateTime regDt;
-    
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "rsv_id")
-    private Reservation reservation;
-    
 }

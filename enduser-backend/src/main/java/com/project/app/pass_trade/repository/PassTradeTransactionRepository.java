@@ -13,6 +13,6 @@ public interface PassTradeTransactionRepository extends JpaRepository<PassTradeT
 
     List<PassTradeTransaction> findByPostIdOrderByRegDtDesc(Long postId);
 
-    Optional<PassTradeTransaction> findByPostIdAndTransactionStatusIn(
+    Optional<PassTradeTransaction> findByPostIdAndSttsCdIn(
             Long postId, List<TransactionStatus> statuses);
 }

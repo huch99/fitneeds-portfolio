@@ -30,8 +30,8 @@ public class Reservation {
     @Column(name = "brch_id")
     private Long brchId;
 
-    @Column(name = "pass_id")
-    private Long passId;
+    @Column(name = "user_pass_id")
+    private Long userPassId;
 
     @Column(name = "stts_cd")
     private String sttsCd;

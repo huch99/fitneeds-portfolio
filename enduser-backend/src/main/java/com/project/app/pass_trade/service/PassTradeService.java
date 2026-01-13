@@ -161,14 +161,14 @@ public class PassTradeService {
             throw new RuntimeException("본인의 게시글은 구매할 수 없습니다.");
         }
 
-        Integer tradeCount = request.getTradeCount();
+        Integer buyQty = request.getBuyQty();
 
         // 4) 구매 수량 검증
-        if (tradeCount == null || tradeCount <= 0) {
+        if (buyQty == null || buyQty <= 0) {
             throw new IllegalArgumentException("구매 수량은 1 이상이어야 합니다.");
         }
 
-        if (tradeCount > post.getSellCount()) {
+        if (buyQty > post.getSellCount()) {
             throw new RuntimeException("구매 수량이 판매 수량을 초과합니다.");
         }
 
@@ -187,8 +187,8 @@ public class PassTradeService {
                         );
 
 // 거래 금액 = 단가 * 구매 수량
-        BigDecimal tradeAmount =
-                unitPrice.multiply(BigDecimal.valueOf(tradeCount));
+        BigDecimal tradeAmt =
+                unitPrice.multiply(BigDecimal.valueOf(buyQty));
 
 
         // 6) 거래 트랜잭션 생성 (결제는 나중에 → paymentId는 null)
@@ -196,9 +196,9 @@ public class PassTradeService {
         transaction.setPostId(postId);
         transaction.setBuyerId(buyerId);
         transaction.setSellerId(post.getSellerId());
-        transaction.setTradeCount(tradeCount);
-        transaction.setTotalAmount(tradeAmount);
-        transaction.setTransactionStatus(TransactionStatus.COMPLETED);
+        transaction.setBuyQty(buyQty);
+        transaction.setTradeAmt(tradeAmt);
+        transaction.setSttsCd(TransactionStatus.COMPLETED);
         transaction.setPaymentId(null);
 
         PassTradeTransaction savedTransaction = passTradeTransactionRepository.save(transaction);
@@ -207,7 +207,7 @@ public class PassTradeService {
         UserPass sellerPassAfter = userPassTradeService.decreaseForTrade(
                 post.getUserPassId(),
                 post.getSellerId(),
-                tradeCount,
+                buyQty,
                 "이용권 거래 판매 (거래ID: " + savedTransaction.getTransactionId() + ")"
         );
 
@@ -218,7 +218,7 @@ public class PassTradeService {
         userPassTradeService.increaseOrCreateForTrade(
                 buyerId,
                 sportId,
-                tradeCount,
+                buyQty,
                 lstProdId,
                 "이용권 거래 구매 (거래ID: " + savedTransaction.getTransactionId() + ")"
         );
@@ -252,9 +252,9 @@ public class PassTradeService {
         response.setPostId(transaction.getPostId());
         response.setBuyerId(transaction.getBuyerId());
         response.setSellerId(transaction.getSellerId());
-        response.setTradeCount(transaction.getTradeCount());
-        response.setTotalAmount(transaction.getTotalAmount());
-        response.setTransactionStatus(transaction.getTransactionStatus());
+        response.setBuyQty(transaction.getBuyQty());
+        response.setTradeAmt(transaction.getTradeAmt());
+        response.setSttsCd(transaction.getSttsCd());
         response.setPaymentId(transaction.getPaymentId());
         response.setRegDt(transaction.getRegDt());
         response.setUpdDt(transaction.getUpdDt());

@@ -3,9 +3,10 @@ package com.project.app.reservation.entity;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import org.hibernate.annotations.ColumnDefault;
+
 import com.project.app.aspect.BaseTimeEntity;
 import com.project.app.branch.entity.Branch;
-import com.project.app.reservation.entity.AttendanceStatus;
 import com.project.app.schedule.entity.Schedule;
 import com.project.app.user.entity.User;
 import com.project.app.userpass.entity.UserPass;
@@ -74,12 +75,16 @@ public class Reservation extends BaseTimeEntity {
 
 	@Column(name = "upd_id", nullable = true)
 	private String updID;
-	
-	//추가)
-	@Column(nullable = false)
+
+//	@ColumnDefault("0")
+//	@Column(name = "review_written", nullable = false, columnDefinition = "TINYINT(0)")
+//	private Boolean reviewWritten;
+
+	// 추가)
+	@Column(name = "review_written", nullable = false)
 	private Boolean reviewWritten = false;
-	
-	//추가)
+
+	// 추가)
 	@Column(name = "attendance_status")
 	@Enumerated(EnumType.STRING)
 	private AttendanceStatus attendanceStatus = AttendanceStatus.UNCHECKED;
@@ -88,7 +93,7 @@ public class Reservation extends BaseTimeEntity {
 	public AttendanceStatus getAttendanceStatus() {
 		return this.attendanceStatus;
 	}
-	
+
 	// 추가)출석 상태 업데이트
 	public void updateAttendanceStatus(AttendanceStatus attendanceStatus) {
 		this.attendanceStatus = attendanceStatus;

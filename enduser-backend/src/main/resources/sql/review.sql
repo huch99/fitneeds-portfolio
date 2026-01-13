@@ -29,18 +29,3 @@ VALUES ('재등록 의사 있어요', '운동 효과가 확실해서 다음 달�
 -- 테이블 확인
 SELECT * FROM review;
 
--- 예약 내역 삽입 
-INSERT INTO RESERVATION_HISTORY (
-    history_id, reservation_id, user_id, schedule_id, sport_name,
-    brch_id, trainer_id, trainer_name, rsv_dt, rsv_time,
-    ref_id, reg_dt, review_written
-) VALUES
-(1, 1001, 'c9d97230213a4dba98bad77dc63f0b52', 2001, '요가', 1, 501, '김트레이너',
- '2025-01-05', '10:00:00', 2001, NOW(), 'N'),
-(2, 1002, 'c9d97230213a4dba98bad77dc63f0b52', 2002, '필라테스', 1, 502, '이트레이너',
- '2025-01-07', '14:00:00', 2002, NOW(), 'N'),
-(3, 1003, 'c9d97230213a4dba98bad77dc63f0b52', 2003, '헬스 PT', 2, 503, '박트레이너',
- '2025-01-03', '18:30:00', 2003, NOW(), 'N');
-
--- 확인
-SELECT * FROM reservation_history;

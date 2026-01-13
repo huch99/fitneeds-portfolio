@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "pass_trade_post")
+@Table(name = "PASS_TRADE_POST")
 @Data
 @NoArgsConstructor
 public class PassTradePost {
@@ -73,8 +73,8 @@ public class PassTradePost {
 
 
     // 판매 사유
-    @Column(name = "reason", nullable = false, length = 300)
-    private String reason;
+//    @Column(name = "reason", nullable = false, length = 300)
+//    private String reason;
 
     /* =========================
      * 삭제 여부
