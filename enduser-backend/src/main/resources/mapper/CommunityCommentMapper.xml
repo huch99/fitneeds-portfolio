@@ -23,7 +23,7 @@
             c.writer_type   AS writerType,
             c.content,
             c.created_at    AS createdAt
-        FROM community_comment c
+        FROM COMMUNITY_COMMENT c
         LEFT JOIN users u
                ON u.user_id = c.writer_id
         WHERE c.post_id = #{postId}
@@ -38,7 +38,7 @@
     <select id="countByCommentIdAndWriterId"
             resultType="int">
         SELECT COUNT(*)
-        FROM community_comment
+        FROM COMMUNITY_COMMENT
         WHERE comment_id = #{commentId}
           AND writer_id = #{writerId}
           AND comment_visible = 1
@@ -48,7 +48,7 @@
          ✏️ 댓글 수정 (본인만)
          ========================= -->
     <update id="updateCommentContent">
-        UPDATE community_comment
+        UPDATE COMMUNITY_COMMENT
         SET
             content = #{content}
         WHERE comment_id = #{commentId}
@@ -61,7 +61,7 @@
          ========================= -->
     <delete id="deleteCommentByWriter">
         DELETE
-        FROM community_comment
+        FROM COMMUNITY_COMMENT
         WHERE comment_id = #{commentId}
           AND writer_id = #{writerId}
     </delete>

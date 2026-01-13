@@ -11,7 +11,7 @@
             useGeneratedKeys="true"
             keyProperty="postId">
 
-        INSERT INTO community_post
+        INSERT INTO COMMUNITY_POST
         (
             post_type,
             category,
@@ -78,7 +78,7 @@
             cp.created_at       AS createdAt,
             cp.updated_at       AS updatedAt,
             COUNT(crj.join_id)  AS recruitCount
-        FROM community_post cp
+        FROM COMMUNITY_POST cp
         LEFT JOIN users u
                ON u.user_id = cp.writer_id
         LEFT JOIN community_recruit_join crj
@@ -119,7 +119,7 @@
             COUNT(crj.join_id)  AS recruitCount
         FROM (
             SELECT post_id
-            FROM community_post
+            FROM COMMUNITY_POST
             WHERE post_type = 'COMMUNITY'
               AND is_visible = 1
               AND post_visible = 1
@@ -127,7 +127,7 @@
             ORDER BY created_at DESC
             LIMIT #{size} OFFSET #{offset}
         ) ids
-        JOIN community_post cp ON cp.post_id = ids.post_id
+        JOIN COMMUNITY_POST cp ON cp.post_id = ids.post_id
         LEFT JOIN users u ON u.user_id = cp.writer_id
         LEFT JOIN community_recruit_join crj ON crj.post_id = cp.post_id
         GROUP BY cp.post_id
@@ -137,7 +137,7 @@
     <!-- 전체 개수 -->
     <select id="selectVisibleCommunityPostCount" resultType="int">
         SELECT COUNT(*)
-        FROM community_post
+        FROM COMMUNITY_POST
         WHERE post_type = 'COMMUNITY'
           AND is_visible = 1
           AND post_visible = 1
@@ -167,7 +167,7 @@
             cp.created_at       AS createdAt,
             cp.updated_at       AS updatedAt,
             COUNT(crj.join_id)  AS recruitCount
-        FROM community_post cp
+        FROM COMMUNITY_POST cp
         LEFT JOIN users u ON u.user_id = cp.writer_id
         LEFT JOIN community_recruit_join crj ON crj.post_id = cp.post_id
         WHERE cp.writer_id = #{userId}
@@ -204,7 +204,7 @@
             cp.created_at         AS createdAt,
             cp.updated_at         AS updatedAt,
             COUNT(crj.join_id)    AS recruitCount
-        FROM community_post cp
+        FROM COMMUNITY_POST cp
         LEFT JOIN users u ON u.user_id = cp.writer_id
         LEFT JOIN community_recruit_join crj ON crj.post_id = cp.post_id
         WHERE cp.post_id = #{postId}
@@ -216,7 +216,7 @@
     <!-- 작성자 본인 체크 -->
     <select id="countByPostIdAndWriterId" resultType="int">
         SELECT COUNT(*)
-        FROM community_post
+        FROM COMMUNITY_POST
         WHERE post_id = #{postId}
           AND writer_id = #{writerId}
           AND post_visible = 1
@@ -225,7 +225,7 @@
 
     <!-- 글 수정 -->
     <update id="updateCommunityPost">
-        UPDATE community_post
+        UPDATE COMMUNITY_POST
         SET
             title = #{title},
             content = #{content},
@@ -242,7 +242,7 @@
 
     <!-- 글 삭제 (소프트 삭제) -->
     <update id="deleteCommunityPost">
-        UPDATE community_post
+        UPDATE COMMUNITY_POST
         SET
             post_visible = 0,
             updated_at = NOW()
@@ -251,7 +251,7 @@
 
     <!-- 조회수 증가 -->
     <update id="increaseViews" parameterType="long">
-        UPDATE community_post
+        UPDATE COMMUNITY_POST
         SET views = views + 1
         WHERE post_id = #{postId}
           AND post_visible = 1

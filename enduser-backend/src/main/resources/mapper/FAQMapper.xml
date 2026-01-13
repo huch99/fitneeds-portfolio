@@ -7,7 +7,7 @@
 
     <!-- =========================
          USER FAQ 목록 조회
-         - community_post 단일 테이블
+         - COMMUNITY_POST 단일 테이블
          - post_type = 'FAQ'
          - is_visible = true
          ========================= -->
@@ -22,7 +22,7 @@
             content     AS content,
             is_visible  AS isVisible,
             created_at  AS createdAt
-        FROM community_post
+        FROM COMMUNITY_POST
         WHERE post_type = 'FAQ'
           AND is_visible = true
         ORDER BY created_at DESC
@@ -44,7 +44,7 @@
             content    AS content,
             is_visible AS isVisible,
             created_at AS createdAt
-        FROM community_post
+        FROM COMMUNITY_POST
         WHERE post_id = #{postId}
           AND post_type = 'FAQ'
           AND is_visible = true

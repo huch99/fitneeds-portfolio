@@ -8,7 +8,7 @@
     <!-- FAQ 개수 -->
     <select id="selectFAQCount" resultType="int">
         SELECT COUNT(*)
-        FROM community_post
+        FROM COMMUNITY_POST
         WHERE post_type = 'FAQ'
         <if test="keyword != null and keyword != ''">
             AND (title LIKE CONCAT('%', #{keyword}, '%')
@@ -36,7 +36,7 @@
             is_visible    AS isVisible,
             created_at    AS createdAt,
             updated_at    AS updatedAt
-        FROM community_post
+        FROM COMMUNITY_POST
         WHERE post_type = 'FAQ'
         <if test="keyword != null and keyword != ''">
             AND (title LIKE CONCAT('%', #{keyword}, '%')
@@ -66,7 +66,7 @@
             is_visible    AS isVisible,
             created_at    AS createdAt,
             updated_at    AS updatedAt
-        FROM community_post
+        FROM COMMUNITY_POST
         WHERE post_id = #{postId}
           AND post_type = 'FAQ'
     </select>
@@ -76,7 +76,7 @@
             parameterType="com.project.app.faq.dto.FAQDto"
             useGeneratedKeys="true"
             keyProperty="postId">
-        INSERT INTO community_post (
+        INSERT INTO COMMUNITY_POST (
             post_type,
             category,
             title,
@@ -105,7 +105,7 @@
     <!-- FAQ 수정 -->
     <update id="updateFAQ"
             parameterType="com.project.app.faq.dto.FAQDto">
-        UPDATE community_post
+        UPDATE COMMUNITY_POST
         SET
             category = #{category},
             title = #{title},
@@ -120,7 +120,7 @@
 
     <!-- FAQ 숨김 / 보이기 -->
     <update id="updateFAQVisible">
-        UPDATE community_post
+        UPDATE COMMUNITY_POST
         SET
             is_visible = #{visible},
             updated_at = NOW()
@@ -130,7 +130,7 @@
 
     <!-- FAQ 삭제 -->
     <delete id="deleteFAQ">
-        DELETE FROM community_post
+        DELETE FROM COMMUNITY_POST
         WHERE post_id = #{postId}
           AND post_type = 'FAQ'
     </delete>
