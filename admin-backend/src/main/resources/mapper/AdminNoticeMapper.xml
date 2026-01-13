@@ -7,6 +7,7 @@
 
     <!-- =========================
          공지사항 목록 조회 (ADMIN)
+         - 상단 고정(is_pinned) 우선
          - 숨김 여부 무관
          - post_type = NOTICE
     ========================= -->
@@ -23,6 +24,7 @@
             cp.branch_id,
             cp.views,
             cp.is_visible,
+            cp.is_pinned,
             cp.display_end,
             cp.created_at,
             cp.updated_at,
@@ -35,7 +37,9 @@
                ON cp.branch_id = b.brch_id
 
         WHERE cp.post_type = 'NOTICE'
-        ORDER BY cp.created_at DESC
+        ORDER BY
+            cp.is_pinned DESC,
+            cp.created_at DESC
 
     </select>
 
@@ -56,6 +60,7 @@
             cp.branch_id,
             cp.views,
             cp.is_visible,
+            cp.is_pinned,
             cp.display_end,
             cp.created_at,
             cp.updated_at,
@@ -74,6 +79,7 @@
 
     <!-- =========================
          공지사항 등록 (ADMIN)
+         - is_pinned 기본값 false
          - display_end : NULL이면 상시
     ========================= -->
     <insert id="insertNotice"
@@ -91,6 +97,7 @@
             branch_id,
             views,
             is_visible,
+            is_pinned,
             display_end,
             created_at,
             updated_at
@@ -105,6 +112,7 @@
             #{branchId},
             #{views},
             #{isVisible},
+            0,
             #{displayEnd},
             NOW(),
             NOW()
@@ -124,6 +132,7 @@
             content = #{content},
             branch_id = #{branchId},
             display_end = #{displayEnd},
+            is_pinned = #{isPinned},
             updated_at = NOW()
         WHERE post_id = #{postId}
           AND post_type = 'NOTICE'
@@ -138,6 +147,20 @@
         UPDATE COMMUNITY_POST
         SET
             is_visible = #{visible},
+            updated_at = NOW()
+        WHERE post_id = #{postId}
+          AND post_type = 'NOTICE'
+
+    </update>
+
+    <!-- =========================
+         공지사항 상단 고정 ON / OFF
+    ========================= -->
+    <update id="updatePinned">
+
+        UPDATE COMMUNITY_POST
+        SET
+            is_pinned = #{pinned},
             updated_at = NOW()
         WHERE post_id = #{postId}
           AND post_type = 'NOTICE'

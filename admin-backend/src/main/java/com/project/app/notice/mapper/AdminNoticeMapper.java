@@ -37,6 +37,11 @@ public interface AdminNoticeMapper {
             @Param("postId") Long postId,
             @Param("visible") boolean visible
     );
+    
+    int updatePinned(
+            @Param("postId") Long postId,
+            @Param("pinned") boolean pinned
+    );
 
     /**
      * ADMIN 공지사항 삭제 (논리 삭제)

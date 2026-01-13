@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import api from "../../api";               
+import api from "../../api";
 import "./Notice.css";
 
 function formatDateYmd(dateStr) {
@@ -42,8 +42,15 @@ function NoticeUserPage() {
   const fetchNotices = async () => {
     setLoadingList(true);
     try {
-      const res = await api.get("/user/notice", { params });   // 🔥 변경
-      setNotices(res.data || []);
+      const res = await api.get("/user/notice", { params });
+
+      // 🔥 isPinned 안전 매핑
+      const mapped = (res.data || []).map((n) => ({
+        ...n,
+        isPinned: Boolean(n.isPinned),
+      }));
+
+      setNotices(mapped);
       setPage(1);
     } catch {
       alert("공지사항 목록 조회 실패");
@@ -56,7 +63,7 @@ function NoticeUserPage() {
   const openNotice = async (postId) => {
     setLoadingDetail(true);
     try {
-      const res = await api.get(`/user/notice/${postId}`);     // 🔥 변경
+      const res = await api.get(`/user/notice/${postId}`);
       setDetail(res.data);
     } catch {
       alert("공지 상세 조회 실패");
@@ -78,12 +85,9 @@ function NoticeUserPage() {
 
   return (
     <div className="notice-wrap notice-faq-only">
-      {/* =========================
-          상단 타이틀 영역 (공지용)
-         ========================= */}
+      {/* 상단 타이틀 */}
       <div className="notice-page-header">
         <h1 className="page-title">공지사항</h1>
-
         <p className="page-subtitle">
           더 나은 운동 경험을 위해 준비한,
           <span className="brand-highlight"> FITNEEDS</span>의
@@ -91,15 +95,9 @@ function NoticeUserPage() {
         </p>
       </div>
 
-      {/* =========================
-          공지사항 리스트 (USER)
-         ========================= */}
       <section className="notice-list-section">
         <div className="section-container">
-
-          {loadingList && (
-            <div className="faq-empty">로딩 중...</div>
-          )}
+          {loadingList && <div className="faq-empty">로딩 중...</div>}
 
           {!loadingList && pagedNotices.length === 0 && (
             <div className="faq-empty">등록된 공지사항이 없습니다.</div>
@@ -133,11 +131,10 @@ function NoticeUserPage() {
 
                         <td>
                           <span
-                            className={`category-badge ${
-                              n.branchName == null || n.branchName === ""
+                            className={`category-badge ${n.branchName == null || n.branchName === ""
                                 ? "notice-branch-all"
                                 : "notice-branch-normal"
-                            }`}
+                              }`}
                           >
                             {n.branchName == null || n.branchName === ""
                               ? "전체 공지"
@@ -146,6 +143,28 @@ function NoticeUserPage() {
                         </td>
 
                         <td className="notice-td-title">
+                          {n.isPinned && (
+                            <span
+                              style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: "4px",
+                                marginRight: "8px",
+                                padding: "3px 8px",
+                                fontSize: "12px",
+                                fontWeight: "700",
+                                color: "#9a6a00",
+                                background: "#fff3c4",
+                                border: "1px solid #ffd54f",
+                                borderRadius: "12px",
+                                verticalAlign: "middle",
+                                lineHeight: "1"
+                              }}
+                            >
+                              📌 고정
+                            </span>
+                          )}
+
                           {n.title}
                         </td>
 
@@ -175,14 +194,9 @@ function NoticeUserPage() {
           )}
         </div>
 
-        {/* =========================
-            페이징 (기존 그대로)
-           ========================= */}
+        {/* 페이징 */}
         <div className="community-pagination notice-pagination-faq">
-          <button
-            disabled={page === 1}
-            onClick={() => setPage(page - 1)}
-          >
+          <button disabled={page === 1} onClick={() => setPage(page - 1)}>
             이전
           </button>
 
@@ -208,18 +222,12 @@ function NoticeUserPage() {
         </div>
       </section>
 
-      {/* =========================
-          공지 상세 팝업 (기존 그대로 유지)
-         ========================= */}
+      {/* 상세 팝업 */}
       {detail && (
         <div className="notice-modal-overlay" onClick={closePopup}>
           <div className="notice-modal-stage" onClick={(e) => e.stopPropagation()}>
             <div className="notice-modal">
-              <button
-                className="notice-modal-close"
-                onClick={closePopup}
-                type="button"
-              >
+              <button className="notice-modal-close" onClick={closePopup}>
                 ×
               </button>
 
@@ -235,12 +243,14 @@ function NoticeUserPage() {
               </div>
 
               <div className="notice-modal-actions">
-                <button className="notice-ok-btn" type="button" onClick={closePopup}>
+                <button className="notice-ok-btn" onClick={closePopup}>
                   확인
                 </button>
               </div>
 
-              {loadingDetail && <div className="notice-loading-mask">로딩 중...</div>}
+              {loadingDetail && (
+                <div className="notice-loading-mask">로딩 중...</div>
+              )}
             </div>
           </div>
         </div>
