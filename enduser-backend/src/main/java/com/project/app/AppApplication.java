@@ -2,6 +2,7 @@ package com.project.app;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.client.RestTemplate;
@@ -27,7 +28,7 @@ public class AppApplication {
 	/**
 	 * RestTemplate Bean 등록 외부 API를 호출할 때 사용하는 HTTP 클라이언트 도구
 	 */
-//	@Bean
+	@Bean
 	public RestTemplate restTemplate() {
 		return new RestTemplate();
 	}

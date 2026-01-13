@@ -597,44 +597,44 @@ function Home() {
             <div className="panorama-row panorama-row-1">
               <div className="panorama-track">
                 <div className="panorama-item">
-                  <img src="/images/main/1.jpg" alt="Gallery 1" />
+                  <img src="/images/main/c10.png" alt="헬스" />
                 </div>
                 <div className="panorama-item">
-                  <img src="/images/main/2.jpg" alt="Gallery 2" />
+                  <img src="/images/main/c11.png" alt="헬스" />
                 </div>
                 <div className="panorama-item">
-                  <img src="/images/main/3.jpg" alt="Gallery 3" />
+                  <img src="/images/main/c2.png" alt="크로스핏" />
                 </div>
                 <div className="panorama-item">
-                  <img src="/images/main/1.jpg" alt="Gallery 4" />
+                  <img src="/images/main/c4.png" alt="요가" />
                 </div>
                 <div className="panorama-item">
-                  <img src="/images/main/2.jpg" alt="Gallery 5" />
+                  <img src="/images/main/c12.png" alt="fit" />
                 </div>
                 <div className="panorama-item">
-                  <img src="/images/main/3.jpg" alt="Gallery 6" />
+                  <img src="/images/main/c10.png" alt="헬스" />
                 </div>
                 <div className="panorama-item">
-                  <img src="/images/main/1.jpg" alt="Gallery 7" />
+                  <img src="/images/main/c14.png" alt="헬스" />
                 </div>
                 <div className="panorama-item">
-                  <img src="/images/main/2.jpg" alt="Gallery 8" />
+                  <img src="/images/main/c15.png" alt="헬스" />
                 </div>
                 <div className="panorama-item">
-                  <img src="/images/main/3.jpg" alt="Gallery 9" />
+                  <img src="/images/main/c3.png" alt="요가" />
                 </div>
                 <div className="panorama-item">
-                  <img src="/images/main/1.jpg" alt="Gallery 10" />
+                  <img src="/images/main/c4.png" alt="요가" />
                 </div>
                 {/* Duplicate for seamless loop */}
                 <div className="panorama-item">
-                  <img src="/images/main/1.jpg" alt="Gallery 1" />
+                  <img src="/images/main/c1.png" alt="요가" />
                 </div>
                 <div className="panorama-item">
-                  <img src="/images/main/2.jpg" alt="Gallery 2" />
+                  <img src="/images/main/c2.png" alt="크로스핏" />
                 </div>
                 <div className="panorama-item">
-                  <img src="/images/main/3.jpg" alt="Gallery 3" />
+                  <img src="/images/main/c3.png" alt="요가" />
                 </div>
               </div>
             </div>
@@ -642,44 +642,44 @@ function Home() {
             <div className="panorama-row panorama-row-2">
               <div className="panorama-track">
                 <div className="panorama-item">
-                  <img src="/images/main/3.jpg" alt="Gallery 3" />
+                  <img src="/images/main/c5.png" alt="요가" />
                 </div>
                 <div className="panorama-item">
-                  <img src="/images/main/2.jpg" alt="Gallery 2" />
+                  <img src="/images/main/c6.png" alt="요가" />
                 </div>
                 <div className="panorama-item">
-                  <img src="/images/main/1.jpg" alt="Gallery 1" />
+                  <img src="/images/main/c7.png" alt="크로스핏" />
                 </div>
                 <div className="panorama-item">
-                  <img src="/images/main/3.jpg" alt="Gallery 3" />
+                  <img src="/images/main/c8.png" alt="그룹요가" />
                 </div>
                 <div className="panorama-item">
-                  <img src="/images/main/2.jpg" alt="Gallery 2" />
+                  <img src="/images/main/c9.png" alt="크로스핏" />
                 </div>
                 <div className="panorama-item">
-                  <img src="/images/main/1.jpg" alt="Gallery 1" />
+                  <img src="/images/main/c1.png" alt="요가" />
                 </div>
                 <div className="panorama-item">
-                  <img src="/images/main/3.jpg" alt="Gallery 3" />
+                  <img src="/images/main/c13.png" alt="요가" />
                 </div>
                 <div className="panorama-item">
-                  <img src="/images/main/2.jpg" alt="Gallery 2" />
+                  <img src="/images/main/c3.png" alt="요가" />
                 </div>
                 <div className="panorama-item">
-                  <img src="/images/main/1.jpg" alt="Gallery 1" />
+                  <img src="/images/main/c4.png" alt="요가" />
                 </div>
                 <div className="panorama-item">
-                  <img src="/images/main/3.jpg" alt="Gallery 3" />
+                  <img src="/images/main/c1.png" alt="요가" />
                 </div>
                 {/* Duplicate for seamless loop */}
                 <div className="panorama-item">
-                  <img src="/images/main/3.jpg" alt="Gallery 3" />
+                  <img src="/images/main/c5.png" alt="요가" />
                 </div>
                 <div className="panorama-item">
-                  <img src="/images/main/2.jpg" alt="Gallery 2" />
+                  <img src="/images/main/c6.png" alt="요가" />
                 </div>
                 <div className="panorama-item">
-                  <img src="/images/main/1.jpg" alt="Gallery 1" />
+                  <img src="/images/main/c7.png" alt="크로스핏" />
                 </div>
               </div>
             </div>

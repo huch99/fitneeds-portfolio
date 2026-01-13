@@ -7,7 +7,7 @@ function Footer() {
       <div className="footer-container">
         <div className="footer-content">
           <div className="footer-copyright">
-            <div className="footer-text">Copyright &copy; FITNEEDS 2023</div>
+            <div className="footer-text">Copyright &copy; FITNEEDS 2025</div>
           </div>
           <div className="footer-links">
             <a className="footer-link" href="#!">Privacy</a>
