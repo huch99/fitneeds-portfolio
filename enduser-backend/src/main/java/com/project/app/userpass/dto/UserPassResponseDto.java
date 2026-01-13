@@ -37,6 +37,7 @@ public class UserPassResponseDto {
                 .passStatusCd(userPass.getPassStatusCd().name())
                 .rmnCnt(userPass.getRmnCnt())
                 .lstProdId(userPass.getLstProdId())
+                .initCnt(userPass.getInitCnt() != null ? userPass.getInitCnt().longValue() : 0L)
                 .regDt(userPass.getRegDt())
                 .updDt(userPass.getUpdDt())
                 .userId(userPass.getUser().getUserId())
