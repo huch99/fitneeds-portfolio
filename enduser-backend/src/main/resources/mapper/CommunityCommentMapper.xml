@@ -24,7 +24,7 @@
             c.content,
             c.created_at    AS createdAt
         FROM COMMUNITY_COMMENT c
-        LEFT JOIN users u
+        LEFT JOIN USERS u
                ON u.user_id = c.writer_id
         WHERE c.post_id = #{postId}
           AND c.comment_visible = 1
