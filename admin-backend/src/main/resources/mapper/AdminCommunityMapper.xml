@@ -15,7 +15,7 @@
       p.*,
       COUNT(c.comment_id) AS commentCount
     FROM COMMUNITY_POST p
-    LEFT JOIN COMMUNITY_COMMENT c
+    LEFT JOIN community_comment c
       ON p.post_id = c.post_id
      AND c.comment_visible = 1
 
@@ -62,7 +62,7 @@
   <select id="selectCommunityPostCount" resultType="int">
     SELECT COUNT(DISTINCT p.post_id)
     FROM COMMUNITY_POST p
-    LEFT JOIN COMMUNITY_COMMENT c
+    LEFT JOIN community_comment c
       ON p.post_id = c.post_id
      AND c.comment_visible = 1
 
