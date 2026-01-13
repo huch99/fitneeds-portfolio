@@ -28,7 +28,7 @@
             oper_yn,
             DATE_FORMAT(reg_dt, '%Y-%m-%d %H:%i:%s') AS reg_dt,
             DATE_FORMAT(upd_dt, '%Y-%m-%d %H:%i:%s') AS upd_dt
-        FROM branch
+        FROM BRANCH
         ORDER BY brch_id ASC
     </select>
 
@@ -46,7 +46,7 @@
             oper_yn,
             DATE_FORMAT(reg_dt, '%Y-%m-%d %H:%i:%s') AS reg_dt,
             DATE_FORMAT(upd_dt, '%Y-%m-%d %H:%i:%s') AS upd_dt
-        FROM branch
+        FROM BRANCH
         WHERE brch_id = #{brchId}
     </select>
 
@@ -55,7 +55,7 @@
     ========================= -->
     <insert id="insert"
             parameterType="com.project.app.branch.domain.Branch">
-        INSERT INTO branch (
+        INSERT INTO BRANCH (
             brch_id,
             brch_nm,
             addr,
@@ -77,7 +77,7 @@
     ========================= -->
     <update id="update"
             parameterType="com.project.app.branch.domain.Branch">
-        UPDATE branch
+        UPDATE BRANCH
         SET
             brch_nm = #{brchNm},
             addr = #{addr},
@@ -91,7 +91,7 @@
     ========================= -->
     <delete id="delete"
             parameterType="long">
-        DELETE FROM branch
+        DELETE FROM BRANCH
         WHERE brch_id = #{brchId}
     </delete>
 
@@ -129,7 +129,7 @@
             parameterType="string"
             resultType="string">
         SELECT MAX(brch_id)
-        FROM branch
+        FROM BRANCH
         WHERE brch_id LIKE CONCAT('BR-', #{year}, '-%')
     </select>
 
@@ -139,7 +139,7 @@
     <select id="findMaxBrchId"
             resultType="java.lang.Long">
         SELECT MAX(brch_id)
-        FROM branch
+        FROM BRANCH
     </select>
 
 </mapper>

@@ -25,7 +25,7 @@
             cp.branch_id    AS branchId,
             b.brch_nm       AS branchName
         FROM COMMUNITY_POST cp
-        LEFT JOIN branch b
+        LEFT JOIN BRANCH b
             ON cp.branch_id = b.brch_id
         WHERE cp.post_type = 'NOTICE'
           AND cp.is_visible = 1
@@ -57,7 +57,7 @@
             cp.branch_id    AS branchId, 
             b.brch_nm       AS branchName
         FROM COMMUNITY_POST cp
-        LEFT JOIN branch b
+        LEFT JOIN BRANCH b
             ON cp.branch_id = b.brch_id
         WHERE cp.post_id = #{postId}
           AND cp.post_type = 'NOTICE'

@@ -31,7 +31,7 @@
             b.brch_nm AS branch_name
 
         FROM COMMUNITY_POST cp
-        LEFT JOIN branch b
+        LEFT JOIN BRANCH b
                ON cp.branch_id = b.brch_id
 
         WHERE cp.post_type = 'NOTICE'
@@ -64,7 +64,7 @@
             b.brch_nm AS branch_name
 
         FROM COMMUNITY_POST cp
-        LEFT JOIN branch b
+        LEFT JOIN BRANCH b
                ON cp.branch_id = b.brch_id
 
         WHERE cp.post_id = #{postId}

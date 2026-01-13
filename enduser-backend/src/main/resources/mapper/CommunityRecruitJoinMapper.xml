@@ -56,7 +56,7 @@
   <select id="selectJoinUsersByPostId" resultType="string">
     SELECT u.user_name
     FROM COMMUNITY_RECRUIT_JOIN j
-    LEFT JOIN users u
+    LEFT JOIN USERS u
            ON u.user_id = j.user_id
     WHERE j.post_id = #{postId}
     ORDER BY j.join_id ASC
