@@ -255,10 +255,10 @@
   cursor: pointer;
 }
 
-.notice-faq-only {
+/* .notice-faq-only {
   position: relative;
   top: -80px;
-}
+} */
 
 /* X 닫기 버튼 */
 .notice-modal-close {
