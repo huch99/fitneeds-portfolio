@@ -15,7 +15,7 @@
       p.*,
       COUNT(c.comment_id) AS commentCount
     FROM COMMUNITY_POST p
-    LEFT JOIN community_comment c
+    LEFT JOIN COMMUNITY_COMMENT c
       ON p.post_id = c.post_id
      AND c.comment_visible = 1
 
@@ -62,7 +62,7 @@
   <select id="selectCommunityPostCount" resultType="int">
     SELECT COUNT(DISTINCT p.post_id)
     FROM COMMUNITY_POST p
-    LEFT JOIN community_comment c
+    LEFT JOIN COMMUNITY_COMMENT c
       ON p.post_id = c.post_id
      AND c.comment_visible = 1
 
@@ -89,7 +89,7 @@
   =============================== -->
   <select id="selectRecruitJoinCountByPostId" resultType="int">
     SELECT COUNT(*)
-    FROM community_recruit_join
+    FROM COMMUNITY_RECRUIT_JOIN
     WHERE post_id = #{postId}
   </select>
 
@@ -123,7 +123,7 @@
     SELECT
       crj.join_id AS joinId,
       crj.user_id AS userId
-    FROM community_recruit_join crj
+    FROM COMMUNITY_RECRUIT_JOIN crj
     WHERE crj.post_id = #{postId}
     ORDER BY crj.join_id ASC
   </select>
@@ -132,7 +132,7 @@
        ADMIN 모집 참여자 삭제
   =============================== -->
   <delete id="deleteRecruitJoin">
-    DELETE FROM community_recruit_join
+    DELETE FROM COMMUNITY_RECRUIT_JOIN
     WHERE join_id = #{joinId}
   </delete>
 
