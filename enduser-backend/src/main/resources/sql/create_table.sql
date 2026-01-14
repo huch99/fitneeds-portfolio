@@ -9,36 +9,36 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- 1. DROP TABLES
 -- ==========================================
 
-drop table if exists teacher_settlement_item;
-drop table if exists teacher_settlement;
-drop table if exists teacher_certificate;
-drop table if exists teacher_career;
-drop table if exists teacher_sport;
-drop table if exists teacher_profile;
-drop table if exists review;
-drop table if exists favorite;
-drop table if exists faq;
-drop table if exists COMMUNITY_COMMENT;
-drop table if exists community_recruit_join;
-drop table if exists COMMUNITY_POST;
-drop table if exists pass_trade_transaction;
-drop table if exists pass_trade_post;
-drop table if exists pass_log;
-drop table if exists payment;
-drop table if exists class_attendance;
-drop table if exists reservation;
-drop table if exists schedule;
-drop table if exists user_pass;
-drop table if exists pass_product;
-drop table if exists program;
-drop table if exists branch_info;
-drop table if exists users_admin;
-drop table if exists branch;
-drop table if exists sport_type;
-drop table if exists users;
-drop table if exists branch_info;
-drop table if exists reservation_history;
-drop table if exists user;
+DROP TABLE IF EXISTS teacher_settlement_item;
+DROP TABLE IF EXISTS teacher_settlement;
+DROP TABLE IF EXISTS teacher_certificate;
+DROP TABLE IF EXISTS teacher_career;
+DROP TABLE IF EXISTS teacher_sport;
+DROP TABLE IF EXISTS teacher_profile;
+DROP TABLE IF EXISTS review;
+DROP TABLE IF EXISTS favorite;
+DROP TABLE IF EXISTS faq;
+DROP TABLE IF EXISTS COMMUNITY_COMMENT;
+DROP TABLE IF EXISTS community_recruit_join;
+DROP TABLE IF EXISTS COMMUNITY_POST;
+DROP TABLE IF EXISTS pass_trade_transaction;
+DROP TABLE IF EXISTS pass_trade_post;
+DROP TABLE IF EXISTS pass_log;
+DROP TABLE IF EXISTS payment;
+DROP TABLE IF EXISTS class_attendance;
+DROP TABLE IF EXISTS reservation;
+DROP TABLE IF EXISTS schedule;
+DROP TABLE IF EXISTS user_pass;
+DROP TABLE IF EXISTS pass_product;
+DROP TABLE IF EXISTS program;
+DROP TABLE IF EXISTS branch_info;
+DROP TABLE IF EXISTS users_admin;
+DROP TABLE IF EXISTS branch;
+DROP TABLE IF EXISTS sport_type;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS branch_info;
+DROP TABLE IF EXISTS reservation_history;
+DROP TABLE IF EXISTS user;
 
 commit;
 -- ==========================================
@@ -46,7 +46,7 @@ commit;
 -- ==========================================
 
 -- 1. SPORT_TYPE (운동 종목)
-CREATE TABLE SPORT_TYPE (
+CREATE TABLE IF NOT EXISTS SPORT_TYPE (
     sport_id   BIGINT AUTO_INCREMENT NOT NULL COMMENT '스포츠 종목 ID',
     sport_nm   VARCHAR(100) NOT NULL COMMENT '스포츠 종목 이름',
     sport_memo VARCHAR(500) NULL     COMMENT '메모',
@@ -58,7 +58,7 @@ CREATE TABLE SPORT_TYPE (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- 2. BRANCH (지점) - USERS_ADMIN 보다 먼저 생성되어야 함
-CREATE TABLE BRANCH (
+CREATE TABLE IF NOT EXISTS BRANCH (
     brch_id BIGINT AUTO_INCREMENT NOT NULL COMMENT '지점ID',
     brch_nm VARCHAR(50)  NOT NULL COMMENT '지점명',
     addr    VARCHAR(255) NOT NULL COMMENT '주소',
@@ -73,7 +73,7 @@ CREATE TABLE BRANCH (
 
 
 -- 3. USERS (회원 유저)
-CREATE TABLE USERS (
+CREATE TABLE IF NOT EXISTS USERS (
     user_id      VARCHAR(50)  NOT NULL COMMENT '사용자 고유 ID',
     user_name    VARCHAR(100) NOT NULL COMMENT '사용자 이름',
     email        VARCHAR(255) NOT NULL UNIQUE COMMENT '사용자 이메일',
@@ -86,7 +86,7 @@ CREATE TABLE USERS (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- 4. USERS_ADMIN (관리자 유저)
-CREATE TABLE USERS_ADMIN (
+CREATE TABLE IF NOT EXISTS USERS_ADMIN (
     user_id      VARCHAR(50)  NOT NULL COMMENT '사용자 고유 ID',
     user_name    VARCHAR(100) NOT NULL COMMENT '사용자 이름',
     email        VARCHAR(255) NOT NULL UNIQUE COMMENT '사용자 이메일',
@@ -101,7 +101,7 @@ CREATE TABLE USERS_ADMIN (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- 5. BRANCH_INFO (지점 상세)
-CREATE TABLE BRANCH_INFO (
+CREATE TABLE IF NOT EXISTS BRANCH_INFO (
     br_info_id       BIGINT AUTO_INCREMENT NOT NULL COMMENT '지점 정보 ID',
     brch_id          BIGINT NOT NULL COMMENT '지점 ID',
     open_time        TIME   NOT NULL DEFAULT '06:00:00' COMMENT '오픈 시간',
@@ -116,7 +116,7 @@ CREATE TABLE BRANCH_INFO (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- 6. PROGRAM (지점 운동 프로그램)
-CREATE TABLE PROGRAM (
+CREATE TABLE IF NOT EXISTS PROGRAM (
     prog_id      BIGINT AUTO_INCREMENT NOT NULL COMMENT '프로그램ID',
     prog_nm      VARCHAR(255)   NOT NULL COMMENT '프로그램명',
     sport_id     BIGINT         NOT NULL COMMENT '스포츠 아이디',
@@ -131,7 +131,7 @@ CREATE TABLE PROGRAM (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- 7. PASS_PRODUCT (이용권 상품)
-CREATE TABLE PASS_PRODUCT (
+CREATE TABLE IF NOT EXISTS PASS_PRODUCT (
     prod_id  BIGINT AUTO_INCREMENT NOT NULL COMMENT '상품ID',
     sport_id BIGINT         NOT NULL COMMENT '스포츠ID',
     prod_nm  VARCHAR(100)   NOT NULL COMMENT '상품명',
@@ -145,7 +145,7 @@ CREATE TABLE PASS_PRODUCT (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- 8. USER_PASS (회원 이용권)
-CREATE TABLE USER_PASS (
+CREATE TABLE IF NOT EXISTS USER_PASS (
     user_pass_id   BIGINT AUTO_INCREMENT NOT NULL COMMENT '보유이용권ID',
     user_id        VARCHAR(50) NOT NULL COMMENT '회원ID',
     sport_id       BIGINT      NOT NULL COMMENT '스포츠ID',
@@ -162,7 +162,7 @@ CREATE TABLE USER_PASS (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- 9. SCHEDULE (스케줄)
-CREATE TABLE SCHEDULE (
+CREATE TABLE IF NOT EXISTS SCHEDULE (
     schd_id     BIGINT AUTO_INCREMENT NOT NULL COMMENT '스케줄ID',
     prog_id     BIGINT      NOT NULL COMMENT '프로그램ID',
     user_id     VARCHAR(50) NOT NULL COMMENT '강사ID',
@@ -182,10 +182,9 @@ CREATE TABLE SCHEDULE (
     CONSTRAINT FK_SCHEDULE_BRANCH FOREIGN KEY (brch_id) REFERENCES BRANCH (brch_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-drop table RESERVATION;
 
 -- 10. RESERVATION (예약)
-CREATE TABLE RESERVATION (
+CREATE TABLE IF NOT EXISTS RESERVATION (
     rsv_id    BIGINT AUTO_INCREMENT NOT NULL COMMENT '예약ID',
     user_id   VARCHAR(50) NOT NULL COMMENT '회원ID',
     schd_id   BIGINT      NOT NULL COMMENT '스케줄ID',
@@ -209,7 +208,7 @@ CREATE TABLE RESERVATION (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- 11. CLASS_ATTENDANCE (출석)
-CREATE TABLE CLASS_ATTENDANCE (
+CREATE TABLE IF NOT EXISTS CLASS_ATTENDANCE (
     atnd_id    BIGINT AUTO_INCREMENT NOT NULL COMMENT '출석 ID',
     rsv_id     BIGINT      NOT NULL UNIQUE COMMENT '예약 ID',
     atnd_yn    TINYINT(1)  NOT NULL DEFAULT 0 COMMENT '출석 여부',
@@ -221,7 +220,7 @@ CREATE TABLE CLASS_ATTENDANCE (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- 12. PAYMENT (결제)
-CREATE TABLE PAYMENT (
+CREATE TABLE IF NOT EXISTS PAYMENT (
     pay_id      BIGINT AUTO_INCREMENT NOT NULL COMMENT '결제ID',
     ord_no      VARCHAR(100)   NOT NULL UNIQUE COMMENT '주문번호',
     user_id     VARCHAR(50)    NOT NULL COMMENT '회원ID',
@@ -238,7 +237,7 @@ CREATE TABLE PAYMENT (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- 13. PASS_LOG (이용권 로그)
-CREATE TABLE PASS_LOG (
+CREATE TABLE IF NOT EXISTS PASS_LOG (
     pass_log_id  BIGINT AUTO_INCREMENT NOT NULL COMMENT '이력ID',
     user_pass_id BIGINT       NOT NULL COMMENT '이용권ID',
     chg_type_cd  VARCHAR(30)  NOT NULL COMMENT '변경유형',
@@ -252,7 +251,7 @@ CREATE TABLE PASS_LOG (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- 14. PASS_TRADE_POST (이용권 거래 게시글)
-CREATE TABLE PASS_TRADE_POST (
+CREATE TABLE IF NOT EXISTS PASS_TRADE_POST (
     post_id      BIGINT AUTO_INCREMENT NOT NULL COMMENT '게시글ID',
     seller_id    VARCHAR(50)    NOT NULL COMMENT '판매자ID',
     user_pass_id BIGINT         NOT NULL COMMENT '이용권ID',
@@ -269,10 +268,9 @@ CREATE TABLE PASS_TRADE_POST (
     CONSTRAINT FK_TRADE_POST_PASS FOREIGN KEY (user_pass_id) REFERENCES USER_PASS (user_pass_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-drop TABLE PASS_TRADE_TRANSACTION;
 
 -- 15. PASS_TRADE_TRANSACTION (거래 내역)
-CREATE TABLE PASS_TRADE_TRANSACTION (
+CREATE TABLE IF NOT EXISTS PASS_TRADE_TRANSACTION (
     transaction_id BIGINT AUTO_INCREMENT NOT NULL COMMENT '거래ID',
     post_id       BIGINT         NOT NULL COMMENT '게시글ID',
     buyer_id VARCHAR(50)    NOT NULL COMMENT '구매자ID',
@@ -290,7 +288,7 @@ CREATE TABLE PASS_TRADE_TRANSACTION (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- 16. COMMUNITY_POST (커뮤니티)
-CREATE TABLE COMMUNITY_POST (
+CREATE TABLE IF NOT EXISTS COMMUNITY_POST (
     post_id          BIGINT AUTO_INCREMENT NOT NULL COMMENT '게시글ID',
     post_type        VARCHAR(20)  NOT NULL COMMENT '게시글 유형',
     category         VARCHAR(20)  NULL     COMMENT '카테고리',
@@ -315,7 +313,7 @@ CREATE TABLE COMMUNITY_POST (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- 17. COMMUNITY_RECRUIT_JOIN (모집 참여)
-CREATE TABLE COMMUNITY_RECRUIT_JOIN (
+CREATE TABLE IF NOT EXISTS COMMUNITY_RECRUIT_JOIN (
     join_id   BIGINT AUTO_INCREMENT NOT NULL COMMENT '참여ID',
     post_id   BIGINT      NOT NULL COMMENT '게시글ID',
     user_id   VARCHAR(50) NOT NULL COMMENT '참여자ID',
@@ -326,7 +324,7 @@ CREATE TABLE COMMUNITY_RECRUIT_JOIN (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- 18. COMMUNITY_COMMENT (댓글)
-CREATE TABLE COMMUNITY_COMMENT (
+CREATE TABLE IF NOT EXISTS COMMUNITY_COMMENT (
     comment_id      BIGINT AUTO_INCREMENT NOT NULL COMMENT '댓글ID',
     post_id         BIGINT      NOT NULL COMMENT '게시글ID',
     writer_id       VARCHAR(50) NOT NULL COMMENT '작성자ID',
@@ -339,7 +337,7 @@ CREATE TABLE COMMUNITY_COMMENT (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- 19. FAQ
-CREATE TABLE FAQ (
+CREATE TABLE IF NOT EXISTS FAQ (
     faq_id     BIGINT AUTO_INCREMENT NOT NULL COMMENT 'FAQ ID',
     user_id    VARCHAR(50)  NOT NULL COMMENT '작성자ID',
     category   VARCHAR(255) NOT NULL COMMENT '카테고리',
@@ -352,7 +350,7 @@ CREATE TABLE FAQ (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- 20. FAVORITE (즐겨찾기)
-CREATE TABLE FAVORITE (
+CREATE TABLE IF NOT EXISTS FAVORITE (
     favorite_id BIGINT AUTO_INCREMENT NOT NULL COMMENT '즐겨찾기ID',
     user_id     VARCHAR(50) NOT NULL COMMENT '회원ID',
     post_id     BIGINT      NOT NULL COMMENT '게시글ID',
@@ -362,7 +360,7 @@ CREATE TABLE FAVORITE (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- 21. REVIEW (리뷰)
-CREATE TABLE REVIEW (
+CREATE TABLE IF NOT EXISTS REVIEW (
     rvw_id  BIGINT AUTO_INCREMENT NOT NULL COMMENT '리뷰ID',
     rsv_id  BIGINT         NOT NULL COMMENT '예약ID',
     rating  DECIMAL(2, 1)  NOT NULL COMMENT '별점',
@@ -375,7 +373,7 @@ CREATE TABLE REVIEW (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- 22. TEACHER_PROFILE (강사 프로필)
-CREATE TABLE TEACHER_PROFILE (
+CREATE TABLE IF NOT EXISTS TEACHER_PROFILE (
     user_id         VARCHAR(50)  NOT NULL COMMENT '강사ID',
     brch_id         BIGINT       NOT NULL COMMENT '지점ID',
     stts_cd         VARCHAR(20)  NOT NULL DEFAULT 'ACTIVE' COMMENT '상태코드',
@@ -394,7 +392,7 @@ CREATE TABLE TEACHER_PROFILE (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- 23. TEACHER_SPORT (강사 운동 종목)
-CREATE TABLE TEACHER_SPORT (
+CREATE TABLE IF NOT EXISTS TEACHER_SPORT (
     user_id  VARCHAR(50) NOT NULL COMMENT '강사ID',
     sport_id BIGINT      NOT NULL COMMENT '운동종목ID',
     main_yn  TINYINT(1)  NOT NULL DEFAULT 0 COMMENT '대표종목여부',
@@ -407,7 +405,7 @@ CREATE TABLE TEACHER_SPORT (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- 24. TEACHER_CAREER (강사 경력)
-CREATE TABLE TEACHER_CAREER (
+CREATE TABLE IF NOT EXISTS TEACHER_CAREER (
     career_id   BIGINT AUTO_INCREMENT NOT NULL COMMENT '경력ID',
     user_id     VARCHAR(50)  NOT NULL COMMENT '강사ID',
     org_nm      VARCHAR(255) NOT NULL COMMENT '기관명',
@@ -423,7 +421,7 @@ CREATE TABLE TEACHER_CAREER (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- 25. TEACHER_CERTIFICATE (강사 자격증)
-CREATE TABLE TEACHER_CERTIFICATE (
+CREATE TABLE IF NOT EXISTS TEACHER_CERTIFICATE (
     cert_id     BIGINT AUTO_INCREMENT NOT NULL COMMENT '자격증ID',
     user_id     VARCHAR(50)  NOT NULL COMMENT '강사ID',
     cert_nm     VARCHAR(255) NOT NULL COMMENT '자격증명',
@@ -439,7 +437,7 @@ CREATE TABLE TEACHER_CERTIFICATE (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- 26. TEACHER_SETTLEMENT (강사 정산)
-CREATE TABLE TEACHER_SETTLEMENT (
+CREATE TABLE IF NOT EXISTS TEACHER_SETTLEMENT (
     stlm_id     BIGINT AUTO_INCREMENT NOT NULL COMMENT '정산ID',
     stlm_month  VARCHAR(7)     NOT NULL COMMENT '정산월',
     brch_id     BIGINT         NOT NULL COMMENT '지점ID',
@@ -462,7 +460,7 @@ CREATE TABLE TEACHER_SETTLEMENT (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- 27. TEACHER_SETTLEMENT_ITEM (정산 상세)
-CREATE TABLE TEACHER_SETTLEMENT_ITEM (
+CREATE TABLE IF NOT EXISTS TEACHER_SETTLEMENT_ITEM (
     stlm_item_id BIGINT AUTO_INCREMENT NOT NULL COMMENT '정산상세ID',
     stlm_id      BIGINT         NOT NULL COMMENT '정산ID',
     schd_id      BIGINT         NOT NULL COMMENT '회차ID',

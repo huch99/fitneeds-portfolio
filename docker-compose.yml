@@ -71,10 +71,12 @@ services:
     environment:
       - MARIADB_ROOT_PASSWORD=rfullstack2025
       - MARIADB_DATABASE=fitneedsdb
-      - MARIADB_USER=fituser
+      - MARIADB_USER=fitneeds
       - MARIADB_PASSWORD=fullstack2025
     volumes:
       - fitneeds-db-data:/var/lib/mysql
+      - ./enduser-backend/src/main/resources/sql/create_table.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - ./mariadb.cnf:/etc/mysql/conf.d/mariadb.cnf:ro
     networks:
       - fitneeds-net
 
