@@ -9,14 +9,14 @@
         <id property="schdId" column="schd_id" />
         <result property="brchId" column="brch_id" />
         <result property="progId" column="prog_id" />
-        <result property="usrId" column="usr_id" />
+        <result property="userId" column="user_id" />
         <result property="strtDt" column="strt_dt" />
         <result property="endDt" column="end_dt" />
         <result property="strtTm" column="strt_tm" />
         <result property="endTm" column="end_tm" />
         <result property="maxNopCnt" column="max_nop_cnt" />
         <result property="rsvCnt" column="rsv_cnt" />
-        <result property="sttsCd" column="stts_cd" />
+        <result property="sttsCd" column="stts_cd" javaType="com.project.app.schedule.entity.ScheduleSttsCd" jdbcType="VARCHAR" typeHandler="org.apache.ibatis.type.EnumTypeHandler" />
         <result property="description" column="description" />
         <result property="regDt" column="reg_dt" />
         <result property="updDt" column="upd_dt" />
@@ -31,7 +31,7 @@
             schd_id,
             brch_id,
             prog_id,
-            usr_id,
+            user_id,
             strt_dt,
             end_dt,
             strt_tm,
@@ -56,7 +56,7 @@
             schd_id,
             brch_id,
             prog_id,
-            usr_id,
+            user_id,
             strt_dt,
             end_dt,
             strt_tm,
@@ -81,7 +81,7 @@
         INSERT INTO schedule (
             brch_id,
             prog_id,
-            usr_id,
+            user_id,
             strt_dt,
             end_dt,
             strt_tm,
@@ -95,14 +95,14 @@
         ) VALUES (
             #{brchId},
             #{progId},
-            #{usrId},
+            #{userId},
             #{strtDt},
             #{endDt},
             #{strtTm},
             #{endTm},
             #{maxNopCnt},
             #{rsvCnt},
-            #{sttsCd},
+            #{sttsCd, jdbcType=VARCHAR, javaType=com.project.app.schedule.entity.ScheduleSttsCd, typeHandler=org.apache.ibatis.type.EnumTypeHandler},
             #{description},
             #{regDt},
             #{updDt}
@@ -118,13 +118,13 @@
         SET
             brch_id = #{brchId},
             prog_id = #{progId},
-            usr_id = #{usrId},
+            user_id = #{userId},
             strt_dt = #{strtDt},
             end_dt = #{endDt},
             strt_tm = #{strtTm},
             end_tm = #{endTm},
             max_nop_cnt = #{maxNopCnt},
-            stts_cd = #{sttsCd},
+            stts_cd = #{sttsCd, jdbcType=VARCHAR, javaType=com.project.app.schedule.entity.ScheduleSttsCd, typeHandler=org.apache.ibatis.type.EnumTypeHandler},
             description = #{description},
             upd_dt = #{updDt}
         WHERE schd_id = #{schdId}
@@ -147,7 +147,7 @@
         SELECT COUNT(*)
         FROM schedule
         WHERE prog_id = #{progId}
-          AND usr_id = #{usrId}
+          AND user_id = #{userId}
           AND strt_dt = #{strtDt}
           AND (
             (strt_tm &lt; #{endTm} AND end_tm &gt; #{strtTm})

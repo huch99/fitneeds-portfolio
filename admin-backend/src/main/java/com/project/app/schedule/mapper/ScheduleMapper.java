@@ -18,7 +18,7 @@ public interface ScheduleMapper {
     
     // 중복 체크: 같은 날짜, 시간, 프로그램, 강사
     int countDuplicate(@Param("progId") Long progId, 
-                       @Param("usrId") String usrId,
+                       @Param("userId") String userId,
                        @Param("strtDt") LocalDate strtDt,
                        @Param("strtTm") LocalTime strtTm,
                        @Param("endTm") LocalTime endTm,

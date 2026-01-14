@@ -49,8 +49,8 @@ public class LoggingAspect {
 	@AfterReturning(pointcut = "execution(* com.project.app..*.*(..))", returning = "result")
 	public void logAfter(JoinPoint joinPoint, Object result) {
 		// 로그가 필요하면 아래 주석을 해제하세요
-		log.info("[AfterReturning] 메소드 실행 성공: {}, 반환값: {}", 
-				joinPoint.getSignature(), result);
+//		log.info("[AfterReturning] 메소드 실행 성공: {}, 반환값: {}", 
+//				joinPoint.getSignature(), result);
 	}
 	
 	/**

@@ -22,6 +22,7 @@ public class UserAdminRequestDto {
 	private String isActive;
 	private String agreeAt;
 	private String phoneNumber;
+	private Long brchId;
 	private boolean success;
 	private String message;
 }

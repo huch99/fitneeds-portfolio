@@ -50,6 +50,9 @@ dependencies {
 	// mariadb 의존성
 	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
 	
+	// H2 - in-memory DB for tests (integration TDD)
+	testImplementation 'com.h2database:h2'
+
 	// TEST 의존성
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.5'
@@ -79,4 +82,8 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+tasks.withType(JavaCompile) {
+	options.compilerArgs << '-parameters'
 }

@@ -41,7 +41,7 @@ function AdminFaqPage() {
       category,
       title: question,
       content: answer,
-      visible: true,
+      isvisible: true,
       postVisible: true
     };
 

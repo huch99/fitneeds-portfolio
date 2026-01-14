@@ -68,7 +68,18 @@ public class AdminNoticeController {
         adminNoticeService.updateVisible(postId, visible);
     }
 
-
+    /**
+     * 🔥 ADMIN 공지사항 상단 고정 / 해제
+     */
+    @PutMapping("/{postId}/pin")
+    public void updatePinned(
+            @PathVariable("postId") Long postId,
+            @RequestParam("pinned") boolean pinned
+    ) {
+        adminNoticeService.updatePinned(postId, pinned);
+    }
+    
+    
     /**
      * ADMIN 공지사항 삭제 (논리 삭제)
      * - is_visible = false 처리

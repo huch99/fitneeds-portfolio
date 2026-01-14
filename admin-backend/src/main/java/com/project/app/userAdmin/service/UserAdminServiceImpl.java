@@ -83,5 +83,11 @@ public class UserAdminServiceImpl implements UserAdminService {
         return userAdminRepository.getUserByEmail(email);
     }
 
+	@Override
+	public void updateUserBranch(UserAdminRequestDto userAdminRequestDto) {
+		UserAdmin user = UserAdmin.builder().userId(userAdminRequestDto.getUserId()).brchId(userAdminRequestDto.getBrchId()).build();
+		userAdminRepository.save(user);
+	}
+
 
 }

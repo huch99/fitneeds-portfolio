@@ -6,7 +6,7 @@
         <id property="payId" column="pay_id" />
         <result property="orderNo" column="order_no" />
         <result property="brchId" column="brch_id" />
-        <result property="usrId" column="usr_id" />
+        <result property="userId" column="user_id" />
         <result property="payTypeCd" column="pay_type_cd" />
         <result property="targetId" column="target_id" />
         <result property="payAmt" column="pay_amt" />
@@ -28,7 +28,7 @@
         INSERT INTO payment (
             order_no,
             brch_id,
-            usr_id,
+            user_id,
             pay_type_cd,
             target_id,
             pay_amt,
@@ -39,7 +39,7 @@
         ) VALUES (
             #{orderNo},
             #{brchId},
-            #{usrId},
+            #{userId},
             #{payTypeCd},
             #{targetId},
             #{payAmt},
@@ -55,7 +55,7 @@
         SET
             order_no = #{orderNo},
             brch_id = #{brchId},
-            usr_id = #{usrId},
+            user_id = #{userId},
             pay_type_cd = #{payTypeCd},
             target_id = #{targetId},
             pay_amt = #{payAmt},

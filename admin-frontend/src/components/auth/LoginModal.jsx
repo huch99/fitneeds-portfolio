@@ -41,10 +41,9 @@ function LoginModal({ isOpen, onClose, onOpenRegister }) {
     return (
         <>
             {/* 모달 외부 클릭 시 닫히도록 하는 오버레이 */}
-            <div className="modal-overlay" onClick={onClose}></div>
-
-            {/* 모달 콘텐츠 */}
-            <div className="modal-content">
+            <div className="modal-overlay" onClick={onClose}>
+                {/* 모달 콘텐츠 - 클릭 전파 방지 */}
+                <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 <h2 style={{ marginBottom: '20px', color: 'black' }}>ADMIN</h2>
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     {/* <input
@@ -79,7 +78,8 @@ function LoginModal({ isOpen, onClose, onOpenRegister }) {
                         회원가입
                     </button>
                 </form>
-                <button onClick={onClose} className="modal-close-button"></button>
+                <button onClick={onClose} className="modal-close-button">✕</button>
+            </div>
             </div>
         </>
     );

@@ -3,7 +3,7 @@ import './styles/Admin.css';
 
 // Pages
 import AdminLayout from './components/AdminLayout';
-import AdminTicketPage from './pages/AdminTicketPage';
+import AdminTicketPage from './pages/pass/AdminTicketPage';
 import AdminReservationPage from './pages/AdminReservationPage';
 import AdminTradePage from './pages/AdminTradePage';
 import AdminFaqPage from './pages/FAQ/AdminFaqPage';

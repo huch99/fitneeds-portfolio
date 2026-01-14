@@ -19,4 +19,5 @@ public interface UserAdminService {
 	List<UserAdmin> getTeachers();
 	Optional<UserAdmin> getUserByEmailAdmin(String email);
 	Optional<UserAdmin> getUserByEmail(String email);
+	void updateUserBranch(UserAdminRequestDto adminRequestDto);
 }

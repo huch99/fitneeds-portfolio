@@ -3,6 +3,7 @@ package com.project.app.order.service;
 import java.util.UUID;
 import java.time.LocalDateTime;
 
+import com.project.app.userpass.entity.PassStatusCd;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -92,7 +93,7 @@ public class PurchaseService {
             UserPass np = new UserPass();
             np.setUser(user);
             np.setSportType(prod.getSport());
-            np.setPassStatusCd(com.project.app.userpass.entity.PassStatusCd.AVAILABLE);
+            np.setPassStatusCd(PassStatusCd.ACTIVE);
             np.setRmnCnt(prod.getPrvCnt());
             // initCnt는 Integer 타입이므로 Integer로 할당
             np.setInitCnt(prod.getPrvCnt());
@@ -123,7 +124,7 @@ public class PurchaseService {
 
             userPass.setLstProdId(prod.getProdId());
             // 상태 가능으로 설정
-            userPass.setPassStatusCd(com.project.app.userpass.entity.PassStatusCd.AVAILABLE);
+            userPass.setPassStatusCd(PassStatusCd.ACTIVE);
             userPass = userPassRepository.save(userPass);
 
             PassLog log = PassLog.builder()
