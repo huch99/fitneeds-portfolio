@@ -70,7 +70,7 @@ public class UserPass extends BaseTimeEntity {
             this.rmnCnt--;
             // rmnCnt 변경에 따라 passStatusCd 자동 반영
             if (this.rmnCnt == 0) {
-                this.passStatusCd = PassStatusCd.UNAVAILABLE;
+                this.passStatusCd = PassStatusCd.SUSPENDED;
             }
             return true;
         }
@@ -92,7 +92,7 @@ public class UserPass extends BaseTimeEntity {
         this.rmnCnt++;
         // 잔여 횟수가 0보다 커지면 상태를 AVAILABLE로 변경 (이전에는 0이었다가 1이 되는 경우)
         if (this.rmnCnt > 0) {
-            this.passStatusCd = PassStatusCd.AVAILABLE;
+            this.passStatusCd = PassStatusCd.ACTIVE;
         }
         // 이 메서드는 일반적으로 성공으로 간주하고, 위 선택사항 제약이 없으면 항상 true를 반환
         return true;
@@ -102,7 +102,7 @@ public class UserPass extends BaseTimeEntity {
      * 현재 이용권이 사용 가능한 상태인지 확인합니다.
      */
     public boolean isAvailable() {
-        return this.passStatusCd == PassStatusCd.AVAILABLE;
+        return this.passStatusCd == PassStatusCd.ACTIVE;
     }
 
 }

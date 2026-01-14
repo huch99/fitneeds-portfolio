@@ -53,7 +53,7 @@ public class PassTradeService {
                 .findByUserPassIdAndUser_UserId(request.getUserPassId(), sellerId)
                 .orElseThrow(() -> new RuntimeException("보유하지 않은 이용권입니다."));
 
-        if (sellerPass.getPassStatusCd() != PassStatusCd.AVAILABLE) {
+        if (sellerPass.getPassStatusCd() != PassStatusCd.ACTIVE) {
             throw new RuntimeException("판매할 수 없는 이용권 상태입니다.");
         }
 

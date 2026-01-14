@@ -1,7 +1,7 @@
 package com.project.app.payment.service;
 
-import com.project.app.payment.domain.PassLog;
-import com.project.app.payment.mapper.PassLogMapper;
+import com.project.app.ticket.domain.PassLog;
+import com.project.app.ticket.mapper.PassLogMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,4 +42,3 @@ public class PassLogServiceImpl implements PassLogService {
         passlogMapper.delete(passLogId);
     }
 }
-

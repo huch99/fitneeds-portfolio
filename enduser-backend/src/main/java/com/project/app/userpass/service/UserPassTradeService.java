@@ -38,7 +38,7 @@ public class UserPassTradeService {
                 .findByUserPassIdAndUser_UserId(userPassId, sellerId)
                 .orElseThrow(() -> new IllegalArgumentException("판매자의 이용권을 찾을 수 없습니다."));
 
-        if (sellerPass.getPassStatusCd() != PassStatusCd.AVAILABLE) {
+        if (sellerPass.getPassStatusCd() != PassStatusCd.ACTIVE) {
             throw new IllegalStateException("판매할 수 없는 이용권 상태입니다.");
         }
 
@@ -96,7 +96,7 @@ public class UserPassTradeService {
                     UserPass created = new UserPass();
                     created.setUser(buyer);
                     created.setSportType(sportType);
-                    created.setPassStatusCd(PassStatusCd.AVAILABLE);
+                    created.setPassStatusCd(PassStatusCd.ACTIVE);
                     created.setRmnCnt(0);
                     created.setInitCnt(0); // 아래에서 증가분 반영
                     created.setLstProdId(lstProdId);

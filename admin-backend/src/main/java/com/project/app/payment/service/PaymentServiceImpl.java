@@ -44,7 +44,7 @@ public class PaymentServiceImpl implements PaymentService {
                 .chgTypeCd("PURCHASE")
                 .chgCnt(product.getPrvCnt())
                 .chgRsn("상품 구매")
-                .usrId(payment.getUsrId())
+                .userId(payment.getUserId())
                 .regDt(LocalDateTime.now())
                 .build();
             passLogService.create(passLog);
@@ -66,5 +66,3 @@ public class PaymentServiceImpl implements PaymentService {
         paymentMapper.delete(payId);
     }
 }
-
-

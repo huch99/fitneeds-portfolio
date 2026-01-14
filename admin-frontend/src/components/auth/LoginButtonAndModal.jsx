@@ -21,6 +21,10 @@ function LoginButtonAndModal() {
 
     const handleLogoutClick = () => {
         dispatch(logout());
+        // 모달 상태 초기화
+        setIsLoginModalOpen(false);
+        setIsRegisterModalOpen(false);
+        // 홈페이지로 이동
         navigate('/');
     };
 
@@ -33,11 +37,12 @@ function LoginButtonAndModal() {
         setIsRegisterModalOpen(false);
     };
 
-    if (!isAuthenticated) {
-        if (!isLoginModalOpen) {
-            setIsLoginModalOpen(true);
-        }
-    }
+    // 로그아웃 후 자동으로 모달을 열지 않도록 제거
+    // if (!isAuthenticated) {
+    //     if (!isLoginModalOpen) {
+    //         setIsLoginModalOpen(true);
+    //     }
+    // }
 
     const handleMyinfoClick = () => {
         //setIsRegisterModalOpen(true);
