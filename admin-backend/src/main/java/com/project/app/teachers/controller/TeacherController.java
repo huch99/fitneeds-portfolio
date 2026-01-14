@@ -2,6 +2,7 @@
 package com.project.app.teachers.controller;
 
 import com.project.app.teachers.dto.TeacherDto;
+import com.project.app.teachers.dto.TeacherStatusUpdateReq;
 import com.project.app.teachers.service.TeacherService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -115,6 +116,7 @@ public class TeacherController {
      * PATCH /api/teachers/{userId}/retire
      * - SYSTEM_ADMIN / BRANCH_ADMIN만 허용 (TEACHER 금지)
      * - stts_cd='RETIRED', leave_dt/leave_rsn, is_active=0 (guide)
+     * - 퇴사 처리 전용 (다른 상태변경은 안됌)
      */
     @PatchMapping("/{userId}/retire")
     public ResponseEntity<Void> retire(
@@ -135,6 +137,27 @@ public class TeacherController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    @PatchMapping("/{userId}/status")
+    public ResponseEntity<Void> updateStatus(
+            Authentication authentication,
+            @PathVariable String userId,
+            @RequestBody @Valid TeacherStatusUpdateReq req
+    ) {
+        try {
+            String requesterId = requireRequester(authentication);
+            teacherService.updateStatus(requesterId, userId, req);
+            return ResponseEntity.noContent().build();
+        } catch (AccessDeniedException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            log.error("Error updating teacher status", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
 
     private String requireRequester(Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {

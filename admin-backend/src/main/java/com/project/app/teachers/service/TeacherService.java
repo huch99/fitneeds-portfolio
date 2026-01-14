@@ -5,8 +5,9 @@ import com.project.app.config.util.UserIdGenerator;
 import com.project.app.sportTypes.entity.SportType;
 import com.project.app.sportTypes.repository.SportTypeRepository;
 import com.project.app.teachers.dto.TeacherDto;
+import com.project.app.teachers.dto.TeacherStatusUpdateReq;
 import com.project.app.teachers.entity.*;
-import com.project.app.teachers.repository.*;
+import com.project.app.teachers.mapper.TeacherMapper;
 import com.project.app.userAdmin.entity.Branch;
 import com.project.app.userAdmin.entity.UserAdmin;
 import com.project.app.userAdmin.repository.BranchRepository;
@@ -25,15 +26,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class TeacherService {
 
-    private final TeacherProfileRepository profileRepo;
-    private final TeacherSportRepository sportRepo;
-    private final TeacherCertificateRepository certRepo;
-    private final TeacherCareerRepository careerRepo;
-
+    private final TeacherMapper teacherMapper;
     private final UserAdminRepository userAdminRepo;
     private final BranchRepository branchRepo;
     private final SportTypeRepository sportTypeRepo;
-
     private final PasswordEncoder passwordEncoder;
 
     // ------------------------
@@ -66,13 +62,13 @@ public class TeacherService {
 
         List<TeacherProfile> profiles;
         if (sportId != null) {
-            List<String> userIds = sportRepo.findUserIdsBySportId(sportId);
+            List<String> userIds = teacherMapper.findUserIdsBySportId(sportId);
             if (userIds == null || userIds.isEmpty()) return List.of();
-            profiles = profileRepo.findByUserIdInAndFilters(userIds, effectiveBranchId, resolvedStatus);
+            profiles = teacherMapper.findByUserIdInAndFilters(userIds, effectiveBranchId, resolvedStatus);
         } else {
             profiles = (effectiveBranchId == null)
-                    ? profileRepo.findBySttsCd(resolvedStatus)
-                    : profileRepo.findByBrchIdAndSttsCd(effectiveBranchId, resolvedStatus);
+                    ? teacherMapper.findBySttsCd(resolvedStatus)
+                    : teacherMapper.findByBrchIdAndSttsCd(effectiveBranchId, resolvedStatus);
         }
 
         if (profiles == null || profiles.isEmpty()) return List.of();
@@ -84,8 +80,10 @@ public class TeacherService {
         UserAdmin requester = requireRequester(requesterId);
         String role = safe(requester.getRole());
 
-        TeacherProfile target = profileRepo.findById(targetUserId)
-                .orElseThrow(() -> new IllegalArgumentException("TeacherProfile not found: " + targetUserId));
+        TeacherProfile target = teacherMapper.findById(targetUserId);
+        if (target == null) {
+            throw new IllegalArgumentException("TeacherProfile not found: " + targetUserId);
+        }
 
         enforceAccessToTarget(role, requester, target);
         return toFullResp(target);
@@ -146,19 +144,22 @@ public class TeacherService {
                 .brchId(req.brchId())
                 .build();
         userAdminRepo.save(userAdmin);
+        userAdminRepo.flush(); // 즉시 DB에 반영
 
-        // TEACHER_PROFILE 생성 (ENUM 안전하게 ACTIVE 명시)
+        // TEACHER_PROFILE 생성
         TeacherProfile profile = TeacherProfile.builder()
                 .userId(userId)
                 .brchId(req.brchId())
-                .sttsCd("ACTIVE") // ✅ ENUM 허용값
+                .sttsCd("ACTIVE")
                 .hireDt(req.hireDt())
-                .leaveRsn("")     // 빈 문자열로 통일(선택)
+                .leaveRsn("")
                 .intro(req.intro())
                 .profileImgUrl(req.profileImgUrl())
+                .regDt(LocalDateTime.now())
+                .updDt(LocalDateTime.now())
                 .updUserId(req.updUserId())
                 .build();
-        profileRepo.save(profile);
+        teacherMapper.insert(profile);
 
         // TEACHER_SPORT / CERT / CAREER
         upsertChildren(userId, req.updUserId(), req.sports(), req.certificates(), req.careers());
@@ -171,8 +172,10 @@ public class TeacherService {
         UserAdmin requester = requireRequester(requesterId);
         String role = safe(requester.getRole());
 
-        TeacherProfile targetProfile = profileRepo.findById(targetUserId)
-                .orElseThrow(() -> new IllegalArgumentException("TeacherProfile not found: " + targetUserId));
+        TeacherProfile targetProfile = teacherMapper.findById(targetUserId);
+        if (targetProfile == null) {
+            throw new IllegalArgumentException("TeacherProfile not found: " + targetUserId);
+        }
 
         enforceAccessToTarget(role, requester, targetProfile);
 
@@ -199,45 +202,54 @@ public class TeacherService {
 
         // TEACHER_PROFILE 수정
         targetProfile.update(req.brchId(), req.intro(), req.profileImgUrl(), req.updUserId());
-        profileRepo.save(targetProfile);
+        teacherMapper.update(targetProfile);
 
         // 하위 테이블 교체(요청이 null이면 변경 없음, 빈 리스트면 전체 삭제)
         if (req.sports() != null) {
-            sportRepo.deleteByUserId(targetUserId);
-            sportRepo.saveAll(req.sports().stream().filter(Objects::nonNull).map(s ->
-                    TeacherSport.builder()
-                            .userId(targetUserId)
-                            .sportId(s.sportId())
-                            .mainYn(Boolean.TRUE.equals(s.mainYn()))
-                            .sortNo(s.sortNo() == null ? 1 : s.sortNo())
-                            .build()
-            ).toList());
+            teacherMapper.deleteSportsByUserId(targetUserId);
+            req.sports().stream().filter(Objects::nonNull).forEach(s -> {
+                TeacherSport sport = TeacherSport.builder()
+                        .userId(targetUserId)
+                        .sportId(s.sportId())
+                        .mainYn(Boolean.TRUE.equals(s.mainYn()))
+                        .sortNo(s.sortNo() == null ? 1 : s.sortNo())
+                        .regDt(LocalDateTime.now())
+                        .updDt(LocalDateTime.now())
+                        .build();
+                teacherMapper.insertSport(sport);
+            });
         }
         if (req.certificates() != null) {
-            certRepo.deleteByUserId(targetUserId);
-            certRepo.saveAll(req.certificates().stream().filter(Objects::nonNull).map(c ->
-                    TeacherCertificate.builder()
-                            .userId(targetUserId)
-                            .certNm(c.certNm())
-                            .issuer(c.issuer())
-                            .acqDt(c.acqDt())
-                            .certNo(c.certNo())
-                            .updUserId(req.updUserId())
-                            .build()
-            ).toList());
+            teacherMapper.deleteCertsByUserId(targetUserId);
+            req.certificates().stream().filter(Objects::nonNull).forEach(c -> {
+                TeacherCertificate cert = TeacherCertificate.builder()
+                        .userId(targetUserId)
+                        .certNm(c.certNm())
+                        .issuer(c.issuer())
+                        .acqDt(c.acqDt())
+                        .certNo(c.certNo())
+                        .regDt(LocalDateTime.now())
+                        .updDt(LocalDateTime.now())
+                        .updUserId(req.updUserId())
+                        .build();
+                teacherMapper.insertCert(cert);
+            });
         }
         if (req.careers() != null) {
-            careerRepo.deleteByUserId(targetUserId);
-            careerRepo.saveAll(req.careers().stream().filter(Objects::nonNull).map(c ->
-                    TeacherCareer.builder()
-                            .userId(targetUserId)
-                            .orgNm(c.orgNm())
-                            .roleNm(c.roleNm())
-                            .strtDt(c.strtDt())
-                            .endDt(c.endDt())
-                            .updUserId(req.updUserId())
-                            .build()
-            ).toList());
+            teacherMapper.deleteCareersByUserId(targetUserId);
+            req.careers().stream().filter(Objects::nonNull).forEach(c -> {
+                TeacherCareer career = TeacherCareer.builder()
+                        .userId(targetUserId)
+                        .orgNm(c.orgNm())
+                        .roleNm(c.roleNm())
+                        .strtDt(c.strtDt())
+                        .endDt(c.endDt())
+                        .regDt(LocalDateTime.now())
+                        .updDt(LocalDateTime.now())
+                        .updUserId(req.updUserId())
+                        .build();
+                teacherMapper.insertCareer(career);
+            });
         }
 
         return detail(requesterId, targetUserId);
@@ -250,24 +262,50 @@ public class TeacherService {
 
         if ("TEACHER".equals(role)) throw new AccessDeniedException("TEACHER cannot retire teachers");
 
-        TeacherProfile targetProfile = profileRepo.findById(targetUserId)
-                .orElseThrow(() -> new IllegalArgumentException("TeacherProfile not found: " + targetUserId));
+        TeacherProfile targetProfile = teacherMapper.findById(targetUserId);
+        if (targetProfile == null) {
+            throw new IllegalArgumentException("TeacherProfile not found: " + targetUserId);
+        }
         enforceAccessToTarget(role, requester, targetProfile);
 
         UserAdmin targetUser = userAdminRepo.findByUserId(targetUserId)
                 .orElseThrow(() -> new IllegalArgumentException("UserAdmin not found: " + targetUserId));
 
-        // ✅ DB ENUM 허용값으로 퇴직 처리: RESIGNED
-        // (leave_dt/leave_rsn 반영 + users_admin.is_active=0)
         String updaterId = req.updaterId();
         String leaveRsn = (req.leaveRsn() == null) ? "" : req.leaveRsn();
 
-        targetProfile.retire(req.leaveDt(), leaveRsn, updaterId); // 내부에서 sttsCd=RESIGNED로 세팅되도록
-        profileRepo.save(targetProfile);
+        targetProfile.retire(req.leaveDt(), leaveRsn, updaterId);
+        teacherMapper.update(targetProfile);
 
         targetUser.setIsActive(false);
         userAdminRepo.save(targetUser);
     }
+
+    @Transactional
+    public void updateStatus(String requesterId, String targetUserId, TeacherStatusUpdateReq req) {
+        UserAdmin requester = requireRequester(requesterId);
+        String role = safe(requester.getRole());
+
+        if ("TEACHER".equals(role)) throw new AccessDeniedException("TEACHER cannot change status");
+
+        TeacherProfile targetProfile = teacherMapper.findById(targetUserId);
+        if (targetProfile == null) {
+            throw new IllegalArgumentException("TeacherProfile not found: " + targetUserId);
+        }
+        enforceAccessToTarget(role, requester, targetProfile);
+
+        String newStatus = normalizeStatus(req.getSttsCd());
+        
+        // RESIGNED는 retire API로만 가능
+        if ("RESIGNED".equals(newStatus)) {
+            throw new IllegalArgumentException("퇴직 상태는 /retire API로만 변경 가능합니다.");
+        }
+        
+        targetProfile.setSttsCd(newStatus);
+        targetProfile.setUpdDt(LocalDateTime.now());
+        teacherMapper.update(targetProfile);
+    }
+
 
     // ------------------------
     // 권한/유틸
@@ -300,14 +338,13 @@ public class TeacherService {
     }
 
     private List<TeacherDto.Resp> listAsTeacher(String requesterId, Long sportId, String status) {
-        Optional<TeacherProfile> op = profileRepo.findById(requesterId);
-        if (op.isEmpty()) return List.of();
+        TeacherProfile p = teacherMapper.findById(requesterId);
+        if (p == null) return List.of();
 
-        TeacherProfile p = op.get();
         if (status != null && !status.isBlank() && !status.equals(p.getSttsCd())) return List.of();
 
         if (sportId != null) {
-            boolean hasSport = sportRepo.findByUserId(requesterId).stream()
+            boolean hasSport = teacherMapper.findSportsByUserId(requesterId).stream()
                     .anyMatch(s -> s != null && Objects.equals(s.getSportId(), sportId));
             if (!hasSport) return List.of();
         }
@@ -345,40 +382,49 @@ public class TeacherService {
             List<TeacherDto.CareerReq> careers
     ) {
         if (sports != null) {
-            sportRepo.saveAll(sports.stream().filter(Objects::nonNull).map(s ->
-                    TeacherSport.builder()
-                            .userId(userId)
-                            .sportId(s.sportId())
-                            .mainYn(Boolean.TRUE.equals(s.mainYn()))
-                            .sortNo(s.sortNo() == null ? 1 : s.sortNo())
-                            .build()
-            ).toList());
+            sports.stream().filter(Objects::nonNull).forEach(s -> {
+                TeacherSport sport = TeacherSport.builder()
+                        .userId(userId)
+                        .sportId(s.sportId())
+                        .mainYn(Boolean.TRUE.equals(s.mainYn()))
+                        .sortNo(s.sortNo() == null ? 1 : s.sortNo())
+                        .regDt(LocalDateTime.now())
+                        .updDt(LocalDateTime.now())
+                        .build();
+                teacherMapper.insertSport(sport);
+            });
         }
 
         if (certs != null) {
-            certRepo.saveAll(certs.stream().filter(Objects::nonNull).map(c ->
-                    TeacherCertificate.builder()
-                            .userId(userId)
-                            .certNm(c.certNm())
-                            .issuer(c.issuer())
-                            .acqDt(c.acqDt())
-                            .certNo(c.certNo())
-                            .updUserId(updUserId)
-                            .build()
-            ).toList());
+            certs.stream().filter(Objects::nonNull).forEach(c -> {
+                TeacherCertificate cert = TeacherCertificate.builder()
+                        .userId(userId)
+                        .certNm(c.certNm())
+                        .issuer(c.issuer())
+                        .acqDt(c.acqDt())
+                        .certNo(c.certNo())
+                        .regDt(LocalDateTime.now())
+                        .updDt(LocalDateTime.now())
+                        .updUserId(updUserId)
+                        .build();
+                teacherMapper.insertCert(cert);
+            });
         }
 
         if (careers != null) {
-            careerRepo.saveAll(careers.stream().filter(Objects::nonNull).map(c ->
-                    TeacherCareer.builder()
-                            .userId(userId)
-                            .orgNm(c.orgNm())
-                            .roleNm(c.roleNm())
-                            .strtDt(c.strtDt())
-                            .endDt(c.endDt())
-                            .updUserId(updUserId)
-                            .build()
-            ).toList());
+            careers.stream().filter(Objects::nonNull).forEach(c -> {
+                TeacherCareer career = TeacherCareer.builder()
+                        .userId(userId)
+                        .orgNm(c.orgNm())
+                        .roleNm(c.roleNm())
+                        .strtDt(c.strtDt())
+                        .endDt(c.endDt())
+                        .regDt(LocalDateTime.now())
+                        .updDt(LocalDateTime.now())
+                        .updUserId(updUserId)
+                        .build();
+                teacherMapper.insertCareer(career);
+            });
         }
     }
 
@@ -390,7 +436,7 @@ public class TeacherService {
         UserAdmin ua = userAdminRepo.findByUserId(profile.getUserId()).orElse(null);
         Branch br = branchRepo.findById(profile.getBrchId()).orElse(null);
 
-        List<TeacherSport> sports = sportRepo.findByUserId(profile.getUserId());
+        List<TeacherSport> sports = teacherMapper.findSportsByUserId(profile.getUserId());
         List<TeacherDto.SportResp> sportResps = toSportResps(sports);
 
         return new TeacherDto.Resp(
@@ -421,9 +467,9 @@ public class TeacherService {
         UserAdmin ua = userAdminRepo.findByUserId(profile.getUserId()).orElse(null);
         Branch br = branchRepo.findById(profile.getBrchId()).orElse(null);
 
-        List<TeacherSport> sports = sportRepo.findByUserId(profile.getUserId());
-        List<TeacherCertificate> certs = certRepo.findByUserIdOrderByCertIdAsc(profile.getUserId());
-        List<TeacherCareer> careers = careerRepo.findByUserIdOrderByCareerIdAsc(profile.getUserId());
+        List<TeacherSport> sports = teacherMapper.findSportsByUserId(profile.getUserId());
+        List<TeacherCertificate> certs = teacherMapper.findCertsByUserId(profile.getUserId());
+        List<TeacherCareer> careers = teacherMapper.findCareersByUserId(profile.getUserId());
 
         List<TeacherDto.SportResp> sportResps = toSportResps(sports);
 

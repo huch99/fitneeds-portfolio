@@ -27,7 +27,7 @@ import PaymentManagement from './pages/payment/PaymentManagement';
 import CenterInfo from './pages/center/CenterInfo';
 // Attendance page
 import AdminAttendancePage from './pages/AdminAttendancePage';
-// Teaches page
+// Teachers page
 import AdminTeachersListPage from './pages/Teachers/AdminTeachersListPage';
 import AdminTeachersDetailPage from './pages/Teachers/AdminTeachersDetailPage';
 import AdminTeachersCreatePage from './pages/Teachers/AdminTeachersCreatePage';

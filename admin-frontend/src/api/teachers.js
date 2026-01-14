@@ -52,3 +52,11 @@ export async function retireTeacher(userId, payload) {
     const res = await api.patch(`/teachers/${userId}/retire`, payload);
     return res.data; // (204이면 undefined)
 }
+
+/**
+ * 상태 변경
+ */
+export async function updateTeacherStatus(userId, payload) {
+    const res = await api.patch(`/teachers/${userId}/status`, payload);
+    return res.data; // 204면 undefined
+}
