@@ -198,7 +198,6 @@ function RegisterModal({ isOpen, onClose }) {
         if (document.getElementById('agree').checked == true) {
             setIsAgreeModalOpen(true);
         }
-
     }
 
     return (
@@ -265,32 +264,6 @@ function RegisterModal({ isOpen, onClose }) {
 
                     {isAuthenticated ? (
                         <>
-                            {/* <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                                <label htmlFor="cashPoint" style={{ minWidth: '80px', textAlign: 'right' }}>캐시:</label>
-                                <input
-                                    id="cashPoint"
-                                    type="text"
-                                    placeholder="Cash Point"
-                                    value={cashPoint}
-                                    onChange={handleChange}
-                                    className="modal-input"
-                                    readOnly
-                                    style={{ flexGrow: 1 }}
-                                />
-                            </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                                <label htmlFor="gradePoint" style={{ minWidth: '80px', textAlign: 'right' }}>등급:</label>
-                                <input
-                                    id="gradePoint"
-                                    type="text"
-                                    placeholder="Grade Point"
-                                    value={gradePoint}
-                                    onChange={handleChange}
-                                    className="modal-input"
-                                    readOnly
-                                    style={{ flexGrow: 1 }}
-                                />
-                            </div> */}
                             <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                                 <label htmlFor="agreeAt" style={{ minWidth: '80px', textAlign: 'right' }}>개인정보동의:</label>
                                 <input
@@ -337,7 +310,6 @@ function RegisterModal({ isOpen, onClose }) {
                 isOpen={isAgreeModalOpen}
                 onClose={() => setIsAgreeModalOpen(false)}
             />
-
         </div>
     );
 }

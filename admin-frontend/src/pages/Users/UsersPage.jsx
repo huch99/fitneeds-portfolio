@@ -9,7 +9,7 @@ function AdminMemberPage() {
     const [loading, setLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
 
-    const ITEMS_PER_PAGE = 10;
+    const ITEMS_PER_PAGE = 8;
 
     /* ===============================
        Derived Data (파생 데이터)
@@ -64,7 +64,9 @@ function AdminMemberPage() {
     const handleIsActiveChange = async (e, userId) => {
         const newIsActive = e.target.checked;
 
-        // UI 즉시 반영
+        console.log('User ID:', userId);
+        console.log('newIsActive:', newIsActive);
+
         setUserList(prev =>
             prev.map(user =>
                 user.userId === userId
@@ -72,10 +74,11 @@ function AdminMemberPage() {
                     : user
             )
         );
-
         try {
-            // TODO: 실제 API 연동
-            // await api.patch(`/user/${userId}/active`, { isActive: newIsActive });
+            await api.post(`/user/updateUserIsActive`, {
+                isActive: newIsActive,
+                userId: userId
+            });
         } catch (error) {
             // 실패 시 롤백
             setUserList(prev =>

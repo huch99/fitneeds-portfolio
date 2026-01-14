@@ -91,10 +91,6 @@ public class UserAdminController {
 	@PostMapping("/updateUserBranch")
 	public ResponseEntity<Void> updateUserBranch(@RequestBody UserAdminRequestDto userAdminRequestDto) {
 		try {
-			if (userAdminRequestDto.getUserId() == null || userAdminRequestDto.getBrchId() == null) {
-                log.warn("Invalid request for updating branch: userId or brchId is null.");
-                return ResponseEntity.badRequest().build();
-            }
 			userAdminService.updateUserBranch(userAdminRequestDto);
 			return ResponseEntity.ok().build(); // 성공 시 200 OK 응답
 		} catch (IllegalArgumentException e) {
@@ -102,6 +98,34 @@ public class UserAdminController {
 			return ResponseEntity.badRequest().build(); // 400 Bad Request
 		} catch (Exception e) {
 			log.error("Error updating user branch for userId {}: {}", userAdminRequestDto.getUserId(), e.getMessage(), e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500 Internal Server Error
+		}
+	}
+	
+	@PostMapping("/updateUserIsActive")
+	public ResponseEntity<Void> updateUserIsActive(@RequestBody UserAdminRequestDto userAdminRequestDto) {
+		try {
+			userAdminService.updateUserIsActive(userAdminRequestDto);
+			return ResponseEntity.ok().build(); // 성공 시 200 OK 응답
+		} catch (IllegalArgumentException e) {
+			log.error("Failed to update user isActive for userId {}: {}", userAdminRequestDto.getUserId(), e.getMessage());
+			return ResponseEntity.badRequest().build(); // 400 Bad Request
+		} catch (Exception e) {
+			log.error("Error updating user isActive for userId {}: {}", userAdminRequestDto.getUserId(), e.getMessage(), e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500 Internal Server Error
+		}
+	}
+	
+	@PostMapping("/updateUserRole")
+	public ResponseEntity<Void> updateUserRole(@RequestBody UserAdminRequestDto userAdminRequestDto) {
+		try {
+			userAdminService.updateUserRole(userAdminRequestDto);
+			return ResponseEntity.ok().build(); // 성공 시 200 OK 응답
+		} catch (IllegalArgumentException e) {
+			log.error("Failed to update user isActive for userId {}: {}", userAdminRequestDto.getUserId(), e.getMessage());
+			return ResponseEntity.badRequest().build(); // 400 Bad Request
+		} catch (Exception e) {
+			log.error("Error updating user isActive for userId {}: {}", userAdminRequestDto.getUserId(), e.getMessage(), e);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500 Internal Server Error
 		}
 	}

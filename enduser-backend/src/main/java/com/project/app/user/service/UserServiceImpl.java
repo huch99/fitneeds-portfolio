@@ -58,7 +58,12 @@ public class UserServiceImpl implements UserService{
 
 	@Override
 	public User updateUser(UserRequestDto userRequestDto) {
-		// TODO Auto-generated method stub
-		return null;
+		User user = findByUserId(userRequestDto.getUserId()).orElseThrow(() -> new RuntimeException("User not found"));
+		user.setUserName(userRequestDto.getUserName());
+		user.setPassword(passwordEncoder.encode(userRequestDto.getPassword()));
+		user.setEmail(userRequestDto.getEmail());
+		user.setPhoneNumber(userRequestDto.getPhoneNumber());
+
+		return userRepository.save(user);
 	}
 }

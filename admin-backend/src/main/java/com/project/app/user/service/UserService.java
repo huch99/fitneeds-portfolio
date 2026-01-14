@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import com.project.app.user.dto.UserRequestDto;
 import com.project.app.user.entity.User;
+import com.project.app.userAdmin.dto.UserAdminRequestDto;
 
 public interface UserService {
 	
@@ -16,4 +17,5 @@ public interface UserService {
 	List<User> getTeachers();
 	Optional<User> getUserByEmailAdmin(String email);
 	Optional<User> getUserByEmail(String email);
+	void updateUserIsActive(UserRequestDto userRequestDto);
 }

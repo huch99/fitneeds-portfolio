@@ -1,8 +1,8 @@
 package com.project.app.userAdmin.dto;
 
-import java.util.Optional;
+import java.time.LocalDateTime;
 
-import com.project.app.userAdmin.entity.UserAdmin;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,8 +19,9 @@ public class UserAdminRequestDto {
 	private String userName;
 	private String password;
 	private String role;
-	private String isActive;
-	private String agreeAt;
+	@JsonProperty("isActive")
+	private boolean isActive;
+	private LocalDateTime agreeAt;
 	private String phoneNumber;
 	private Long brchId;
 	private boolean success;

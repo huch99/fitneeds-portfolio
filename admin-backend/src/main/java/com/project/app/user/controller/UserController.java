@@ -76,5 +76,19 @@ public class UserController {
 		}
 
 	}
+	
+	@PostMapping("/updateUserIsActive")
+	public ResponseEntity<Void> updateUserIsActive(@RequestBody UserRequestDto userRequestDto) {
+		try {
+			userService.updateUserIsActive(userRequestDto);
+			return ResponseEntity.ok().build(); // 성공 시 200 OK 응답
+		} catch (IllegalArgumentException e) {
+			log.error("Failed to update user isActive for userId {}: {}", userRequestDto.getUserId(), e.getMessage());
+			return ResponseEntity.badRequest().build(); // 400 Bad Request
+		} catch (Exception e) {
+			log.error("Error updating user isActive for userId {}: {}", userRequestDto.getUserId(), e.getMessage(), e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500 Internal Server Error
+		}
+	}
 
 }
