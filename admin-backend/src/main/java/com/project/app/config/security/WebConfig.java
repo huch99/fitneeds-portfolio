@@ -41,7 +41,7 @@ public class WebConfig implements WebMvcConfigurer {
              * 클라이언트에서 서버로 요청할 때 허용되는 HTTP 메소드들을 지정합니다.
              * GET, POST, PUT, DELETE 외에 OPTIONS는 Preflight 요청을 위해 필요합니다.
              */
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
             /**
              * 클라이언트 요청에 포함될 수 있는 모든 HTTP 헤더를 허용합니다.
              */
