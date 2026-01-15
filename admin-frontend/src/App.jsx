@@ -3,8 +3,9 @@ import './styles/Admin.css';
 
 // Pages
 import AdminLayout from './components/AdminLayout';
-import AdminTicketPage from './pages/AdminTicketPage';
-import AdminReservationPage from './pages/AdminReservationPage';
+import AdminTicketPage from './pages/pass/AdminTicketPage';
+import AdminPassProductPage from './pages/product/AdminPassProductPage'
+import AdminReservationPage from './pages/reservation/AdminReservationPage';
 import AdminTradePage from './pages/AdminTradePage';
 import AdminFaqPage from './pages/FAQ/AdminFaqPage';
 import AdminCommunityPage from './pages/Community/AdminCommunityPage';
@@ -27,6 +28,12 @@ import PaymentManagement from './pages/payment/PaymentManagement';
 import CenterInfo from './pages/center/CenterInfo';
 // Attendance page
 import AdminAttendancePage from './pages/AdminAttendancePage';
+// Teachers page
+import AdminTeachersListPage from './pages/Teachers/AdminTeachersListPage';
+import AdminTeachersDetailPage from './pages/Teachers/AdminTeachersDetailPage';
+import AdminTeachersCreatePage from './pages/Teachers/AdminTeachersCreatePage';
+import AdminTeachersEditPage from './pages/Teachers/AdminTeachersEditPage';
+
 
 // 아직 없는 파일은 import 에러가 날 수 있으니 주석 처리하거나 빈 파일 생성 필요
 // import AdminDashboardPage from './pages/AdminDashboardPage'; 
@@ -67,6 +74,7 @@ function App() {
           <Route path="/trades" element={<AdminTradePage />} />
           <Route path="/reservations" element={<AdminReservationPage />} />
           <Route path="/tickets" element={<AdminTicketPage />} />
+          <Route path="/products" element={<AdminPassProductPage />} />
 
           {/* FAQ */}
           <Route path="/AdminFaqPage" element={<AdminFaqPage />} />
@@ -83,6 +91,13 @@ function App() {
           <Route path="/branches/new" element={<BranchRegister />} />
           <Route path="/branches/:branchId" element={<BranchDetail />} />
           <Route path="/branches/:branchId/edit" element={<BranchForm />} />
+          {/* 강사 관리 */}
+          <Route path="/teachers" element={<AdminTeachersListPage />} />
+          <Route path="/teachers/new" element={<AdminTeachersCreatePage />} />
+          <Route path="/teachers/:userId" element={<AdminTeachersDetailPage />} />
+          <Route path="/teachers/:userId/edit" element={<AdminTeachersEditPage />} />
+
+
 
           {/* 스케줄 관리 */}
           <Route path="/schedules" element={<AdminSchedulePage />} />

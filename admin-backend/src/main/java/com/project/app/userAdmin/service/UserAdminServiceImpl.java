@@ -83,5 +83,26 @@ public class UserAdminServiceImpl implements UserAdminService {
         return userAdminRepository.getUserByEmail(email);
     }
 
+	@Override
+	public void updateUserBranch(UserAdminRequestDto userAdminRequestDto) {
+		UserAdmin user = findByUserId(userAdminRequestDto.getUserId()).orElseThrow(() -> new RuntimeException("User not found"));
+		user.setBrchId(userAdminRequestDto.getBrchId());
+		userAdminRepository.save(user);
+	}
+	
+	@Override
+	public void updateUserIsActive(UserAdminRequestDto userAdminRequestDto) {
+		UserAdmin user = findByUserId(userAdminRequestDto.getUserId()).orElseThrow(() -> new RuntimeException("User not found"));
+		user.setIsActive(userAdminRequestDto.isActive());
+		userAdminRepository.save(user);
+	}
+	
+	@Override
+	public void updateUserRole(UserAdminRequestDto userAdminRequestDto) {
+		UserAdmin user = findByUserId(userAdminRequestDto.getUserId()).orElseThrow(() -> new RuntimeException("User not found"));
+		user.setRole(userAdminRequestDto.getRole());
+		userAdminRepository.save(user);
+	}
+
 
 }

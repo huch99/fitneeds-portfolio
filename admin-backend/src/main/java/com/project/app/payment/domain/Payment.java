@@ -7,6 +7,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import com.project.app.payment.entity.PaymentPayMethod;
+import com.project.app.payment.entity.PaymentPayTypeCd;
+import com.project.app.payment.entity.PaymentSttsCd;
 
 /**
  * Payment 도메인 클래스
@@ -26,12 +29,12 @@ public class Payment {
     @JsonProperty("brch_id")
     private Long brchId;
     
-    @JsonProperty("usr_id")
-    private String usrId;
-    
+    @JsonProperty("user_id")
+    private String userId;
+
     @JsonProperty("pay_type_cd")
-    private String payTypeCd;
-    
+    private PaymentPayTypeCd payTypeCd;
+
     @JsonProperty("ref_id")
     private Long refId;
     
@@ -39,11 +42,11 @@ public class Payment {
     private Integer payAmt;
     
     @JsonProperty("pay_method")
-    private String payMethod;
-    
+    private PaymentPayMethod payMethod;
+
     @JsonProperty("stts_cd")
-    private String sttsCd;
-    
+    private PaymentSttsCd sttsCd;
+
     @JsonProperty("reg_dt")
     private String regDt;
     

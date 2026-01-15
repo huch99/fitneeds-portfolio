@@ -7,16 +7,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.project.app.branch.domain.Branch;
+import com.project.app.branch.service.BranchService;
 import com.project.app.config.security.JwtTokenProvider;
 import com.project.app.config.util.UserIdGenerator;
 import com.project.app.userAdmin.dto.UserAdminRequestDto;
 import com.project.app.userAdmin.entity.UserAdmin;
+import com.project.app.userAdmin.repository.UserAdminRepository;
 import com.project.app.userAdmin.service.UserAdminService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -27,9 +31,13 @@ import lombok.extern.slf4j.Slf4j;
 public class UserAdminController {
 
 	private final UserAdminService userAdminService;
+	private final BranchService branchService;
 
-	public UserAdminController(UserAdminService userAdminService, JwtTokenProvider jwtTokenProvider, PasswordEncoder passwordEncoder) {
+	// 생성자 주입
+	public UserAdminController(UserAdminService userAdminService,
+	                           BranchService branchService) {
 		this.userAdminService = userAdminService;
+		this.branchService = branchService;
 	}
 
 	@GetMapping("/all")
@@ -64,7 +72,7 @@ public class UserAdminController {
 	}
 
 	@GetMapping("/userinfo/{userId}")
-	public ResponseEntity<?> userinfo(@PathVariable("userId") String userId) {
+	public ResponseEntity<?> userinfo(@PathVariable String userId) {
 		try {
 			return ResponseEntity.ok(userAdminService.findByUserId(userId)); // 200 OK와 사용자 정보 반환
 		} catch (Exception e) {
@@ -72,6 +80,54 @@ public class UserAdminController {
 					.body("사용자 정보 조회 처리 중 오류가 발생했습니다. : " + e.getMessage());
 		}
 
+	}
+	
+	@GetMapping("/branchCode")
+	public ResponseEntity<List<Branch>> branchCode(){
+		List<Branch> branchCode = branchService.findAll();
+		return ResponseEntity.ok(branchCode);
+	}
+	
+	@PostMapping("/updateUserBranch")
+	public ResponseEntity<Void> updateUserBranch(@RequestBody UserAdminRequestDto userAdminRequestDto) {
+		try {
+			userAdminService.updateUserBranch(userAdminRequestDto);
+			return ResponseEntity.ok().build(); // 성공 시 200 OK 응답
+		} catch (IllegalArgumentException e) {
+			log.error("Failed to update user branch for userId {}: {}", userAdminRequestDto.getUserId(), e.getMessage());
+			return ResponseEntity.badRequest().build(); // 400 Bad Request
+		} catch (Exception e) {
+			log.error("Error updating user branch for userId {}: {}", userAdminRequestDto.getUserId(), e.getMessage(), e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500 Internal Server Error
+		}
+	}
+	
+	@PostMapping("/updateUserIsActive")
+	public ResponseEntity<Void> updateUserIsActive(@RequestBody UserAdminRequestDto userAdminRequestDto) {
+		try {
+			userAdminService.updateUserIsActive(userAdminRequestDto);
+			return ResponseEntity.ok().build(); // 성공 시 200 OK 응답
+		} catch (IllegalArgumentException e) {
+			log.error("Failed to update user isActive for userId {}: {}", userAdminRequestDto.getUserId(), e.getMessage());
+			return ResponseEntity.badRequest().build(); // 400 Bad Request
+		} catch (Exception e) {
+			log.error("Error updating user isActive for userId {}: {}", userAdminRequestDto.getUserId(), e.getMessage(), e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500 Internal Server Error
+		}
+	}
+	
+	@PostMapping("/updateUserRole")
+	public ResponseEntity<Void> updateUserRole(@RequestBody UserAdminRequestDto userAdminRequestDto) {
+		try {
+			userAdminService.updateUserRole(userAdminRequestDto);
+			return ResponseEntity.ok().build(); // 성공 시 200 OK 응답
+		} catch (IllegalArgumentException e) {
+			log.error("Failed to update user isActive for userId {}: {}", userAdminRequestDto.getUserId(), e.getMessage());
+			return ResponseEntity.badRequest().build(); // 400 Bad Request
+		} catch (Exception e) {
+			log.error("Error updating user isActive for userId {}: {}", userAdminRequestDto.getUserId(), e.getMessage(), e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500 Internal Server Error
+		}
 	}
 
 }

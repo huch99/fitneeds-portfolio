@@ -1,7 +1,7 @@
 package com.project.app.payment.service;
 
-import com.project.app.payment.domain.PassProduct;
-import com.project.app.payment.mapper.PassProductMapper;
+import com.project.app.product.domain.PassProduct;
+import com.project.app.product.mapper.PassProductMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,4 +42,3 @@ public class PassProductServiceImpl implements PassProductService {
         passproductMapper.delete(prodId);
     }
 }
-

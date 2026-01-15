@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import com.project.app.user.dto.UserRequestDto;
 import com.project.app.user.entity.User;
 import com.project.app.user.repository.UserRepository;
+import com.project.app.userAdmin.dto.UserAdminRequestDto;
+import com.project.app.userAdmin.entity.UserAdmin;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -64,5 +66,12 @@ public class UserServiceImpl implements UserService {
 	public Optional<User> getUserByEmail(String email) {
         return userRepository.getUserByEmail(email);
     }
+	
+	@Override
+	public void updateUserIsActive(UserRequestDto userRequestDto) {
+		User user = findByUserId(userRequestDto.getUserId()).orElseThrow(() -> new RuntimeException("User not found"));
+		user.setIsActive(userRequestDto.isActive());
+		userRepository.save(user);
+	}
 
 }

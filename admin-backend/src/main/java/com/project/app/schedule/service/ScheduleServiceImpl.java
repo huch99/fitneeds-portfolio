@@ -2,6 +2,7 @@ package com.project.app.schedule.service;
 
 import com.project.app.schedule.domain.Schedule;
 import com.project.app.schedule.mapper.ScheduleMapper;
+import com.project.app.schedule.entity.ScheduleSttsCd;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,7 +43,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         // 중복 체크: 같은 날짜, 시간, 프로그램, 강사
         int duplicateCount = scheduleMapper.countDuplicate(
             schedule.getProgId(),
-            schedule.getUsrId(),
+            schedule.getUserId(),
             strtDt,
             strtTm,
             endTm,
@@ -58,7 +59,7 @@ public class ScheduleServiceImpl implements ScheduleService {
             schedule.setRsvCnt(0);
         }
         if (schedule.getSttsCd() == null) {
-            schedule.setSttsCd("OPEN");
+            schedule.setSttsCd(ScheduleSttsCd.AVAILABLE);
         }
         if (schedule.getRegDt() == null) {
             schedule.setRegDt(LocalDateTime.now().format(DATETIME_FORMATTER));
@@ -80,7 +81,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         // 중복 체크: 같은 날짜, 시간, 프로그램, 강사 (현재 스케줄 제외)
         int duplicateCount = scheduleMapper.countDuplicate(
             schedule.getProgId(),
-            schedule.getUsrId(),
+            schedule.getUserId(),
             strtDt,
             strtTm,
             endTm,

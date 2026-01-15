@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import api from '../../api';
-import './modalStyles.css';
+import './AuthModalStyles.css';
 import AgreeModal from './AgreeModal';
 
 // 폼 입력 필드를 위한 초기 상태 정의 (컴포넌트 외부)
@@ -198,7 +198,6 @@ function RegisterModal({ isOpen, onClose }) {
         if (document.getElementById('agree').checked == true) {
             setIsAgreeModalOpen(true);
         }
-
     }
 
     return (
@@ -265,32 +264,6 @@ function RegisterModal({ isOpen, onClose }) {
 
                     {isAuthenticated ? (
                         <>
-                            {/* <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                                <label htmlFor="cashPoint" style={{ minWidth: '80px', textAlign: 'right' }}>캐시:</label>
-                                <input
-                                    id="cashPoint"
-                                    type="text"
-                                    placeholder="Cash Point"
-                                    value={cashPoint}
-                                    onChange={handleChange}
-                                    className="modal-input"
-                                    readOnly
-                                    style={{ flexGrow: 1 }}
-                                />
-                            </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                                <label htmlFor="gradePoint" style={{ minWidth: '80px', textAlign: 'right' }}>등급:</label>
-                                <input
-                                    id="gradePoint"
-                                    type="text"
-                                    placeholder="Grade Point"
-                                    value={gradePoint}
-                                    onChange={handleChange}
-                                    className="modal-input"
-                                    readOnly
-                                    style={{ flexGrow: 1 }}
-                                />
-                            </div> */}
                             <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                                 <label htmlFor="agreeAt" style={{ minWidth: '80px', textAlign: 'right' }}>개인정보동의:</label>
                                 <input
@@ -337,7 +310,6 @@ function RegisterModal({ isOpen, onClose }) {
                 isOpen={isAgreeModalOpen}
                 onClose={() => setIsAgreeModalOpen(false)}
             />
-
         </div>
     );
 }
