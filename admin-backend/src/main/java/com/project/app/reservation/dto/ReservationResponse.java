@@ -10,6 +10,7 @@ public record ReservationResponse(
         Long rsvId,
         String memberName,
         String sportName,
+        String branchName,
         Long schdId,
         LocalDate rsvDt,
         LocalTime rsvTime,
@@ -20,10 +21,11 @@ public record ReservationResponse(
         LocalDateTime updDt
 ) {
     public static ReservationResponse from(Reservation r) {
-        if (r == null) return new ReservationResponse(null, null, null, null, null, null, null, null, null, null, null);
+        if (r == null) return new ReservationResponse(null, null, null, null, null, null, null, null, null, null, null, null);
 
         String memberName = null;
         String sportName = null;
+        String branchName = null;
         Long schdId = null;
 
         if (r.getUser() != null) {
@@ -39,11 +41,15 @@ public record ReservationResponse(
                 }
             } catch (Throwable ignored) {}
         }
+        if (r.getBranch() != null) {
+            try { branchName = r.getBranch().getBrchNm(); } catch (Throwable ignored) {}
+        }
 
         return new ReservationResponse(
                 r.getRsvId(),
                 memberName,
                 sportName,
+                branchName,
                 schdId,
                 r.getRsvDt(),
                 r.getRsvTime(),

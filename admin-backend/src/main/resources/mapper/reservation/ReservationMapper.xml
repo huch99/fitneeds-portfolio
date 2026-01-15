@@ -10,6 +10,7 @@
         r.rsv_id AS rsvId,
         u.user_name AS memberName,
         st.sport_nm AS sportName,
+        b.brch_nm AS branchName,
         r.schd_id AS schdId,
         r.rsv_dt AS rsvDt,
         r.rsv_time AS rsvTime,
@@ -20,6 +21,7 @@
         r.upd_dt AS updDt
         FROM RESERVATION r
         INNER JOIN USERS u ON r.user_id = u.user_id
+        INNER JOIN BRANCH b ON r.brch_id = b.brch_id
         INNER JOIN SCHEDULE s ON r.schd_id = s.schd_id
         INNER JOIN PROGRAM p ON s.prog_id = p.prog_id
         INNER JOIN SPORT_TYPE st ON p.sport_id = st.sport_id
@@ -49,6 +51,7 @@
         SELECT COUNT(*)
         FROM RESERVATION r
         INNER JOIN USERS u ON r.user_id = u.user_id
+        INNER JOIN BRANCH b ON r.brch_id = b.brch_id
         INNER JOIN SCHEDULE s ON r.schd_id = s.schd_id
         INNER JOIN PROGRAM p ON s.prog_id = p.prog_id
         INNER JOIN SPORT_TYPE st ON p.sport_id = st.sport_id
@@ -74,6 +77,7 @@
         SELECT r.rsv_id    AS rsvId,
                u.user_name AS memberName,
                st.sport_nm AS sportName,
+               b.brch_nm   AS branchName,
                r.schd_id   AS schdId,
                r.rsv_dt    AS rsvDt,
                r.rsv_time  AS rsvTime,
@@ -84,6 +88,7 @@
                r.upd_dt    AS updDt
         FROM RESERVATION r
                  INNER JOIN USERS u ON r.user_id = u.user_id
+                 INNER JOIN BRANCH b ON r.brch_id = b.brch_id
                  INNER JOIN SCHEDULE s ON r.schd_id = s.schd_id
                  INNER JOIN PROGRAM p ON s.prog_id = p.prog_id
                  INNER JOIN SPORT_TYPE st ON p.sport_id = st.sport_id

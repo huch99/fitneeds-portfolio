@@ -170,9 +170,7 @@ const AdminMarketPostPage = () => {
                 <td style={{ textAlign: "left" }}>{post.title}</td>
                 <td>{post.saleAmt?.toLocaleString()}원</td>
                 <td>
-                  <span className={`badge-${post.statusCode}`}>
-                    {post.statusCode}
-                  </span>
+                  <StatusBadge status={post.statusCode} />
                 </td>
                 <td>
                   <button
@@ -239,6 +237,33 @@ const AdminMarketPostPage = () => {
         />
       )}
     </div>
+  );
+};
+
+// 상태 배지 컴포넌트
+const StatusBadge = ({ status }) => {
+  const config = {
+    ON_SALE: { bg: "#e6f4ea", text: "#1e7e34", label: "판매중" },
+    SOLD_OUT: { bg: "#fce8e6", text: "#c92a2a", label: "판매완료" },
+  };
+  const s = config[status] || {
+    bg: "#f1f3f5",
+    text: "#495057",
+    label: "알수없음",
+  };
+  return (
+    <span
+      style={{
+        padding: "4px 8px",
+        borderRadius: "4px",
+        fontSize: "12px",
+        fontWeight: "bold",
+        backgroundColor: s.bg,
+        color: s.text,
+      }}
+    >
+      {s.label}
+    </span>
   );
 };
 

@@ -3,9 +3,11 @@ import './styles/Admin.css';
 
 // Pages
 import AdminLayout from './components/AdminLayout';
+import PassUsageStatsPage from './pages/pass/PassUsageStatsPage';
 import AdminTicketPage from './pages/pass/AdminTicketPage';
-import AdminPassProductPage from './pages/product/AdminPassProductPage'
+import AdminPassProductPage from './pages/product/AdminPassProductPage';
 import AdminReservationPage from './pages/reservation/AdminReservationPage';
+import MarketStatsPage from './pages/trade/MarketStatsPage';
 import AdminTradePage from './pages/trade/AdminTradePage';
 import AdminMarketPostPage from './pages/trade/AdminMarketPostPage';
 
@@ -73,9 +75,11 @@ function App() {
           <Route path="/centers/:branchId" element={<CenterInfo />} />
 
           {/* 이미 만드신 페이지들 */}
+          <Route path="/marketstats" element={<MarketStatsPage />} />
           <Route path="/trades" element={<AdminTradePage />} />
           <Route path="/markets" element={<AdminMarketPostPage />} />
           <Route path="/reservations" element={<AdminReservationPage />} />
+          <Route path="/ticketstats" element={<PassUsageStatsPage />} />
           <Route path="/tickets" element={<AdminTicketPage />} />
           <Route path="/products" element={<AdminPassProductPage />} />
 

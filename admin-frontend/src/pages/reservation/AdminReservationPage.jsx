@@ -143,6 +143,7 @@ const AdminReservationPage = () => {
           <thead>
             <tr>
               <th>ID</th>
+              <th>지점명</th>
               <th>회원명</th>
               <th>종목</th>
               <th>예약일시</th>
@@ -155,6 +156,7 @@ const AdminReservationPage = () => {
             {reservations.map((rsv) => (
               <tr key={rsv.rsvId}>
                 <td>{rsv.rsvId}</td>
+                <td>{rsv.branchName}</td>
                 <td>
                   <strong>{rsv.memberName}</strong>
                 </td>
