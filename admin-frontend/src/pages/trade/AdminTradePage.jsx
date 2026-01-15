@@ -161,7 +161,39 @@ const AdminTradePage = () => {
                 <td>{t.tradeAmt?.toLocaleString()}원</td>
                 <td>{t.buyQty}회</td>
                 <td>
-                  <strong>{t.sttsCd}</strong>
+                  <span
+                    className="status-badge"
+                    style={{
+                      padding: "4px 12px",
+                      borderRadius: "12px",
+                      fontSize: "13px",
+                      fontWeight: "600",
+                      backgroundColor:
+                        t.sttsCd === "PENDING"
+                          ? "#FFF3CD"
+                          : t.sttsCd === "COMPLETED"
+                          ? "#D1E7DD"
+                          : t.sttsCd === "CANCELED"
+                          ? "#F8D7DA"
+                          : "#E9ECEF",
+                      color:
+                        t.sttsCd === "PENDING"
+                          ? "#997404"
+                          : t.sttsCd === "COMPLETED"
+                          ? "#0F5132"
+                          : t.sttsCd === "CANCELED"
+                          ? "#842029"
+                          : "#495057",
+                    }}
+                  >
+                    {t.sttsCd === "PENDING"
+                      ? "대기"
+                      : t.sttsCd === "COMPLETED"
+                      ? "완료"
+                      : t.sttsCd === "CANCELED"
+                      ? "취소"
+                      : t.sttsCd}
+                  </span>
                 </td>
                 <td>{t.regDt?.substring(0, 16).replace("T", " ")}</td>
                 <td>
