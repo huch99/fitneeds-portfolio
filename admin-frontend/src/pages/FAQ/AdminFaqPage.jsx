@@ -15,6 +15,9 @@ function AdminFaqPage() {
 
   const categoryList = ["이용안내", "결제/환불", "시설이용", "기타"];
 
+  // localstraoge에서, role 확인
+  const role = localStorage.getItem("role");
+
   /* =========================
      FAQ 목록 조회
   ========================= */
@@ -97,6 +100,20 @@ function AdminFaqPage() {
   const toggleOpen = (id) => {
     setOpenId(openId === id ? null : id);
   };
+
+  // ROLE 권한 체크해서, 출력하는 문
+  if (["TEACHER", "MANAGER"].includes(role)) {
+    return (
+      <div style={{ padding: "40px", textAlign: "center" }}>
+        <h2>권한이 없습니다.</h2>
+        <p style={{ marginTop: "10px", color: "#666" }}>
+          해당 페이지에 접근할 수 있는 권한이 없습니다.
+        </p>
+      </div>
+    );
+  }
+
+
 
   return (
     <>

@@ -124,20 +124,18 @@
          공지사항 수정 (ADMIN)
     ========================= -->
     <update id="updateNotice"
-            parameterType="com.project.app.notice.dto.NoticeDto">
+        parameterType="com.project.app.notice.dto.NoticeDto">
+    UPDATE COMMUNITY_POST
+    SET
+        title = #{title},
+        content = #{content},
+        branch_id = #{branchId},
+        display_end = #{displayEnd},
+        updated_at = NOW()
+    WHERE post_id = #{postId}
+      AND post_type = 'NOTICE'
+</update>
 
-        UPDATE COMMUNITY_POST
-        SET
-            title = #{title},
-            content = #{content},
-            branch_id = #{branchId},
-            display_end = #{displayEnd},
-            is_pinned = #{isPinned},
-            updated_at = NOW()
-        WHERE post_id = #{postId}
-          AND post_type = 'NOTICE'
-
-    </update>
 
     <!-- =========================
          공지사항 숨김 / 보이기 (ADMIN)

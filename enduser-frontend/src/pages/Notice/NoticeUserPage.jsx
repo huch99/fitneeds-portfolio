@@ -132,8 +132,8 @@ function NoticeUserPage() {
                         <td>
                           <span
                             className={`category-badge ${n.branchName == null || n.branchName === ""
-                                ? "notice-branch-all"
-                                : "notice-branch-normal"
+                              ? "notice-branch-all"
+                              : "notice-branch-normal"
                               }`}
                           >
                             {n.branchName == null || n.branchName === ""
@@ -143,6 +143,7 @@ function NoticeUserPage() {
                         </td>
 
                         <td className="notice-td-title">
+                          {/* {n.title} */}
                           {n.isPinned && (
                             <span
                               style={{
@@ -154,18 +155,18 @@ function NoticeUserPage() {
                                 fontSize: "12px",
                                 fontWeight: "700",
                                 color: "#9a6a00",
-                                background: "#fff3c4",
-                                border: "1px solid #ffd54f",
+                                // background: "#fff3c4",
+                                // border: "1px solid #ffd54f",
                                 borderRadius: "12px",
                                 verticalAlign: "middle",
                                 lineHeight: "1"
                               }}
                             >
-                              📌 고정
+                              📌
                             </span>
                           )}
-
                           {n.title}
+
                         </td>
 
                         <td>

@@ -13,6 +13,18 @@ function AdminNoticePage() {
   const [displayEnd, setDisplayEnd] = useState("");
   const [alwaysDisplay, setAlwaysDisplay] = useState(true);
 
+  // localstraoge에서, role 확인
+  const role = localStorage.getItem("role"); // ADMIN | MANAGER | TEACHER
+  const rawBranchId = localStorage.getItem("brchId");
+
+  const myBranchId =
+    role === "ADMIN" ? null : Number(rawBranchId);
+
+
+
+
+  const [editingBranchId, setEditingBranchId] = useState(null);
+
   /* =========================
      공지 목록 조회
   ========================= */
@@ -47,9 +59,19 @@ function AdminNoticePage() {
   };
 
   const editNotice = (n) => {
+    if (
+      role === "MANAGER" &&
+      (n.branchId === null || n.branchId !== myBranchId)
+    ) {
+      alert("본인 지점 공지만 수정할 수 있습니다.");
+      return;
+    }
+
     setEditingId(n.id);
+    setEditingBranchId(n.branchId); // ✅ 여기: 절대 null 아님
     setTitle(n.title);
     setContent(n.content);
+
 
     if (n.rawDisplayEnd) {
       setAlwaysDisplay(false);
@@ -60,25 +82,27 @@ function AdminNoticePage() {
     }
   };
 
+
   /* =========================
      등록 / 수정
   ========================= */
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const rawBranchId = localStorage.getItem("brchId");
-
-    const payload = {
-      title,
-      content,
-      branchId: rawBranchId ? Number(rawBranchId) : null,
-      displayEnd: alwaysDisplay ? null : `${displayEnd}T23:59:59`,
-    };
-
     if (!alwaysDisplay && !displayEnd) {
       alert("종료 날짜를 선택하세요.");
       return;
     }
+
+    const payload = {
+      title,
+      content,
+      branchId: editingId
+        ? editingBranchId     // 수정 시 기존 지점 유지
+        : myBranchId,         // ✅ 등록 시도 동일 기준 사용
+      displayEnd: alwaysDisplay ? null : `${displayEnd}T23:59:59`,
+    };
+
 
     if (editingId) {
       await api.put(`/admin/notice/${editingId}`, payload);
@@ -87,6 +111,7 @@ function AdminNoticePage() {
     }
 
     setEditingId(null);
+    setEditingBranchId(null); // ✅ 이거 꼭 같이 초기화
     setTitle("");
     setContent("");
     setDisplayEnd("");
@@ -94,6 +119,7 @@ function AdminNoticePage() {
 
     fetchNotices();
   };
+
 
   /* =========================
      삭제
@@ -135,10 +161,33 @@ function AdminNoticePage() {
   );
 
   // DB에서도 정렬되지만, UI에서도 한 번 더 안전하게 처리
-  const sortedNotices = [...filteredNotices].sort((a, b) => {
-    if (a.pinned !== b.pinned) return b.pinned - a.pinned; // pinned 먼저
+  const visibleNotices = filteredNotices.filter((n) => {
+    if (role === "ADMIN") return true;
+
+    if (role === "MANAGER") {
+      return n.branchId === myBranchId || n.branchId === null;
+    }
+
+    return false;
+  });
+
+  const sortedNotices = [...visibleNotices].sort((a, b) => {
+    if (a.pinned !== b.pinned) return b.pinned - a.pinned;
     return b.id - a.id;
   });
+
+
+  // ROLE 권한 체크해서, 출력하는 문
+  if (role === "TEACHER") {
+    return (
+      <div style={{ padding: "40px", textAlign: "center" }}>
+        <h2>권한이 없습니다.</h2>
+        <p style={{ marginTop: "10px", color: "#666" }}>
+          해당 페이지에 접근할 수 있는 권한이 없습니다.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -174,8 +223,8 @@ function AdminNoticePage() {
                   background: n.pinned
                     ? "#fff9e6"
                     : !n.visible
-                    ? "#f1f1f1"
-                    : "white",
+                      ? "#f1f1f1"
+                      : "white",
                   color: !n.visible ? "#999" : "#000",
                   opacity: !n.visible ? 0.5 : 1,
                 }}
@@ -192,20 +241,34 @@ function AdminNoticePage() {
                 <td>{n.endDate}</td>
                 <td>{n.visible ? "노출" : "숨김"}</td>
                 <td>
-                  <button onClick={() => editNotice(n)}>수정</button>
-                  <button onClick={() => toggleVisible(n)}>
-                    {n.visible ? "숨기기" : "보이기"}
-                  </button>
-                  <button onClick={() => togglePinned(n)}>
-                    {n.pinned ? "고정해제" : "상단고정"}
-                  </button>
-                  <button
-                    onClick={() => deleteNotice(n.id)}
-                    style={{ color: "red" }}
-                  >
-                    삭제
-                  </button>
+                  {(role === "ADMIN" ||
+                    (role === "MANAGER" && n.branchId === myBranchId)) && (
+                      <>
+                        <button onClick={() => editNotice(n)}>수정</button>
+
+                        <button onClick={() => toggleVisible(n)}>
+                          {n.visible ? "숨기기" : "보이기"}
+                        </button>
+                      </>
+                    )}
+
+                  {role === "ADMIN" && (
+                    <button onClick={() => togglePinned(n)}>
+                      {n.pinned ? "고정해제" : "상단고정"}
+                    </button>
+                  )}
+
+                  {(role === "ADMIN" ||
+                    (role === "MANAGER" && n.branchId === myBranchId)) && (
+                      <button
+                        onClick={() => deleteNotice(n.id)}
+                        style={{ color: "red" }}
+                      >
+                        삭제
+                      </button>
+                    )}
                 </td>
+
               </tr>
             );
 
