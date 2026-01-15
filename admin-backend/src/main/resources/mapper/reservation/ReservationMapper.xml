@@ -19,7 +19,7 @@
         r.reg_dt AS regDt,
         r.upd_dt AS updDt
         FROM RESERVATION r
-        INNER JOIN USERS u ON r.user_id = u.user_id
+        INNER JOIN USERS u ON r.usr_id = u.user_id
         INNER JOIN SCHEDULE s ON r.schd_id = s.schd_id
         INNER JOIN PROGRAM p ON s.prog_id = p.prog_id
         INNER JOIN SPORT_TYPE st ON p.sport_id = st.sport_id
@@ -48,7 +48,7 @@
             resultType="int">
         SELECT COUNT(*)
         FROM RESERVATION r
-        INNER JOIN USERS u ON r.user_id = u.user_id
+        INNER JOIN USERS u ON r.usr_id = u.user_id
         INNER JOIN SCHEDULE s ON r.schd_id = s.schd_id
         INNER JOIN PROGRAM p ON s.prog_id = p.prog_id
         INNER JOIN SPORT_TYPE st ON p.sport_id = st.sport_id
@@ -83,7 +83,7 @@
                r.reg_dt    AS regDt,
                r.upd_dt    AS updDt
         FROM RESERVATION r
-                 INNER JOIN USERS u ON r.user_id = u.user_id
+                 INNER JOIN USERS u ON r.usr_id = u.user_id
                  INNER JOIN SCHEDULE s ON r.schd_id = s.schd_id
                  INNER JOIN PROGRAM p ON s.prog_id = p.prog_id
                  INNER JOIN SPORT_TYPE st ON p.sport_id = st.sport_id
@@ -96,7 +96,7 @@
         SELECT COUNT(*)
         FROM RESERVATION r
                  INNER JOIN SCHEDULE s ON r.schd_id = s.schd_id
-        WHERE r.user_id = #{userId}
+        WHERE r.usr_id = #{userId}
           AND s.strt_dt = #{startDate}
           AND s.strt_tm = #{startTime}
           AND r.stts_cd = #{status}

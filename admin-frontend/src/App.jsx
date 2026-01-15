@@ -6,7 +6,9 @@ import AdminLayout from './components/AdminLayout';
 import AdminTicketPage from './pages/pass/AdminTicketPage';
 import AdminPassProductPage from './pages/product/AdminPassProductPage'
 import AdminReservationPage from './pages/reservation/AdminReservationPage';
-import AdminTradePage from './pages/AdminTradePage';
+import AdminTradePage from './pages/trade/AdminTradePage';
+import AdminMarketPostPage from './pages/trade/AdminMarketPostPage';
+
 import AdminFaqPage from './pages/FAQ/AdminFaqPage';
 import AdminCommunityPage from './pages/Community/AdminCommunityPage';
 import AdminCommunityDetailPage from './pages/Community/AdminCommunityDetail';
@@ -72,6 +74,7 @@ function App() {
 
           {/* 이미 만드신 페이지들 */}
           <Route path="/trades" element={<AdminTradePage />} />
+          <Route path="/markets" element={<AdminMarketPostPage />} />
           <Route path="/reservations" element={<AdminReservationPage />} />
           <Route path="/tickets" element={<AdminTicketPage />} />
           <Route path="/products" element={<AdminPassProductPage />} />
