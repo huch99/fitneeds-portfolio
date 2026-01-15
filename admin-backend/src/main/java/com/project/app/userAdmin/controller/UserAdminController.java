@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.project.app.branch.domain.Branch;
@@ -71,11 +72,13 @@ public class UserAdminController {
 
 	}
 
-	@GetMapping("/userinfo/{userId}")
-	public ResponseEntity<?> userinfo(@PathVariable String userId) {
+	@GetMapping("/userinfo")
+	public ResponseEntity<?> userinfo(@RequestParam("userId") String userId) {
 		try {
 			return ResponseEntity.ok(userAdminService.findByUserId(userId)); // 200 OK와 사용자 정보 반환
 		} catch (Exception e) {
+			// 로깅 후 클라이언트에 에러 메시지 반환
+			// Logger.error("사용자 정보 조회 중 오류 발생: " + e.getMessage());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body("사용자 정보 조회 처리 중 오류가 발생했습니다. : " + e.getMessage());
 		}

@@ -139,33 +139,96 @@ function AdminMemberPage() {
         }
     };
 
-    const handleBranchChange = async (userId, brchId) => {
+    const handleBranchChange = async (userId, newBranchId) => {
+        const prevBranchId = userList.find(u => u.userId === userId)?.brchId;
+
+        // optimistic update
+        setUserList(prev =>
+            prev.map(user =>
+                user.userId === userId
+                    ? { ...user, brchId: Number(newBranchId) }
+                    : user
+            )
+        );
         setFilteredList(prev =>
             prev.map(user =>
-                user.userId === userId ? { ...user, brchId: Number(brchId) } : user
+                user.userId === userId
+                    ? { ...user, brchId: Number(newBranchId) }
+                    : user
             )
         );
 
         try {
-            await api.post('/admin/updateUserBranch', { userId, brchId });
+            await api.post('/admin/updateUserBranch', {
+                userId,
+                brchId: Number(newBranchId)
+            });
         } catch {
-            alert('지점 변경 실패');
-            fetchUserList();
+            // 정확한 롤백
+            setUserList(prev =>
+                prev.map(user =>
+                    user.userId === userId
+                        ? { ...user, brchId: prevBranchId }
+                        : user
+                )
+            );
+            setFilteredList(prev =>
+                prev.map(user =>
+                    user.userId === userId
+                        ? { ...user, brchId: prevBranchId }
+                        : user
+                )
+            );
+            alert('지점 변경에 실패했습니다.');
         }
     };
 
-    const handleRoleChange = async (userId, role) => {
+    const handleRoleChange = async (userId, newRole) => {
+        // 0️⃣ 이전 role 백업 (정확 롤백용)
+        const prevRole = userList.find(u => u.userId === userId)?.role;
+
+        // 1️⃣ UI 즉시 반영 (Optimistic UI)
+        setUserList(prev =>
+            prev.map(user =>
+                user.userId === userId
+                    ? { ...user, role: newRole }
+                    : user
+            )
+        );
+
         setFilteredList(prev =>
             prev.map(user =>
-                user.userId === userId ? { ...user, role } : user
+                user.userId === userId
+                    ? { ...user, role: newRole }
+                    : user
             )
         );
 
         try {
-            await api.post('/admin/updateUserRole', { userId, role });
-        } catch {
-            alert('권한 변경 실패');
-            fetchUserList();
+            // 2️⃣ 서버 반영 (조용히)
+            await api.post('/admin/updateUserRole', {
+                userId,
+                role: newRole
+            });
+        } catch (error) {
+            // 3️⃣ 실패 시 이전 role로 정확 롤백
+            setUserList(prev =>
+                prev.map(user =>
+                    user.userId === userId
+                        ? { ...user, role: prevRole }
+                        : user
+                )
+            );
+
+            setFilteredList(prev =>
+                prev.map(user =>
+                    user.userId === userId
+                        ? { ...user, role: prevRole }
+                        : user
+                )
+            );
+
+            alert('권한 변경에 실패했습니다.');
         }
     };
 
@@ -174,7 +237,7 @@ function AdminMemberPage() {
     =============================== */
     return (
         <div className="container" style={{ padding: '20px' }}>
-            <h1>[관리자] 회원 관리</h1>
+            <h1>[관리자] 관리자 관리</h1>
 
             <div className="content-box"
                 style={{
@@ -259,7 +322,7 @@ function AdminMemberPage() {
                                     <td>{user.email}</td>
                                     <td>{user.phoneNumber}</td>
 
-                                    <td onClick={() => setEditingUserId(`role-${user.userId}`)}>
+                                    <td style={{ cursor: 'pointer' }} onClick={() => setEditingUserId(`role-${user.userId}`)}>
                                         {editingUserId === `role-${user.userId}` ? (
                                             <select
                                                 value={user.role}
@@ -276,7 +339,7 @@ function AdminMemberPage() {
                                         ) : user.role}
                                     </td>
 
-                                    <td onClick={() => setEditingUserId(user.userId)}>
+                                    <td style={{ cursor: 'pointer' }} onClick={() => setEditingUserId(user.userId)}>
                                         {editingUserId === user.userId ? (
                                             <select
                                                 value={user.brchId ?? ''}
@@ -295,8 +358,8 @@ function AdminMemberPage() {
 
                                     <td>{user.agreeAt}</td>
 
-                                    <td>
-                                        <input
+                                    <td style={{ cursor: 'pointer' }}>
+                                        <input style={{ cursor: 'pointer' }}
                                             type="checkbox"
                                             checked={user.isActive}
                                             onChange={e => handleIsActiveChange(e, user.userId)}

@@ -5,7 +5,7 @@ import api from '../../api';
 import './AuthModalStyles.css';
 import AgreeModal from './AgreeModal';
 
-// 폼 입력 필드를 위한 초기 상태 정의 (컴포넌트 외부)
+// 폼 입력 필드를 위한 초기 상태 정의 (컴포넌트 외부) 
 const initialFormState = {
     userId: '',
     userName: '',
@@ -71,7 +71,7 @@ function RegisterModal({ isOpen, onClose }) {
     const fetchUserInfo = useCallback(async () => {
         setIsLoading(true);
         try {
-            const response = await api.get('/user/userinfo', {
+            const response = await api.get('/admin/userinfo', {
                 params: { userId: userId }
             });
             console.log('User Info Response:', response.data);
@@ -145,6 +145,9 @@ function RegisterModal({ isOpen, onClose }) {
             } else {
                 setMessage(response.data.message || '수정 성공!');
                 alert('정보 수정이 완료되었습니다.');
+
+                // 정보 수정 후 최신 정보 다시 불러오기
+                fetchUserInfo();
             }
 
             onClose();
