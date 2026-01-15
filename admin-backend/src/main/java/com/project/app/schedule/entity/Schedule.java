@@ -1,87 +1,78 @@
 package com.project.app.schedule.entity;
 
+import com.project.app.branch.entity.Branch;
+import com.project.app.global.entity.BaseTimeEntity;
+import com.project.app.program.entity.Program;
+import com.project.app.userAdmin.entity.UserAdmin;
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-import org.hibernate.annotations.ColumnDefault;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.project.app.userAdmin.entity.UserAdmin;
-import com.project.app.global.entity.BaseTimeEntity;
-import com.project.app.branch.entity.Branch;
-import com.project.app.program.entity.Program;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Index;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 @Entity
-@Getter @Setter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@Table(name = "SCHEDULE", indexes = {
-        @Index(name = "idx_schd_strtdt", columnList = "strt_dt"),
-        @Index(name = "idx_schd_sttscd", columnList = "stts_cd"),
-        @Index(name = "idx_schd_brch_prog", columnList = "brch_id, prog_id")
-})
-public class Schedule extends BaseTimeEntity {
+@Table(name = "SCHEDULE")
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EntityListeners(AuditingEntityListener.class)
+public class Schedule extends BaseTimeEntity { // BaseTimeEntity 상속 X (테이블에 upd_dt 없음)
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "schd_id", nullable = false)
-    private Long schdId;			// 스케줄 ID
+    @Column(name = "schd_id")
+    private Long schdId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "prog_id", nullable = false)
-    private Program program;		// 프로그램 ID
+    private Program program;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private UserAdmin userAdmin;	// 유저(어드민 - 강사) ID
+    private UserAdmin instructor;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "brch_id", nullable = false)
     private Branch branch;
 
     @Column(name = "strt_dt", nullable = false)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private LocalDate strtDt;		// 시작 날짜
+    private LocalDate strtDt;
+
 
     @Column(name = "strt_tm", nullable = false)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
-    private LocalTime strtTm;		// 시작 시간
+    private LocalTime strtTm;
 
     @Column(name = "end_tm", nullable = false)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
-    private LocalTime endTm;		// 종료 시간
+    private LocalTime endTm;
 
     @Column(name = "max_nop_cnt", nullable = false)
-    private Integer maxNopCnt;		// 최대 정원
+    private Integer maxNopCnt;
 
     @Column(name = "rsv_cnt", nullable = false)
-    @ColumnDefault("0")
-    @Builder.Default
-    private Integer rsvCnt = 0;			// 현재 인원
+    private Integer rsvCnt = 0;
 
-    @Column(name = "stts_cd", nullable = false, columnDefinition = "VARCHAR(20)")
-    @Enumerated(EnumType.STRING)
-    private ScheduleSttsCd sttsCd;			// 상태 코드
-
-    @Column(name = "description", nullable = true, columnDefinition = "TEXT")
+    // DB 컬럼명 `description`(TEXT)과 매핑
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
+    @Column(name = "stts_cd", nullable = false, length = 20)
+    private String sttsCd; // 예약가능, 마감 등
+
+
+    // 비즈니스 로직: 예약 발생 시 카운트 증가
+    public void increaseReservationCount() {
+        if (this.rsvCnt >= this.maxNopCnt) {
+            throw new IllegalStateException("정원 초과입니다.");
+        }
+        this.rsvCnt++;
+    }
+
+    // 비즈니스 로직: 예약 취소 시 카운트 감소
+    public void decreaseReservationCount() {
+        if (this.rsvCnt > 0) {
+            this.rsvCnt--;
+        }
+    }
 }

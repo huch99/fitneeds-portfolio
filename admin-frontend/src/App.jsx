@@ -5,7 +5,7 @@ import './styles/Admin.css';
 import AdminLayout from './components/AdminLayout';
 import AdminTicketPage from './pages/pass/AdminTicketPage';
 import AdminPassProductPage from './pages/product/AdminPassProductPage'
-import AdminReservationPage from './pages/AdminReservationPage';
+import AdminReservationPage from './pages/reservation/AdminReservationPage';
 import AdminTradePage from './pages/AdminTradePage';
 import AdminFaqPage from './pages/FAQ/AdminFaqPage';
 import AdminCommunityPage from './pages/Community/AdminCommunityPage';
