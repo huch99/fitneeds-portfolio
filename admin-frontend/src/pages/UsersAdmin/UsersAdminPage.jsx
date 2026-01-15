@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import api from '../../api';
 
 function AdminMemberPage() {
@@ -6,8 +6,11 @@ function AdminMemberPage() {
        State
     =============================== */
     const [userList, setUserList] = useState([]);
+    const [filteredList, setFilteredList] = useState([]);
     const [loading, setLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
+
+    const [searchName, setSearchName] = useState('');
 
     const ITEMS_PER_PAGE = 8;
 
@@ -17,18 +20,17 @@ function AdminMemberPage() {
     const ROLE_OPTIONS = ['ADMIN', 'USER', 'TEACHER', 'MANAGER'];
 
     /* ===============================
-       Derived Data (파생 데이터)
+       Derived Data
     =============================== */
-    const totalPages = Math.ceil(userList.length / ITEMS_PER_PAGE);
+    const totalPages = Math.ceil(filteredList.length / ITEMS_PER_PAGE);
 
-    const currentItems = userList.slice(
+    const currentItems = filteredList.slice(
         (currentPage - 1) * ITEMS_PER_PAGE,
         currentPage * ITEMS_PER_PAGE
     );
 
-    const getBranchName = (branchId) => {
-        return branchList.find(b => b.id === branchId)?.name || '-';
-    };
+    const getBranchName = (branchId) =>
+        branchList.find(b => b.id === branchId)?.name || '-';
 
     /* ===============================
        Lifecycle
@@ -39,14 +41,8 @@ function AdminMemberPage() {
     }, []);
 
     useEffect(() => {
-        window.scrollTo(0, 0);
-    }, [currentPage]);
-
-    useEffect(() => {
-        if (currentPage > totalPages) {
-            setCurrentPage(1);
-        }
-    }, [userList, totalPages]);
+        if (currentPage > totalPages) setCurrentPage(1);
+    }, [filteredList, totalPages]);
 
     /* ===============================
        API
@@ -54,10 +50,10 @@ function AdminMemberPage() {
     const fetchUserList = async () => {
         setLoading(true);
         try {
-            // ✅ 기존 API 유지
             const response = await api.get('/admin/all');
             setUserList(response.data);
-        } catch (error) {
+            setFilteredList(response.data); // ⭐ 초기에는 전체
+        } catch {
             alert('데이터를 불러오지 못했습니다.');
         } finally {
             setLoading(false);
@@ -66,36 +62,39 @@ function AdminMemberPage() {
 
     const fetchBranches = async () => {
         const response = await api.get('/admin/branchCode', {
-            headers: {
-                Accept: 'application/xml'
-            }
+            headers: { Accept: 'application/xml' }
         });
-        try {
-            const parser = new DOMParser();
-            const xml = parser.parseFromString(response.data, 'text/xml');
 
-            const items = Array.from(xml.getElementsByTagName('item')).map(item => ({
-                id: Number(item.getElementsByTagName('brchId')[0].textContent),
-                name: item.getElementsByTagName('brchNm')[0].textContent
-            }));
-            setBranchList(items);
-        } catch (error) {
-            console.error(error);
-        }
+        const parser = new DOMParser();
+        const xml = parser.parseFromString(response.data, 'text/xml');
+
+        const items = Array.from(xml.getElementsByTagName('item')).map(item => ({
+            id: Number(item.getElementsByTagName('brchId')[0].textContent),
+            name: item.getElementsByTagName('brchNm')[0].textContent
+        }));
+        setBranchList(items);
     };
+
     /* ===============================
        Event Handlers
     =============================== */
     const handleSearch = () => {
         setCurrentPage(1);
-        fetchUserList();
+
+        if (!searchName.trim()) {
+            setFilteredList(userList);
+            return;
+        }
+
+        const result = userList.filter(user =>
+            user.userName?.includes(searchName)
+        );
+
+        setFilteredList(result);
     };
 
     const handleIsActiveChange = async (e, userId) => {
         const newIsActive = e.target.checked;
-
-        console.log('User ID:', userId);
-        console.log('newIsActive:', newIsActive);
 
         setUserList(prev =>
             prev.map(user =>
@@ -104,13 +103,23 @@ function AdminMemberPage() {
                     : user
             )
         );
+
+        setFilteredList(prev =>
+            prev.map(user =>
+                user.userId === userId
+                    ? { ...user, isActive: newIsActive }
+                    : user
+            )
+        );
+
         try {
-            await api.post(`/admin/updateUserIsActive`, {
-                isActive: newIsActive,
-                userId: userId
+            // 2️⃣ 서버 반영 (조용히)
+            await api.post('/admin/updateUserIsActive', {
+                userId,
+                isActive: newIsActive
             });
         } catch (error) {
-            // 실패 시 롤백
+            // 3️⃣ 실패 시 롤백
             setUserList(prev =>
                 prev.map(user =>
                     user.userId === userId
@@ -118,55 +127,45 @@ function AdminMemberPage() {
                         : user
                 )
             );
+            setFilteredList(prev =>
+                prev.map(user =>
+                    user.userId === userId
+                        ? { ...user, isActive: !newIsActive }
+                        : user
+                )
+            );
+
             alert('사용자 활성 상태 변경에 실패했습니다.');
         }
     };
 
-    const handleBranchChange = async (userId, newBranchId) => {
-        // 1. UI 즉시 반영
-        console.log('User ID:', userId);
-        console.log('Selected Branch ID:', newBranchId);
-        setUserList(prev =>
+    const handleBranchChange = async (userId, brchId) => {
+        setFilteredList(prev =>
             prev.map(user =>
-                user.userId === userId
-                    ? { ...user, brchId: Number(newBranchId) }
-                    : user
+                user.userId === userId ? { ...user, brchId: Number(brchId) } : user
             )
         );
 
         try {
-            // 2. 서버 반영
-            await api.post(`/admin/updateUserBranch`, {
-                brchId: newBranchId,
-                userId: userId
-            });
-        } catch (error) {
-            alert('지점 변경에 실패했습니다.');
-            fetchUserList(); // 실패 시 서버 값으로 복구
+            await api.post('/admin/updateUserBranch', { userId, brchId });
+        } catch {
+            alert('지점 변경 실패');
+            fetchUserList();
         }
     };
 
-    const handleRoleChange = async (userId, newRole) => {
-        // 1. UI 즉시 반영
-        console.log('User ID:', userId);
-        console.log('Selected Role:', newRole);
-        setUserList(prev =>
+    const handleRoleChange = async (userId, role) => {
+        setFilteredList(prev =>
             prev.map(user =>
-                user.userId === userId
-                    ? { ...user, role: newRole }
-                    : user
+                user.userId === userId ? { ...user, role } : user
             )
         );
 
         try {
-            // 2. 서버 반영
-            await api.post(`/admin/updateUserRole`, {
-                role: newRole,
-                userId: userId
-            });
-        } catch (error) {
-            alert('역할 변경에 실패했습니다.');
-            fetchUserList(); // 실패 시 서버 값으로 복구
+            await api.post('/admin/updateUserRole', { userId, role });
+        } catch {
+            alert('권한 변경 실패');
+            fetchUserList();
         }
     };
 
@@ -177,32 +176,37 @@ function AdminMemberPage() {
         <div className="container" style={{ padding: '20px' }}>
             <h1>[관리자] 회원 관리</h1>
 
-            <div
-                className="content-box"
+            <div className="content-box"
                 style={{
                     background: '#fff',
                     padding: '20px',
                     borderRadius: '8px',
                     boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-                }}
-            >
+                }}>
+
                 {/* 검색 영역 */}
-                <div
-                    style={{
-                        marginBottom: '20px',
-                        padding: '15px',
-                        background: '#f8f9fa',
-                        borderRadius: '5px',
-                        display: 'flex',
-                        justifyContent: 'flex-end'
-                    }}
-                >
+                <div style={{
+                    marginBottom: '20px',
+                    padding: '15px',
+                    background: '#f8f9fa',
+                    borderRadius: '5px',
+                    display: 'flex',
+                    gap: '20px',
+                    justifyContent: 'flex-end'
+                }}>
+                    <input
+                        type="text"
+                        placeholder="이름 검색"
+                        value={searchName}
+                        onChange={e => setSearchName(e.target.value)}
+                        style={{ padding: '6px' }}
+                    />
                     <button
                         onClick={handleSearch}
                         style={{
                             padding: '8px 16px',
                             background: '#2c3e50',
-                            color: 'white',
+                            color: '#fff',
                             border: 'none',
                             borderRadius: '4px',
                             cursor: 'pointer',
@@ -219,21 +223,18 @@ function AdminMemberPage() {
                         데이터를 불러오는 중입니다...
                     </div>
                 ) : (
-                    <table
-                        style={{
-                            width: '100%',
-                            borderCollapse: 'collapse',
-                            textAlign: 'center',
-                            fontSize: '14px'
+                    <table style={{
+                        width: '100%',
+                        borderCollapse: 'collapse',
+                        textAlign: 'center',
+                        fontSize: '14px'
+                    }}>
+                        <thead style={{
+                            background: '#ecf0f1',
+                            borderBottom: '2px solid #bdc3c7',
+                            color: '#2c3e50',
+                            height: '40px'
                         }}
-                    >
-                        <thead
-                            style={{
-                                background: '#ecf0f1',
-                                borderBottom: '2px solid #bdc3c7',
-                                color: '#2c3e50',
-                                height: '40px'
-                            }}
                         >
                             <tr>
                                 <th>이름</th>
@@ -248,78 +249,65 @@ function AdminMemberPage() {
                         <tbody>
                             {currentItems.length === 0 ? (
                                 <tr>
-                                    <td colSpan="7" style={{ padding: '40px', color: '#7f8c8d' }}>
+                                    <td colSpan="7" style={{ padding: '40px' }}>
                                         조회된 회원이 없습니다.
                                     </td>
                                 </tr>
-                            ) : (
-                                currentItems.map(user => (
-                                    <tr
-                                        key={user.userId}
-                                        style={{ borderBottom: '1px solid #eee', height: '50px' }}
-                                    >
-                                        <td>{user.userName}</td>
-                                        <td>{user.email}</td>
-                                        <td>{user.phoneNumber}</td>
-                                        <td style={{ cursor: 'pointer' }} onClick={() => setEditingUserId(`role-${user.userId}`)}>
-                                            {editingUserId === `role-${user.userId}` ? (
-                                                <select
-                                                    value={user.role}
-                                                    onChange={(e) => {
-                                                        handleRoleChange(user.userId, e.target.value);
-                                                        setEditingUserId(null);
-                                                    }}
-                                                    autoFocus
-                                                >
-                                                    {ROLE_OPTIONS.map(role => (
-                                                        <option key={role} value={role}>
-                                                            {role}
-                                                        </option>
-                                                    ))}
-                                                </select>
-                                            ) : (
-                                                user.role
-                                            )}
-                                        </td>
-                                        {/* <td>{user.brchId}</td> */}
-                                        <td style={{ cursor: 'pointer' }} onClick={() => setEditingUserId(user.userId)}>
-                                            {editingUserId === user.userId ? (
-                                                <select style={{ padding: '4px' }}
-                                                    value={user.brchId ?? ''}
-                                                    onChange={(e) => {
-                                                        handleBranchChange(user.userId, e.target.value);
-                                                    }}
-                                                    onBlur={() => setEditingUserId(null)}
-                                                    autoFocus
-                                                >
-                                                    {branchList.map(branch => (
-                                                        <option key={branch.id} value={branch.id}>
-                                                            {branch.name}
-                                                        </option>
-                                                    ))}
-                                                </select>
-                                            ) : (
-                                                getBranchName(user.brchId)
-                                            )}
-                                        </td>
-                                        <td>{user.agreeAt}</td>
-                                        <td style={{ cursor: 'pointer' }}>
-                                            <input style={{ cursor: 'pointer' }}
-                                                type="checkbox"
-                                                checked={user.isActive}
+                            ) : currentItems.map(user => (
+                                <tr key={user.userId} style={{ borderBottom: '1px solid #eee', height: '50px' }}>
+                                    <td>{user.userName}</td>
+                                    <td>{user.email}</td>
+                                    <td>{user.phoneNumber}</td>
+
+                                    <td onClick={() => setEditingUserId(`role-${user.userId}`)}>
+                                        {editingUserId === `role-${user.userId}` ? (
+                                            <select
+                                                value={user.role}
+                                                onChange={e => {
+                                                    handleRoleChange(user.userId, e.target.value);
+                                                    setEditingUserId(null);
+                                                }}
+                                                autoFocus
+                                            >
+                                                {ROLE_OPTIONS.map(r => (
+                                                    <option key={r} value={r}>{r}</option>
+                                                ))}
+                                            </select>
+                                        ) : user.role}
+                                    </td>
+
+                                    <td onClick={() => setEditingUserId(user.userId)}>
+                                        {editingUserId === user.userId ? (
+                                            <select
+                                                value={user.brchId ?? ''}
                                                 onChange={e =>
-                                                    handleIsActiveChange(e, user.userId)
+                                                    handleBranchChange(user.userId, e.target.value)
                                                 }
-                                            />
-                                        </td>
-                                    </tr>
-                                ))
-                            )}
+                                                onBlur={() => setEditingUserId(null)}
+                                                autoFocus
+                                            >
+                                                {branchList.map(b => (
+                                                    <option key={b.id} value={b.id}>{b.name}</option>
+                                                ))}
+                                            </select>
+                                        ) : getBranchName(user.brchId)}
+                                    </td>
+
+                                    <td>{user.agreeAt}</td>
+
+                                    <td>
+                                        <input
+                                            type="checkbox"
+                                            checked={user.isActive}
+                                            onChange={e => handleIsActiveChange(e, user.userId)}
+                                        />
+                                    </td>
+                                </tr>
+                            ))}
                         </tbody>
                     </table>
                 )}
             </div>
-
             {/* Pagination */}
             <div style={{ marginTop: '20px', textAlign: 'center' }}>
                 <button

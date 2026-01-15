@@ -6,17 +6,20 @@ function AdminMemberPage() {
        State
     =============================== */
     const [userList, setUserList] = useState([]);
+    const [filteredList, setFilteredList] = useState([]);
     const [loading, setLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
+
+    const [searchName, setSearchName] = useState('');
 
     const ITEMS_PER_PAGE = 8;
 
     /* ===============================
        Derived Data (파생 데이터)
     =============================== */
-    const totalPages = Math.ceil(userList.length / ITEMS_PER_PAGE);
+    const totalPages = Math.ceil(filteredList.length / ITEMS_PER_PAGE);
 
-    const currentItems = userList.slice(
+    const currentItems = filteredList.slice(
         (currentPage - 1) * ITEMS_PER_PAGE,
         currentPage * ITEMS_PER_PAGE
     );
@@ -33,10 +36,8 @@ function AdminMemberPage() {
     }, [currentPage]);
 
     useEffect(() => {
-        if (currentPage > totalPages) {
-            setCurrentPage(1);
-        }
-    }, [userList, totalPages]);
+        if (currentPage > totalPages) setCurrentPage(1);
+    }, [filteredList, totalPages]);
 
     /* ===============================
        API
@@ -46,6 +47,7 @@ function AdminMemberPage() {
         try {
             const response = await api.get('/user/all');
             setUserList(response.data); // 전체 리스트
+            setFilteredList(response.data); // ⭐ 초기에는 전체
         } catch (error) {
             alert('데이터를 불러오지 못했습니다.');
         } finally {
@@ -58,14 +60,20 @@ function AdminMemberPage() {
     =============================== */
     const handleSearch = () => {
         setCurrentPage(1);
-        fetchUserList();
+        if (!searchName.trim()) {
+            setFilteredList(userList);
+            return;
+        }
+
+        const result = userList.filter(user =>
+            user.userName?.includes(searchName)
+        );
+
+        setFilteredList(result);
     };
 
     const handleIsActiveChange = async (e, userId) => {
         const newIsActive = e.target.checked;
-
-        console.log('User ID:', userId);
-        console.log('newIsActive:', newIsActive);
 
         setUserList(prev =>
             prev.map(user =>
@@ -74,13 +82,23 @@ function AdminMemberPage() {
                     : user
             )
         );
+
+        setFilteredList(prev =>
+            prev.map(user =>
+                user.userId === userId
+                    ? { ...user, isActive: newIsActive }
+                    : user
+            )
+        );
+
         try {
-            await api.post(`/user/updateUserIsActive`, {
-                isActive: newIsActive,
-                userId: userId
+            // 2️⃣ 서버 반영 (조용히)
+            await api.post('/user/updateUserIsActive', {
+                userId,
+                isActive: newIsActive
             });
         } catch (error) {
-            // 실패 시 롤백
+            // 3️⃣ 실패 시 롤백
             setUserList(prev =>
                 prev.map(user =>
                     user.userId === userId
@@ -88,6 +106,14 @@ function AdminMemberPage() {
                         : user
                 )
             );
+            setFilteredList(prev =>
+                prev.map(user =>
+                    user.userId === userId
+                        ? { ...user, isActive: !newIsActive }
+                        : user
+                )
+            );
+
             alert('사용자 활성 상태 변경에 실패했습니다.');
         }
     };
@@ -116,9 +142,16 @@ function AdminMemberPage() {
                         background: '#f8f9fa',
                         borderRadius: '5px',
                         display: 'flex',
+                        gap: '20px',
                         justifyContent: 'flex-end'
-                    }}
-                >
+                    }}>
+                    <input
+                        type="text"
+                        placeholder="이름 검색"
+                        value={searchName}
+                        onChange={e => setSearchName(e.target.value)}
+                        style={{ padding: '6px' }}
+                    />
                     <button
                         onClick={handleSearch}
                         style={{
