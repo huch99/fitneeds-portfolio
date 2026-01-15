@@ -15,7 +15,7 @@ const AdminPassProductPage = () => {
     size: 10,
   });
   const [searchDto, setSearchDto] = useState({
-    sportNm: "",
+    sportName: "",
     useYn: "",
     prodNm: "",
     "paging.page": 1,
@@ -69,7 +69,7 @@ const AdminPassProductPage = () => {
 
   const handleReset = () => {
     const reset = {
-      sportNm: "",
+      sportName: "",
       useYn: "",
       prodNm: "",
       "paging.page": 1,
@@ -112,11 +112,11 @@ const AdminPassProductPage = () => {
           <div className="input-group">
             <label>스포츠 종목</label>
             <select
-              value={searchDto.sportNm}
+              value={searchDto.sportName}
               onChange={(e) =>
                 setSearchDto((prev) => ({
                   ...prev,
-                  sportNm: e.target.value,
+                  sportName: e.target.value,
                   "paging.page": 1,
                 }))
               }
@@ -203,7 +203,7 @@ const AdminPassProductPage = () => {
               products.map((product) => (
                 <tr key={product.prodId}>
                   <td>{product.prodId}</td>
-                  <td>{product.sportNm}</td>
+                  <td>{product.sportName}</td>
                   <td>
                     <strong>{product.prodNm}</strong>
                   </td>
