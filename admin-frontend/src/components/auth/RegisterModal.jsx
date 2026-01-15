@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import api from '../../api';
-import './modalStyles.css';
+import './AuthModalStyles.css';
 import AgreeModal from './AgreeModal';
 
 // 폼 입력 필드를 위한 초기 상태 정의 (컴포넌트 외부)
@@ -201,8 +201,8 @@ function RegisterModal({ isOpen, onClose }) {
     }
 
     return (
-        <div className="modal-overlay-2">
-            <div className="modal-content">
+        <div className="auth-modal-overlay">
+            <div className="auth-modal-content-1">
                 <button onClick={onClose} className="modal-close-button">X</button>
                 <h2 style={{ marginBottom: '20px', color: 'black' }}>{formTitle}</h2>
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -282,7 +282,7 @@ function RegisterModal({ isOpen, onClose }) {
                     ) : (
                         <>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '5px', margin: '0 auto' }}>
-                                <label htmlFor="agree" style={{ minWidth: '80px', textAlign: 'right' }}>개인정보 사용 및 수신 동의:</label>
+                                <label htmlFor="agree" style={{ minWidth: '80px', textAlign: 'right', color: '#333' }}>개인정보 사용 및 수신 동의:</label>
                                 <input
                                     onClick={agreeOpen}
                                     id="agree"

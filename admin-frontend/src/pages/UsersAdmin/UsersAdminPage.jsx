@@ -238,13 +238,13 @@ function AdminMemberPage() {
                             }}
                         >
                             <tr>
-                                <th>USER NAME</th>
-                                <th>E-MAIL</th>
-                                <th>PHONE-NUMBER</th>
-                                <th>ROLE</th>
-                                <th>BRANCH</th>
-                                <th>AGREE</th>
-                                <th>ACTIVE</th>
+                                <th>이름</th>
+                                <th>이메일</th>
+                                <th>전화번호</th>
+                                <th>권한</th>
+                                <th>지점</th>
+                                <th>동의날짜</th>
+                                <th>활성</th>
                             </tr>
                         </thead>
                         <tbody>

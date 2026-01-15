@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import api from '../../api';
-import './modalStyles.css';
+import './AuthModalStyles.css';
 import AgreeModal from './AgreeModal';
 
 // 폼 입력 필드를 위한 초기 상태 정의 (컴포넌트 외부)

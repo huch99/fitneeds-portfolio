@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPortal } from 'react-dom';
 import api from '../../api';
-import '../../components/auth/modalStyles.css';
+import '../../components/auth/AuthModalStyles.css';
 
 /* =========================
    API 함수들
@@ -15,9 +15,9 @@ const getPastHistory = async (startDate = null, endDate = null, branchId = null,
     if (endDate) params.endDate = endDate;
     if (branchId) params.branchId = branchId;
     if (reviewWritten) params.reviewWritten = reviewWritten;
-    
+
     const response = await api.get('/reservations/completedReservations', { params });
-    
+
     // 백엔드 응답 구조: { status, message, data }
     if (response.data.status === 'SUCCESS' && response.data.data) {
       return response.data.data;
@@ -34,7 +34,7 @@ const getPastHistory = async (startDate = null, endDate = null, branchId = null,
 const getMyReservations = async () => {
   try {
     const response = await api.get('/reservations/myReservations');
-    
+
     // 백엔드 응답 구조: { resultCode, message, data }
     if (response.data.resultCode === 'SUCCESS' && response.data.data) {
       return response.data.data;
@@ -51,7 +51,7 @@ const getMyReservations = async () => {
 const getScheduleById = async (scheduleId) => {
   try {
     const response = await api.get(`/schedules/getScheduleBySchdIdForR/${scheduleId}`);
-    
+
     if (response.data) {
       return response.data;
     } else {
@@ -72,7 +72,7 @@ function UsageHistorySection({ onRefresh }) {
   const [frequentReservationsLoading, setFrequentReservationsLoading] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
   const [showFrequentModal, setShowFrequentModal] = useState(false);
-  
+
   // 운동 종목명에 따른 이미지 매핑 함수
   const getSportImage = (sportName) => {
     if (!sportName) return '/images/pt.png';
@@ -96,7 +96,7 @@ function UsageHistorySection({ onRefresh }) {
         const userId = localStorage.getItem('userId');
         const data = await getPastHistory();
         console.log('[UsageHistorySection] 이용내역 API 응답 데이터:', data);
-        
+
         // 백엔드 데이터를 화면에 맞게 변환
         // 백엔드 응답 필드: reservationId, sportName, brchNm, trainerName, rsvDt, rsvTime, refId, reviewWritten, scheduleId
         const transformed = (data || []).map((history) => {
@@ -109,7 +109,7 @@ function UsageHistorySection({ onRefresh }) {
               dateStr = history.rsvDt;
             }
           }
-          
+
           // 시간 변환
           let timeStr = '';
           if (history.rsvTime) {
@@ -119,7 +119,7 @@ function UsageHistorySection({ onRefresh }) {
               timeStr = String(history.rsvTime).substring(0, 5);
             }
           }
-          
+
           return {
             id: history.refId || history.reservationId,
             reservationId: history.reservationId,
@@ -134,9 +134,9 @@ function UsageHistorySection({ onRefresh }) {
             image: getSportImage(history.sportName)
           };
         });
-        
+
         console.log('[UsageHistorySection] 변환된 이용내역 데이터:', transformed);
-        
+
         setUsageHistoryData(transformed);
       } catch (error) {
         console.error('[UsageHistorySection] 이용내역 조회 실패:', error);
@@ -157,7 +157,7 @@ function UsageHistorySection({ onRefresh }) {
         const userId = localStorage.getItem('userId');
         const reservations = await getMyReservations();
         console.log('[UsageHistorySection] 예약 목록 API 응답 데이터:', reservations);
-        
+
         // 같은 프로그램/지점/강사 조합으로 그룹화
         const grouped = {};
         (reservations || []).forEach((reservation) => {
@@ -173,7 +173,7 @@ function UsageHistorySection({ onRefresh }) {
           }
           grouped[key].count++;
         });
-        
+
         // 2회 이상인 항목만 필터링
         const frequent = Object.values(grouped)
           .filter(item => item.count >= 2)
@@ -181,14 +181,14 @@ function UsageHistorySection({ onRefresh }) {
             ...item,
             price: '-' // 가격 정보는 API에 없으므로 "-"로 표시
           }));
-        
+
         console.log('[UsageHistorySection] 2회 이상 예약한 항목:', frequent);
 
-        
+
         setFrequentReservations(frequent);
       } catch (error) {
         console.error('[UsageHistorySection] 2회 이상 예약한 항목 조회 실패:', error);
-        
+
       } finally {
         setFrequentReservationsLoading(false);
       }
@@ -250,8 +250,8 @@ function UsageHistorySection({ onRefresh }) {
                           backgroundColor: '#f8f9fa'
                         }}>
                           {item.image && (
-                            <img 
-                              src={item.image} 
+                            <img
+                              src={item.image}
                               alt={item.programName}
                               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                             />
@@ -272,21 +272,21 @@ function UsageHistorySection({ onRefresh }) {
                           x{item.count}
                         </div>
                       </div>
-                      
+
                       {/* 텍스트 (이미지 옆) */}
-                      <div style={{ 
-                        fontSize: '1.375rem', 
+                      <div style={{
+                        fontSize: '1.375rem',
                         color: '#212529',
                         flex: 1
                       }}>
                         자주 이용하는 프로그램 {item.count}
                       </div>
-                      
+
                       <div style={{ marginLeft: 'auto', marginRight: '4rem' }}>
-                        <div 
+                        <div
                           onClick={() => setShowFrequentModal(true)}
-                          style={{ 
-                            fontSize: '1rem', 
+                          style={{
+                            fontSize: '1rem',
                             color: '#6c757d',
                             cursor: 'pointer',
                             textDecoration: 'underline'
@@ -339,9 +339,9 @@ function UsageHistorySection({ onRefresh }) {
                 return Object.entries(groupedByDate).map(([date, histories]) => (
                   <div key={date} style={{ marginBottom: '2rem', paddingLeft: '2rem' }}>
                     {/* 날짜 헤더 */}
-                    <div style={{ 
-                      fontSize: '1.375rem', 
-                      fontWeight: '700', 
+                    <div style={{
+                      fontSize: '1.375rem',
+                      fontWeight: '700',
                       color: '#212529',
                       marginBottom: '1rem',
                       display: 'flex',
@@ -362,20 +362,20 @@ function UsageHistorySection({ onRefresh }) {
                         borderBottom: '1px solid #e9ecef'
                       }}>
                         {/* 이미지 영역 */}
-                        <div style={{ 
+                        <div style={{
                           flexShrink: 0
                         }}>
                           {/* 이미지 */}
-                          <div style={{ 
-                            width: '120px', 
-                            height: '120px', 
+                          <div style={{
+                            width: '120px',
+                            height: '120px',
                             borderRadius: '8px',
                             overflow: 'hidden',
                             backgroundColor: '#f8f9fa'
                           }}>
                             {history.image && (
-                              <img 
-                                src={history.image} 
+                              <img
+                                src={history.image}
                                 alt={history.programName}
                                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                               />
@@ -386,18 +386,18 @@ function UsageHistorySection({ onRefresh }) {
                         {/* 정보 영역 */}
                         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.25rem', paddingTop: '1.5rem' }}>
                           {/* 지점명 */}
-                          <div style={{ 
-                            fontSize: '1.25rem', 
+                          <div style={{
+                            fontSize: '1.25rem',
                             color: '#212529',
                             fontWeight: '500',
                             marginBottom: '0.25rem'
                           }}>
                             {history.branchName}
                           </div>
-                          
+
                           {/* 프로그램명 | 강사명 */}
-                          <div style={{ 
-                            fontSize: '1.125rem', 
+                          <div style={{
+                            fontSize: '1.125rem',
                             color: '#6c757d',
                             lineHeight: '1.5'
                           }}>
@@ -406,8 +406,8 @@ function UsageHistorySection({ onRefresh }) {
                         </div>
 
                         {/* 상세보기 버튼 */}
-                        <div style={{ 
-                          display: 'flex', 
+                        <div style={{
+                          display: 'flex',
                           alignItems: 'center',
                           paddingTop: '1.5rem',
                           marginRight: '4rem'
@@ -424,7 +424,7 @@ function UsageHistorySection({ onRefresh }) {
 
                                 // 스케줄 정보 조회
                                 const schedule = await getScheduleById(history.scheduleId);
-                                
+
                                 if (!schedule || !schedule.progId) {
                                   alert('프로그램 정보를 찾을 수 없습니다.');
                                   console.error('[UsageHistorySection] 스케줄 정보 조회 실패:', schedule);
@@ -459,7 +459,7 @@ function UsageHistorySection({ onRefresh }) {
                                   strtTm: formatTime(schedule.strtTm) || history.time || '09:00',
                                   endTm: formatTime(schedule.endTm) || history.time || '10:00'
                                 });
-                                
+
                                 navigate(`/program-detail?${params.toString()}`);
                               } catch (error) {
                                 console.error('[UsageHistorySection] 상세보기 페이지 이동 실패:', error);
@@ -505,7 +505,7 @@ function UsageHistorySection({ onRefresh }) {
 
       {/* 자주 이용하는 프로그램 전체보기 모달 */}
       {showFrequentModal && createPortal(
-        <div 
+        <div
           onClick={() => setShowFrequentModal(false)}
           style={{
             position: 'fixed',
@@ -524,7 +524,7 @@ function UsageHistorySection({ onRefresh }) {
             padding: 0
           }}
         >
-          <div 
+          <div
             onClick={(e) => e.stopPropagation()}
             style={{
               backgroundColor: '#fff',
@@ -584,7 +584,7 @@ function UsageHistorySection({ onRefresh }) {
                 </div>
               ) : (
                 frequentReservations.map((item, index) => (
-                  <div 
+                  <div
                     key={index}
                     style={{
                       display: 'flex',
@@ -606,8 +606,8 @@ function UsageHistorySection({ onRefresh }) {
                         backgroundColor: '#f8f9fa'
                       }}>
                         {item.image && (
-                          <img 
-                            src={item.image} 
+                          <img
+                            src={item.image}
                             alt={item.programName}
                             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                           />

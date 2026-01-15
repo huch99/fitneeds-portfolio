@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api';
-import '../../components/auth/modalStyles.css';
+import '../../components/auth/AuthModalStyles.css';
 
 /* =========================
    API 함수들
@@ -425,9 +425,9 @@ function ReviewWriteSection({ reviewTab, setReviewTab }) {
                 <p>작성일: {r.writtenDate}</p>
                 <button onClick={() => { setSelectedReview(r); setIsDetailModalOpen(true); }}>상세보기</button>
                 <button onClick={() => { setSelectedReviewId(r.reviewId); setIsEditModalOpen(true); }}>수정하기</button>
-                <button onClick={async () => { 
+                <button onClick={async () => {
                   if (!window.confirm('정말 삭제하시겠습니까?')) return;
-                  await deleteReview(r.reviewId); fetchMyReviews(); 
+                  await deleteReview(r.reviewId); fetchMyReviews();
                 }}>삭제하기</button>
               </div>
             </div>

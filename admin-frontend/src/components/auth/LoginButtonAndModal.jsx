@@ -38,11 +38,11 @@ function LoginButtonAndModal() {
     };
 
     // 로그아웃 후 자동으로 모달을 열지 않도록 제거
-    // if (!isAuthenticated) {
-    //     if (!isLoginModalOpen) {
-    //         setIsLoginModalOpen(true);
-    //     }
-    // }
+    if (!isAuthenticated) {
+        if (!isLoginModalOpen) {
+            setIsLoginModalOpen(true);
+        }
+    }
 
     const handleMyinfoClick = () => {
         //setIsRegisterModalOpen(true);

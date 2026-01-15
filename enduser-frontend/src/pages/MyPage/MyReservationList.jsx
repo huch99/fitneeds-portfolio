@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import SideBar from "./SideBar";
-import '../../components/auth/modalStyles.css';
+import '../../components/auth/AuthModalStyles.css';
 import '../MyPage/MyPage.css';
 import api from '../../api'; // axios instance, baseURL: '/api' 포함
 
@@ -110,7 +110,7 @@ function MyReservationList() {
         const data = await getClosingSoonSchedules();
         const transformed = (data || []).map(schedule => {
           const dateStr = schedule.endDt ? schedule.endDt.split('T')[0] : '';
-          const timeStr = schedule.endTm ? schedule.endTm.substring(0,5) : '';
+          const timeStr = schedule.endTm ? schedule.endTm.substring(0, 5) : '';
           const lessonType = schedule.trainerName ? '개인레슨' : '그룹레슨';
           return {
             id: schedule.scheduleId,
@@ -223,16 +223,16 @@ function MyReservationList() {
                     <div className="class-card-image">
                       <img src={c.image} alt={c.name} />
                       <div className="class-card-rating">
-                        {[1,2,3,4,5].map(star => (
+                        {[1, 2, 3, 4, 5].map(star => (
                           <span key={star} style={{ color: star <= c.rating ? '#FFC107' : '#ddd' }}>★</span>
                         ))}
                       </div>
                     </div>
                     <div className="class-card-info">
                       <h3 className="class-card-name">{c.name}</h3>
-                      <div style={{ fontSize: '1.125rem', color:'#6c757d', marginBottom:'0.5rem' }}>{c.branch}</div>
-                      <div style={{ fontSize: '1.125rem', color:'#6c757d', marginBottom:'0.5rem' }}>{c.date} {c.time}</div>
-                      {c.remainingSeats !== undefined && <div style={{ fontSize:'0.875rem', color:'#dc3545', marginBottom:'1rem' }}>남은 자리: {c.remainingSeats}석</div>}
+                      <div style={{ fontSize: '1.125rem', color: '#6c757d', marginBottom: '0.5rem' }}>{c.branch}</div>
+                      <div style={{ fontSize: '1.125rem', color: '#6c757d', marginBottom: '0.5rem' }}>{c.date} {c.time}</div>
+                      {c.remainingSeats !== undefined && <div style={{ fontSize: '0.875rem', color: '#dc3545', marginBottom: '1rem' }}>남은 자리: {c.remainingSeats}석</div>}
                       <button className="btn-submit">예약하기</button>
                     </div>
                   </div>

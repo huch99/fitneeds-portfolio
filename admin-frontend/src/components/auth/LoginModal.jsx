@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { login } from '../../store/authSlice'; // Redux login 액션 임포트
 // import './common.css';
-import './modalStyles.css';
+import './AuthModalStyles.css';
 
 // LoginModal은 isOpen, onClose 외에 onOpenRegister 콜백 함수를 props로 받습니다.
 function LoginModal({ isOpen, onClose, onOpenRegister }) {
@@ -41,12 +41,12 @@ function LoginModal({ isOpen, onClose, onOpenRegister }) {
     return (
         <>
             {/* 모달 외부 클릭 시 닫히도록 하는 오버레이 */}
-            <div className="modal-overlay" onClick={onClose}>
+            <div className="auth-modal-overlay" onClick={onClose}>
                 {/* 모달 콘텐츠 - 클릭 전파 방지 */}
-                <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                <h2 style={{ marginBottom: '20px', color: 'black' }}>ADMIN</h2>
-                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    {/* <input
+                <div className="auth-modal-content" onClick={(e) => e.stopPropagation()}>
+                    <h2 style={{ marginBottom: '20px', color: 'black' }}>ADMIN</h2>
+                    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        {/* <input
                         type="text"
                         placeholder="아이디"
                         value={userId}
@@ -54,32 +54,31 @@ function LoginModal({ isOpen, onClose, onOpenRegister }) {
                         className="modal-input"
                         autoComplete="current-userId"
                     /> */}
-                    <input
-                        type="text"
-                        placeholder="EMAIL"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className="modal-input"
-                        autoComplete="current-email"
-                    />
-                    <input
-                        type="password"
-                        placeholder="비밀번호"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className="modal-input"
-                        autoComplete="current-password"
-                    />
-                    {error && <p style={{ color: 'red', fontSize: '14px' }}>{error}</p>}
-                    <button type="submit" disabled={isLoading} className="modal-button">
-                        {isLoading ? '로그인 중...' : '로그인'}
-                    </button>
-                    <button type="button" onClick={handleRegisterClick} className="modal-button-secondary">
-                        회원가입
-                    </button>
-                </form>
-                <button onClick={onClose} className="modal-close-button">✕</button>
-            </div>
+                        <input
+                            type="text"
+                            placeholder="EMAIL"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className="modal-input"
+                            autoComplete="current-email"
+                        />
+                        <input
+                            type="password"
+                            placeholder="비밀번호"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="modal-input"
+                            autoComplete="current-password"
+                        />
+                        {error && <p style={{ color: 'red', fontSize: '14px' }}>{error}</p>}
+                        <button type="submit" disabled={isLoading} className="modal-button">
+                            {isLoading ? '로그인 중...' : '로그인'}
+                        </button>
+                        <button type="button" onClick={handleRegisterClick} className="modal-button-secondary">
+                            회원가입
+                        </button>
+                    </form>
+                </div>
             </div>
         </>
     );

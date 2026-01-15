@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { login } from '../../store/authSlice'; // Redux login 액션 임포트
 // import './common.css';
-import './modalStyles.css';
+import './AuthModalStyles.css';
 
 // LoginModal은 isOpen, onClose 외에 onOpenRegister 콜백 함수를 props로 받습니다.
 function LoginModal({ isOpen, onClose, onOpenRegister }) {
@@ -23,10 +23,10 @@ function LoginModal({ isOpen, onClose, onOpenRegister }) {
     return (
         <>
             {/* 모달 외부 클릭 시 닫히도록 하는 오버레이 */}
-            <div className="modal-overlay-2" onClick={onClose}>X</div>
+            <div className="auth-modal-overlay" onClick={onClose}>X</div>
 
             {/* 모달 콘텐츠 */}
-            <div className="modal-content-3">
+            <div className="auth-modal-content-2">
                 <h2 style={{ marginBottom: '20px', color: 'black' }}>개인정보 사용 및 수신 동의</h2>
                 <div onSubmit={handleSubmit} style={{ display: 'flex', color: 'black', flexDirection: 'column', gap: '10px' }}>
                     <div style={{ textAlign: 'left', maxHeight: '400px', overflowY: 'auto', marginBottom: '20px' }}>

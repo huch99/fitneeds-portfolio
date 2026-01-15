@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import '../../components/auth/modalStyles.css';
+import '../../components/auth/AuthModalStyles.css';
 import './MyPage.css';
 
 
@@ -15,7 +15,7 @@ import SideBar from './SideBar';
 
 function MyPage() {
   const location = useLocation();
-  
+
   // activeMenu는 세션 상태로 관리 (페이지 새로고침 시 메인 페이지로 초기화)
   const [activeMenu, setActiveMenu] = useState(null);
 
