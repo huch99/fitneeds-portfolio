@@ -48,11 +48,27 @@ const PassDetailModal = ({ passId, onRefresh, onClose }) => {
       if (actionType === 'DELETE') await passApi.deletePass(pass.passId);
       else await passApi.updateStatus(pass.passId, param);
       
+      alert("처리 완료!");
       fetchDetail(); 
       onRefresh();
     } catch (err) {
       const msg = err.response?.data?.message || err.message || "오류가 발생했습니다.";
       alert(`작업 실패: ${msg}`);
+    }
+  };
+
+  // 4. 삭제된 이용권 복구
+  const handleRestore = async () => {
+    if (!window.confirm("삭제된 이용권을 복구하시겠습니까?")) return;
+
+    try {
+      await passApi.restorePass(pass.passId);
+      alert("복구 완료!");
+      fetchDetail();
+      onRefresh();
+    } catch (err) {
+      const msg = err.response?.data?.message || err.message || "오류가 발생했습니다.";
+      alert(`복구 실패: ${msg}`);
     }
   };
 
@@ -92,11 +108,11 @@ const PassDetailModal = ({ passId, onRefresh, onClose }) => {
             </div>
             
             <div className="button-group" style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '10px' }}>
-              <button className="update-btn" onClick={handleUpdate}>저장</button>
+              <button className="update-btn" onClick={handleUpdate} disabled={pass.passStatusCode === 'DELETED'}>저장</button>
 
               {/* 상태에 따른 동적 버튼 제어 */}
               {pass.passStatusCode === 'DELETED' ? (
-                <button className="active-btn" onClick={() => handleAction('STATUS', 'ACTIVE')}>복구(활성화)</button>
+                <button className="active-btn" onClick={handleRestore}>복구(활성화)</button>
               ) : (
                 <>
                   {pass.passStatusCode === 'ACTIVE' ? (

@@ -5,6 +5,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -15,7 +18,6 @@ public class ReservationDto {
     private String userName;
     private String phoneNumber;
     private String sttsCd;
-    private String rsvDt;
-    private String rsvTime;
+    private LocalDate rsvDt;
+    private LocalTime rsvTime;
 }
-

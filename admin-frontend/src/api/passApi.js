@@ -60,6 +60,11 @@ const passApi = {
         return api.delete(`/user-pass/${id}`);
     },
 
+    // 7-1. 이용권 복구
+    restorePass: (id) => {
+        return api.patch(`/user-pass/${id}/restore`);
+    },
+
     // 8. 이용권 등록을 위한 회원 검색
     searchUsers: (keyword) => {
         return api.get('/user-pass/search-users', { params: { keyword } });

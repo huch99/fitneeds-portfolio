@@ -4,7 +4,8 @@ import './styles/Admin.css';
 // Pages
 import AdminLayout from './components/AdminLayout';
 import AdminTicketPage from './pages/pass/AdminTicketPage';
-import AdminReservationPage from './pages/AdminReservationPage';
+import AdminPassProductPage from './pages/product/AdminPassProductPage'
+import AdminReservationPage from './pages/reservation/AdminReservationPage';
 import AdminTradePage from './pages/AdminTradePage';
 import AdminFaqPage from './pages/FAQ/AdminFaqPage';
 import AdminCommunityPage from './pages/Community/AdminCommunityPage';
@@ -73,6 +74,7 @@ function App() {
           <Route path="/trades" element={<AdminTradePage />} />
           <Route path="/reservations" element={<AdminReservationPage />} />
           <Route path="/tickets" element={<AdminTicketPage />} />
+          <Route path="/products" element={<AdminPassProductPage />} />
 
           {/* FAQ */}
           <Route path="/AdminFaqPage" element={<AdminFaqPage />} />

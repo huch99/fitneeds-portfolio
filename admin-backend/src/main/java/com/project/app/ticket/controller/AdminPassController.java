@@ -97,4 +97,11 @@ public class AdminPassController {
     public ResponseEntity<List<SportSearchResponse>> getActiveSports() {
         return ResponseEntity.ok(userPassService.getActiveSports());
     }
+
+    @Operation(summary = "이용권 복구", description = "관리자가 삭제된 이용권을 복구합니다.")
+    @PatchMapping("/{id}/restore")
+    public ResponseEntity<String> restorePass(@PathVariable Long id) {
+        userPassService.restorePass(id);
+        return ResponseEntity.ok("이용권이 복구되었습니다.");
+    }
 }

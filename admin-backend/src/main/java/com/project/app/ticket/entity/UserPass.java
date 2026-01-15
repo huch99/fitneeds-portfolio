@@ -154,4 +154,15 @@ public class UserPass extends BaseTimeEntity {
         return diff; // 변화량 반환
     }
 
+    public void restoreDeleted() {
+        if (this.passStatusCode == null || !this.passStatusCode.isDeleted()) {
+            throw new IllegalStateException("복구 대상이 아닌 이용권입니다.");
+        }
+
+        // initCount가 null이면 0으로 세팅
+        int restoreCnt = this.initCount != null ? this.initCount : 0;
+        this.remainingCount = restoreCnt;
+        this.passStatusCode = PassStatusCd.ACTIVE;
+
+    }
 }
