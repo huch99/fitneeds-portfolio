@@ -78,8 +78,6 @@ function AdminMemberPage() {
                 id: Number(item.getElementsByTagName('brchId')[0].textContent),
                 name: item.getElementsByTagName('brchNm')[0].textContent
             }));
-
-            console.log(items);
             setBranchList(items);
         } catch (error) {
             console.error(error);
@@ -305,8 +303,8 @@ function AdminMemberPage() {
                                             )}
                                         </td>
                                         <td>{user.agreeAt}</td>
-                                        <td>
-                                            <input
+                                        <td style={{ cursor: 'pointer' }}>
+                                            <input style={{ cursor: 'pointer' }}
                                                 type="checkbox"
                                                 checked={user.isActive}
                                                 onChange={e =>

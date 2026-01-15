@@ -21,7 +21,8 @@ public class UserAdminRequestDto {
 	private String role;
 	@JsonProperty("isActive")
 	private boolean isActive;
-	private LocalDateTime agreeAt;
+//	private LocalDateTime agreeAt;
+	private String agreeAt;
 	private String phoneNumber;
 	private Long brchId;
 	private boolean success;

@@ -182,8 +182,8 @@ function AdminMemberPage() {
                                         <td>{user.email}</td>
                                         <td>{user.phoneNumber}</td>
                                         <td>{user.agreeAt}</td>
-                                        <td>
-                                            <input
+                                        <td style={{ cursor: 'pointer' }}>
+                                            <input style={{ cursor: 'pointer' }}
                                                 type="checkbox"
                                                 checked={user.isActive}
                                                 onChange={e =>
