@@ -26,7 +26,7 @@ function LoginModal({ isOpen, onClose, onOpenRegister }) {
             <div className="auth-modal-overlay" onClick={onClose}>X</div>
 
             {/* 모달 콘텐츠 */}
-            <div className="auth-modal-content-2">
+            <div className="auth-modal-content-1">
                 <h2 style={{ marginBottom: '20px', color: 'black' }}>개인정보 사용 및 수신 동의</h2>
                 <div onSubmit={handleSubmit} style={{ display: 'flex', color: 'black', flexDirection: 'column', gap: '10px' }}>
                     <div style={{ textAlign: 'left', maxHeight: '400px', overflowY: 'auto', marginBottom: '20px' }}>

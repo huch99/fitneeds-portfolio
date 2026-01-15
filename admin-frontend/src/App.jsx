@@ -34,27 +34,7 @@ import AdminTeachersDetailPage from './pages/Teachers/AdminTeachersDetailPage';
 import AdminTeachersCreatePage from './pages/Teachers/AdminTeachersCreatePage';
 import AdminTeachersEditPage from './pages/Teachers/AdminTeachersEditPage';
 
-
-// 아직 없는 파일은 import 에러가 날 수 있으니 주석 처리하거나 빈 파일 생성 필요
-// import AdminDashboardPage from './pages/AdminDashboardPage'; 
-// import AdminMemberPage from './pages/AdminMemberPage';
-// import AdminCenterPage from './pages/AdminCenterPage';
-
 function App() {
-  /*
-  useEffect(() => {
-    // Load Bootstrap JS
-    const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js';
-    script.async = true;
-    document.body.appendChild(script);
-
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, []);
-  */
-
   return (
     <Router>
       <Routes>

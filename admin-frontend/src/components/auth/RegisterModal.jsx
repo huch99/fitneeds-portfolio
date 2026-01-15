@@ -201,7 +201,11 @@ function RegisterModal({ isOpen, onClose }) {
     }
 
     return (
-        <div className="auth-modal-overlay">
+
+        <div
+            className={`${isAuthenticated ? 'auth-modal-overlay-1' : 'auth-modal-overlay'
+                }`}
+        >
             <div className="auth-modal-content-1">
                 <button onClick={onClose} className="modal-close-button">X</button>
                 <h2 style={{ marginBottom: '20px', color: 'black' }}>{formTitle}</h2>
