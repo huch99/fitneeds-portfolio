@@ -195,7 +195,7 @@ public class PassTradeService {
         PassTradeTransaction transaction = new PassTradeTransaction();
         transaction.setPostId(postId);
         transaction.setBuyerId(buyerId);
-        transaction.setSellerId(post.getSellerId());
+//        transaction.setSellerId(post.getSellerId());
         transaction.setBuyQty(buyQty);
         transaction.setTradeAmt(tradeAmt);
         transaction.setSttsCd(TransactionStatus.COMPLETED);
@@ -251,13 +251,13 @@ public class PassTradeService {
         response.setTransactionId(transaction.getTransactionId());
         response.setPostId(transaction.getPostId());
         response.setBuyerId(transaction.getBuyerId());
-        response.setSellerId(transaction.getSellerId());
+//        response.setSellerId(transaction.getSellerId());
         response.setBuyQty(transaction.getBuyQty());
         response.setTradeAmt(transaction.getTradeAmt());
         response.setSttsCd(transaction.getSttsCd());
         response.setPaymentId(transaction.getPaymentId());
         response.setRegDt(transaction.getRegDt());
-        response.setUpdDt(transaction.getUpdDt());
+//        response.setUpdDt(transaction.getUpdDt());
         return response;
     }
 }

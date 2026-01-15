@@ -15,17 +15,17 @@ public class PassTradeTransaction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "transaction_id")
+    @Column(name = "trade_id")
     private Long transactionId;
 
     @Column(name = "post_id", nullable = false)
     private Long postId;
 
-    @Column(name = "buyer_id", nullable = false)
+    @Column(name = "buyer_user_id", nullable = false)
     private String buyerId;
 
-    @Column(name = "seller_id", nullable = false)
-    private String sellerId;
+//    @Column(name = "seller_id", nullable = false)
+//    private String sellerId;
 
     @Column(name = "buy_qty", nullable = false)
     private Integer buyQty;
@@ -49,17 +49,13 @@ public class PassTradeTransaction {
     @Column(name = "reg_dt", updatable = false)
     private LocalDateTime regDt;
 
-    @Column(name = "upd_dt")
-    private LocalDateTime updDt;
+//    @Column(name = "upd_dt")
+//    private LocalDateTime updDt;
 
     @PrePersist
     protected void onCreate() {
         this.regDt = LocalDateTime.now();
-        this.updDt = LocalDateTime.now();
+//        this.updDt = LocalDateTime.now();
     }
 
-    @PreUpdate
-    protected void onUpdate() {
-        this.updDt = LocalDateTime.now();
-    }
 }
