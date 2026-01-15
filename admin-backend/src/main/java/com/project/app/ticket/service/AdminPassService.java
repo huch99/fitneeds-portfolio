@@ -177,10 +177,32 @@ public class AdminPassService {
         userPass.updateStatus("DELETED");
 
         saveHistory(userPass, "MANUAL_DEL", -remaining,
-            String.format("관리자 삭제 처리(전액 회수) - 이전 상태: %s",
-                currentStatus != null ? currentStatus.getDescription() : "없음"));
+                String.format("관리자 삭제 처리(전액 회수) - 이전 상태: %s",
+                        currentStatus != null ? currentStatus.getDescription() : "없음"));
 
         log.info("이용권 삭제 완료: passId={}, 회수 횟수={}", passId, remaining);
+    }
+
+    @Transactional
+    public void restorePass(Long passId) {
+        UserPass userPass = findPassById(passId);
+
+        // 반드시 DELETED 상태인 경우에만 복구 허용
+        if (userPass.getPassStatusCode() == null || !userPass.getPassStatusCode().isDeleted()) {
+            throw new IllegalStateException("복구 대상이 아닌 이용권입니다.");
+        }
+
+        // 복구 수행: 엔티티 내부 메서드 사용
+        int restoredCnt = userPass.getInitCount() != null ? userPass.getInitCount() : 0;
+        userPass.restoreDeleted();
+
+        // 영속화 (JPA는 변경 감지로 자동 반영되지만 명시적으로 저장)
+        userPassRepository.save(userPass);
+
+        // 이력 저장: 복구는 MANUAL_ADD로 기록, 변경량은 +restoredCnt
+        saveHistory(userPass, "MANUAL_ADD", restoredCnt, "관리자에 의한 복구");
+
+        log.info("이용권 복구 완료: passId={}, 복구횟수={}", passId, restoredCnt);
     }
 
     private UserPass findPassById(Long passId) {
@@ -200,6 +222,8 @@ public class AdminPassService {
                 .map(u -> new UserSearchResponse(u.getUserId(), u.getUserName()))
                 .toList();
     }
+
+
 
     /**
      * 활성 스포츠 목록 조회
@@ -230,4 +254,6 @@ public class AdminPassService {
 
         passLogRepository.save(passLog);
     }
+
+
 }
