@@ -13,6 +13,10 @@ function AdminNoticePage() {
   const [displayEnd, setDisplayEnd] = useState("");
   const [alwaysDisplay, setAlwaysDisplay] = useState(true);
 
+  // localstraoge에서, role 확인
+  const role = localStorage.getItem("role"); // ADMIN | MANAGER | TEACHER
+
+
   /* =========================
      공지 목록 조회
   ========================= */
@@ -140,6 +144,18 @@ function AdminNoticePage() {
     return b.id - a.id;
   });
 
+  // ROLE 권한 체크해서, 출력하는 문
+  if (role === "TEACHER") {
+    return (
+      <div style={{ padding: "40px", textAlign: "center" }}>
+        <h2>권한이 없습니다.</h2>
+        <p style={{ marginTop: "10px", color: "#666" }}>
+          해당 페이지에 접근할 수 있는 권한이 없습니다.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <>
       <h1>공지사항 관리</h1>
@@ -174,8 +190,8 @@ function AdminNoticePage() {
                   background: n.pinned
                     ? "#fff9e6"
                     : !n.visible
-                    ? "#f1f1f1"
-                    : "white",
+                      ? "#f1f1f1"
+                      : "white",
                   color: !n.visible ? "#999" : "#000",
                   opacity: !n.visible ? 0.5 : 1,
                 }}
@@ -196,9 +212,12 @@ function AdminNoticePage() {
                   <button onClick={() => toggleVisible(n)}>
                     {n.visible ? "숨기기" : "보이기"}
                   </button>
-                  <button onClick={() => togglePinned(n)}>
-                    {n.pinned ? "고정해제" : "상단고정"}
-                  </button>
+                  {role === "ADMIN" && (
+                    <button onClick={() => togglePinned(n)}>
+                      {n.pinned ? "고정해제" : "상단고정"}
+                    </button>
+                  )}
+
                   <button
                     onClick={() => deleteNotice(n.id)}
                     style={{ color: "red" }}
