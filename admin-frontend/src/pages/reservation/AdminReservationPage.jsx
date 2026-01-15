@@ -25,43 +25,14 @@ const AdminReservationPage = () => {
     async (params = searchDto) => {
       try {
         const res = await reservationApi.getReservations(params);
-        const data = res.data;
-        
-        // 응답 데이터 구조 안전하게 처리
-        if (data && typeof data === 'object') {
-          setReservations(data.content || []);
-          setPageInfo({
-            currentPage: data.currentPage || 1,
-            totalPages: data.totalPages || 0,
-            totalElements: data.totalElements || 0,
-          });
-        } else {
-          // 예상하지 못한 응답 구조
-          setReservations([]);
-          setPageInfo({
-            currentPage: 1,
-            totalPages: 0,
-            totalElements: 0,
-          });
-        }
+        setReservations(res.data.content || []);
+        setPageInfo({
+          currentPage: res.data.currentPage,
+          totalPages: res.data.totalPages,
+          totalElements: res.data.totalElements,
+        });
       } catch (err) {
         console.error("예약 목록 로드 실패:", err);
-        // 에러 발생 시 빈 상태로 초기화
-        setReservations([]);
-        setPageInfo({
-          currentPage: 1,
-          totalPages: 0,
-          totalElements: 0,
-        });
-        
-        // 사용자에게 에러 메시지 표시
-        if (err.response?.status === 500) {
-          alert("서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
-        } else if (err.response?.status === 401) {
-          alert("로그인이 필요합니다.");
-        } else {
-          alert("예약 목록을 불러오는 중 오류가 발생했습니다.");
-        }
       }
     },
     [searchDto]
