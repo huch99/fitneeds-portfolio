@@ -14,7 +14,7 @@ function AdminMemberPage() {
     const [branchList, setBranchList] = useState([]);
     const [editingUserId, setEditingUserId] = useState(null);
 
-    const ROLE_OPTIONS = ['ADMIN', 'USER', 'TEACHER'];
+    const ROLE_OPTIONS = ['ADMIN', 'USER', 'TEACHER', 'MANAGER'];
 
     /* ===============================
        Derived Data (파생 데이터)

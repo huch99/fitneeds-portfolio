@@ -202,9 +202,9 @@ function RegisterModal({ isOpen, onClose }) {
 
     return (
         <div className="modal-overlay">
-            <div className="modal-content">
+            <div className="modal-content-2">
                 <button onClick={onClose} className="modal-close-button">X</button>
-                <h2 style={{ marginBottom: '20px', color: 'black' }}>{formTitle}</h2>
+                <h2 style={{ marginBottom: '20px', color: 'black', fontWeight: 'bold' }}>{formTitle}</h2>
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                         <label htmlFor="userName" style={{ minWidth: '80px', textAlign: 'right' }}>이름:</label>
