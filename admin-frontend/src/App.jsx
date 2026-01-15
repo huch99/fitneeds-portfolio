@@ -6,7 +6,9 @@ import AdminLayout from './components/AdminLayout';
 import AdminTicketPage from './pages/pass/AdminTicketPage';
 import AdminPassProductPage from './pages/product/AdminPassProductPage'
 import AdminReservationPage from './pages/reservation/AdminReservationPage';
-import AdminTradePage from './pages/AdminTradePage';
+import AdminTradePage from './pages/trade/AdminTradePage';
+import AdminMarketPostPage from './pages/trade/AdminMarketPostPage';
+
 import AdminFaqPage from './pages/FAQ/AdminFaqPage';
 import AdminCommunityPage from './pages/Community/AdminCommunityPage';
 import AdminCommunityDetailPage from './pages/Community/AdminCommunityDetail';
@@ -34,27 +36,7 @@ import AdminTeachersDetailPage from './pages/Teachers/AdminTeachersDetailPage';
 import AdminTeachersCreatePage from './pages/Teachers/AdminTeachersCreatePage';
 import AdminTeachersEditPage from './pages/Teachers/AdminTeachersEditPage';
 
-
-// 아직 없는 파일은 import 에러가 날 수 있으니 주석 처리하거나 빈 파일 생성 필요
-// import AdminDashboardPage from './pages/AdminDashboardPage'; 
-// import AdminMemberPage from './pages/AdminMemberPage';
-// import AdminCenterPage from './pages/AdminCenterPage';
-
 function App() {
-  /*
-  useEffect(() => {
-    // Load Bootstrap JS
-    const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js';
-    script.async = true;
-    document.body.appendChild(script);
-
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, []);
-  */
-
   return (
     <Router>
       <Routes>
@@ -72,6 +54,7 @@ function App() {
 
           {/* 이미 만드신 페이지들 */}
           <Route path="/trades" element={<AdminTradePage />} />
+          <Route path="/markets" element={<AdminMarketPostPage />} />
           <Route path="/reservations" element={<AdminReservationPage />} />
           <Route path="/tickets" element={<AdminTicketPage />} />
           <Route path="/products" element={<AdminPassProductPage />} />

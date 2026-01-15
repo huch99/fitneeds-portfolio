@@ -44,8 +44,8 @@ function LoginModal({ isOpen, onClose, onOpenRegister }) {
             <div className="modal-overlay" onClick={onClose}></div>
 
             {/* 모달 콘텐츠 */}
-            <div className="modal-content">
-                <h2 style={{ marginBottom: '20px', color: 'black' }}>로그인</h2>
+            <div className="modal-content-2">
+                <h2 style={{ marginBottom: '20px', color: 'black', fontWeight: 'bold' }}>로그인</h2>
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     {/* <input
                         type="text"

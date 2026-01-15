@@ -27,7 +27,7 @@ function LoginModal({ isOpen, onClose, onOpenRegister }) {
 
             {/* 모달 콘텐츠 */}
             <div className="modal-content-3">
-                <h2 style={{ marginBottom: '20px', color: 'black' }}>개인정보 사용 및 수신 동의</h2>
+                <h2 style={{ marginBottom: '20px', color: 'black', fontWeight: 'bold' }}>개인정보 사용 및 수신 동의</h2>
                 <div onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     <div style={{ textAlign: 'left', maxHeight: '400px', overflowY: 'auto', marginBottom: '20px' }}>
                         <p>
