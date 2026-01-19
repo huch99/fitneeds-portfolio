@@ -1,18 +1,32 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useState } from 'react';
-import '../styles/Admin.css';
+import '../styles/AdminNavigation.css'; // ✅ 전용 CSS 임포트
 import LoginButtonAndModal from './auth/LoginButtonAndModal';
 
 const AdminLayout = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [openMenus, setOpenMenus] = useState({});
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // ✅ 변경점: 2depth 메뉴 구조
+  // ✅ 2depth 메뉴 구조
   const menus = [
-    { name: '대시보드', path: '/dashboard' },
-    { name: '회원 관리', path: '/users' },
-    { name: '관리자 관리', path: '/usersAdmin' },
+    { 
+      name: '회원 관리', 
+      children: [
+        { name: '회원 관리', path: '/users' },
+        { name: '관리자 관리', path: '/usersAdmin' },
+      ]
+    },
+    { name: '스포츠 정보 관리', path: '/sports' },
+    { 
+      name: '시설/관리', 
+      children: [
+        { name: '지점 관리', path: '/branches' },
+        { name: '강사 관리', path: '/teachers' },
+        { name: '스케줄 관리', path: '/schedules' },
+      ]
+    },
     { name: '예약 관리', path: '/reservations' },
     { name: '출결 관리', path: '/attendance' },
     { 
@@ -30,13 +44,15 @@ const AdminLayout = ({ children }) => {
         { name: '이용권 상품 관리', path: '/products' },
       ]
     },
-    { name: '지점 관리', path: '/branches' },
-    { name: '강사 관리', path: '/teachers' },
-    { name: '스케줄 관리', path: '/schedules' },
     { name: '결제 관리', path: '/payment' },
-    { name: '커뮤니티 관리', path: '/community' },
-    { name: 'FAQ 관리', path: '/AdminFaqPage' },
-    { name: '공지사항 관리', path: '/notice' },
+    { 
+      name: '커뮤니티', 
+      children: [
+        { name: '커뮤니티 관리', path: '/community' },
+        { name: 'FAQ 관리', path: '/AdminFaqPage' },
+        { name: '공지사항 관리', path: '/notice' },
+      ]
+    },
   ];
 
   const toggleMenu = (menuName) => {
@@ -56,17 +72,22 @@ const AdminLayout = ({ children }) => {
     return false;
   };
 
+  const handleMenuClick = (path) => {
+    navigate(path);
+    setMobileMenuOpen(false);
+  };
+
   return (
     <div className="admin-layout">
       <div className="sidebar">
         <h3>관리자 시스템</h3>
 
-        {/* 오른쪽: 로그인/로그아웃 버튼 */}
+        {/* 로그인/로그아웃 버튼 */}
         <div style={{ flex: 1, textAlign: 'right' }}>
           <LoginButtonAndModal />
         </div>
 
-        <ul>
+        <ul className={mobileMenuOpen ? 'mobile-open' : ''}>
           {menus.map((menu) => (
             <li key={menu.name}>
               {menu.children ? (
@@ -74,20 +95,38 @@ const AdminLayout = ({ children }) => {
                   <div
                     className={`menu-item ${isActiveMenu(menu) ? 'active' : ''}`}
                     onClick={() => toggleMenu(menu.name)}
-                    style={{ cursor: 'pointer', fontWeight: 'bold' }}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        toggleMenu(menu.name);
+                      }
+                    }}
                   >
-                    {menu.name} {openMenus[menu.name] ? '▼' : '▶'}
+                    <span>{menu.name}</span>
+                    <span style={{ fontSize: '12px', marginLeft: '8px' }}>
+                      {openMenus[menu.name] ? '▼' : '▶'}
+                    </span>
                   </div>
                   {openMenus[menu.name] && (
-                    <ul style={{ paddingLeft: '20px', marginTop: '5px' }}>
+                    <ul>
                       {menu.children.map((child) => (
                         <li
                           key={child.path}
                           className={location.pathname === child.path ? 'active' : ''}
-                          onClick={() => navigate(child.path)}
-                          style={{ cursor: 'pointer', padding: '8px 0' }}
                         >
-                          {child.name}
+                          <div
+                            onClick={() => handleMenuClick(child.path)}
+                            role="button"
+                            tabIndex={0}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                handleMenuClick(child.path);
+                              }
+                            }}
+                          >
+                            {' ' + child.name}
+                          </div>
                         </li>
                       ))}
                     </ul>
@@ -96,8 +135,14 @@ const AdminLayout = ({ children }) => {
               ) : (
                 <div
                   className={location.pathname === menu.path ? 'active' : ''}
-                  onClick={() => navigate(menu.path)}
-                  style={{ cursor: 'pointer' }}
+                  onClick={() => handleMenuClick(menu.path)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleMenuClick(menu.path);
+                    }
+                  }}
                 >
                   {menu.name}
                 </div>
@@ -105,13 +150,6 @@ const AdminLayout = ({ children }) => {
             </li>
           ))}
         </ul>
-
-        {/* <div style={{ marginTop: '50px', textAlign: 'center' }}>
-          <button onClick={() => navigate('/')} style={{ background: 'transparent', color: '#ccc', border: '1px solid #ccc' }}>
-            로그아웃
-          </button>
-        </div> */}
-
       </div>
       <div className="main">
         {children}

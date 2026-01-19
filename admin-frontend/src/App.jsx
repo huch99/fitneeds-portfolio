@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
-import './styles/Admin.css';
+import './styles/AdminNavigation.css'; // ✅ 네비게이션 CSS만 임포트
+import './styles/Admin.css'; // ⚠️ 다른 팀원이 관리 중
 
 // Pages
 import AdminLayout from './components/AdminLayout';
@@ -37,24 +38,25 @@ import AdminTeachersListPage from './pages/Teachers/AdminTeachersListPage';
 import AdminTeachersDetailPage from './pages/Teachers/AdminTeachersDetailPage';
 import AdminTeachersCreatePage from './pages/Teachers/AdminTeachersCreatePage';
 import AdminTeachersEditPage from './pages/Teachers/AdminTeachersEditPage';
+// Sports page
+import AdminSportTypes from './pages/SportType/AdminSportType';
 
 function App() {
   return (
     <Router>
       <Routes>
-        {/* 1. 로그인 페이지 (레이아웃 없음) */}
+        {/* 로그인 페이지 (레이아웃 없음) */}
         <Route path="/" element={<AdminLayout />} />
 
-        {/* 2. 관리자 레이아웃 적용 그룹 */}
-        {/* AdminLayout을 공통 부모로 사용합니다. */}
+        {/* 관리자 레이아웃 적용 그룹 */}
         <Route element={<LayoutWrapper />}>
-          <Route path="/dashboard" element={<div className="p-4">대시보드(준비중)</div>} />
-          <Route path="/Usersadmin" element={<UsersAdminPage />} />
+                   {/* 회원 관리 */}
           <Route path="/users" element={<UserPage />} />
+          <Route path="/usersAdmin" element={<UsersAdminPage />} />
           <Route path="/centers" element={<CenterInfo />} />
           <Route path="/centers/:branchId" element={<CenterInfo />} />
 
-          {/* 이미 만드신 페이지들 */}
+          {/* 이미 만든 페이지들 */}
           <Route path="/marketstats" element={<MarketStatsPage />} />
           <Route path="/trades" element={<AdminTradePage />} />
           <Route path="/markets" element={<AdminMarketPostPage />} />
@@ -65,7 +67,7 @@ function App() {
 
           {/* FAQ */}
           <Route path="/AdminFaqPage" element={<AdminFaqPage />} />
-          {/*  커뮤니티 */}
+          {/* 커뮤니티 */}
           <Route path="/community" element={<AdminCommunityPage />} />
           <Route path="/community/detail/:id" element={<AdminCommunityDetailPage />} />
           {/* 공지사항 */}
@@ -78,30 +80,32 @@ function App() {
           <Route path="/branches/new" element={<BranchRegister />} />
           <Route path="/branches/:branchId" element={<BranchDetail />} />
           <Route path="/branches/:branchId/edit" element={<BranchForm />} />
+          
           {/* 강사 관리 */}
           <Route path="/teachers" element={<AdminTeachersListPage />} />
           <Route path="/teachers/new" element={<AdminTeachersCreatePage />} />
           <Route path="/teachers/:userId" element={<AdminTeachersDetailPage />} />
           <Route path="/teachers/:userId/edit" element={<AdminTeachersEditPage />} />
 
-
-
           {/* 스케줄 관리 */}
           <Route path="/schedules" element={<AdminSchedulePage />} />
+
+          {/* 스포츠 관리 */}
+          <Route path="/sports" element={<AdminSportTypes/>} />
+          
 
           {/* 결제 관리 */}
           <Route path="/payment" element={<PaymentManagement />} />
 
           {/* 출결관리 */}
           <Route path="/attendance" element={<AdminAttendancePage />} />
-
         </Route>
       </Routes>
     </Router>
   );
 }
 
-// [Tip] LayoutWrapper: AdminLayout 안에 <Outlet />을 넣어 자식 라우트를 렌더링하게 해줍니다.
+// LayoutWrapper: AdminLayout 안에 <Outlet />을 넣어 자식 라우트를 렌더링
 function LayoutWrapper() {
   return (
     <AdminLayout>
@@ -111,4 +115,3 @@ function LayoutWrapper() {
 }
 
 export default App;
-
