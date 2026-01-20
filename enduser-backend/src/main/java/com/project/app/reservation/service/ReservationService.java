@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.project.app.branch.entity.Branch;
 import com.project.app.reservation.dto.MyReservationResponseDto;
 import com.project.app.reservation.dto.PastHistoryResponseDto;
+import com.project.app.reservation.entity.AttendanceStatus;
 import com.project.app.reservation.entity.Reservation;
 import com.project.app.reservation.entity.RsvSttsCd;
 import com.project.app.reservation.repository.ReservationRepository;
@@ -52,7 +53,9 @@ public class ReservationService {
                 .rsvDt(rsvDt)
                 .rsvTime(rsvTime)
                 .sttsCd(RsvSttsCd.CONFIRMED)
-                .updID(user.getUserId())
+                .attendanceStatus(AttendanceStatus.UNCHECKED)
+                .reviewWritten(true)
+//                .updId(user.getUserId())
                 .build();
 
         return reservationRepository.save(reservation);
@@ -121,7 +124,7 @@ public class ReservationService {
 
             // CONFIRMED → COMPLETED 상태 변경 (삭제 대신)
             r.complete();
-            r.setUpdID(batchUser);
+            r.setUpdId(batchUser);
             reservationRepository.save(r);
         }
         return targets.size();
