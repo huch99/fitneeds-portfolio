@@ -74,7 +74,7 @@ public class Reservation extends BaseTimeEntity {
 	private String cnclRsn;
 
 	@Column(name = "upd_id", nullable = true)
-	private String updID;
+	private String updId;
 
 //	@ColumnDefault("0")
 //	@Column(name = "review_written", nullable = false, columnDefinition = "TINYINT(0)")
@@ -104,7 +104,7 @@ public class Reservation extends BaseTimeEntity {
 		if (this.sttsCd == RsvSttsCd.CONFIRMED) { // 확정 상태일 때만 취소 가능
 			this.sttsCd = RsvSttsCd.CANCELED;
 			this.cnclRsn = reason;
-			this.updID = updId;
+//			this.updId = updId;
 			// updDt는 @LastModifiedDate에 의해 자동으로 업데이트 됩니다.
 		} else {
 			throw new IllegalStateException("확정 상태가 아니므로 예약을 취소할 수 없습니다.");

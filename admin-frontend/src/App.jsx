@@ -40,6 +40,9 @@ import AdminTeachersCreatePage from './pages/Teachers/AdminTeachersCreatePage';
 import AdminTeachersEditPage from './pages/Teachers/AdminTeachersEditPage';
 // Sports page
 import AdminSportTypes from './pages/SportType/AdminSportType';
+// Myclass page
+import AdminMyClassDetailPage from "@/pages/Myclass/AdminMyClassDetailPage.jsx";
+import AdminMyClassListPage from "@/pages/Myclass/AdminMyClassClassListPage.jsx";
 
 function App() {
   return (
@@ -80,12 +83,17 @@ function App() {
           <Route path="/branches/new" element={<BranchRegister />} />
           <Route path="/branches/:branchId" element={<BranchDetail />} />
           <Route path="/branches/:branchId/edit" element={<BranchForm />} />
-          
+
           {/* 강사 관리 */}
           <Route path="/teachers" element={<AdminTeachersListPage />} />
           <Route path="/teachers/new" element={<AdminTeachersCreatePage />} />
           <Route path="/teachers/:userId" element={<AdminTeachersDetailPage />} />
           <Route path="/teachers/:userId/edit" element={<AdminTeachersEditPage />} />
+
+          {/* 내 수업 관리 */}
+          <Route path="/myclass" element={<AdminMyClassListPage />} />
+          <Route path="/myclass/schedules/:schdId" element={<AdminMyClassDetailPage />} />
+
 
           {/* 스케줄 관리 */}
           <Route path="/schedules" element={<AdminSchedulePage />} />

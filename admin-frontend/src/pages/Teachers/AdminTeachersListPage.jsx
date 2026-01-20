@@ -224,7 +224,7 @@ export default function AdminTeachersListPage() {
                     <h2 className="teachers-title">강사 목록</h2>
                 </div>
 
-                <button className="btn-register" onClick={() => navigate("/teachers/new")}>
+                <button className="btn-primary" onClick={() => navigate("/teachers/new")}>
                     강사 등록
                 </button>
             </div>

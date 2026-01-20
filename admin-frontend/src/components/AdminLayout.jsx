@@ -44,6 +44,10 @@ const AdminLayout = ({ children }) => {
         { name: '이용권 상품 관리', path: '/products' },
       ]
     },
+    { name: '지점 관리', path: '/branches' },
+    { name: '강사 관리', path: '/teachers' },
+    { name: '내 수업 관리', path: '/myclass' },
+    { name: '스케줄 관리', path: '/schedules' },
     { name: '결제 관리', path: '/payment' },
     { 
       name: '커뮤니티', 
