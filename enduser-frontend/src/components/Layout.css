@@ -1,10 +1,18 @@
 /* Layout component specific styles */
 
-.layout-wrapper {
+/* .layout-wrapper {
   display: block;
   min-height: 100vh;
   overflow-x: hidden;
+} */
+
+.layout-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
+
 
 /* Ensure Navigation is always on top and consistent across all pages */
 .layout-wrapper > nav {
