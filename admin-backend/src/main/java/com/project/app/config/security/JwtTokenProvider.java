@@ -33,7 +33,9 @@ public class JwtTokenProvider {
 
     private Key secretKey;
 
-    private final long tokenValidTime = 30 * 60 * 1000L;
+//    private final long tokenValidTime = 30 * 60 * 1000L; //30분
+    
+    private final long tokenValidTime = 10 * 60 * 60 * 1000L; //10시간
 
     private final UserDetailsService userDetailsService;
 

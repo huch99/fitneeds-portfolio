@@ -11,46 +11,46 @@ const AdminLayout = ({ children }) => {
 
   // ✅ 2depth 메뉴 구조
   const menus = [
-    { 
-      name: '회원 관리', 
+    {
+      name: '회원 관리',
       children: [
         { name: '회원 관리', path: '/users' },
         { name: '관리자 관리', path: '/usersAdmin' },
       ]
     },
     { name: '스포츠 정보 관리', path: '/sports' },
-    { 
-      name: '시설/관리', 
+    {
+      name: '시설/관리',
       children: [
         { name: '지점 관리', path: '/branches' },
-        { name: '강사 관리', path: '/teachers' },
+        // { name: '강사 관리', path: '/teachers' },
         { name: '스케줄 관리', path: '/schedules' },
       ]
     },
     { name: '예약 관리', path: '/reservations' },
     { name: '출결 관리', path: '/attendance' },
-    { 
-      name: '이용권 거래', 
+    {
+      name: '이용권 거래',
       children: [
         { name: '이용권 거래 통계', path: '/marketstats' },
         { name: '이용권 거래 관리', path: '/trades' },
         { name: '이용권 거래 게시판 관리', path: '/markets' },
       ]
     },
-    { 
-      name: '이용권', 
+    {
+      name: '이용권',
       children: [
         { name: '이용권 관리', path: '/tickets' },
         { name: '이용권 상품 관리', path: '/products' },
       ]
     },
-    { name: '지점 관리', path: '/branches' },
+    // { name: '지점 관리', path: '/branches' },
     { name: '강사 관리', path: '/teachers' },
     { name: '내 수업 관리', path: '/myclass' },
-    { name: '스케줄 관리', path: '/schedules' },
+    // { name: '스케줄 관리', path: '/schedules' },
     { name: '결제 관리', path: '/payment' },
-    { 
-      name: '커뮤니티', 
+    {
+      name: '커뮤니티',
       children: [
         { name: '커뮤니티 관리', path: '/community' },
         { name: 'FAQ 관리', path: '/AdminFaqPage' },
