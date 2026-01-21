@@ -38,8 +38,9 @@ export default function AdminHomePage() {
             {
                 title: "이용권 거래 관리",
                 items: [
-                    { label: "이용권 거래 내역", path: "/trades", desc: "이용권 거래 내역" },
-                    { label: "이용권 거래 게시판 관리", path: "/markets", desc: "이용권 거래 게시물 관리" },
+                    { label: "이용권 거래 내역", path: "/trades", desc: "회원간 이용권 거래 내역" },
+                    { label: "이용권 거래 통계", path: "/marketstats", desc: "회원간 이용권 거래 통계" },
+                    { label: "이용권 거래 게시판 관리", path: "/markets", desc: "회원 이용권 매매 게시물 관리" },
                 ],
             },
             {
@@ -58,7 +59,7 @@ export default function AdminHomePage() {
             },            {
                 title: "강사 관리",
                 items: [
-                    { label: "내 수업 목록", path: "/myclass", desc: "강사가 본인의 수업을 관리합니다" },
+                    { label: "내 수업 관리", path: "/myclass", desc: "강사가 본인의 수업을 관리합니다" },
                     // { label: "출석관리", path: "/attendance", desc: "내 수업 리스트" },
                 ],
             },
