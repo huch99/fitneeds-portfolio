@@ -52,13 +52,13 @@ public class TeacherService {
         }
 
         Long effectiveBranchId = requestedBranchId;
-        if ("BRANCH_ADMIN".equals(role)) {
+        if ("MANAGER".equals(role)) {
             if (requester.getBrchId() == null) {
-                throw new IllegalStateException("BRANCH_ADMIN has no brchId");
+                throw new IllegalStateException("MANAGER has no brchId");
             }
             effectiveBranchId = requester.getBrchId();
         }
-        // SYSTEM_ADMIN: requestedBranchId 그대로 사용
+        // ADMIN: requestedBranchId 그대로 사용
 
         List<TeacherProfile> profiles;
         if (sportId != null) {
@@ -97,9 +97,9 @@ public class TeacherService {
         // TEACHER 생성 금지
         if ("TEACHER".equals(role)) throw new AccessDeniedException("TEACHER cannot create teachers");
 
-        // BRANCH_ADMIN은 본인 지점으로만 생성
-        if ("BRANCH_ADMIN".equals(role)) {
-            if (requester.getBrchId() == null) throw new IllegalStateException("BRANCH_ADMIN has no brchId");
+        // MANAGER은 본인 지점으로만 생성
+        if ("MANAGER".equals(role)) {
+            if (requester.getBrchId() == null) throw new IllegalStateException("MANAGER has no brchId");
             if (req.brchId() == null) {
                 req = new TeacherDto.CreateReq(
                         req.userId(),
@@ -117,7 +117,7 @@ public class TeacherService {
                         req.careers()
                 );
             } else if (!Objects.equals(req.brchId(), requester.getBrchId())) {
-                throw new AccessDeniedException("BRANCH_ADMIN can only create teachers in own branch");
+                throw new AccessDeniedException("MANAGER can only create teachers in own branch");
             }
         }
 
@@ -317,12 +317,12 @@ public class TeacherService {
     }
 
     private void enforceAccessToTarget(String role, UserAdmin requester, TeacherProfile targetProfile) {
-        if ("SYSTEM_ADMIN".equals(role)) return;
+        if ("ADMIN".equals(role)) return;
 
-        if ("BRANCH_ADMIN".equals(role)) {
-            if (requester.getBrchId() == null) throw new IllegalStateException("BRANCH_ADMIN has no brchId");
+        if ("MANAGER".equals(role)) {
+            if (requester.getBrchId() == null) throw new IllegalStateException("MANAGER has no brchId");
             if (!Objects.equals(requester.getBrchId(), targetProfile.getBrchId())) {
-                throw new AccessDeniedException("BRANCH_ADMIN can only manage own branch teachers");
+                throw new AccessDeniedException("MANAGER can only manage own branch teachers");
             }
             return;
         }

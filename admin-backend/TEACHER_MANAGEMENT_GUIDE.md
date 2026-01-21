@@ -73,7 +73,7 @@ CREATE TABLE USERS_ADMIN (
     email        VARCHAR(255) NOT NULL UNIQUE COMMENT '사용자 이메일',
     password     VARCHAR(255) NOT NULL COMMENT '암호화된 비밀번호',
     phone_number VARCHAR(20)  NULL     COMMENT '전화번호',
-    role         VARCHAR(50)  NOT NULL DEFAULT 'USER' COMMENT '권한(SYSTEM_ADMIN, BRANCH_ADMIN, TEACHER)',
+    role         VARCHAR(50)  NOT NULL DEFAULT 'USER' COMMENT '권한(ADMIN, MANAGER, TEACHER)',
     brch_id      BIGINT       NULL     COMMENT '지점ID',
     is_active    TINYINT(1)   NOT NULL DEFAULT 1 COMMENT '활성화 여부',
     agree_at     TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '개인정보 동의 시각',
@@ -665,8 +665,8 @@ public class TeacherController {
 - 진행 예정 스케줄이 있으면 퇴직 불가 또는 재배정
 
 ### 5. 권한 관리
-- SYSTEM_ADMIN: 모든 강사 관리
-- BRANCH_ADMIN: 자기 지점 강사만 관리
+- ADMIN 관리
+- MANAGER: 자기 지점 강사만 관리
 - TEACHER: 본인 정보만 조회/수정
 
 ---
