@@ -19,7 +19,7 @@
             c.comment_id    AS commentId,
             c.post_id       AS postId,
             c.writer_id     AS writerId,
-            u.user_name     AS writerName,   <!-- 🔥 핵심 -->
+            COALESCE(u.user_name, '탈퇴한 회원') AS writerName,
             c.writer_type   AS writerType,
             c.content,
             c.created_at    AS createdAt
