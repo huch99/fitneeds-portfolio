@@ -206,7 +206,7 @@ export default function SportTypeList() {
 
                         {/* ✅ 초기화 */}
                         <button
-                            className="btn-sm"
+                            className="btn-secondary"
                             type="button"
                             onClick={() => {
                                 setKeyword("");
@@ -215,11 +215,11 @@ export default function SportTypeList() {
                         >
                             초기화
                         </button>
+                        {/* ✅ 등록 버튼 → 모달 오픈 */}
+                        <button className="btn btn-register btn-primary" onClick={openCreateModal}>
+                            + 새 운동 종목 등록
+                        </button>
                     </div>
-                    {/* ✅ 등록 버튼 → 모달 오픈 */}
-                    <button className="btn btn-register" onClick={openCreateModal}>
-                        + 새 운동 종목 등록
-                    </button>
                 </div>
 
                 {loading && <div style={{ padding: 10 }}>불러오는 중...</div>}
@@ -260,8 +260,8 @@ export default function SportTypeList() {
                                 <td>{it.regDt ?? "-"}</td>
                                 <td>{it.updDt ?? "-"}</td>
                                 <td>
-                                    <button className="btn-sm" onClick={() => openEditModal(it)}>수정</button>{" "}
-                                    <button className="btn-sm"
+                                    <button className="btn-link" onClick={() => openEditModal(it)}>수정</button>{" "}
+                                    <button className="btn-link"
                                             disabled={it.useYn === false || it.useYn === 0}
                                             onClick={() => deactivateSportType(it)}>
                                         비활성화

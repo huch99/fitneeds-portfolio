@@ -18,7 +18,7 @@ const AdminLayout = ({ children }) => {
         { name: '관리자 관리', path: '/usersAdmin' },
       ]
     },
-    { name: '스포츠 정보 관리', path: '/sports' },
+    { name: '운동 종목 관리', path: '/sports' },
     {
       name: '시설/관리',
       children: [

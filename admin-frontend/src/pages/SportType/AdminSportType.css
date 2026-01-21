@@ -1,11 +1,14 @@
 @charset 'UTF-8';
 
-.toolbar-left {
+.toolbar-left > .input {
     margin-right: 5px;
 }
 
 .toolbar {
+    height: 40px;
     position: relative;
+    display:flex;
+    align-items: center;
 }
 
 .btn-register {
@@ -49,4 +52,8 @@
     display:block;
     margin: 0 10px 0 0;
     text-align: center;
+}
+
+.page-desc {
+    padding: 10px 0;
 }
