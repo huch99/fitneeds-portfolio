@@ -54,9 +54,20 @@
     padding: 0;
 }
 
-/* ==========================================
-   메뉴 아이템 스타일
-   ========================================== */
+.menu-item-arrow {
+    font-size: 12px;
+    position:absolute;
+    top: 13px;
+    right: 5px;
+}
+
+.menu-item {
+    position:relative;
+}
+
+    /* ==========================================
+       메뉴 아이템 스타일
+       ========================================== */
 .sidebar .menu-item {
     display: flex;
     align-items: center;
