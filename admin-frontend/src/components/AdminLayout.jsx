@@ -28,7 +28,7 @@ const AdminLayout = ({ children }) => {
       ]
     },
     { name: '예약 관리', path: '/reservations' },
-    { name: '출결 관리', path: '/attendance' },
+    // { name: '출결 관리', path: '/attendance' },
     {
       name: '이용권 거래',
       children: [
