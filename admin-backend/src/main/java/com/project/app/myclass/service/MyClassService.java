@@ -31,10 +31,10 @@ public class MyClassService {
         // 권한 강제
         if ("TEACHER".equals(role)) {
             q.setTeacherId(requesterId);
-        } else if ("BRANCH_ADMIN".equals(role)) {
-            if (requester.getBrchId() == null) throw new IllegalStateException("BRANCH_ADMIN has no brchId");
+        } else if ("MANAGER".equals(role)) {
+            if (requester.getBrchId() == null) throw new IllegalStateException("MANAGER has no brchId");
             q.setBrchId(requester.getBrchId());
-        } else if (!"SYSTEM_ADMIN".equals(role)) {
+        } else if (!"ADMIN".equals(role)) {
             throw new AccessDeniedException("Unknown role: " + role);
         }
 
@@ -86,12 +86,12 @@ public class MyClassService {
     }
 
     private void enforceAccess(String role, UserAdmin requester, MyClassScheduleRow schedule) {
-        if ("SYSTEM_ADMIN".equals(role)) return;
+        if ("ADMIN".equals(role)) return;
 
-        if ("BRANCH_ADMIN".equals(role)) {
-            if (requester.getBrchId() == null) throw new IllegalStateException("BRANCH_ADMIN has no brchId");
+        if ("MANAGER".equals(role)) {
+            if (requester.getBrchId() == null) throw new IllegalStateException("MANAGER has no brchId");
             if (!Objects.equals(requester.getBrchId(), schedule.getBrchId())) {
-                throw new AccessDeniedException("BRANCH_ADMIN can only access own branch schedules");
+                throw new AccessDeniedException("MANAGER can only access own branch schedules");
             }
             return;
         }

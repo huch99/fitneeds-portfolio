@@ -3,6 +3,8 @@ import './styles/AdminNavigation.css'; // ✅ 네비게이션 CSS만 임포트
 import './styles/Admin.css'; // ⚠️ 다른 팀원이 관리 중
 
 // Pages
+import HomeAdmin from './pages/home-admin/HomeAdmin';
+
 import AdminLayout from './components/AdminLayout';
 import PassUsageStatsPage from './pages/pass/PassUsageStatsPage';
 import AdminTicketPage from './pages/pass/AdminTicketPage';
@@ -53,7 +55,10 @@ function App() {
 
         {/* 관리자 레이아웃 적용 그룹 */}
         <Route element={<LayoutWrapper />}>
-                   {/* 회원 관리 */}
+          {/* 메인 화면 (사이트맵) */}
+          <Route index element={<HomeAdmin />} />
+
+          {/* 회원 관리 */}
           <Route path="/users" element={<UserPage />} />
           <Route path="/usersAdmin" element={<UsersAdminPage />} />
           <Route path="/centers" element={<CenterInfo />} />
@@ -106,7 +111,7 @@ function App() {
           <Route path="/payment" element={<PaymentManagement />} />
 
           {/* 출결관리 */}
-          <Route path="/attendance" element={<AdminAttendancePage />} />
+          {/*<Route path="/attendance" element={<AdminAttendancePage />} />*/}
         </Route>
       </Routes>
     </Router>

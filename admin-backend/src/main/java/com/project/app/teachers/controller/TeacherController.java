@@ -70,7 +70,7 @@ public class TeacherController {
 
     /**
      * POST /api/teachers/new
-     * - SYSTEM_ADMIN / BRANCH_ADMIN만 허용 (TEACHER 금지)
+     * - ADMIN / MANAGER만 허용 (TEACHER 금지)
      */
     @PostMapping("/new")
     public ResponseEntity<TeacherDto.Resp> create(Authentication authentication, @RequestBody @Valid TeacherDto.CreateReq req) {
@@ -88,8 +88,8 @@ public class TeacherController {
 
     /**
      * PUT /api/teachers/{userId}
-     * - SYSTEM_ADMIN: 전체
-     * - BRANCH_ADMIN: 자기 지점 강사만
+     * - ADMIN: 전체
+     * - MANAGER: 자기 지점 강사만
      * - TEACHER: 본인만 (단, brchId 변경 금지)
      */
     @PutMapping("/{userId}")
@@ -114,7 +114,7 @@ public class TeacherController {
 
     /**
      * PATCH /api/teachers/{userId}/retire
-     * - SYSTEM_ADMIN / BRANCH_ADMIN만 허용 (TEACHER 금지)
+     * - ADMIN / MANAGER만 허용 (TEACHER 금지)
      * - stts_cd='RETIRED', leave_dt/leave_rsn, is_active=0 (guide)
      * - 퇴사 처리 전용 (다른 상태변경은 안됌)
      */

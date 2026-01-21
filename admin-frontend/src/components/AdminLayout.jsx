@@ -16,39 +16,39 @@ const AdminLayout = ({ children }) => {
       children: [
         { name: '회원 관리', path: '/users' },
         { name: '관리자 관리', path: '/usersAdmin' },
+        { name: '강사 관리', path: '/teachers' },
       ]
     },
-    { name: '스포츠 정보 관리', path: '/sports' },
+    { name: '운동 종목 관리', path: '/sports' },
     {
-      name: '시설/관리',
+      name: '센터(지점) 관리',
       children: [
-        { name: '지점 관리', path: '/branches' },
-        // { name: '강사 관리', path: '/teachers' },
-        { name: '스케줄 관리', path: '/schedules' },
+        { name: '센터 관리', path: '/branches' },
+        { name: '센터 스케줄 관리', path: '/schedules' },
       ]
     },
     { name: '예약 관리', path: '/reservations' },
-    { name: '출결 관리', path: '/attendance' },
+    // { name: '출결 관리', path: '/attendance' },
     {
-      name: '이용권 거래',
+      name: '이용권 거래 관리',
       children: [
-        { name: '이용권 거래 통계', path: '/marketstats' },
         { name: '이용권 거래 관리', path: '/trades' },
+        { name: '이용권 거래 통계', path: '/marketstats' },
         { name: '이용권 거래 게시판 관리', path: '/markets' },
       ]
     },
     {
-      name: '이용권',
+      name: '이용권 관리',
       children: [
         { name: '이용권 관리', path: '/tickets' },
+        { name: '이용권 이용 통계', path: '/ticketstats' },
         { name: '이용권 상품 관리', path: '/products' },
       ]
     },
     // { name: '지점 관리', path: '/branches' },
-    { name: '강사 관리', path: '/teachers' },
+    { name: '결제 관리', path: '/payment' },
     { name: '내 수업 관리', path: '/myclass' },
     // { name: '스케줄 관리', path: '/schedules' },
-    { name: '결제 관리', path: '/payment' },
     {
       name: '커뮤니티',
       children: [
@@ -84,7 +84,17 @@ const AdminLayout = ({ children }) => {
   return (
     <div className="admin-layout">
       <div className="sidebar">
-        <h3>관리자 시스템</h3>
+        <h3
+            style={{ textAlign: 'center', cursor:'pointer' }}
+            onClick={() => handleMenuClick('/')}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    handleMenuClick('/');
+                }
+            }}
+        >관리자 시스템</h3>
 
         {/* 로그인/로그아웃 버튼 */}
         <div style={{ flex: 1, textAlign: 'right' }}>
@@ -108,7 +118,7 @@ const AdminLayout = ({ children }) => {
                     }}
                   >
                     <span>{menu.name}</span>
-                    <span style={{ fontSize: '12px', marginLeft: '8px' }}>
+                    <span className={'menu-item-arrow'}>
                       {openMenus[menu.name] ? '▼' : '▶'}
                     </span>
                   </div>
