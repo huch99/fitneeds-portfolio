@@ -86,17 +86,17 @@ function AdminCommunityPage() {
 
   // ROLE 권한 체크해서, 출력하는 문
   if (role === "TEACHER") {
-  return (
-    <div style={{ padding: "40px", textAlign: "center" }}>
-      <h2>권한이 없습니다.</h2>
-      <p style={{ marginTop: "10px", color: "#666" }}>
-        해당 페이지에 접근할 수 있는 권한이 없습니다.
-      </p>
-    </div>
-  );
-}
+    return (
+      <div style={{ padding: "40px", textAlign: "center" }}>
+        <h2>권한이 없습니다.</h2>
+        <p style={{ marginTop: "10px", color: "#666" }}>
+          해당 페이지에 접근할 수 있는 권한이 없습니다.
+        </p>
+      </div>
+    );
+  }
 
-  
+
   return (
     <div>
       <h1>커뮤니티 관리</h1>
@@ -166,7 +166,7 @@ function AdminCommunityPage() {
                 </Link>
               </td>
 
-              <td>{p.writerId}</td>
+              <td>{p.writerEmail}</td>
               <td>{p.views}</td>
 
               <td>

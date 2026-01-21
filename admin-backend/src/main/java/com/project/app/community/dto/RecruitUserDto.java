@@ -4,7 +4,9 @@ import lombok.Data;
 
 @Data
 public class RecruitUserDto {
-
-    private Long userId;
-    private String userName;
+	
+	private Long joinId;
+    private String userId;
+	private String userName;
+	private String userEmail;
 }

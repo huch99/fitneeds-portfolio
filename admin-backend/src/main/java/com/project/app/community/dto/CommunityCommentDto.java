@@ -14,7 +14,8 @@ public class CommunityCommentDto {
      * - USER  : userId (UUID)
      * - STAFF : staffId
      */
-    private String writerId;
+//    private String writerId;
+    private String writerEmail;
 
     /**
      * 작성자 타입
@@ -27,9 +28,7 @@ public class CommunityCommentDto {
     private LocalDateTime createdAt;
 
     /**
-     * 댓글 노출 여부
-     * 1 : 노출
-     * 0 : 숨김
-     */
-    private Integer commentVisible;
+	 * 댓글 노출 여부 1 : 노출 0 : 숨김
+	 */
+	private Integer commentVisible;
 }
