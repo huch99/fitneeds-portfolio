@@ -84,7 +84,17 @@ const AdminLayout = ({ children }) => {
   return (
     <div className="admin-layout">
       <div className="sidebar">
-        <h3>관리자 시스템</h3>
+        <h3
+            style={{ textAlign: 'center', cursor:'pointer' }}
+            onClick={() => handleMenuClick('/')}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    handleMenuClick('/');
+                }
+            }}
+        >관리자 시스템</h3>
 
         {/* 로그인/로그아웃 버튼 */}
         <div style={{ flex: 1, textAlign: 'right' }}>
