@@ -206,7 +206,7 @@ export default function SportTypeList() {
 
                         {/* ✅ 초기화 */}
                         <button
-                            className="btn-secondary"
+                            className="btn-link"
                             type="button"
                             onClick={() => {
                                 setKeyword("");
@@ -288,7 +288,6 @@ export default function SportTypeList() {
                             </label>
                             <input
                                 className="input"
-                                style={{ width: "80%" }}
                                 placeholder="예: 요가"
                                 value={form.name}
                                 onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
@@ -300,8 +299,7 @@ export default function SportTypeList() {
                             <label>메모</label>
                             <textarea
                                 className="input textarea"
-                                style={{ width: "80%"}}
-                                rows={4}
+                                rows={6}
                                 placeholder="설명(선택)"
                                 value={form.memo}
                                 onChange={(e) => setForm((p) => ({ ...p, memo: e.target.value }))}
@@ -309,10 +307,9 @@ export default function SportTypeList() {
                             />
                         </div>
 
-                        <div style={{ textAlign: "center", marginTop: 20, borderTop: "1px solid #ddd", paddingTop: 20 }}>
+                        <div className="modal-form-action" style={{ textAlign: "center", marginTop: 20}}>
                             <button
                                 className="btn btn-primary"
-                                style={{ padding: "10px 40px", fontSize: 14 }}
                                 onClick={saveSportType}
                                 disabled={saving}
                             >
@@ -320,7 +317,6 @@ export default function SportTypeList() {
                             </button>{" "}
                             <button
                                 className="btn-sm"
-                                style={{ padding: "10px 40px",  fontSize: 14, background: "#999", color: "#fff", border: "none" }}
                                 onClick={closeModal}
                                 disabled={saving}
                             >

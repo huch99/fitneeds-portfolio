@@ -2,6 +2,7 @@
 
 .toolbar-left > .input {
     margin-right: 5px;
+    height: 30px;
 }
 
 .toolbar {
@@ -38,7 +39,8 @@
 
 .modal-area {
     width: 500px;
-    padding-top: 0;
+    height: 300px;
+    margin: 0;
     border: 2px solid #999;
     border-radius: 10px;
     position: absolute;
@@ -51,9 +53,34 @@
 .modal-title {
     display:block;
     margin: 0 10px 0 0;
+    padding-bottom: 15px;
     text-align: center;
+    border-bottom: 1px solid #ddd;
 }
 
 .page-desc {
     padding: 10px 0;
+}
+
+.btn-link {
+    padding: 5px;
+}
+
+.form-grid {
+    margin-top: 15px;
+    margin-bottom: 10px;
+}
+
+.form-grid > input {
+    height: 30px;
+    width: 95%;
+}
+
+.form-grid > textarea {
+    width: 95%;
+}
+
+.modal-form-action > .btn-primary, .btn-sm {
+    margin: 0;
+    padding: 5px 20px;
 }
