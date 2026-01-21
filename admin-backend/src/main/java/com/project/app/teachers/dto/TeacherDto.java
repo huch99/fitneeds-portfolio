@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 public class TeacherDto {
@@ -130,5 +131,19 @@ public class TeacherDto {
             String roleNm,
             LocalDate strtDt,
             LocalDate endDt
+    ) {}
+
+    public record AssignedScheduleResp(
+            Long schdId,
+            Long progId,
+            String progNm,
+            Long brchId,
+            String brchNm,
+            LocalDate strtDt,
+            LocalTime strtTm,
+            LocalTime endTm,
+            Integer maxNopCnt,
+            Integer rsvCnt,
+            String sttsCd
     ) {}
 }

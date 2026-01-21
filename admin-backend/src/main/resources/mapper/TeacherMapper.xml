@@ -202,4 +202,32 @@
         WHERE USER_ID = #{userId}
     </update>
 
+    <select id="findAssignedSchedulesByUserId"
+            parameterType="map"
+            resultType="com.project.app.teachers.dto.TeacherDto$AssignedScheduleResp">
+        SELECT
+        s.schd_id     AS schdId,
+        s.prog_id     AS progId,
+        p.prog_nm     AS progNm,
+        s.brch_id     AS brchId,
+        b.brch_nm     AS brchNm,
+        s.strt_dt     AS strtDt,
+        s.strt_tm     AS strtTm,
+        s.end_tm      AS endTm,
+        s.max_nop_cnt AS maxNopCnt,
+        s.rsv_cnt     AS rsvCnt,
+        s.stts_cd     AS sttsCd
+        FROM SCHEDULE s
+        INNER JOIN PROGRAM p ON p.prog_id = s.prog_id
+        INNER JOIN BRANCH  b ON b.brch_id = s.brch_id
+        WHERE s.user_id = #{userId}
+        <if test="fromDt != null and fromDt != ''">
+            AND s.strt_dt &gt;= #{fromDt}
+        </if>
+        <if test="toDt != null and toDt != ''">
+            AND s.strt_dt &lt;= #{toDt}
+        </if>
+        ORDER BY s.strt_dt DESC, s.strt_tm DESC
+    </select>
+
 </mapper>

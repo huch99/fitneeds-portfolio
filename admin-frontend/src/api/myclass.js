@@ -36,3 +36,13 @@ export async function getMySettlements(params = {}) {
     const res = await api.get("/myclass/settlements", { params });
     return res.data;
 }
+/**
+ * 강사 배정 수업 목록
+ * GET /api/myclass/settlements?month&brchId&teacherId ...
+ */
+export async function getTeacherAssignedSchedules(teacherId, params = {}) {
+    const res = await api.get("/myclass/schedules", {
+        params: { ...params, teacherId }, // teacherId=USER_ID
+    });
+    return res.data;
+}

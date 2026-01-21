@@ -1,6 +1,8 @@
 // file: src/main/java/com/project/app/teachers/controller/TeacherController.java
 package com.project.app.teachers.controller;
 
+import com.project.app.myclass.dto.MyClassDto;
+import com.project.app.myclass.dto.ScheduleListQuery;
 import com.project.app.teachers.dto.TeacherDto;
 import com.project.app.teachers.dto.TeacherStatusUpdateReq;
 import com.project.app.teachers.service.TeacherService;
@@ -64,6 +66,25 @@ public class TeacherController {
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
             log.error("Error retrieving teacher detail", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/{userId}/schedules")
+    public ResponseEntity<List<MyClassDto.ScheduleResp>> listAssignedSchedules(
+            Authentication authentication,
+            @PathVariable String userId,
+            @Valid ScheduleListQuery q
+    ) {
+        try {
+            String requesterId = requireRequester(authentication);
+            return ResponseEntity.ok(teacherService.listAssignedSchedules(requesterId, userId, q));
+        } catch (AccessDeniedException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            log.error("Error listing teacher assigned schedules", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

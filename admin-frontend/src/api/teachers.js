@@ -60,3 +60,11 @@ export async function updateTeacherStatus(userId, payload) {
     const res = await api.patch(`/teachers/${userId}/status`, payload);
     return res.data; // 204면 undefined
 }
+
+/**
+ *  강사 배정 수업 목록
+ *  */
+export async function getTeacherAssignedSchedules(userId, params = {}) {
+    const res = await api.get(`/teachers/${userId}/schedules`, { params });
+    return res.data;
+}

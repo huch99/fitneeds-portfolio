@@ -306,7 +306,7 @@ CREATE TABLE IF NOT EXISTS COMMUNITY_POST (
     display_start    DATETIME     NULL     COMMENT '공지 게시 시작일',
     display_end      DATETIME     NULL     COMMENT '공지 게시 종료일',
     is_visible       TINYINT(1)   NOT NULL DEFAULT 1 COMMENT '공지 노출 여부',
-    is_pinned		 TINYINT(1)   NOT NULL DEFAULT 0 COMMENT '상단 고정기능'
+    is_pinned		 TINYINT(1)   NOT NULL DEFAULT 0 COMMENT '상단 고정기능',
     post_visible     TINYINT(1)   NOT NULL DEFAULT 1 COMMENT '관리자 숨김 여부',
     PRIMARY KEY (post_id),
     CONSTRAINT FK_COMMUNITY_POST_BRANCH FOREIGN KEY (branch_id) REFERENCES BRANCH (brch_id)

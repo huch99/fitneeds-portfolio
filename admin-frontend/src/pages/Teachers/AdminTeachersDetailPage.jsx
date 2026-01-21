@@ -1,13 +1,14 @@
+// file: src/pages/Teachers/AdminTeachersDetailPage.jsx
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "./css/AdminTeachers.css";
-import { getTeacherDetail, retireTeacher , updateTeacherStatus } from "../../api/teachers";
+import {
+    getTeacherDetail,
+    getTeacherAssignedSchedules,
+    retireTeacher,
+    updateTeacherStatus,
+} from "../../api/teachers";
 import { ACCESS_TOKEN_KEY } from "../../store/authSlice";
-
-/**
- * 백엔드 UpdateReq에는 sttsCd가 없어서 “상태 변경”은 현재 불가.
- * (퇴사는 RetireReq로 가능)
- */
 
 function statusLabel(sttsCd) {
     switch (sttsCd) {
@@ -24,6 +25,12 @@ function statusLabel(sttsCd) {
 
 function safeArr(v) {
     return Array.isArray(v) ? v : [];
+}
+
+function fmtTime(v) {
+    if (!v) return "-";
+    if (typeof v === "string" && v.length >= 5) return v.slice(0, 5);
+    return String(v);
 }
 
 function base64UrlDecode(str) {
@@ -51,24 +58,44 @@ function getCurrentUserIdFromToken() {
 
 export default function AdminTeachersDetailPage() {
     const navigate = useNavigate();
-    const { userId } = useParams();
+    const params = useParams();
+
+    // 라우트 param 이름이 userId/teacherId 등 섞여있을 수 있어 방어
+    const targetUserId = params.userId || params.teacherId;
+
+    // 배정 수업 기간 기본: 이번 달 1일 ~ 오늘
+    const today = new Date();
+    const y = today.getFullYear();
+    const m = String(today.getMonth() + 1).padStart(2, "0");
+    const firstDay = `${y}-${m}-01`;
+
+    const [from, setFrom] = useState(firstDay);
+    const [to, setTo] = useState(new Date().toISOString().slice(0, 10));
 
     const [teacher, setTeacher] = useState(null);
-    const [loading, setLoading] = useState(false);
+    const [schedules, setSchedules] = useState([]);
+
+    const [loading, setLoading] = useState(false); // 상세 로딩
+    const [schLoading, setSchLoading] = useState(false); // 배정수업 로딩
     const [errMsg, setErrMsg] = useState("");
 
     // 퇴사 처리 입력
     const [leaveDt, setLeaveDt] = useState(() => new Date().toISOString().slice(0, 10));
     const [leaveRsn, setLeaveRsn] = useState("");
 
+    // 상태 변경
     const [nextStatus, setNextStatus] = useState("ACTIVE");
 
-    const loadDetail = async () => {
+    const loadDetailOnly = async () => {
+        if (!targetUserId) return;
+
         setLoading(true);
         setErrMsg("");
         try {
-            const data = await getTeacherDetail(userId);
+            const data = await getTeacherDetail(targetUserId);
             setTeacher(data || null);
+
+            // 상태 변경 select 초기값
             setNextStatus(data?.sttsCd || "ACTIVE");
 
             // 이미 퇴사 정보가 있으면 초기값 세팅
@@ -83,25 +110,67 @@ export default function AdminTeachersDetailPage() {
             setLoading(false);
         }
     };
-    const onChangeStatus = async () => {
-        if (!userId) return;
 
-        const ok = window.confirm(`상태를 '${nextStatus}'로 변경할까요?`);
-        if (!ok) return;
+    const loadSchedulesOnly = async () => {
+        if (!targetUserId) return;
 
+        setSchLoading(true);
+        setErrMsg("");
         try {
-            await updateTeacherStatus(userId, { sttsCd: nextStatus });
-            await loadDetail();
-            alert("상태가 변경되었습니다.");
+            const sch = await getTeacherAssignedSchedules(targetUserId, {
+                from: from || undefined,
+                to: to || undefined,
+            });
+            setSchedules(safeArr(sch));
         } catch (e) {
-            alert(e?.response?.data?.message || e?.message || "상태 변경 중 오류가 발생했습니다.");
+            setErrMsg(e?.response?.data?.message || e?.message || "배정 수업 조회 중 오류가 발생했습니다.");
+            setSchedules([]);
+        } finally {
+            setSchLoading(false);
+        }
+    };
+
+    // 초기: 상세 + 배정수업 같이 로드
+    const loadAll = async () => {
+        if (!targetUserId) return;
+
+        setLoading(true);
+        setSchLoading(true);
+        setErrMsg("");
+        try {
+            const [d, sch] = await Promise.all([
+                getTeacherDetail(targetUserId),
+                getTeacherAssignedSchedules(targetUserId, {
+                    from: from || undefined,
+                    to: to || undefined,
+                }),
+            ]);
+
+            setTeacher(d || null);
+            setSchedules(safeArr(sch));
+
+            // 상태 변경 select 초기값
+            setNextStatus(d?.sttsCd || "ACTIVE");
+
+            // 이미 퇴사 정보가 있으면 초기값 세팅
+            const serverLeaveDt = d?.leaveDt;
+            const serverLeaveRsn = d?.leaveRsn;
+            if (serverLeaveDt) setLeaveDt(serverLeaveDt);
+            if (serverLeaveRsn) setLeaveRsn(serverLeaveRsn);
+        } catch (e) {
+            setErrMsg(e?.response?.data?.message || e?.message || "강사 상세/배정수업 조회 중 오류가 발생했습니다.");
+            setTeacher(null);
+            setSchedules([]);
+        } finally {
+            setLoading(false);
+            setSchLoading(false);
         }
     };
 
     useEffect(() => {
-        loadDetail();
+        loadAll();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [userId]);
+    }, [targetUserId]);
 
     const vm = useMemo(() => {
         const t = teacher || {};
@@ -113,24 +182,41 @@ export default function AdminTeachersDetailPage() {
             .join(", ");
 
         return {
-            userId: t?.userId,
-            userName: t?.userName,
-            brchNm: t?.brchNm,
+            userId: t?.userId ?? t?.user_id ?? "-",
+            userName: t?.userName ?? t?.user_name ?? "-",
+            brchNm: t?.brchNm ?? t?.brch_nm ?? "-",
             sportsText,
-            phoneNumber: t?.phoneNumber,
-            email: t?.email,
-            hireDt: t?.hireDt,
-            sttsCd: t?.sttsCd,
-            intro: t?.intro,
-            leaveDt: t?.leaveDt,
-            leaveRsn: t?.leaveRsn,
+            phoneNumber: t?.phoneNumber ?? t?.phone_number ?? "-",
+            email: t?.email ?? "-",
+            hireDt: t?.hireDt ?? t?.hire_dt ?? "-",
+            sttsCd: t?.sttsCd ?? t?.stts_cd ?? "-",
+            intro: t?.intro ?? "",
+            leaveDt: t?.leaveDt ?? t?.leave_dt ?? "",
+            leaveRsn: t?.leaveRsn ?? t?.leave_rsn ?? "",
+            profileImgUrl: t?.profileImgUrl ?? t?.profile_img_url ?? "",
         };
     }, [teacher]);
 
     const isResigned = vm.sttsCd === "RESIGNED";
+    const isBusy = loading || schLoading;
+
+    const onChangeStatus = async () => {
+        if (!targetUserId) return;
+
+        const ok = window.confirm(`상태를 '${nextStatus}'로 변경할까요?`);
+        if (!ok) return;
+
+        try {
+            await updateTeacherStatus(targetUserId, { sttsCd: nextStatus });
+            await loadDetailOnly();
+            alert("상태가 변경되었습니다.");
+        } catch (e) {
+            alert(e?.response?.data?.message || e?.message || "상태 변경 중 오류가 발생했습니다.");
+        }
+    };
 
     const onRetire = async () => {
-        if (!userId) return;
+        if (!targetUserId) return;
 
         if (isResigned) {
             alert("이미 퇴사 처리된 강사입니다.");
@@ -159,8 +245,8 @@ export default function AdminTeachersDetailPage() {
         }
 
         try {
-            await retireTeacher(userId, { leaveDt, leaveRsn: leaveRsn.trim(), updaterId });
-            await loadDetail();
+            await retireTeacher(targetUserId, { leaveDt, leaveRsn: leaveRsn.trim(), updaterId });
+            await loadDetailOnly();
             alert("퇴사 처리되었습니다.");
         } catch (e) {
             alert(e?.response?.data?.message || e?.message || "퇴사 처리 중 오류가 발생했습니다.");
@@ -171,15 +257,19 @@ export default function AdminTeachersDetailPage() {
         <div className="teachers-page">
             <div className="teachers-header">
                 <div>
-                    <div className="teachers-breadcrumb">SYS - 강사 상세</div>
+                    <div className="teachers-breadcrumb">TEACHERS - 강사 상세</div>
                     <h2 className="teachers-title">강사 상세</h2>
                 </div>
 
                 <div className="teachers-header-actions">
-                    <button className="btn-sm" onClick={() => navigate(`/teachers/${userId}/edit`)} disabled={!userId}>
+                    <button
+                        className="btn-sm"
+                        onClick={() => navigate(`/teachers/${targetUserId}/edit`)}
+                        disabled={!targetUserId || isBusy}
+                    >
                         수정
                     </button>
-                    <button className="btn-sm" onClick={() => navigate("/teachers")}>
+                    <button className="btn-sm" onClick={() => navigate("/teachers")} disabled={isBusy}>
                         목록으로
                     </button>
                 </div>
@@ -188,65 +278,118 @@ export default function AdminTeachersDetailPage() {
             <div className="teachers-content">
                 {errMsg && <div className="teachers-error">{errMsg}</div>}
 
-                {loading ? (
+                {loading && !teacher ? (
                     <div className="teachers-loading">로딩 중...</div>
                 ) : !teacher ? (
                     <div className="teachers-empty">데이터가 없습니다.</div>
                 ) : (
                     <>
                         <div className="detail-grid">
+                            {/* 좌측: 강사 기본정보 + 프로필 이미지 */}
                             <div className="panel">
-                                <div className="panel-title">기본 정보</div>
-                                <div className="kv">
-                                    <div className="kv-row">
-                                        <div className="kv-k">강사명</div>
-                                        <div className="kv-v">{vm.userName || "-"}</div>
+                                <div className="panel-title">강사 정보</div>
+
+                                <div style={{ display: "flex", gap: 16, alignItems: "flex-start", marginBottom: 12 }}>
+                                    <div
+                                        style={{
+                                            width: 120,
+                                            height: 120,
+                                            borderRadius: 12,
+                                            overflow: "hidden",
+                                            background: "#f3f4f6",
+                                        }}
+                                    >
+                                        {vm.profileImgUrl ? (
+                                            <img
+                                                src={vm.profileImgUrl}
+                                                alt="profile"
+                                                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                                                onError={(e) => {
+                                                    e.currentTarget.style.display = "none";
+                                                }}
+                                            />
+                                        ) : (
+                                            <div
+                                                style={{
+                                                    width: "100%",
+                                                    height: "100%",
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    justifyContent: "center",
+                                                }}
+                                            >
+                                                No Image
+                                            </div>
+                                        )}
                                     </div>
-                                    <div className="kv-row">
-                                        <div className="kv-k">소속 지점</div>
-                                        <div className="kv-v">{vm.brchNm || "-"}</div>
-                                    </div>
-                                    <div className="kv-row">
-                                        <div className="kv-k">주요 종목</div>
-                                        <div className="kv-v">{vm.sportsText || "-"}</div>
-                                    </div>
-                                    <div className="kv-row">
-                                        <div className="kv-k">연락처</div>
-                                        <div className="kv-v">{vm.phoneNumber || "-"}</div>
-                                    </div>
-                                    <div className="kv-row">
-                                        <div className="kv-k">이메일</div>
-                                        <div className="kv-v">{vm.email || "-"}</div>
-                                    </div>
-                                    <div className="kv-row">
-                                        <div className="kv-k">입사일</div>
-                                        <div className="kv-v">{vm.hireDt || "-"}</div>
-                                    </div>
-                                    <div className="kv-row">
-                                        <div className="kv-k">상태</div>
-                                        <div className="kv-v">{statusLabel(vm.sttsCd)}</div>
-                                    </div>
-                                    <div className="kv-row">
-                                        <div className="kv-k">한줄 소개</div>
-                                        <div className="kv-v">{vm.intro || "-"}</div>
+
+                                    <div style={{ flex: 1 }}>
+                                        <div className="kv">
+                                            <div className="kv-row">
+                                                <div className="kv-k">USER_ID</div>
+                                                <div className="kv-v" style={{ wordBreak: "break-all" }}>
+                                                    {vm.userId}
+                                                </div>
+                                            </div>
+                                            <div className="kv-row">
+                                                <div className="kv-k">강사명</div>
+                                                <div className="kv-v">{vm.userName}</div>
+                                            </div>
+                                            <div className="kv-row">
+                                                <div className="kv-k">소속 지점</div>
+                                                <div className="kv-v">{vm.brchNm}</div>
+                                            </div>
+                                            <div className="kv-row">
+                                                <div className="kv-k">주요 종목</div>
+                                                <div className="kv-v">{vm.sportsText || "-"}</div>
+                                            </div>
+                                            <div className="kv-row">
+                                                <div className="kv-k">연락처</div>
+                                                <div className="kv-v">{vm.phoneNumber}</div>
+                                            </div>
+                                            <div className="kv-row">
+                                                <div className="kv-k">이메일</div>
+                                                <div className="kv-v">{vm.email}</div>
+                                            </div>
+                                            <div className="kv-row">
+                                                <div className="kv-k">입사일</div>
+                                                <div className="kv-v">{vm.hireDt}</div>
+                                            </div>
+                                            <div className="kv-row">
+                                                <div className="kv-k">상태</div>
+                                                <div className="kv-v">{statusLabel(vm.sttsCd)}</div>
+                                            </div>
+                                            <div className="kv-row">
+                                                <div className="kv-k">프로필 URL</div>
+                                                <div className="kv-v" style={{ wordBreak: "break-all" }}>
+                                                    {vm.profileImgUrl || "-"}
+                                                </div>
+                                            </div>
+                                            <div className="kv-row">
+                                                <div className="kv-k">한줄 소개</div>
+                                                <div className="kv-v">{vm.intro || "-"}</div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
+                            {/* 우측: 상태·퇴사 관리 (기존 유지) */}
                             <div className="panel">
                                 <div className="panel-title">상태 · 퇴사 관리</div>
 
                                 <div className="sub-panel">
                                     <div className="sub-title">상태 변경</div>
                                     <div className="inline-controls">
-                                        <select value={nextStatus} onChange={(e
-                                        ) => setNextStatus(e.target.value)}>
-                                        <option value="ACTIVE">재직</option>
+                                        <select value={nextStatus} onChange={(e) => setNextStatus(e.target.value)}>
+                                            <option value="ACTIVE">재직</option>
                                             <option value="LEAVE">휴직</option>
-                                            <option value="RESIGNED" disabled>퇴사(퇴사처리로만)</option>
+                                            <option value="RESIGNED" disabled>
+                                                퇴사(퇴사처리로만)
+                                            </option>
                                         </select>
 
-                                        <button className="btn-primary" onClick={onChangeStatus}>
+                                        <button className="btn-primary" onClick={onChangeStatus} disabled={isBusy || !targetUserId}>
                                             상태변경
                                         </button>
                                     </div>
@@ -260,15 +403,15 @@ export default function AdminTeachersDetailPage() {
                                             type="date"
                                             value={leaveDt}
                                             onChange={(e) => setLeaveDt(e.target.value)}
-                                            disabled={isResigned}
+                                            disabled={isResigned || isBusy}
                                         />
                                         <input
                                             value={leaveRsn}
                                             onChange={(e) => setLeaveRsn(e.target.value)}
                                             placeholder="퇴사 사유 (필수)"
-                                            disabled={isResigned}
+                                            disabled={isResigned || isBusy}
                                         />
-                                        <button className="danger-btn" onClick={onRetire} disabled={isResigned}>
+                                        <button className="danger-btn" onClick={onRetire} disabled={isResigned || isBusy}>
                                             퇴사처리
                                         </button>
                                     </div>
@@ -285,6 +428,7 @@ export default function AdminTeachersDetailPage() {
                             </div>
                         </div>
 
+                        {/* 경력/자격증 (기존 유지) */}
                         <div className="panel panel-wide">
                             <div className="panel-title">경력 · 자격증</div>
 
@@ -327,8 +471,90 @@ export default function AdminTeachersDetailPage() {
                                     </div>
                                 </div>
                             </div>
+                        </div>
 
-                            <div className="hint">배정된 수업 목록은 “내 수업 관리” API 연동 시 추가합니다.</div>
+                        {/* ✅ 추가: 배정 수업 목록 (위 코드 기능 합침) */}
+                        <div className="panel panel-wide">
+                            <div className="panel-title">배정 수업 목록</div>
+
+                            <div className="teachers-filter" style={{ marginBottom: 12 }}>
+                                <div className="filter-row" style={{ alignItems: "end" }}>
+                                    <div className="filter-item">
+                                        <label>기간(From)</label>
+                                        <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} disabled={schLoading} />
+                                    </div>
+                                    <div className="filter-item">
+                                        <label>기간(To)</label>
+                                        <input type="date" value={to} onChange={(e) => setTo(e.target.value)} disabled={schLoading} />
+                                    </div>
+                                    <div className="filter-item filter-btn">
+                                        <button className="btn-primary" onClick={loadSchedulesOnly} disabled={schLoading || !targetUserId}>
+                                            {schLoading ? "조회 중..." : "검색"}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="teachers-table-wrap">
+                                <table>
+                                    <thead>
+                                    <tr>
+                                        <th>스케줄ID</th>
+                                        <th>수업명</th>
+                                        <th>지점</th>
+                                        <th>일자</th>
+                                        <th>시간</th>
+                                        <th>정원</th>
+                                        <th>예약</th>
+                                        <th>상태</th>
+                                        <th>액션</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {schLoading ? (
+                                        <tr>
+                                            <td colSpan={9} style={{ padding: 20 }}>
+                                                조회 중...
+                                            </td>
+                                        </tr>
+                                    ) : schedules.length === 0 ? (
+                                        <tr>
+                                            <td colSpan={9} style={{ padding: 20 }}>
+                                                조회 결과가 없습니다.
+                                            </td>
+                                        </tr>
+                                    ) : (
+                                        schedules.map((s, idx) => {
+                                            const schdId = s.schdId ?? s.schd_id ?? idx;
+                                            return (
+                                                <tr key={schdId}>
+                                                    <td>{s.schdId ?? s.schd_id}</td>
+                                                    <td>{s.progNm ?? s.prog_nm}</td>
+                                                    <td>{s.brchNm ?? s.brch_nm}</td>
+                                                    <td>{s.strtDt ?? s.strt_dt}</td>
+                                                    <td>
+                                                        {fmtTime(s.strtTm ?? s.strt_tm)} ~ {fmtTime(s.endTm ?? s.end_tm)}
+                                                    </td>
+                                                    <td>{s.maxNopCnt ?? s.max_nop_cnt}</td>
+                                                    <td>{s.rsvCnt ?? s.rsv_cnt}</td>
+                                                    <td>{s.sttsCd ?? s.stts_cd}</td>
+                                                    <td className="teachers-actions">
+                                                        <button
+                                                            className="link-btn"
+                                                            onClick={() => navigate(`/myclass/schedules/${s.schdId ?? s.schd_id}`)}
+                                                        >
+                                                            수업상세
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })
+                                    )}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div className="teachers-paging-hint">페이징은 추후 연동</div>
                         </div>
                     </>
                 )}
