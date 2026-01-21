@@ -54,7 +54,7 @@
        🔥 user_id → user_name
   ========================= -->
   <select id="selectJoinUsersByPostId" resultType="string">
-    SELECT u.user_name
+    SELECT COALESCE(u.user_name, '탈퇴한 회원')
     FROM COMMUNITY_RECRUIT_JOIN j
     LEFT JOIN USERS u
            ON u.user_id = j.user_id
