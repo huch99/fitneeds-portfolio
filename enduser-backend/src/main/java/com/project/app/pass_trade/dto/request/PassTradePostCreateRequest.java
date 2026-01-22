@@ -24,4 +24,5 @@ public class PassTradePostCreateRequest {
     
     // 게시글 내용
     private String content;
+
 }

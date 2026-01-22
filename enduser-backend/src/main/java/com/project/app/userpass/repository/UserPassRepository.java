@@ -31,6 +31,6 @@ public interface UserPassRepository extends JpaRepository<UserPass, Long> {
     """)
     List<UserPass> findUserPassesWithUserAndSport(@Param("userId") String userId);
 
-    @Query(value = "select count(*) from user_pass", nativeQuery = true)
+    @Query(value = "select count(*) from USER_PASS", nativeQuery = true)
     long countUserPass();
 }

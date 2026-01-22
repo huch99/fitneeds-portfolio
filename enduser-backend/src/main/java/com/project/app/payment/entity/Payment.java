@@ -57,7 +57,6 @@ public class Payment {
 
 	@Column(name = "pay_amt", nullable = false, columnDefinition = "DECIMAL(19,4)")
 	private BigDecimal payAmt;
-
 	@Column(name = "pay_method", nullable = false, length = 20 )
 	@Enumerated(EnumType.STRING)
 	private PaymentPayMethod payMethod;

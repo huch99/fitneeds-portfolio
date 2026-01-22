@@ -105,4 +105,5 @@ public class UserPass extends BaseTimeEntity {
         return this.passStatusCd == PassStatusCd.ACTIVE;
     }
 
+
 }

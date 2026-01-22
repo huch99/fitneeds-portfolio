@@ -1,6 +1,8 @@
 package com.project.app.passfaq.controller;
 
+import com.project.app.passfaq.dto.PassFaqCreateRequest;
 import com.project.app.passfaq.dto.PassFaqResponse;
+import com.project.app.passfaq.dto.PassFaqUpdateRequest;
 import com.project.app.passfaq.service.PassFaqService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -12,10 +14,17 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-// 이용권 도메인 FAQ 조회 전용 컨트롤러
-// 사용자 화면에서 이용권 관련 FAQ 목록/상세 조회 API 제공
-// pass_trade, payment 등 다른 도메인과 독립적으로 운영
-@Tag(name = "이용권 FAQ", description = "이용권 관련 FAQ 조회 API")
+/**
+ * 이용권 FAQ (Q&A) 사용자용 컨트롤러
+ *
+ * 역할:
+ * - 사용자의 질문(Q) CRUD 처리
+ * - 관리자가 등록한 답변(A) 조회
+ *
+ * 비고:
+ * - 관리자 답변 등록/수정은 별도 관리자 프로젝트에서 처리
+ */
+@Tag(name = "이용권 FAQ", description = "이용권 Q&A (사용자 질문 / 관리자 답변 조회 API)")
 @RestController
 @RequestMapping("/api/passfaq")
 @RequiredArgsConstructor
@@ -23,36 +32,107 @@ public class PassFaqController {
 
     private final PassFaqService passFaqService;
 
-    // 이용권 FAQ 목록 조회
-    // 사용자가 FAQ 페이지 진입 시 또는 카테고리별 필터링 시 호출
-    @Operation(summary = "FAQ 목록 조회", description = "이용권 관련 FAQ 목록을 조회합니다.")
+    /**
+     * FAQ(Q&A) 목록 조회
+     * - 전체 조회
+     * - 카테고리별 필터링 조회
+     */
+    @Operation(
+            summary = "FAQ(Q&A) 목록 조회",
+            description = "이용권 관련 질문(Q&A) 목록을 조회합니다. 카테고리 필터링이 가능합니다."
+    )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "FAQ 목록 조회 성공"),
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping
-    public ResponseEntity<List<PassFaqResponse>> getAllFaqs(
-            @RequestParam(required = false) String category) {
-        
-        List<PassFaqResponse> faqs = category != null 
-            ? passFaqService.getFaqsByCategory(category)
-            : passFaqService.getAllFaqs();
-        
-        return ResponseEntity.ok(faqs);
+    public ResponseEntity<List<PassFaqResponse>> getFaqList(
+            @RequestParam(required = false) String category
+    ) {
+        return ResponseEntity.ok(passFaqService.getFaqList(category));
     }
 
-    // 이용권 FAQ 상세 조회
-    // 사용자가 FAQ 목록에서 특정 항목 클릭 시 호출
-    @Operation(summary = "FAQ 상세 조회", description = "특정 FAQ의 상세 내용을 조회합니다.")
+    /**
+     * FAQ(Q&A) 상세 조회
+     * - 조회수 증가 포함
+     */
+    @Operation(
+            summary = "FAQ(Q&A) 상세 조회",
+            description = "특정 FAQ(Q&A)의 상세 내용을 조회합니다. 조회 시 조회수가 증가합니다."
+    )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "FAQ 상세 조회 성공"),
-            @ApiResponse(responseCode = "404", description = "FAQ 조회 실패"),
+            @ApiResponse(responseCode = "404", description = "FAQ를 찾을 수 없음"),
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping("/{faqId}")
-    public ResponseEntity<PassFaqResponse> getFaq(@PathVariable Long faqId) {
-        return passFaqService.getFaq(faqId)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<PassFaqResponse> getFaq(
+            @PathVariable Long faqId
+    ) {
+        return ResponseEntity.ok(passFaqService.getFaq(faqId));
+    }
+
+    /**
+     * FAQ(Q&A) 질문 등록
+     * - 사용자 질문 등록
+     */
+    @Operation(
+            summary = "FAQ(Q&A) 질문 등록",
+            description = "사용자가 이용권 관련 질문(Q&A)을 등록합니다."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "질문 등록 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청"),
+            @ApiResponse(responseCode = "500", description = "서버 오류")
+    })
+    @PostMapping
+    public ResponseEntity<Void> createFaq(
+            @RequestBody PassFaqCreateRequest request
+    ) {
+        passFaqService.createFaq(request);
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * FAQ(Q&A) 질문 수정
+     * - 답변이 등록되지 않은 질문만 수정 가능
+     */
+    @Operation(
+            summary = "FAQ(Q&A) 질문 수정",
+            description = "사용자가 등록한 질문을 수정합니다. 답변 완료된 질문은 수정할 수 없습니다."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "질문 수정 성공"),
+            @ApiResponse(responseCode = "400", description = "답변 완료된 질문 수정 불가"),
+            @ApiResponse(responseCode = "404", description = "FAQ를 찾을 수 없음"),
+            @ApiResponse(responseCode = "500", description = "서버 오류")
+    })
+    @PutMapping("/{faqId}")
+    public ResponseEntity<Void> updateFaq(
+            @PathVariable Long faqId,
+            @RequestBody PassFaqUpdateRequest request
+    ) {
+        passFaqService.updateFaq(faqId, request);
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * FAQ(Q&A) 질문 삭제
+     */
+    @Operation(
+            summary = "FAQ(Q&A) 질문 삭제",
+            description = "사용자가 등록한 질문(Q&A)을 삭제합니다."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "질문 삭제 성공"),
+            @ApiResponse(responseCode = "404", description = "FAQ를 찾을 수 없음"),
+            @ApiResponse(responseCode = "500", description = "서버 오류")
+    })
+    @DeleteMapping("/{faqId}")
+    public ResponseEntity<Void> deleteFaq(
+            @PathVariable Long faqId
+    ) {
+        passFaqService.deleteFaq(faqId);
+        return ResponseEntity.ok().build();
     }
 }

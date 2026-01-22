@@ -38,5 +38,6 @@ public class MyPassService {
         if (logs.size() > 5) logs = logs.subList(0, 5);
         return PassDetailDto.of(p, logs);
     }
+
 }
 

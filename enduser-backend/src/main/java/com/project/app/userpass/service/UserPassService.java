@@ -2,7 +2,11 @@ package com.project.app.userpass.service;
 
 import java.util.List;
 
+import com.project.app.sporttype.entity.SportType;
+import com.project.app.user.entity.User;
+import com.project.app.user.repository.UserRepository;
 import com.project.app.userpass.dto.UserPassResponseDto;
+import com.project.app.userpass.entity.PassStatusCd;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +22,7 @@ public class UserPassService {
 
     private final UserPassRepository userPassRepository;
     private final PassLogService passLogService;
+    private final UserRepository userRepository;
 
     /**
      * 특정 사용자 ID에 해당하는 모든 이용권을 조회합니다. 이 메서드는 예약 관련 정보 조회를 위해 사용됩니다.
@@ -106,6 +111,90 @@ public class UserPassService {
                 .map(UserPassResponseDto::from)
                 .toList();
     }
+
+    // ------------------------pass_trade
+
+    @Transactional
+    public UserPass usePassForTrade(Long userPassId, int buyCount, String reason) {
+        UserPass userPass = userPassRepository.findById(userPassId)
+                .orElseThrow(() -> new IllegalArgumentException("이용권을 찾을 수 없습니다."));
+
+        if (buyCount <= 0) {
+            throw new IllegalArgumentException("구매 수량은 1 이상이어야 합니다.");
+        }
+
+        if (userPass.getRmnCnt() < buyCount) {
+            throw new IllegalArgumentException("잔여 횟수가 부족합니다.");
+        }
+
+        // ✅ 판매자 잔여 차감
+        userPass.setRmnCnt(userPass.getRmnCnt() - buyCount);
+
+        // ✅ 상태 자동 반영
+        if (userPass.getRmnCnt() == 0) {
+            userPass.setPassStatusCd(PassStatusCd.SUSPENDED);
+        }
+
+        UserPass updated = userPassRepository.save(userPass);
+
+        // ✅ 로그 (enum은 프로젝트에 있는 값 사용)
+        passLogService.createPassLog(
+                updated,
+                PassLogChgTypeCd.USE,
+                -buyCount,
+                reason,
+                null
+        );
+
+        return updated;
+    }
+
+
+    @Transactional
+    public UserPass addPassForTrade(
+            String buyerId,
+            SportType sportType,
+            int buyCount,
+            String reason
+    ) {
+        if (buyCount <= 0) {
+            throw new IllegalArgumentException("구매 수량은 1 이상이어야 합니다.");
+        }
+
+        User buyer = userRepository.findByUserId(buyerId)
+                .orElseThrow(() -> new IllegalArgumentException("구매자 정보 없음"));
+
+        UserPass userPass = userPassRepository
+                .findByUser_UserIdAndSportType_SportId(buyerId, sportType.getSportId())
+                .orElseGet(() -> UserPass.builder()
+                        .user(buyer)
+                        .sportType(sportType)
+                        .passStatusCd(PassStatusCd.ACTIVE)
+                        .rmnCnt(0)
+                        .initCnt(0)
+                        .build()
+                );
+
+        // ✅ 거래이므로 rmnCnt + initCnt 같이 증가
+        userPass.setRmnCnt(userPass.getRmnCnt() + buyCount);
+        userPass.setInitCnt(userPass.getInitCnt() + buyCount);
+        userPass.setPassStatusCd(PassStatusCd.ACTIVE);
+
+        UserPass saved = userPassRepository.save(userPass);
+
+        passLogService.createPassLog(
+                saved,
+                PassLogChgTypeCd.USE,   // (있으면 TRADE_BUY로 교체 가능)
+                buyCount,
+                reason,
+                null
+        );
+
+        return saved;
+    }
+
+
+
 
 
 }

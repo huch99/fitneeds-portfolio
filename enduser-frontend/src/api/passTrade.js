@@ -2,14 +2,14 @@
 import api from './index';
 
 export const createTradePost = (sellerId, data) =>
-  api.post('/api/pass-trade/posts', data, {
+  api.post('/pass-trade/posts', data, {
     params: { sellerId }
   });
 
 export const getTradePosts = () =>
-  api.get('/api/pass-trade/posts');
+  api.get('/pass-trade/posts');
 
 export const buyTrade = (postId, buyerId, data) =>
-  api.post(`/api/pass-trade/posts/${postId}/buy`, data, {
+  api.post(`/pass-trade/posts/${postId}/buy`, data, {
     params: { buyerId }
   });

@@ -125,3 +125,48 @@ INSERT INTO pass_trade_transaction
 (post_id, buyer_usr_id, trade_amt, stts_cd, buy_qty)
 VALUES
     (1, 'buyer_user', 20000, 'COMPLETED', 1);
+
+-- ///////////////////////////////////////////////////////////////////////////////////////////////
+
+-- ======================================================
+-- 추가요청 FAQ
+-- ======================================================
+CREATE TABLE faq (
+                     faq_id    BIGINT       NOT NULL AUTO_INCREMENT COMMENT 'PK, FAQ 식별자',
+                     title     VARCHAR(255) NOT NULL COMMENT 'FAQ 제목',
+                     content   TEXT         NOT NULL COMMENT 'FAQ 내용',
+                     category  VARCHAR(100) NOT NULL COMMENT '카테고리(PURCHASE/USAGE/TRADE/GENERAL)',
+                     view_cnt  INT          NOT NULL DEFAULT 0 COMMENT '조회수',
+                     reg_dt    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
+                     upd_dt    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정일시',
+                     ans_stat  VARCHAR(20)  NOT NULL DEFAULT 'WAIT' COMMENT '답변상태(WAIT/DONE)',
+                     ans_by    VARCHAR(255) NULL COMMENT '답변자 users.user_id',
+                     ans_at    DATETIME     NULL COMMENT '답변일시',
+                     PRIMARY KEY (faq_id),
+                     KEY idx_faq_category (category)
+) ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_general_ci
+COMMENT='이용권 FAQ';
+
+-- ///////////////////////////////////////////////////////////////////////////////////////////////
+
+
+-- ======================================================
+-- 추가요청 FAVORITE (즐겨찾기)
+-- ======================================================
+CREATE TABLE favorite (
+                          favorite_id BIGINT       NOT NULL AUTO_INCREMENT COMMENT 'PK, 즐겨찾기ID',
+                          user_id     VARCHAR(255) NOT NULL COMMENT 'FK, users.user_id',
+                          post_id     BIGINT       NOT NULL COMMENT 'FK, pass_trade_post.post_id',
+                          PRIMARY KEY (favorite_id),
+                          UNIQUE KEY uk_favorite_user_post (user_id, post_id),
+                          KEY idx_favorite_post (post_id),
+                          CONSTRAINT fk_favorite_user
+                              FOREIGN KEY (user_id) REFERENCES users (user_id),
+                          CONSTRAINT fk_favorite_post
+                              FOREIGN KEY (post_id) REFERENCES pass_trade_post (post_id)
+) ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_general_ci
+COMMENT='즐겨찾기';
