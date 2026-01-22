@@ -241,32 +241,34 @@ function AdminNoticePage() {
                 <td>{n.endDate}</td>
                 <td>{n.visible ? "노출" : "숨김"}</td>
                 <td>
-                  {(role === "ADMIN" ||
-                    (role === "MANAGER" && n.branchId === myBranchId)) && (
-                      <>
-                        <button onClick={() => editNotice(n)}>수정</button>
+                  <span style={{ display: "inline-flex", gap: "6px" }}>
+                    {(role === "ADMIN" ||
+                      (role === "MANAGER" && n.branchId === myBranchId)) && (
+                        <>
+                          <button onClick={() => editNotice(n)}>수정</button>
 
-                        <button onClick={() => toggleVisible(n)}>
-                          {n.visible ? "숨기기" : "보이기"}
-                        </button>
-                      </>
-                    )}
+                          <button onClick={() => toggleVisible(n)}>
+                            {n.visible ? "숨기기" : "보이기"}
+                          </button>
+                        </>
+                      )}
 
-                  {role === "ADMIN" && (
-                    <button onClick={() => togglePinned(n)}>
-                      {n.pinned ? "고정해제" : "상단고정"}
-                    </button>
-                  )}
-
-                  {(role === "ADMIN" ||
-                    (role === "MANAGER" && n.branchId === myBranchId)) && (
-                      <button
-                        onClick={() => deleteNotice(n.id)}
-                        style={{ color: "red" }}
-                      >
-                        삭제
+                    {role === "ADMIN" && (
+                      <button onClick={() => togglePinned(n)}>
+                        {n.pinned ? "고정해제" : "상단고정"}
                       </button>
                     )}
+
+                    {(role === "ADMIN" ||
+                      (role === "MANAGER" && n.branchId === myBranchId)) && (
+                        <button
+                          onClick={() => deleteNotice(n.id)}
+                          style={{ color: "red" }}
+                        >
+                          삭제
+                        </button>
+                      )}
+                  </span>
                 </td>
 
               </tr>
@@ -297,41 +299,45 @@ function AdminNoticePage() {
         {editingId ? "공지 수정" : "공지 등록"}
       </h2>
 
-      <form onSubmit={handleSubmit} style={{ marginTop: "20px" }}>
-        <div>
-          <label>제목</label><br />
+      <form onSubmit={handleSubmit} className="notice-form">
+        <div className="form-row">
+          <label style={{ fontSize: "25px", fontWeight: "600" }}>제목</label>
+          <br />
           <input
             type="text"
             required
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            style={{ width: "500px" }}
           />
         </div>
 
-        <div>
-          <label>내용</label><br />
+        <div className="form-row">
+          <label style={{ fontSize: "25px", fontWeight: "600" }}>내용</label><br />
           <textarea
             required
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            style={{ width: "500px", height: "150px" }}
           />
         </div>
 
-        <div style={{ marginTop: "10px" }}>
-          <label>
-            <input
-              type="checkbox"
-              checked={alwaysDisplay}
-              onChange={(e) => setAlwaysDisplay(e.target.checked)}
-            />{" "}
-            상시 게시
+        <div className="form-row">
+          <label className="always-display-label">
+            <span className="always-display-box">
+              <input
+                type="checkbox"
+                checked={alwaysDisplay}
+                onChange={(e) => setAlwaysDisplay(e.target.checked)}
+              />
+            </span>
+
+            <span className="always-display-text">상시 게시</span>
           </label>
         </div>
 
-        <div style={{ marginTop: "10px" }}>
-          <label>종료 날짜</label><br />
+
+
+        <div className="form-row">
+          <label style={{ fontSize: "20px", fontWeight: "600" }}>종료 날짜</label><br />
           <input
             type="date"
             disabled={alwaysDisplay}
@@ -340,10 +346,89 @@ function AdminNoticePage() {
           />
         </div>
 
-        <button type="submit" style={{ marginTop: "15px" }}>
+        <button type="submit">
           {editingId ? "수정 완료" : "등록"}
         </button>
+
+        {/* ✅ 스타일 한 번에 */}
+        <style>{`
+    .notice-form {
+      margin-top: 20px;
+    }
+
+    .notice-form .form-row {
+      margin-bottom: 20px;
+    }
+
+    .notice-form label {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .notice-form input[type="text"],
+    .notice-form input[type="date"],
+    .notice-form textarea {
+      width: 600px;
+      font-size: 14px;
+      padding: 10px 12px;
+      margin-top: 6px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+
+    .notice-form input[type="text"],
+    .notice-form input[type="date"] {
+      height: 42px;
+    }
+
+    .notice-form textarea {
+      height: 200px;
+      resize: vertical;
+    }
+
+    .notice-form button {
+      padding: 10px 22px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+     .always-display-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+  }
+
+  .always-display-box {
+    width: 22px;
+    height: 22px;
+    border: 2px solid #555;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+  }
+
+  .always-display-box input {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+  }
+
+  /* 체크된 상태 강조 */
+  .always-display-box input:checked {
+    accent-color: #5c6ac4;
+  }
+
+  .always-display-text {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1;
+  }  
+  `}</style>
       </form>
+
     </>
   );
 }

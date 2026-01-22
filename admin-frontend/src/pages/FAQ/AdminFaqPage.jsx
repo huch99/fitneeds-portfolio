@@ -143,15 +143,21 @@ function AdminFaqPage() {
                 </td>
                 <td>{f.isVisible ? "노출" : "숨김"}</td>
                 <td>
-                  <button onClick={() => editFaq(f)}>수정</button>
-                  <button onClick={() => toggleVisible(f)}>
-                    {f.isVisible ? "숨기기" : "보이기"}
-                  </button>
-                  <button onClick={() => deleteFaq(f.postId)} style={{ color: "red" }}>
-                    삭제
-                  </button>
+                  <span style={{ display: "inline-flex", gap: "px" }}>
+                    <button onClick={() => editFaq(f)}>수정</button>
+                    <button onClick={() => toggleVisible(f)}>
+                      {f.isVisible ? "숨기기" : "보이기"}
+                    </button>
+                    <button
+                      onClick={() => deleteFaq(f.postId)}
+                      style={{ color: "red" }}
+                    >
+                      삭제
+                    </button>
+                  </span>
                 </td>
               </tr>
+
 
               {openId === f.postId && (
                 <tr>
@@ -184,17 +190,13 @@ function AdminFaqPage() {
         {editingId ? "FAQ 수정" : "FAQ 등록"}
       </h2>
 
-      <form
-        onSubmit={handleSubmit}
-        style={{
-          marginTop: "20px",
-          padding: "20px",
-          background: "#fafafa",
-          borderRadius: "8px",
-          width: "650px"
-        }}
-      >
-        <div style={{ marginBottom: "15px" }}>
+      {/* 등록 / 수정 */}
+      <h2 style={{ marginTop: "30px" }}>
+        {editingId ? "FAQ 수정" : "FAQ 등록"}
+      </h2>
+
+      <form onSubmit={handleSubmit} className="faq-form">
+        <div className="faq-form-row">
           <label>카테고리</label>
           <select value={category} onChange={(e) => setCategory(e.target.value)}>
             {categoryList.map((c) => (
@@ -203,30 +205,79 @@ function AdminFaqPage() {
           </select>
         </div>
 
-        <div style={{ marginBottom: "15px" }}>
+        <div className="faq-form-row">
           <label>질문</label>
           <input
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
             required
-            style={{ width: "500px" }}
           />
         </div>
 
-        <div style={{ marginBottom: "15px" }}>
+        <div className="faq-form-row">
           <label>답변</label>
           <textarea
             value={answer}
             onChange={(e) => setAnswer(e.target.value)}
             required
-            style={{ width: "500px", height: "180px" }}
           />
         </div>
 
         <button type="submit">
           {editingId ? "수정완료" : "등록"}
         </button>
+
+
+        <style>{`
+                  .faq-form {
+                    margin-top: 20px;
+                    padding: 24px;
+                    background: #fafafa;
+                    border-radius: 8px;
+                    width: 700px;
+                  }
+
+                  .faq-form-row {
+                    margin-bottom: 20px;
+                  }
+
+                  .faq-form label {
+                    display: block;
+                    font-size: 16px;
+                    font-weight: 600;
+                    margin-bottom: 6px;
+                  }
+
+                  .faq-form select,
+                  .faq-form input,
+                  .faq-form textarea {
+                    width: 600px;
+                    font-size: 14px;
+                    padding: 10px 12px;
+                    border: 1px solid #ccc;
+                    border-radius: 6px;
+                    box-sizing: border-box;
+                  }
+
+                  .faq-form select,
+                  .faq-form input {
+                    height: 42px;
+                  }
+
+                  .faq-form textarea {
+                    height: 200px;
+                    resize: vertical;
+                  }
+
+                  .faq-form button {
+                    margin-top: 10px;
+                    padding: 10px 22px;
+                    font-size: 14px;
+                    cursor: pointer;
+                  }
+  `}</style>
       </form>
+
     </>
   );
 }
