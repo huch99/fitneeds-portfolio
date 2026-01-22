@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.project.app.branch.entity.Branch;
-import com.project.app.branch.repository.BranchRepository;
+import com.project.app.branch.respository.BranchRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 @Transactional(readOnly = true)
 public class BranchService {
 
-    private final BranchRepository branchRepository;
+	private final BranchRepository branchRepository;
 
     public List<Branch> getAllBranches() {
         return branchRepository.findAll();
