@@ -37,13 +37,14 @@ public class ScheduleService {
 	/**
 	 * 특정 스포츠 ID 기준으로 스케줄을 조회하고 그룹핑/페이징 처리합니다.
 	 */
+	@Transactional(readOnly = true)
 	public Page<GroupedScheduleResponseDto> getSchedulesBySportIdForR(Long sportId, String searchKeyword,
 			LocalDate currentDate, LocalTime currentTime, LocalDate selectedDate, Pageable pageable) {
 		try {
 			log.info("서비스: 스포츠 ID로 스케줄 조회 요청: sportId={}, searchKeyword={}", sportId, searchKeyword);
 
 			List<Schedule> allSchedules = scheduleRepository.findAvailableSchedulesBySportId(sportId, currentDate,
-					currentTime, selectedDate, searchKeyword, ScheduleSttsCd.AVAILABLE);
+					currentTime, selectedDate, searchKeyword, List.of(ScheduleSttsCd.AVAILABLE, ScheduleSttsCd.OPEN));
 
 			log.debug("서비스: 스포츠 ID {} 로 조회된 총 스케줄 수: {}", sportId, allSchedules.size());
 			return applyGroupingAndPaging(allSchedules, pageable);
@@ -57,13 +58,14 @@ public class ScheduleService {
 	/**
 	 * 특정 지점 ID 기준으로 스케줄을 조회하고 그룹핑/페이징 처리합니다.
 	 */
+	@Transactional(readOnly = true)
 	public Page<GroupedScheduleResponseDto> getSchedulesByBrchIdForR(Long brchId, String searchKeyword,
 			LocalDate currentDate, LocalTime currentTime, LocalDate selectedDate, Pageable pageable) {
 		try {
 			log.info("서비스: 지점 ID로 스케줄 조회 요청: brchId={}, searchKeyword={}", brchId, searchKeyword);
 
 			List<Schedule> allSchedules = scheduleRepository.findAvailableSchedulesByBrchId(brchId, currentDate,
-					currentTime, selectedDate, searchKeyword, ScheduleSttsCd.AVAILABLE);
+					currentTime, selectedDate, searchKeyword, List.of(ScheduleSttsCd.AVAILABLE, ScheduleSttsCd.OPEN));
 
 			log.debug("서비스: 지점 ID {} 로 조회된 총 스케줄 수: {}", brchId, allSchedules.size());
 			return applyGroupingAndPaging(allSchedules, pageable);
