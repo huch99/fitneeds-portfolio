@@ -27,6 +27,7 @@
 .layout-main {
   padding-top: 80px; /* Add padding to prevent content from being hidden under fixed header */
   overflow-x: hidden;
+   flex: 1;  
 }
 
 /* Home page doesn't need padding-top as header is transparent initially */

@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -51,10 +52,12 @@ public class PassController {
     public ResponseEntity<List<UserPassResponseDto>> getUserPassResponses(
             @RequestParam String userId
     ) {
+
         return ResponseEntity.ok(
                 userPassService.getUserPassResponses(userId)
         );
     }
+
 
 
     @Operation(summary = "이용권 사용", description = "이용권을 1회 사용하여 잔여 횟수를 차감합니다.")

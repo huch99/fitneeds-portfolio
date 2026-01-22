@@ -22,6 +22,21 @@ public interface PassTradePostRepository extends JpaRepository<PassTradePost, Lo
 
     List<PassTradePost> findByTradeStatusAndDeletedFalseOrderByRegDtDesc(TradeStatus tradeStatus);
 
+    // 🔥 종목(SportType)까지 함께 조회 (JOIN FETCH)
+    @Query("""
+    select p
+    from PassTradePost p
+    join fetch p.sportType
+    where p.tradeStatus = :status
+      and p.deleted = false
+    order by p.regDt desc
+""")
+    List<PassTradePost> findActiveWithSport(
+            @Param("status") TradeStatus status
+    );
+
+
+
 
     // 비관적 락 조회
     @Lock(LockModeType.PESSIMISTIC_WRITE)
@@ -38,5 +53,6 @@ WHERE p.postId = :postId
             Long postId,
             String sellerId
     );
+
 
 }

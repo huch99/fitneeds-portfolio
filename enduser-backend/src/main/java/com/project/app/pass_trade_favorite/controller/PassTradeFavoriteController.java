@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,18 +33,16 @@ public class PassTradeFavoriteController {
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @PostMapping
-    public ResponseEntity<PassTradeFavoriteResponse> addFavorite(
-            @RequestHeader("Authorization") String authorization,
-            @RequestBody PassTradeFavoriteRequest request) {
-        
-        try {
-            String userId = extractUserIdFromAuth(authorization);
-            PassTradeFavoriteResponse response = favoriteService.addFavorite(userId, request.getPostId());
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<Void> addFavorite(
+            Authentication authentication,
+            @RequestBody PassTradeFavoriteRequest request
+    ) {
+        String userId = authentication.getName(); // ⭐ 핵심
+        favoriteService.addFavorite(userId, request.getPostId());
+        return ResponseEntity.ok().build();
     }
+
+
 
     // 즐겨찾기 해제
     @Operation(summary = "즐겨찾기 해제", description = "거래 게시글을 즐겨찾기에서 제거합니다.")
@@ -54,17 +53,15 @@ public class PassTradeFavoriteController {
     })
     @DeleteMapping("/{postId}")
     public ResponseEntity<Void> removeFavorite(
-            @RequestHeader("Authorization") String authorization,
-            @PathVariable Long postId) {
-        
-        try {
-            String userId = extractUserIdFromAuth(authorization);
-            favoriteService.removeFavorite(userId, postId);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+            Authentication authentication,
+            @PathVariable Long postId
+    ) {
+        String userId = authentication.getName();
+        favoriteService.removeFavorite(userId, postId);
+        return ResponseEntity.ok().build();
     }
+
+
 
     // 내 즐겨찾기 목록 조회
     @Operation(summary = "즐겨찾기 목록 조회", description = "사용자의 즐겨찾기 목록을 조회합니다.")
@@ -74,12 +71,14 @@ public class PassTradeFavoriteController {
     })
     @GetMapping
     public ResponseEntity<List<PassTradeFavoriteResponse>> getFavorites(
-            @RequestHeader("Authorization") String authorization) {
-        
-        String userId = extractUserIdFromAuth(authorization);
-        List<PassTradeFavoriteResponse> favorites = favoriteService.getFavorites(userId);
+            Authentication authentication
+    ) {
+        String userId = authentication.getName();   // ⭐ 통일
+        List<PassTradeFavoriteResponse> favorites =
+                favoriteService.getFavorites(userId);
         return ResponseEntity.ok(favorites);
     }
+
 
     // 특정 게시글 즐겨찾기 여부 확인
     @Operation(summary = "즐겨찾기 여부 확인", description = "특정 게시글의 즐겨찾기 여부를 확인합니다.")
@@ -89,19 +88,16 @@ public class PassTradeFavoriteController {
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping("/{postId}")
-    public ResponseEntity<PassTradeFavoriteResponse> isFavorite(
-            @RequestHeader("Authorization") String authorization,
-            @PathVariable Long postId) {
-        
-        String userId = extractUserIdFromAuth(authorization);
-        return favoriteService.isFavorite(userId, postId)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<Boolean> isFavorite(
+            Authentication authentication,
+            @PathVariable Long postId
+    ) {
+        String userId = authentication.getName();   // ⭐ 통일
+        boolean isFavorite = favoriteService.isFavorite(userId, postId);
+        return ResponseEntity.ok(isFavorite);
     }
 
-    // Authorization 헤더에서 사용자 ID 추출
-    private String extractUserIdFromAuth(String authorization) {
-        // TODO: JWT 토큰 파싱하여 사용자 ID 추출
-        return authorization.replace("Bearer ", "");
-    }
+
+
+
 }
