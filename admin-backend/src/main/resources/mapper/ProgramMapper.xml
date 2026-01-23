@@ -14,14 +14,12 @@
             prog_id AS progId,
             prog_nm AS progNm,
             sport_id AS sportId,
-            type_cd AS typeCd,
+			brch_id AS brchId,
             use_yn AS useYn,
             one_time_amt AS oneTimeAmt,
-            rwd_game_point AS rwdGamePoint,
             reg_dt AS regDt,
-            upd_dt AS updDt,
-            detail_type_cd AS detailTypeCd
-        FROM program
+            upd_dt AS updDt
+        FROM PROGRAM
         ORDER BY reg_dt DESC
     </select>
 
@@ -35,14 +33,12 @@
             prog_id AS progId,
             prog_nm AS progNm,
             sport_id AS sportId,
-            type_cd AS typeCd,
+			brch_id AS brchId,
             use_yn AS useYn,
             one_time_amt AS oneTimeAmt,
-            rwd_game_point AS rwdGamePoint,
             reg_dt AS regDt,
-            upd_dt AS updDt,
-            detail_type_cd AS detailTypeCd
-        FROM program
+            upd_dt AS updDt
+        FROM PROGRAM
         WHERE prog_id = #{progId}
     </select>
 
@@ -53,26 +49,22 @@
             parameterType="com.project.app.program.domain.Program"
             useGeneratedKeys="true"
             keyProperty="progId">
-        INSERT INTO program (
+        INSERT INTO PROGRAM (
             prog_nm,
             sport_id,
-            type_cd,
+            brch_id,
             use_yn,
             one_time_amt,
-            rwd_game_point,
             reg_dt,
-            upd_dt,
-            detail_type_cd
+            upd_dt
         ) VALUES (
             #{progNm},
             #{sportId},
-            #{typeCd},
+            #{brchId},
             #{useYn},
             #{oneTimeAmt},
-            #{rwdGamePoint},
-            #{regDt},
-            #{updDt},
-            #{detailTypeCd}
+            #{regDt, jdbcType=TIMESTAMP},
+            #{updDt, jdbcType=TIMESTAMP}
         )
     </insert>
 
@@ -81,16 +73,14 @@
     ========================= -->
     <update id="update"
             parameterType="com.project.app.program.domain.Program">
-        UPDATE program
+        UPDATE PROGRAM
         SET
             prog_nm = #{progNm},
             sport_id = #{sportId},
-            type_cd = #{typeCd},
+			brch_id = #{brchId},
             use_yn = #{useYn},
             one_time_amt = #{oneTimeAmt},
-            rwd_game_point = #{rwdGamePoint},
-            upd_dt = #{updDt},
-            detail_type_cd = #{detailTypeCd}
+            upd_dt = #{updDt}
         WHERE prog_id = #{progId}
     </update>
 
@@ -99,7 +89,7 @@
     ========================= -->
     <delete id="delete"
             parameterType="long">
-        DELETE FROM program
+        DELETE FROM PROGRAM
         WHERE prog_id = #{progId}
     </delete>
 
