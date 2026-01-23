@@ -29,7 +29,7 @@ function CenterInfo() {
     const now = new Date();
     const year = now.getFullYear();
     const month = now.getMonth() + 1; // 1-12
-    
+
     const holidayMap = {
       1: [{ date: '1월 1일', name: '신정' }],
       2: [{ date: '2월 16일', name: '설날 연휴' }, { date: '2월 17일', name: '설날' }, { date: '2월 18일', name: '설날 연휴' }],
@@ -41,7 +41,7 @@ function CenterInfo() {
       10: [{ date: '10월 3일', name: '개천절' }, { date: '10월 9일', name: '한글날' }],
       12: [{ date: '12월 25일', name: '성탄절' }]
     };
-    
+
     return holidayMap[month] || [];
   };
 
@@ -56,11 +56,9 @@ function CenterInfo() {
   const [programFormData, setProgramFormData] = useState({
     progNm: '',
     sportId: '',
-    typeCd: 'PERSONAL',
+    brchId: branchId,
     useYn: 1,
     oneTimeAmt: 0,
-    rwdGamePoint: 0,
-    detailTypeCd: ''
   })
 
   useEffect(() => {
@@ -70,7 +68,7 @@ function CenterInfo() {
         loadBranches(),
         loadSportTypes()
       ])
-      
+
       if (branchId && branchId !== 'all') {
         await loadData()
       } else {
@@ -82,7 +80,7 @@ function CenterInfo() {
     }
     init()
   }, [branchId])
-  
+
   // 지점이 변경되고 데이터 로딩이 완료되면 프로그램 관리 섹션으로 스크롤
   useEffect(() => {
     if (branchId && branchId !== 'all' && !loading && !programsLoading && programs.length >= 0) {
@@ -95,7 +93,7 @@ function CenterInfo() {
         }
         return false
       }
-      
+
       const timer = setTimeout(scrollToPrograms, 300)
       return () => clearTimeout(timer)
     }
@@ -123,20 +121,20 @@ function CenterInfo() {
       if (saving && silent) return;
 
       console.log('Fetching data for branch:', branchId)
-      
+
       const [branchData, branchInfoRes] = await Promise.all([
         branchApi.getById(branchId),
         branchInfoApi.getAll().catch(() => [])
       ])
-      
+
       console.log('Branch data received:', branchData)
       setBranch(branchData)
-      
+
       const branchInfoList = Array.isArray(branchInfoRes) ? branchInfoRes : (branchInfoRes?.data || [])
-      const foundInfo = branchInfoList.find(bi => 
+      const foundInfo = branchInfoList.find(bi =>
         String(bi.brchId || bi.brch_id) === String(branchId)
       )
-      
+
       if (foundInfo) {
         // 저장 중인 섹션이 있으면 해당 데이터는 덮어쓰지 않음
         setCenterInfo(foundInfo)
@@ -171,7 +169,7 @@ function CenterInfo() {
           setFormData(defaultData)
         }
       }
-      
+
       await loadPrograms(branchData)
     } catch (error) {
       console.error('Failed to load data:', error)
@@ -198,26 +196,26 @@ function CenterInfo() {
         holidayInfo: formData.holidayInfo || null,
         policyInfo: formData.policyInfo || null
       }
-      
+
       const existingBrInfoId = centerInfo?.brInfoId || centerInfo?.br_info_id
       let savedResult;
-      
+
       if (existingBrInfoId) {
         savedResult = await branchInfoApi.update(existingBrInfoId, data)
       } else {
         savedResult = await branchInfoApi.create(data)
       }
-      
+
       // 서버에서 반환된 데이터 또는 보낸 데이터로 상태 고정
-      const finalData = (savedResult && typeof savedResult === 'object' && (savedResult.brInfoId || savedResult.openTime)) 
-        ? savedResult 
+      const finalData = (savedResult && typeof savedResult === 'object' && (savedResult.brInfoId || savedResult.openTime))
+        ? savedResult
         : { ...data, brInfoId: existingBrInfoId };
-      
+
       setCenterInfo(finalData)
-      
+
       // 즉시 UI 반영 (HH:mm 형식)
       const formatTime = (t) => t ? t.toString().substring(0, 5) : '';
-      
+
       setFormData({
         openTime: formatTime(finalData.openTime || finalData.open_time || data.openTime || '09:00'),
         closeTime: formatTime(finalData.closeTime || finalData.close_time || data.closeTime || '22:00'),
@@ -226,13 +224,13 @@ function CenterInfo() {
         holidayInfo: finalData.holidayInfo || finalData.holiday_info || data.holidayInfo || '',
         policyInfo: finalData.policyInfo || finalData.policy_info || data.policyInfo || ''
       })
-      
+
       if (section) {
         setEditStates(prev => ({ ...prev, [section]: false }))
       } else {
         setEditStates({ time: false, holiday: false, policy: false })
       }
-      
+
       console.log('Save successful, UI state updated and fixed.')
     } catch (error) {
       console.error('Failed to save:', error)
@@ -257,7 +255,7 @@ function CenterInfo() {
       setProgramsLoading(true)
       console.log('Fetching all programs... Current branchId:', branchId)
       const response = await programApi.getAll()
-      
+
       let fetchedPrograms = []
       if (Array.isArray(response)) {
         fetchedPrograms = response
@@ -266,24 +264,24 @@ function CenterInfo() {
       } else if (response?.data) {
         fetchedPrograms = [response.data]
       }
-      
+
       console.log('Total programs fetched from DB:', fetchedPrograms.length)
       console.log('Sample program names:', fetchedPrograms.slice(0, 3).map(p => p.progNm))
-      
+
       setAllPrograms(fetchedPrograms)
-      
+
       // 전체 지점 선택 시 모든 프로그램 표시
       if (branchId === 'all' || !branchId) {
         console.log('Showing all programs (all branches mode)')
         setPrograms(fetchedPrograms)
         return
       }
-      
+
       // 현재 지점 정보 가져오기 (전달받은 데이터 우선, 없으면 상태, 없으면 목록에서 찾기)
       let currentBranch = targetBranch || branch
       if (!currentBranch || String(currentBranch.brchId || currentBranch.branchId) !== String(branchId)) {
         currentBranch = branches.find(b => String(b.brchId || b.branchId) === String(branchId))
-        
+
         if (!currentBranch && branchId) {
           try {
             console.log('Branch not found in state/list, fetching by ID:', branchId)
@@ -293,10 +291,10 @@ function CenterInfo() {
           }
         }
       }
-      
+
       const currentBranchName = currentBranch?.brchNm || currentBranch?.branchName || ''
       console.log('Target branch for filtering:', currentBranchName)
-      
+
       if (currentBranchName) {
         // 프로그램명이 현재 지점명을 포함하고 있는지 확인 (대소문자 무시, 공백 제거 후 비교)
         const searchName = currentBranchName.toLowerCase().replace(/\s+/g, '')
@@ -338,36 +336,32 @@ function CenterInfo() {
     setProgramFormData({
       progNm: '',
       sportId: '',
-      typeCd: 'PERSONAL',
+      brchId: branchId,
       useYn: 1,
       oneTimeAmt: '',
-      rwdGamePoint: '',
-      detailTypeCd: ''
     })
     setShowProgramModal(true)
   }
 
   const handleProgramEdit = (program) => {
     setEditingProgram(program)
-    
+
     // 현재 지점명 가져오기
-    const branchName = branch?.brchNm || branch?.branchName || 
+    const branchName = branch?.brchNm || branch?.branchName ||
       (branchId ? branches.find(b => String(b.brchId || b.branchId) === String(branchId))?.brchNm : null) || ''
-    
+
     // 수정 시에는 프로그램명에서 지점명 접두사 제거하여 표시
     let displayProgNm = program.progNm || ''
     if (branchName && displayProgNm.startsWith(branchName)) {
       displayProgNm = displayProgNm.substring(branchName.length).trim()
     }
-    
+
     setProgramFormData({
       progNm: displayProgNm,
-      sportId: String(program.sportId || ''),
-      typeCd: program.typeCd || 'PERSONAL',
+      sportId: Number(program.sportId || ''),
+      brchId: Number(branchId),
       useYn: program.useYn !== undefined ? program.useYn : 1,
-      oneTimeAmt: program.oneTimeAmt ? String(program.oneTimeAmt) : '',
-      rwdGamePoint: program.rwdGamePoint ? String(program.rwdGamePoint) : '',
-      detailTypeCd: program.detailTypeCd || ''
+      oneTimeAmt: program.oneTimeAmt ? Number(program.oneTimeAmt) : '',
     })
     setShowProgramModal(true)
   }
@@ -389,8 +383,8 @@ function CenterInfo() {
     const { name, value } = e.target
     setProgramFormData(prev => ({
       ...prev,
-      [name]: name === 'useYn' ? (value === '1' ? 1 : 0) : 
-              (name === 'oneTimeAmt' || name === 'rwdGamePoint' ? (value === '' ? '' : parseInt(value)) : value)
+      [name]: name === 'useYn' ? (value === '1' ? 1 : 0) :
+        (name === 'oneTimeAmt' ? (value === '' ? '' : parseInt(value)) : value)
     }))
   }
 
@@ -399,17 +393,12 @@ function CenterInfo() {
       alert('프로그램명과 스포츠 종목을 입력해주세요.')
       return
     }
-    
-    if (!programFormData.oneTimeAmt || !programFormData.rwdGamePoint) {
-      alert('1회 금액과 보상 게임 포인트를 선택해주세요.')
-      return
-    }
 
     try {
       // 현재 지점명 가져오기
-      const currentBranchName = branch?.brchNm || branch?.branchName || 
+      const currentBranchName = branch?.brchNm || branch?.branchName ||
         (branchId ? branches.find(b => String(b.brchId || b.branchId) === String(branchId))?.brchNm : null) || ''
-      
+
       // 프로그램명 앞에 지점명 항상 붙이기 (목록 필터링을 위해)
       let programName = programFormData.progNm.trim()
       if (currentBranchName) {
@@ -418,15 +407,13 @@ function CenterInfo() {
           programName = `${currentBranchName} ${programName}`
         }
       }
-      
+
       const data = {
         progNm: programName,
         sportId: programFormData.sportId,
-        typeCd: programFormData.typeCd,
+        brchId: programFormData.brchId,
         useYn: programFormData.useYn,
         oneTimeAmt: parseInt(programFormData.oneTimeAmt),
-        rwdGamePoint: parseInt(programFormData.rwdGamePoint),
-        detailTypeCd: programFormData.detailTypeCd || null
       }
 
       if (editingProgram) {
@@ -446,10 +433,10 @@ function CenterInfo() {
 
   if (loading) {
     return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
         height: '100vh',
         fontSize: '16px',
         color: '#666'
@@ -460,14 +447,14 @@ function CenterInfo() {
   }
 
   const currentBranchName = branchId === 'all' ? null : (
-    branch?.brchNm || branch?.branchName || 
+    branch?.brchNm || branch?.branchName ||
     (branchId ? branches.find(b => String(b.brchId || b.branchId) === String(branchId))?.brchNm : null)
   )
-  const pageTitle = branchId === 'all' ? '센터 관리 (전체 지점)' : 
+  const pageTitle = branchId === 'all' ? '센터 관리 (전체 지점)' :
     (currentBranchName ? `${currentBranchName} 센터 관리` : '센터 관리')
 
   return (
-    <div style={{ 
+    <div style={{
       minHeight: '100vh',
       background: '#f5f7fa',
       padding: '24px',
@@ -475,10 +462,10 @@ function CenterInfo() {
       overflowY: 'auto'
     }}>
       {/* 헤더 */}
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center', 
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
         background: '#fff',
         padding: '24px 32px',
         borderRadius: '12px',
@@ -490,20 +477,20 @@ function CenterInfo() {
         boxSizing: 'border-box'
       }}>
         <div>
-          <h1 style={{ 
-            margin: 0, 
-            fontSize: '24px', 
-            fontWeight: '600', 
+          <h1 style={{
+            margin: 0,
+            fontSize: '24px',
+            fontWeight: '600',
             color: '#1a1a1a',
             marginBottom: '4px'
           }}>
             {pageTitle}
           </h1>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <p style={{ 
-              margin: 0, 
-              color: '#666', 
-              fontSize: '14px' 
+            <p style={{
+              margin: 0,
+              color: '#666',
+              fontSize: '14px'
             }}>
               운영 정보 관리
             </p>
@@ -546,9 +533,9 @@ function CenterInfo() {
       </div>
 
       {/* 메인 컨텐츠 그리드 */}
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: '1fr 1fr', 
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
         gap: '24px',
         maxWidth: '1400px',
         width: '100%',
@@ -577,7 +564,7 @@ function CenterInfo() {
               )}
             </div>
           </div>
-          
+
           {editStates.time ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
               <div>
@@ -641,7 +628,7 @@ function CenterInfo() {
               )}
             </div>
           </div>
-          
+
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
             {/* 기본 공휴일 정보 (항상 표시) */}
             <div>
@@ -649,10 +636,10 @@ function CenterInfo() {
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                 {currentMonthHolidays.length > 0 ? (
                   currentMonthHolidays.map((h, i) => (
-                    <div key={i} style={{ 
-                      padding: '6px 12px', 
-                      background: '#fff1f0', 
-                      border: '1px solid #ffa39e', 
+                    <div key={i} style={{
+                      padding: '6px 12px',
+                      background: '#fff1f0',
+                      border: '1px solid #ffa39e',
                       borderRadius: '6px',
                       color: '#cf1322',
                       fontSize: '13px',
@@ -674,30 +661,30 @@ function CenterInfo() {
             <div>
               <span style={{ fontSize: '14px', color: '#888', fontWeight: '500', display: 'block', marginBottom: '10px' }}>추가 휴무일 및 안내</span>
               {editStates.holiday ? (
-                <textarea 
-                  name="holidayInfo" 
-                  value={formData.holidayInfo} 
-                  onChange={handleChange} 
-                  placeholder="예: 매주 일요일 정기 휴무, 내부 수리 기간 등 추가 정보를 입력하세요." 
-                  style={{ 
-                    width: '100%', 
-                    minHeight: '120px', 
-                    padding: '12px', 
-                    border: '1px solid #e0e0e0', 
-                    borderRadius: '8px', 
-                    fontSize: '14px', 
-                    boxSizing: 'border-box', 
-                    resize: 'vertical', 
-                    fontFamily: 'inherit', 
-                    lineHeight: '1.6' 
-                  }} 
+                <textarea
+                  name="holidayInfo"
+                  value={formData.holidayInfo}
+                  onChange={handleChange}
+                  placeholder="예: 매주 일요일 정기 휴무, 내부 수리 기간 등 추가 정보를 입력하세요."
+                  style={{
+                    width: '100%',
+                    minHeight: '120px',
+                    padding: '12px',
+                    border: '1px solid #e0e0e0',
+                    borderRadius: '8px',
+                    fontSize: '14px',
+                    boxSizing: 'border-box',
+                    resize: 'vertical',
+                    fontFamily: 'inherit',
+                    lineHeight: '1.6'
+                  }}
                 />
               ) : (
-                <div style={{ 
-                  color: '#444', 
-                  whiteSpace: 'pre-wrap', 
-                  lineHeight: '1.8', 
-                  fontSize: '15px' 
+                <div style={{
+                  color: '#444',
+                  whiteSpace: 'pre-wrap',
+                  lineHeight: '1.8',
+                  fontSize: '15px'
                 }}>
                   {formData.holidayInfo ? (
                     formData.holidayInfo
@@ -733,17 +720,17 @@ function CenterInfo() {
               )}
             </div>
           </div>
-          
+
           {editStates.policy ? (
             <textarea name="policyInfo" value={formData.policyInfo} onChange={handleChange} placeholder="예: 예약 취소는 수업 24시간 전까지 가능합니다." style={{ width: '100%', minHeight: '200px', padding: '12px', border: '1px solid #e0e0e0', borderRadius: '8px', fontSize: '14px', boxSizing: 'border-box', resize: 'vertical', fontFamily: 'inherit', lineHeight: '1.6' }} />
           ) : (
-            <div style={{ 
-              padding: '15px 0', 
-              minHeight: '200px', 
-              color: '#444', 
-              whiteSpace: 'pre-wrap', 
-              lineHeight: '1.8', 
-              fontSize: '16px' 
+            <div style={{
+              padding: '15px 0',
+              minHeight: '200px',
+              color: '#444',
+              whiteSpace: 'pre-wrap',
+              lineHeight: '1.8',
+              fontSize: '16px'
             }}>
               {formData.policyInfo ? (
                 formData.policyInfo
@@ -755,7 +742,7 @@ function CenterInfo() {
         </div>
 
         {/* 프로그램 관리 카드 (전체 너비) */}
-        <div 
+        <div
           id="program-management"
           style={{
             gridColumn: '1 / -1',
@@ -768,7 +755,7 @@ function CenterInfo() {
             scrollMarginTop: '100px' // 스크롤 시 상단 여백
           }}
         >
-          <div style={{ 
+          <div style={{
             marginBottom: '24px',
             paddingBottom: '16px',
             borderBottom: '2px solid #f0f0f0',
@@ -777,7 +764,7 @@ function CenterInfo() {
             alignItems: 'flex-start'
           }}>
             <div>
-              <h2 style={{ 
+              <h2 style={{
                 margin: 0,
                 fontSize: '20px',
                 fontWeight: '600',
@@ -795,14 +782,14 @@ function CenterInfo() {
                 alignItems: 'center',
                 gap: '10px'
               }}>
-                {branchId === 'all' 
+                {branchId === 'all'
                   ? `전체 지점 프로그램 목록 (${programs.length}개)`
-                  : currentBranchName 
+                  : currentBranchName
                     ? `${currentBranchName} 프로그램 목록 (${programs.length}개)`
                     : `프로그램 목록 (${programs.length}개)`
                 }
-                <button 
-                  onClick={() => loadPrograms()} 
+                <button
+                  onClick={() => loadPrograms()}
                   style={{
                     background: 'none',
                     border: 'none',
@@ -845,12 +832,12 @@ function CenterInfo() {
               textAlign: 'center',
               color: '#999'
             }}>
-              <div style={{ 
-                width: '40px', 
-                height: '40px', 
-                border: '3px solid #ddd', 
-                borderTopColor: '#3498db', 
-                borderRadius: '50%', 
+              <div style={{
+                width: '40px',
+                height: '40px',
+                border: '3px solid #ddd',
+                borderTopColor: '#3498db',
+                borderRadius: '50%',
                 animation: 'spin 0.8s linear infinite',
                 margin: '0 auto 16px auto'
               }}></div>
@@ -923,23 +910,7 @@ function CenterInfo() {
                       fontSize: '15px',
                       color: '#212529',
                       whiteSpace: 'nowrap'
-                    }}>타입</th>
-                    <th style={{
-                      padding: '18px 12px',
-                      textAlign: 'center',
-                      fontWeight: '700',
-                      fontSize: '15px',
-                      color: '#212529',
-                      whiteSpace: 'nowrap'
                     }}>1회 금액</th>
-                    <th style={{
-                      padding: '18px 12px',
-                      textAlign: 'center',
-                      fontWeight: '700',
-                      fontSize: '15px',
-                      color: '#212529',
-                      whiteSpace: 'nowrap'
-                    }}>보상 포인트</th>
                     <th style={{
                       padding: '18px 12px',
                       textAlign: 'center',
@@ -961,12 +932,11 @@ function CenterInfo() {
                 <tbody>
                   {programs.map((program, index) => {
                     const sportType = sportTypes.find(st => String(st.sportId) === String(program.sportId))
-                    const typeCdLabel = program.typeCd === 'PERSONAL' ? '개인' : program.typeCd === 'GROUP' ? '그룹' : program.typeCd
-                    
+
                     // 현재 지점명 가져오기 (접두사 제거용)
-                    const branchName = branch?.brchNm || branch?.branchName || 
+                    const branchName = branch?.brchNm || branch?.branchName ||
                       (branchId ? branches.find(b => String(b.brchId || b.branchId) === String(branchId))?.brchNm : null) || ''
-                    
+
                     // 프로그램명에서 지점명 접두사 제거하여 표시 (더 깔끔하게)
                     let displayProgNm = program.progNm || ''
                     if (branchName && displayProgNm.startsWith(branchName)) {
@@ -986,7 +956,7 @@ function CenterInfo() {
                       'FREESTYLE': '프리스타일'
                     }
                     const detailTypeCdLabel = program.detailTypeCd ? (detailTypeCdLabels[program.detailTypeCd] || program.detailTypeCd) : '-'
-                    
+
                     return (
                       <tr
                         key={program.progId}
@@ -1047,52 +1017,11 @@ function CenterInfo() {
                         <td style={{
                           padding: '18px 12px',
                           textAlign: 'center',
-                          fontSize: '14px'
-                        }}>
-                          <div style={{ 
-                            marginBottom: '4px', 
-                            fontWeight: '600',
-                            color: '#34495e',
-                            fontSize: '14px'
-                          }}>{typeCdLabel}</div>
-                          {program.detailTypeCd && (
-                            <div style={{
-                              fontSize: '12px',
-                              color: '#7f8c8d',
-                              padding: '4px 10px',
-                              background: '#ecf0f1',
-                              borderRadius: '6px',
-                              display: 'inline-block',
-                              fontWeight: '500'
-                            }}>
-                              {detailTypeCdLabel}
-                            </div>
-                          )}
-                        </td>
-                        <td style={{
-                          padding: '18px 12px',
-                          textAlign: 'center',
                           fontWeight: '700',
                           fontSize: '15px',
                           color: '#27ae60'
                         }}>
                           {program.oneTimeAmt?.toLocaleString() || 0}원
-                        </td>
-                        <td style={{
-                          padding: '18px 12px',
-                          textAlign: 'center',
-                          fontWeight: '700',
-                          fontSize: '15px',
-                          color: '#2980b9'
-                        }}>
-                          <span style={{
-                            padding: '6px 12px',
-                            background: '#e3f2fd',
-                            borderRadius: '6px',
-                            display: 'inline-block'
-                          }}>
-                            {program.rwdGamePoint || 0} P
-                          </span>
                         </td>
                         <td style={{
                           padding: '18px 12px',
@@ -1208,7 +1137,7 @@ function CenterInfo() {
             overflowY: 'auto',
             boxShadow: '0 4px 20px rgba(0,0,0,0.3)'
           }} onClick={(e) => e.stopPropagation()}>
-            <h2 style={{ 
+            <h2 style={{
               margin: '0 0 24px 0',
               fontSize: '20px',
               fontWeight: '600'
@@ -1218,9 +1147,9 @@ function CenterInfo() {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div>
-                <label style={{ 
-                  display: 'block', 
-                  marginBottom: '8px', 
+                <label style={{
+                  display: 'block',
+                  marginBottom: '8px',
                   fontSize: '14px',
                   fontWeight: '500'
                 }}>
@@ -1245,9 +1174,9 @@ function CenterInfo() {
               </div>
 
               <div>
-                <label style={{ 
-                  display: 'block', 
-                  marginBottom: '8px', 
+                <label style={{
+                  display: 'block',
+                  marginBottom: '8px',
                   fontSize: '14px',
                   fontWeight: '500'
                 }}>
@@ -1278,83 +1207,17 @@ function CenterInfo() {
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                 <div>
-                  <label style={{ 
-                    display: 'block', 
-                    marginBottom: '8px', 
-                    fontSize: '14px',
-                    fontWeight: '500'
-                  }}>
-                    타입 코드 *
-                  </label>
-                  <select
-                    name="typeCd"
-                    value={programFormData.typeCd}
-                    onChange={handleProgramChange}
-                    required
-                    style={{
-                      width: '100%',
-                      padding: '10px',
-                      border: '1px solid #ddd',
-                      borderRadius: '8px',
-                      fontSize: '14px',
-                      boxSizing: 'border-box'
-                    }}
-                  >
-                    <option value="PERSONAL">개인</option>
-                    <option value="GROUP">그룹</option>
-                  </select>
-                </div>
-
-              </div>
-
-              <div>
-                <label style={{ 
-                  display: 'block', 
-                  marginBottom: '8px', 
-                  fontSize: '14px',
-                  fontWeight: '500'
-                }}>
-                  상세유형코드
-                </label>
-                <select
-                  name="detailTypeCd"
-                  value={programFormData.detailTypeCd || ''}
-                  onChange={handleProgramChange}
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    border: '1px solid #ddd',
-                    borderRadius: '8px',
-                    fontSize: '14px',
-                    boxSizing: 'border-box'
-                  }}
-                >
-                  <option value="">선택하세요 (선택사항)</option>
-                  <option value="BEGINNER">초급반 (BEGINNER)</option>
-                  <option value="INTERMEDIATE">중급반 (INTERMEDIATE)</option>
-                  <option value="ADVANCED">고급반 (ADVANCED)</option>
-                  <option value="HIPHOP">힙합 (HIPHOP)</option>
-                  <option value="KPOP">케이팝 (KPOP)</option>
-                  <option value="LATIN">라틴 (LATIN)</option>
-                  <option value="MEDITATION">명상 (MEDITATION)</option>
-                  <option value="CORE">코어 (CORE)</option>
-                  <option value="DIET">다이어트 (DIET)</option>
-                  <option value="FREESTYLE">프리스타일 (FREESTYLE)</option>
-                </select>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                <div>
-                  <label style={{ 
-                    display: 'block', 
-                    marginBottom: '8px', 
+                  <label style={{
+                    display: 'block',
+                    marginBottom: '8px',
                     fontSize: '14px',
                     fontWeight: '500'
                   }}>
                     1회 금액 (원) *
                   </label>
-                  <select
-                    name="oneTimeAmt"
+                  <input
+                    type="number"
+                    name='oneTimeAmt'
                     value={programFormData.oneTimeAmt || ''}
                     onChange={handleProgramChange}
                     required
@@ -1366,59 +1229,14 @@ function CenterInfo() {
                       fontSize: '14px',
                       boxSizing: 'border-box'
                     }}
-                  >
-                    <option value="">선택하세요</option>
-                    <option value="15000">15,000원</option>
-                    <option value="20000">20,000원</option>
-                    <option value="25000">25,000원</option>
-                    <option value="30000">30,000원</option>
-                    <option value="35000">35,000원</option>
-                    <option value="40000">40,000원</option>
-                    <option value="50000">50,000원</option>
-                    <option value="60000">60,000원</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label style={{ 
-                    display: 'block', 
-                    marginBottom: '8px', 
-                    fontSize: '14px',
-                    fontWeight: '500'
-                  }}>
-                    보상 게임 포인트 *
-                  </label>
-                  <select
-                    name="rwdGamePoint"
-                    value={programFormData.rwdGamePoint || ''}
-                    onChange={handleProgramChange}
-                    required
-                    style={{
-                      width: '100%',
-                      padding: '10px',
-                      border: '1px solid #ddd',
-                      borderRadius: '8px',
-                      fontSize: '14px',
-                      boxSizing: 'border-box'
-                    }}
-                  >
-                    <option value="">선택하세요</option>
-                    <option value="100">100 포인트</option>
-                    <option value="150">150 포인트</option>
-                    <option value="200">200 포인트</option>
-                    <option value="250">250 포인트</option>
-                    <option value="300">300 포인트</option>
-                    <option value="350">350 포인트</option>
-                    <option value="400">400 포인트</option>
-                    <option value="500">500 포인트</option>
-                  </select>
+                  />
                 </div>
               </div>
 
               <div>
-                <label style={{ 
-                  display: 'block', 
-                  marginBottom: '8px', 
+                <label style={{
+                  display: 'block',
+                  marginBottom: '8px',
                   fontSize: '14px',
                   fontWeight: '500'
                 }}>
@@ -1444,9 +1262,9 @@ function CenterInfo() {
               </div>
             </div>
 
-            <div style={{ 
-              display: 'flex', 
-              gap: '12px', 
+            <div style={{
+              display: 'flex',
+              gap: '12px',
               marginTop: '24px',
               justifyContent: 'flex-end'
             }}>
