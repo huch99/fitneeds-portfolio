@@ -1,12 +1,14 @@
 package com.project.app.pass_trade_transaction.controller;
 
-import com.project.app.pass_trade_transaction.dto.response.PassTradeTransactionResponse;
+import com.project.app.pass_trade_transaction.dto.response.PassTradeTransactionListResponse;
+
 import com.project.app.pass_trade_transaction.service.PassTradeTransactionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,11 +30,13 @@ public class PassTradeTransactionController {
      */
     @Operation(summary = "판매 거래 내역 조회")
     @GetMapping("/sell")
-    public ResponseEntity<List<PassTradeTransactionResponse>> getSellTransactions(
+    public ResponseEntity<List<PassTradeTransactionListResponse>> getSellTransactions(
             Authentication authentication
     ) {
         String sellerId = authentication.getName();
-        return ResponseEntity.ok(transactionService.getSellTransactions(sellerId));
+        return ResponseEntity.ok(
+                transactionService.getSellTransactions(sellerId)
+        );
     }
 
     /**
@@ -41,10 +45,12 @@ public class PassTradeTransactionController {
      */
     @Operation(summary = "구매 거래 내역 조회")
     @GetMapping("/buy")
-    public ResponseEntity<List<PassTradeTransactionResponse>> getBuyTransactions(
+    public ResponseEntity<List<PassTradeTransactionListResponse>> getBuyTransactions(
             Authentication authentication
     ) {
         String buyerId = authentication.getName();
-        return ResponseEntity.ok(transactionService.getBuyTransactions(buyerId));
+        return ResponseEntity.ok(
+                transactionService.getBuyTransactions(buyerId)
+        );
     }
 }
