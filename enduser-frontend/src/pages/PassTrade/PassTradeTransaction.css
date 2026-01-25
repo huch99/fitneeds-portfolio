@@ -95,26 +95,86 @@
 }
 
 
+/* ===============================
+   거래 상세 모달 (PassTrade 통일)
+================================ */
+/* 모달 카드 */
+.transaction-modal {
+  background: #fff;
+  border-radius: 14px;
+  width: 420px;
+  padding: 24px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
+}
+
+/* 헤더 */
+.transaction-modal h2 {
+  margin: 0 0 16px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+/* 정보 그리드 */
+.transaction-info {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  row-gap: 10px;
+  column-gap: 12px;
+  margin-bottom: 20px;
+}
+
+.transaction-info .label {
+  color: #6c757d;
+  font-size: 13px;
+}
+
+.transaction-info .value {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* 금액 강조 */
+.transaction-info .price {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0d6efd;
+}
+
+/* 상태 배지 */
+.status-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #e7f1ff;
+  color: #0d6efd;
+  margin-left: 8px;
+}
+
+/* 버튼 */
+.transaction-modal button {
+  width: 100%;
+  margin-top: 8px;
+  padding: 12px 0;
+  border: none;
+  border-radius: 10px;
+  background: #0d6efd;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
 
 .transaction-modal-content {
   position: fixed;
   inset: 0;
-
   background: rgba(0, 0, 0, 0.45);
   z-index: 2147483647;
 
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.transaction-modal {
-  background: #fff;
-  border-radius: 12px;
-  width: 420px;
-  max-width: 92%;
-  padding: 24px;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
 }
 
 

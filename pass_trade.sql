@@ -29,6 +29,13 @@ ORDER BY reg_dt DESC;
 
 SELECT * FROM PASS_TRADE_TRANSACTION;
 
+SELECT *
+FROM FAVORITE
+WHERE user_id = 'dcb5c11e5ecf440d9ac3f9710bf5c0c4';
+
+SELECT *
+FROM FAVORITE
+ORDER BY user_id, post_id;
 
 -- DROP 순서: FK 걸린 테이블부터 역순 삭제
 DROP TABLE IF EXISTS favorite;

@@ -10,4 +10,6 @@ public class PassTradeFavoriteRequest {
     
     // 즐겨찾기할 게시글 ID
     private Long postId;
+
+    private String userId;
 }

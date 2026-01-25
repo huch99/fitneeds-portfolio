@@ -38,21 +38,21 @@ const PassTradeFavorite = () => {
   const [qtyFilter, setQtyFilter] = useState('수량');
 
   const handleCompleteTrade = async (buyCount) => {
-  await api.post(
-    `/pass-trade/${selectedPost.postId}/complete`,
-    null,
-    {
-      params: {
-        buyerId: userId,
-        buyCount,
-      },
-    }
-  );
+    await api.post(
+      `/pass-trade/${selectedPost.postId}/complete`,
+      null,
+      {
+        params: {
+          buyerId: userId,
+          buyCount,
+        },
+      }
+    );
 
-  alert('구매 완료');
-  closeModal();
-  loadFavorites();
-};
+    alert('구매 완료');
+    closeModal();
+    loadFavorites();
+  };
 
 
   /* ===============================
@@ -61,7 +61,9 @@ const PassTradeFavorite = () => {
   const loadFavorites = async () => {
     try {
       // 1️⃣ 즐겨찾기 postId 목록
-      const favRes = await api.get('/pass-trade-favorite');
+      const favRes = await api.get('/pass-trade-favorite', {
+        params: { userId }
+      });
       const favoritePostIds = new Set(favRes.data.map((f) => f.postId));
 
       // 2️⃣ 전체 게시글
@@ -338,7 +340,11 @@ const PassTradeFavorite = () => {
                 <BookmarkButton
                   isFavorite={true}
                   onToggle={async () => {
-                    await api.delete(`/pass-trade-favorite/${post.postId}`);
+                    await api.delete(
+                      `/pass-trade-favorite/${post.postId}`,
+                      { params: { userId } }
+                    );
+
                     setFavoritePosts((prev) =>
                       prev.filter((p) => p.postId !== post.postId)
                     );

@@ -31,8 +31,6 @@ public class SecurityConfig {
     ) throws Exception {
 
         http
-                // ⭐ CORS 활성화 (deprecated 아님)
-                .cors(Customizer.withDefaults())
 
                 // CSRF 보호 비활성화
                 .csrf(csrf -> csrf.disable())
@@ -83,26 +81,6 @@ public class SecurityConfig {
         return http.build();
     }
 
-    /**
-     * CORS 설정
-     */
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration config = new CorsConfiguration();
-
-        config.setAllowedOrigins(List.of("http://localhost:5173"));
-        config.setAllowedMethods(List.of(
-                "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"
-        ));
-        config.setAllowedHeaders(List.of("*"));
-        config.setAllowCredentials(true);
-
-        UrlBasedCorsConfigurationSource source =
-                new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
-
-        return source;
-    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {

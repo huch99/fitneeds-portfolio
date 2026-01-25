@@ -1,6 +1,7 @@
 // PassTradePost.jsx
 import { useState, useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom'; // 거래등록연결 추가
 import api from '../../api';
 
 import PassTradeDetail from './PassTradeDetail';
@@ -16,6 +17,8 @@ import jujitsuPass from '../../assets/passes/pass-jujitsu.png';
 import BookmarkButton from '../../components/BookmarkButton';
 
 const PassTradePost = () => {
+  const location = useLocation(); // 거래등록연결 추가
+
   const passImageMap = {
     헬스: fitnessPass,
     수영: swimPass,
@@ -30,6 +33,9 @@ const PassTradePost = () => {
   const [activeModal, setActiveModal] = useState(null);
   const [selectedPost, setSelectedPost] = useState(null);
   const [viewMode, setViewMode] = useState('all');
+
+  //  외부(MyPassPage)에서 넘어온 “자동 선택할 userPassId”
+  const [prefillUserPassId, setPrefillUserPassId] = useState('');
 
   // 🔹 드롭다운에서 만지는 값 (임시)
   const [tmpSportFilter, setTmpSportFilter] = useState('전체 종목');
@@ -48,6 +54,16 @@ const PassTradePost = () => {
   useEffect(() => {
     reloadPosts();
   }, []);
+
+  //  [추가]
+  // ✅ location.state 기반 자동 등록 모달 오픈
+  useEffect(() => {
+    if (location.state?.userPassId) {
+      setPrefillUserPassId(location.state.userPassId);
+      setActiveModal('register');
+    }
+  }, [location]);
+
 
   const loadFavorites = () => {
     setSportFilter(tmpSportFilter);
@@ -70,9 +86,31 @@ const PassTradePost = () => {
     if (sportFilter !== '전체 종목') {
       result = result.filter(post => post.sportNm === sportFilter);
     }
+    // 3️⃣ 수량 필터
+    if (qtyFilter !== '수량') {
+      const qty = parseInt(qtyFilter.replace(/[^0-9]/g, ''), 10);
+
+      if (!Number.isNaN(qty)) {
+        if (qtyFilter.includes('이하')) {
+          result = result.filter(post => post.sellCount <= qty);
+        }
+        if (qtyFilter.includes('이상')) {
+          result = result.filter(post => post.sellCount >= qty);
+        }
+      }
+    }
+
+    // 4️⃣ 가격 정렬
+    if (priceFilter === '낮은 가격순') {
+      result.sort((a, b) => a.saleAmount - b.saleAmount);
+    }
+
+    if (priceFilter === '높은 가격순') {
+      result.sort((a, b) => b.saleAmount - a.saleAmount);
+    }
 
     return result;
-  }, [posts, viewMode, sportFilter, userId]);
+  }, [posts, viewMode, sportFilter, priceFilter, qtyFilter, userId]);
 
   const openDetail = (post) => {
     setSelectedPost(post);
@@ -82,6 +120,7 @@ const PassTradePost = () => {
   const closeModal = () => {
     setActiveModal(null);
     setSelectedPost(null);
+    setPrefillUserPassId(null); // [추가] 모달 닫을 때 초기화 → 다음에 일반 등록 버튼 눌렀을 때 자동 선택 안 되는 것 보장
   };
 
 
@@ -119,7 +158,10 @@ const PassTradePost = () => {
   const reloadPosts = async () => {
     try {
       const postsRes = await api.get('/pass-trade/posts');
-      const favRes = await api.get('/pass-trade-favorite');
+      const favRes = await api.get('/pass-trade-favorite', {
+        params: { userId }
+      });
+
 
       const favoritePostIds = new Set(favRes.data.map(f => f.postId));
 
@@ -161,6 +203,15 @@ const PassTradePost = () => {
 
       fetchUserPasses();
     }, [userId]);
+
+    // [추가]
+    // URL로 전달된 userPassId가 있으면 자동 선택
+    useEffect(() => {
+      if (prefillUserPassId && userPasses.length > 0) {
+        setSelectedPassId(prefillUserPassId);
+      }
+    }, [prefillUserPassId, userPasses]);
+
 
     const selectedPass = userPasses.find(
       (p) => Number(p.userPassId) === Number(selectedPassId)
@@ -272,18 +323,6 @@ const PassTradePost = () => {
             내가 등록한 이용권
           </button>
 
-          <select
-            className="filter-select"
-            value={tmpSportFilter}
-            onChange={(e) => setTmpSportFilter(e.target.value)}
-          >
-            <option value="전체 종목">전체 종목</option>
-            <option value="PT">피트니스</option>
-            <option value="수영">수영</option>
-            <option value="요가">요가</option>
-            <option value="필라테스">필라테스</option>
-            <option value="주짓수">주짓수</option>
-          </select>
 
           <select
             className="filter-select"
@@ -307,6 +346,20 @@ const PassTradePost = () => {
             <option>40개 이하</option>
             <option>50개 이하</option>
             <option>50개 이상</option>
+          </select>
+
+
+          <select
+            className="filter-select"
+            value={tmpSportFilter}
+            onChange={(e) => setTmpSportFilter(e.target.value)} //  검색버튼 눌렀을 때 반영됨
+          >
+            <option value="전체 종목">전체 종목</option>
+            <option value="PT">피트니스</option>
+            <option value="수영">수영</option>
+            <option value="요가">요가</option>
+            <option value="필라테스">필라테스</option>
+            <option value="주짓수">주짓수</option>
           </select>
 
           <button className="search-btn" onClick={loadFavorites}>
@@ -352,9 +405,16 @@ const PassTradePost = () => {
                 isFavorite={post.isFavorite}
                 onToggle={async () => {
                   if (post.isFavorite) {
-                    await api.delete(`/pass-trade-favorite/${post.postId}`);
+                    await api.delete(
+                      `/pass-trade-favorite/${post.postId}`,
+                      { params: { userId } }
+                    );
+
                   } else {
-                    await api.post('/pass-trade-favorite', { postId: post.postId });
+                    await api.post('/pass-trade-favorite', {
+                      userId,
+                      postId: post.postId
+                    });
                   }
 
                   setPosts(prev =>

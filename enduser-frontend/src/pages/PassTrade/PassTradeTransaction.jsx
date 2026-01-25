@@ -32,11 +32,11 @@ const PassTradeTransaction = () => {
       const mapped = res.data.map((tx) => ({
         txId: tx.transactionId,
         type: type === 'buy' ? 'BUY' : 'SELL',
-        title: `게시글 #${tx.postId}`, // 임시
+        title: tx.postTitle ?? `게시글 #${tx.postId}`,
         counterParty:
           type === 'buy'
-            ? '판매자'        // 현재 백엔드 미제공
-            : tx.buyerId,
+            ? tx.sellerName   // 판매자 이름
+            : tx.buyerName,   // 구매자 이름
         quantity: tx.buyQty,
         price: tx.tradeAmt,
         status: tx.sttsCd,
@@ -128,7 +128,6 @@ const PassTradeTransaction = () => {
         ))}
       </div>
 
-     
       {/* 거래 상세 모달 */}
       {isDetailOpen && selectedTx && (
         <div className="transaction-modal-content" onClick={() => setIsDetailOpen(false)}>
@@ -136,7 +135,7 @@ const PassTradeTransaction = () => {
             className="transaction-modal"
             onClick={(e) => e.stopPropagation()}
           >
-            <h2>거래 상세</h2>
+            <h1>거래 상세</h1>
 
             <p>거래 ID: {selectedTx.txId}</p>
             <p>구분: {selectedTx.type === 'BUY' ? '구매' : '판매'}</p>
