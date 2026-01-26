@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import api from "../../api";
+import CommunitySidebar from "../Community/CommunitySidebar";
 import "./Notice.css";
 
 function formatDateYmd(dateStr) {
@@ -84,9 +85,11 @@ function NoticeUserPage() {
   const pagedNotices = notices.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   return (
-    <div className="notice-wrap notice-faq-only">
-      {/* 상단 타이틀 */}
-      <div className="notice-page-header">
+    <div className="community-layout">
+      <CommunitySidebar />
+      <div className="notice-wrap notice-faq-only">
+        {/* 상단 타이틀 */}
+        <div className="notice-page-header">
         <h1 className="page-title">공지사항</h1>
         <p className="page-subtitle">
           더 나은 운동 경험을 위해 준비한,
@@ -222,6 +225,7 @@ function NoticeUserPage() {
           </button>
         </div>
       </section>
+      </div>
 
       {/* 상세 팝업 */}
       {detail && (

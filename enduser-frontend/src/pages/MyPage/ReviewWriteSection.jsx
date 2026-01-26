@@ -1,11 +1,34 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import api from '../../api';
 import '../../components/auth/AuthModalStyles.css';
 
 /* =========================
    API 함수들
 ========================= */
+
+// 이용내역 조회
+const getPastHistory = async (startDate = null, endDate = null, branchId = null, reviewWritten = null) => {
+  try {
+    const params = {};
+    if (startDate) params.startDate = startDate;
+    if (endDate) params.endDate = endDate;
+    if (branchId) params.branchId = branchId;
+    if (reviewWritten) params.reviewWritten = reviewWritten;
+
+    const response = await api.get('/reservations/completedReservations', { params });
+
+    // 백엔드 응답 구조: { status, message, data }
+    if (response.data.status === 'SUCCESS') {
+      // 성공이면 data가 없어도 빈 배열 반환 (데이터 없음 = 정상)
+      return response.data.data || [];
+    } else {
+      throw new Error(response.data.message || '이용내역 조회 실패');
+    }
+  } catch (error) {
+    console.error('이용내역 조회 실패:', error);
+    throw error;
+  }
+};
 
 // 이용내역 조회 (리뷰 작성 가능한 항목)
 const getCompletedReservations = async (reviewWritten = null) => {
@@ -362,7 +385,7 @@ function ReviewWriteSection({ reviewTab, setReviewTab }) {
 
     setWriteLoading(true);
     try {
-      const data = await getPastHistory('N');
+      const data = await getPastHistory(null, null, null, 'N');
       const transformed = data.map(h => ({
         ...h,
         date: h.rsvDt?.split?.('T')[0] || h.rsvDt,

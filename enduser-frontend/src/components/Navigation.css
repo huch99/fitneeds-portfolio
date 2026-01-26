@@ -191,7 +191,7 @@
 
 .nav-dropdown-menu {
   position: absolute;
-  top: 100%;
+  top: calc(100% - 4px); /* 버튼과 약간 겹치게 하여 틈 제거 */
   left: 0;
   z-index: 1050;
   min-width: 10rem;
@@ -209,14 +209,17 @@
   display: none;
   visibility: hidden;
   opacity: 0;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+  pointer-events: none; /* 드롭다운이 숨겨져 있을 때는 클릭 방지 */
 }
 
 .nav-dropdown-menu.nav-dropdown-show {
   display: block !important;
   visibility: visible !important;
   opacity: 1 !important;
+  pointer-events: auto; /* 드롭다운이 보일 때만 클릭 가능 */
 }
+
 
 .nav-dropdown-item {
   display: block;

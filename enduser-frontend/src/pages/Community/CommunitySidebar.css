@@ -1,4 +1,4 @@
-/* PassTrade Sidebar Styles - 나의 운동 스타일 적용 */
+/* Community Sidebar Styles - 나의 운동 스타일 적용 */
 
 @font-face {
   font-family: 'UbuntuBold';
@@ -7,7 +7,7 @@
   font-style: normal;
 }
 
-.pass-trade-sidebar {
+.community-sidebar {
   width: 320px;
   background-color: #fff;
   padding: 2rem 0;
@@ -80,7 +80,7 @@
 
 /* Responsive */
 @media (max-width: 992px) {
-  .pass-trade-sidebar {
+  .community-sidebar {
     width: 100%;
     border-right: none;
     border-bottom: 1px solid #e9ecef;
