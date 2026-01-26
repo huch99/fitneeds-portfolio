@@ -12,11 +12,12 @@ import java.util.List;
 public interface PassTradeTransactionRepository
         extends JpaRepository<PassTradeTransaction, Long> {
 
+    // ✅ 판매 내역 (판매자 기준)
     @Query("""
     select new com.project.app.pass_trade_transaction.dto.response.PassTradeTransactionListResponse(
         t.transactionId,
         p.postId,
-        p.title,
+        coalesce(p.title, concat(st.sportNm, ' 이용권')),
         b.userId,
         b.userName,
         s.userId,
@@ -28,6 +29,7 @@ public interface PassTradeTransactionRepository
     )
     from PassTradeTransaction t
     join PassTradePost p on t.postId = p.postId
+    join p.sportType st
     join User b on t.buyerId = b.userId
     join User s on p.sellerId = s.userId
     where p.sellerId = :sellerId
@@ -37,11 +39,12 @@ public interface PassTradeTransactionRepository
             @Param("sellerId") String sellerId
     );
 
+    // ✅ 구매 내역 (구매자 기준)
     @Query("""
     select new com.project.app.pass_trade_transaction.dto.response.PassTradeTransactionListResponse(
         t.transactionId,
         p.postId,
-        p.title,
+        coalesce(p.title, concat(st.sportNm, ' 이용권')),
         b.userId,
         b.userName,
         s.userId,
@@ -53,6 +56,7 @@ public interface PassTradeTransactionRepository
     )
     from PassTradeTransaction t
     join PassTradePost p on t.postId = p.postId
+    join p.sportType st
     join User b on t.buyerId = b.userId
     join User s on p.sellerId = s.userId
     where t.buyerId = :buyerId
