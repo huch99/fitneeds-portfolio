@@ -121,6 +121,9 @@ public class PaymentService {
                 throw new IllegalArgumentException("이용권 결제 시 userPassId는 필수입니다.");
             }
             usedUserPass = userPassService.usePassForR(requestDto.getUserPassId(), "스케줄 예약(" + schedule.getSchdId() + ")");
+            if (!usedUserPass.getSportType().getSportId().equals(schedule.getProgram().getSportType().getSportId())) {
+            	throw new IllegalArgumentException("다른 종목의 이용권은 사용 할 수 없습니다.");
+            }
             if (requestDto.getAmount().compareTo(BigDecimal.ZERO) != 0) {
                 throw new IllegalArgumentException("이용권 결제 시 금액은 0원이어야 합니다.");
             }
@@ -130,9 +133,6 @@ public class PaymentService {
             }
         }
         
-        if (!usedUserPass.getSportType().getSportId().equals(schedule.getProgram().getSportType().getSportId())) {
-        	throw new IllegalArgumentException("다른 종목의 이용권은 사용 할 수 없습니다.");
-        }
 
         // 2. Payment 엔티티 생성 및 저장 (기존 로직 유지)
         Payment payment = Payment.builder()
