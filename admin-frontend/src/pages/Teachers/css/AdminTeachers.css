@@ -388,3 +388,46 @@
     padding: 20px;
     color: #555;
 }
+
+/* pagination */
+.teachers-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    margin-top: 14px;
+}
+
+.teachers-pagination .page-btn {
+    min-width: 34px;
+    height: 34px;
+    padding: 0 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #111827;            /* ✅ 숫자 보이게 */
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.teachers-pagination .page-btn:hover {
+    background: #f3f4f6;
+}
+
+.teachers-pagination .page-btn.active {
+    background: #111827;
+    color: #ffffff;
+    border-color: #111827;
+}
+
+.teachers-pagination .page-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.upload-preview.drop-active {
+    outline: 2px dashed #9ca3af;
+    outline-offset: 4px;
+    background: #f9fafb;
+}

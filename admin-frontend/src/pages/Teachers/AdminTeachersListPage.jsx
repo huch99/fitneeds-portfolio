@@ -9,6 +9,9 @@ import { branchApi, sportTypeApi } from "../../api"; // 필요 시 "../../api/in
  * 백엔드: GET /api/teachers?branchId&sportId&status
  * - status: ACTIVE | LEAVE | RESIGNED (null이면 ACTIVE로 정규화됨)
  * - "전체(ALL)"는 백엔드에서 단일 호출로 지원하지 않아서, 프론트에서 3번 호출해서 합친다.
+ *
+ * ✅ 현재 구조에서는 서버사이드 페이징을 붙이기 어렵기 때문에
+ *    1차는 "클라이언트 페이징"으로 구현한다.
  */
 
 const STATUS_OPTIONS = [
@@ -17,6 +20,8 @@ const STATUS_OPTIONS = [
     { value: "LEAVE", label: "휴직" },
     { value: "RESIGNED", label: "퇴사" },
 ];
+
+const PAGE_SIZE = 25; // 원하는 페이지 당 건수로 조절
 
 function statusLabel(sttsCd) {
     switch (sttsCd) {
@@ -78,6 +83,16 @@ function getCurrentUserIdFromToken() {
     }
 }
 
+/** 페이지 번호 묶음 생성 (현재페이지 기준 앞뒤로 n개) */
+function buildPageNumbers(current, total, windowSize = 2) {
+    if (total <= 1) return [1];
+    const start = Math.max(1, current - windowSize);
+    const end = Math.min(total, current + windowSize);
+    const pages = [];
+    for (let p = start; p <= end; p++) pages.push(p);
+    return pages;
+}
+
 export default function AdminTeachersListPage() {
     const navigate = useNavigate();
 
@@ -90,6 +105,9 @@ export default function AdminTeachersListPage() {
     const [loading, setLoading] = useState(false);
     const [errMsg, setErrMsg] = useState("");
 
+    // ✅ 페이징 상태
+    const [page, setPage] = useState(1);
+
     // 지점/종목 옵션: 공용 API로 로딩
     const [branchOptions, setBranchOptions] = useState([{ value: "", label: "전체 지점" }]);
     const [sportOptions, setSportOptions] = useState([{ value: "", label: "전체 종목" }]);
@@ -101,11 +119,12 @@ export default function AdminTeachersListPage() {
                 const branches = await branchApi.getAll(); // 기대: [{ brchId, brchNm, ... }]
                 const opts = [
                     { value: "", label: "전체 지점" },
-                    ...safeArr(branches).map((b) => ({
-                        value: String(b.brchId ?? b.brch_id ?? ""),
-                        label: b.brchNm ?? b.brch_nm ?? "-",
-                    }))
-                    .filter((x) => x.value),
+                    ...safeArr(branches)
+                        .map((b) => ({
+                            value: String(b.brchId ?? b.brch_id ?? ""),
+                            label: b.brchNm ?? b.brch_nm ?? "-",
+                        }))
+                        .filter((x) => x.value),
                 ];
                 setBranchOptions(opts);
             } catch {
@@ -117,11 +136,12 @@ export default function AdminTeachersListPage() {
                 const sports = await sportTypeApi.getAll(); // 기대: [{ sportId, sportNm, ... }]
                 const opts = [
                     { value: "", label: "전체 종목" },
-                    ...safeArr(sports).map((s) => ({
-                        value: String(s.sportId ?? s.sport_id ?? ""),
-                        label: s.sportNm ?? s.sport_nm ?? "-",
-                    }))
-                    .filter((x) => x.value),
+                    ...safeArr(sports)
+                        .map((s) => ({
+                            value: String(s.sportId ?? s.sport_id ?? ""),
+                            label: s.sportNm ?? s.sport_nm ?? "-",
+                        }))
+                        .filter((x) => x.value),
                 ];
                 setSportOptions(opts);
             } catch {
@@ -161,6 +181,8 @@ export default function AdminTeachersListPage() {
                 const one = await fetchByStatus(status);
                 setRows(one);
             }
+            // ✅ 검색(fetchList) 새로 하면 1페이지로
+            setPage(1);
         } catch (e) {
             setErrMsg(e?.response?.data?.message || e?.message || "목록 조회 중 오류가 발생했습니다.");
         } finally {
@@ -182,6 +204,24 @@ export default function AdminTeachersListPage() {
             return name.includes(kw) || phone.includes(kw);
         });
     }, [rows, keyword]);
+
+    // ✅ 페이징 계산 (클라이언트)
+    const totalCount = filteredRows.length;
+    const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+
+    useEffect(() => {
+        // 필터링 결과가 줄어들면 page가 범위를 벗어날 수 있으니 보정
+        if (page > totalPages) setPage(totalPages);
+        if (page < 1) setPage(1);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [totalPages]);
+
+    const pagedRows = useMemo(() => {
+        const start = (page - 1) * PAGE_SIZE;
+        return filteredRows.slice(start, start + PAGE_SIZE);
+    }, [filteredRows, page]);
+
+    const pageNumbers = useMemo(() => buildPageNumbers(page, totalPages, 2), [page, totalPages]);
 
     const onClickRetire = async (userId) => {
         if (!userId) return;
@@ -234,7 +274,13 @@ export default function AdminTeachersListPage() {
                     <div className="filter-row">
                         <div className="filter-item">
                             <label>지점</label>
-                            <select value={branchId} onChange={(e) => setBranchId(e.target.value)}>
+                            <select
+                                value={branchId}
+                                onChange={(e) => {
+                                    setBranchId(e.target.value);
+                                    setPage(1);
+                                }}
+                            >
                                 {branchOptions.map((o) => (
                                     <option key={o.value} value={o.value}>
                                         {o.label}
@@ -245,7 +291,13 @@ export default function AdminTeachersListPage() {
 
                         <div className="filter-item">
                             <label>종목</label>
-                            <select value={sportId} onChange={(e) => setSportId(e.target.value)}>
+                            <select
+                                value={sportId}
+                                onChange={(e) => {
+                                    setSportId(e.target.value);
+                                    setPage(1);
+                                }}
+                            >
                                 {sportOptions.map((o) => (
                                     <option key={o.value} value={o.value}>
                                         {o.label}
@@ -256,7 +308,13 @@ export default function AdminTeachersListPage() {
 
                         <div className="filter-item">
                             <label>상태</label>
-                            <select value={status} onChange={(e) => setStatus(e.target.value)}>
+                            <select
+                                value={status}
+                                onChange={(e) => {
+                                    setStatus(e.target.value);
+                                    setPage(1);
+                                }}
+                            >
                                 {STATUS_OPTIONS.map((o) => (
                                     <option key={o.value} value={o.value}>
                                         {o.label}
@@ -267,7 +325,14 @@ export default function AdminTeachersListPage() {
 
                         <div className="filter-item filter-search">
                             <label>강사명/연락처 검색</label>
-                            <input value={keyword} onChange={(e) => setKeyword(e.target.value)} placeholder="강사명 또는 연락처" />
+                            <input
+                                value={keyword}
+                                onChange={(e) => {
+                                    setKeyword(e.target.value);
+                                    setPage(1);
+                                }}
+                                placeholder="강사명 또는 연락처"
+                            />
                         </div>
 
                         <div className="filter-item filter-btn">
@@ -281,7 +346,9 @@ export default function AdminTeachersListPage() {
                 </div>
 
                 <div className="teachers-table-head">
-                    <div className="teachers-total">총 {filteredRows.length}명</div>
+                    <div className="teachers-total">
+                        총 {totalCount}명 (페이지 {page} / {totalPages})
+                    </div>
                 </div>
 
                 <div className="teachers-table-wrap">
@@ -293,7 +360,7 @@ export default function AdminTeachersListPage() {
                             <th>주요 종목</th>
                             <th>상태</th>
                             <th>연락처</th>
-                            <th>액션</th>
+                            <th>보기</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -303,14 +370,14 @@ export default function AdminTeachersListPage() {
                                     로딩 중...
                                 </td>
                             </tr>
-                        ) : filteredRows.length === 0 ? (
+                        ) : pagedRows.length === 0 ? (
                             <tr>
                                 <td colSpan={6} style={{ padding: 20 }}>
                                     조회 결과가 없습니다.
                                 </td>
                             </tr>
                         ) : (
-                            filteredRows.map((r) => (
+                            pagedRows.map((r) => (
                                 <tr key={r.userId}>
                                     <td>{r.userName || "-"}</td>
                                     <td>{r.brchNm || "-"}</td>
@@ -334,7 +401,75 @@ export default function AdminTeachersListPage() {
                         </tbody>
                     </table>
 
-                    <div className="teachers-paging-hint">페이징은 추후 연동</div>
+                    {/* ✅ 페이징 UI */}
+                    <div className="teachers-pagination">
+                        <button
+                            className="page-btn"
+                            onClick={() => setPage(1)}
+                            disabled={page === 1 || loading}
+                            title="처음"
+                        >
+                            {"<<"}
+                        </button>
+                        <button
+                            className="page-btn"
+                            onClick={() => setPage((p) => Math.max(1, p - 1))}
+                            disabled={page === 1 || loading}
+                            title="이전"
+                        >
+                            {"<"}
+                        </button>
+
+                        {/* 앞쪽 생략 표시 */}
+                        {pageNumbers[0] > 1 && (
+                            <>
+                                <button className="page-btn" onClick={() => setPage(1)} disabled={loading}>
+                                    1
+                                </button>
+                                {pageNumbers[0] > 2 && <span className="page-ellipsis">...</span>}
+                            </>
+                        )}
+
+                        {pageNumbers.map((p) => (
+                            <button
+                                key={p}
+                                className={`page-btn ${p === page ? "active" : ""}`}
+                                onClick={() => setPage(p)}
+                                disabled={loading}
+                            >
+                                {p}
+                            </button>
+                        ))}
+
+                        {/* 뒤쪽 생략 표시 */}
+                        {pageNumbers[pageNumbers.length - 1] < totalPages && (
+                            <>
+                                {pageNumbers[pageNumbers.length - 1] < totalPages - 1 && <span className="page-ellipsis">...</span>}
+                                <button className="page-btn" onClick={() => setPage(totalPages)} disabled={loading}>
+                                    {totalPages}
+                                </button>
+                            </>
+                        )}
+
+                        <button
+                            className="page-btn"
+                            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                            disabled={page === totalPages || loading}
+                            title="다음"
+                        >
+                            {">"}
+                        </button>
+                        <button
+                            className="page-btn"
+                            onClick={() => setPage(totalPages)}
+                            disabled={page === totalPages || loading}
+                            title="마지막"
+                        >
+                            {">>"}
+                        </button>
+                    </div>
+
+                    <div className="teachers-paging-hint">페이징은 추후 서버 연동 가능</div>
                 </div>
             </div>
         </div>

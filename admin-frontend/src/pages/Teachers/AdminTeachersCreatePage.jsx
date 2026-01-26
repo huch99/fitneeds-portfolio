@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo, useState } from "react";
+// file: src/pages/Teachers/AdminTeachersCreatePage.jsx
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "./css/AdminTeachers.css";
 import { createTeacher } from "../../api/teachers";
@@ -20,6 +21,51 @@ function newCareer() {
 
 function newCertificate() {
     return { certNm: "", issuer: "", acqDt: "", certNo: "" };
+}
+
+function fileToDataUrl(file) {
+    return new Promise((resolve, reject) => {
+        const r = new FileReader();
+        r.onload = () => resolve(String(r.result || ""));
+        r.onerror = reject;
+        r.readAsDataURL(file);
+    });
+}
+
+/**
+ * 운영용: 업로드 바디/DB 부담 줄이기 위해 리사이즈/압축
+ * - maxDim: 긴 변 기준 최대 픽셀
+ * - quality: jpeg/webp 품질
+ */
+async function downscaleDataUrl(dataUrl, maxDim = 512, quality = 0.82, mime = "image/jpeg") {
+    const img = new Image();
+    img.src = dataUrl;
+
+    await new Promise((res, rej) => {
+        img.onload = res;
+        img.onerror = rej;
+    });
+
+    const { width, height } = img;
+    const scale = Math.min(1, maxDim / Math.max(width, height));
+    const w = Math.max(1, Math.round(width * scale));
+    const h = Math.max(1, Math.round(height * scale));
+
+    const canvas = document.createElement("canvas");
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(img, 0, 0, w, h);
+
+    // 가능하면 webp로 더 줄이기(브라우저 지원 시)
+    try {
+        const webp = canvas.toDataURL("image/webp", 0.8);
+        if (webp.startsWith("data:image/webp")) return webp;
+    } catch {
+        // ignore
+    }
+
+    return canvas.toDataURL(mime, quality);
 }
 
 export default function AdminTeachersCreatePage() {
@@ -50,6 +96,67 @@ export default function AdminTeachersCreatePage() {
     // profileImgUrl(문자열) + 미리보기
     const [profileImgUrl, setProfileImgUrl] = useState("");
     const previewUrl = useMemo(() => (profileImgUrl ? profileImgUrl : ""), [profileImgUrl]);
+
+    // ✅ 파일 선택/드래그앤드롭용
+    const fileRef = useRef(null);
+    const [dragActive, setDragActive] = useState(false);
+
+    const openFilePicker = () => fileRef.current?.click();
+
+    const applyFile = async (file) => {
+        if (!file) return;
+
+        // 타입 방어(드래그앤드롭 시 특히 중요)
+        if (!file.type?.startsWith("image/")) {
+            alert("이미지 파일만 업로드할 수 있습니다.");
+            return;
+        }
+
+        try {
+            const raw = await fileToDataUrl(file);
+            const compact = await downscaleDataUrl(raw, 512, 0.82);
+            setProfileImgUrl(compact);
+        } catch {
+            alert("이미지 처리 중 오류가 발생했습니다.");
+        }
+    };
+
+    const onPickFile = async (e) => {
+        const file = e.target.files?.[0];
+        await applyFile(file);
+        // 같은 파일 다시 선택 가능하게 reset
+        e.target.value = "";
+    };
+
+    // drag & drop 이벤트는 기본동작 막아야 drop이 먹습니다.
+    const onDragEnter = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDragActive(true);
+    };
+
+    const onDragOver = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDragActive(true);
+    };
+
+    const onDragLeave = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDragActive(false);
+    };
+
+    const onDrop = async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDragActive(false);
+
+        const file = e.dataTransfer?.files?.[0];
+        await applyFile(file);
+    };
+
+    const clearProfileImg = () => setProfileImgUrl("");
 
     // 지점/종목 옵션(API 로딩)
     const [branchOptions, setBranchOptions] = useState([{ value: "", label: "지점 선택" }]);
@@ -298,31 +405,23 @@ export default function AdminTeachersCreatePage() {
                                     <div className="row-card-grid">
                                         <input
                                             value={c.orgNm}
-                                            onChange={(e) =>
-                                                setCareers((p) => p.map((x, i) => (i === idx ? { ...x, orgNm: e.target.value } : x)))
-                                            }
+                                            onChange={(e) => setCareers((p) => p.map((x, i) => (i === idx ? { ...x, orgNm: e.target.value } : x)))}
                                             placeholder="기관/지점명(orgNm)"
                                         />
                                         <input
                                             value={c.roleNm}
-                                            onChange={(e) =>
-                                                setCareers((p) => p.map((x, i) => (i === idx ? { ...x, roleNm: e.target.value } : x)))
-                                            }
+                                            onChange={(e) => setCareers((p) => p.map((x, i) => (i === idx ? { ...x, roleNm: e.target.value } : x)))}
                                             placeholder="직무/설명(roleNm)"
                                         />
                                         <input
                                             type="date"
                                             value={c.strtDt}
-                                            onChange={(e) =>
-                                                setCareers((p) => p.map((x, i) => (i === idx ? { ...x, strtDt: e.target.value } : x)))
-                                            }
+                                            onChange={(e) => setCareers((p) => p.map((x, i) => (i === idx ? { ...x, strtDt: e.target.value } : x)))}
                                         />
                                         <input
                                             type="date"
                                             value={c.endDt}
-                                            onChange={(e) =>
-                                                setCareers((p) => p.map((x, i) => (i === idx ? { ...x, endDt: e.target.value } : x)))
-                                            }
+                                            onChange={(e) => setCareers((p) => p.map((x, i) => (i === idx ? { ...x, endDt: e.target.value } : x)))}
                                         />
                                     </div>
 
@@ -348,30 +447,22 @@ export default function AdminTeachersCreatePage() {
                                     <div className="row-card-grid">
                                         <input
                                             value={c.certNm}
-                                            onChange={(e) =>
-                                                setCertificates((p) => p.map((x, i) => (i === idx ? { ...x, certNm: e.target.value } : x)))
-                                            }
+                                            onChange={(e) => setCertificates((p) => p.map((x, i) => (i === idx ? { ...x, certNm: e.target.value } : x)))}
                                             placeholder="자격증명(certNm)"
                                         />
                                         <input
                                             value={c.issuer}
-                                            onChange={(e) =>
-                                                setCertificates((p) => p.map((x, i) => (i === idx ? { ...x, issuer: e.target.value } : x)))
-                                            }
+                                            onChange={(e) => setCertificates((p) => p.map((x, i) => (i === idx ? { ...x, issuer: e.target.value } : x)))}
                                             placeholder="발급기관(issuer)"
                                         />
                                         <input
                                             type="date"
                                             value={c.acqDt}
-                                            onChange={(e) =>
-                                                setCertificates((p) => p.map((x, i) => (i === idx ? { ...x, acqDt: e.target.value } : x)))
-                                            }
+                                            onChange={(e) => setCertificates((p) => p.map((x, i) => (i === idx ? { ...x, acqDt: e.target.value } : x)))}
                                         />
                                         <input
                                             value={c.certNo}
-                                            onChange={(e) =>
-                                                setCertificates((p) => p.map((x, i) => (i === idx ? { ...x, certNo: e.target.value } : x)))
-                                            }
+                                            onChange={(e) => setCertificates((p) => p.map((x, i) => (i === idx ? { ...x, certNo: e.target.value } : x)))}
                                             placeholder="자격증번호(certNo)"
                                         />
                                     </div>
@@ -387,21 +478,66 @@ export default function AdminTeachersCreatePage() {
                     </div>
                 </div>
 
+                {/* ✅ 프로필 사진: + 클릭 / 드래그앤드롭 지원 */}
                 <div className="panel panel-wide">
                     <div className="panel-title">프로필 사진</div>
 
+                    {/* 숨김 파일 input */}
+                    <input
+                        ref={fileRef}
+                        type="file"
+                        accept="image/*"
+                        style={{ display: "none" }}
+                        onChange={onPickFile}
+                    />
+
+                    {/* URL 입력도 유지 */}
                     <div className="form-row">
-                        <label>이미지 URL</label>
-                        <input value={profileImgUrl} onChange={(e) => setProfileImgUrl(e.target.value)} placeholder="https://..." />
+                        <label>이미지 URL(선택)</label>
+                        <input
+                            value={profileImgUrl}
+                            onChange={(e) => setProfileImgUrl(e.target.value)}
+                            placeholder="https://... 또는 아래에서 파일 선택/드래그"
+                        />
                     </div>
 
                     <div className="upload-box">
-                        <div className="upload-preview">
-                            {previewUrl ? <img src={previewUrl} alt="preview" /> : <div className="upload-placeholder">+</div>}
+                        <div
+                            className={`upload-preview ${dragActive ? "drop-active" : ""}`}
+                            role="button"
+                            tabIndex={0}
+                            onClick={openFilePicker} // ✅ “+” 눌러도 파일 선택
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter" || e.key === " ") openFilePicker();
+                            }}
+                            onDragEnter={onDragEnter}
+                            onDragOver={onDragOver}
+                            onDragLeave={onDragLeave}
+                            onDrop={onDrop}
+                            style={{ cursor: "pointer" }}
+                            title="클릭 또는 이미지 파일을 드래그해서 업로드"
+                        >
+                            {previewUrl ? (
+                                <img src={previewUrl} alt="preview" />
+                            ) : (
+                                <div className="upload-placeholder">
+                                    <div style={{ fontSize: 22, lineHeight: "22px" }}>+</div>
+                                    <div style={{ fontSize: 12, marginTop: 6, color: "#6b7280" }}>클릭 또는 드래그앤드롭</div>
+                                </div>
+                            )}
+                        </div>
+
+                        <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+                            <button type="button" className="btn-sm" onClick={openFilePicker}>
+                                파일 선택
+                            </button>
+                            <button type="button" className="btn-sm" onClick={clearProfileImg} disabled={!profileImgUrl}>
+                                제거
+                            </button>
                         </div>
                     </div>
 
-                    <div className="hint">현재 백엔드는 파일 업로드가 아니라 profileImgUrl(문자열) 저장 방식입니다.</div>
+                    <div className="hint">운영용: 파일 업로드 시 Data URL로 변환해 profileImgUrl에 저장합니다.</div>
                 </div>
 
                 <div className="form-actions">

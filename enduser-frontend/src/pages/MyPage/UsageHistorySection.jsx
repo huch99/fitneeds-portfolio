@@ -19,8 +19,9 @@ const getPastHistory = async (startDate = null, endDate = null, branchId = null,
     const response = await api.get('/reservations/completedReservations', { params });
 
     // 백엔드 응답 구조: { status, message, data }
-    if (response.data.status === 'SUCCESS' && response.data.data) {
-      return response.data.data;
+    if (response.data.status === 'SUCCESS') {
+      // 성공이면 data가 없어도 빈 배열 반환 (데이터 없음 = 정상)
+      return response.data.data || [];
     } else {
       throw new Error(response.data.message || '이용내역 조회 실패');
     }

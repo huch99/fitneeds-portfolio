@@ -1,5 +1,10 @@
 /* Layout component specific styles */
 
+/* 스크롤바 등장/사라짐 시 레이아웃 시프트 방지 (거래 메뉴 전환 시 네비 흔들림 해소) */
+html {
+  scrollbar-gutter: stable;
+}
+
 /* .layout-wrapper {
   display: block;
   min-height: 100vh;
