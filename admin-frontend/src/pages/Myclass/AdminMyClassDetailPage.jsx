@@ -98,6 +98,15 @@ export default function AdminMyClassDetailPage() {
                 </div>
 
                 <div className="teachers-header-actions">
+                    {/* ✅ 추가: 강사 목록으로 이동 */}
+                    <button
+                        className="btn-sm"
+                        onClick={() => navigate("/teachers")}
+                        disabled={loading}
+                    >
+                        강사 목록
+                    </button>
+
                     <button
                         className="btn-sm"
                         onClick={() => navigate("/myclass")}
@@ -188,7 +197,7 @@ export default function AdminMyClassDetailPage() {
                                             </tr>
                                         ) : (
                                             reservations.map((r, idx) => {
-                                                const userName = r.userName ?? r.user_name; // 백엔드에서 내려주면 이름 표시
+                                                const userName = r.userName ?? r.user_name;
                                                 const rsvDt = r.rsvDt ?? r.rsv_dt;
                                                 const rsvTime = fmtTime(r.rsvTime ?? r.rsv_time);
 
@@ -223,10 +232,10 @@ export default function AdminMyClassDetailPage() {
                                     </table>
                                 </div>
 
-                                {/* 참고:
-                    userName(회원명)이 계속 "-"로 나오면,
-                    예약자 API 응답에 user_name 조인이 빠진 상태라 백엔드에서 USERS.user_name(또는 회원명 컬럼) 조인 추가가 필요합니다.
-                */}
+                                {/*
+                                  userName(회원명)이 계속 "-"로 나오면,
+                                  예약자 API 응답에 user_name 조인이 빠진 상태라 백엔드에서 조인 추가 필요.
+                                */}
                             </div>
                         </div>
                     </>

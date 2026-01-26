@@ -1,16 +1,20 @@
 // file: src/main/java/com/project/app/teachers/service/TeacherService.java
 package com.project.app.teachers.service;
 
+import com.project.app.branch.entity.Branch;
+import com.project.app.branch.repository.BranchRepository;
 import com.project.app.config.util.UserIdGenerator;
+import com.project.app.myclass.dto.MyClassDto;
+import com.project.app.myclass.dto.ScheduleListQuery;
+import com.project.app.myclass.dto.row.MyClassScheduleRow;
+import com.project.app.myclass.mapper.MyClassMapper;
 import com.project.app.sportTypes.entity.SportType;
 import com.project.app.sportTypes.repository.SportTypeRepository;
 import com.project.app.teachers.dto.TeacherDto;
 import com.project.app.teachers.dto.TeacherStatusUpdateReq;
 import com.project.app.teachers.entity.*;
 import com.project.app.teachers.mapper.TeacherMapper;
-import com.project.app.branch.entity.Branch;
 import com.project.app.userAdmin.entity.UserAdmin;
-import com.project.app.branch.repository.BranchRepository;
 import com.project.app.userAdmin.repository.UserAdminRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
@@ -32,6 +36,11 @@ public class TeacherService {
     private final SportTypeRepository sportTypeRepo;
     private final PasswordEncoder passwordEncoder;
 
+    // ✅ 강사 배정 수업 목록 조회용
+    private final MyClassMapper myClassMapper;
+
+    private static final Set<String> ALLOWED_ROLES = Set.of("ADMIN", "MANAGER", "TEACHER");
+
     // ------------------------
     // Public APIs (권한 포함)
     // ------------------------
@@ -39,8 +48,8 @@ public class TeacherService {
     @Transactional(readOnly = true)
     public List<TeacherDto.Resp> list(String requesterId, Long requestedBranchId, Long sportId, String status) {
         UserAdmin requester = requireRequester(requesterId);
-
         String role = safe(requester.getRole());
+        requireKnownRole(role);
 
         // status 정규화 + 허용값 검증 (RETIRED 호환: RESIGNED로 치환)
         String resolvedStatus = normalizeStatus(status);
@@ -79,6 +88,7 @@ public class TeacherService {
     public TeacherDto.Resp detail(String requesterId, String targetUserId) {
         UserAdmin requester = requireRequester(requesterId);
         String role = safe(requester.getRole());
+        requireKnownRole(role);
 
         TeacherProfile target = teacherMapper.findById(targetUserId);
         if (target == null) {
@@ -89,10 +99,49 @@ public class TeacherService {
         return toFullResp(target);
     }
 
+    /**
+     * ✅ 신규: "강사 배정된 수업(스케줄) 목록"
+     * - ADMIN: 모든 강사 조회 가능
+     * - MANAGER: 본인 지점 강사만 조회 가능(teacher 접근도 지점으로 제한)
+     * - TEACHER: 본인 것만 조회 가능
+     */
+    @Transactional(readOnly = true)
+    public List<MyClassDto.ScheduleResp> listAssignedSchedules(String requesterId, String targetTeacherId, ScheduleListQuery q) {
+        UserAdmin requester = requireRequester(requesterId);
+        String role = safe(requester.getRole());
+        requireKnownRole(role);
+
+        TeacherProfile target = teacherMapper.findById(targetTeacherId);
+        if (target == null) {
+            throw new IllegalArgumentException("TeacherProfile not found: " + targetTeacherId);
+        }
+
+        // ✅ 여기서 “대상 강사 접근 권한”을 먼저 확정 (MANAGER는 지점 동일해야 함 / TEACHER는 본인만)
+        enforceAccessToTarget(role, requester, target);
+
+        ScheduleListQuery query = (q == null) ? new ScheduleListQuery() : q;
+
+        // ✅ teacherId는 무조건 path 변수 우선 (프론트에서 teacherId param으로 장난 못 치게)
+        query.setTeacherId(targetTeacherId);
+
+        // ✅ MANAGER는 지점 범위를 강제로 본인 지점으로
+        if ("MANAGER".equals(role)) {
+            if (requester.getBrchId() == null) throw new IllegalStateException("MANAGER has no brchId");
+            query.setBrchId(requester.getBrchId());
+        }
+
+        // ADMIN은 query의 brchId 필터가 들어오면 그대로 적용(선택)
+        return myClassMapper.selectScheduleList(query).stream()
+                .filter(Objects::nonNull)
+                .map(this::toMyClassScheduleResp)
+                .toList();
+    }
+
     @Transactional
     public TeacherDto.Resp create(String requesterId, TeacherDto.CreateReq req) {
         UserAdmin requester = requireRequester(requesterId);
         String role = safe(requester.getRole());
+        requireKnownRole(role);
 
         // TEACHER 생성 금지
         if ("TEACHER".equals(role)) throw new AccessDeniedException("TEACHER cannot create teachers");
@@ -144,9 +193,9 @@ public class TeacherService {
                 .brchId(req.brchId())
                 .build();
         userAdminRepo.save(userAdmin);
-        userAdminRepo.flush(); // 즉시 DB에 반영
+        userAdminRepo.flush();
 
-        // TEACHER_PROFILE 생성
+        // TEACHER_PROFILE 생성 (✅ profileImgUrl 포함)
         TeacherProfile profile = TeacherProfile.builder()
                 .userId(userId)
                 .brchId(req.brchId())
@@ -171,6 +220,7 @@ public class TeacherService {
     public TeacherDto.Resp update(String requesterId, String targetUserId, TeacherDto.UpdateReq req) {
         UserAdmin requester = requireRequester(requesterId);
         String role = safe(requester.getRole());
+        requireKnownRole(role);
 
         TeacherProfile targetProfile = teacherMapper.findById(targetUserId);
         if (targetProfile == null) {
@@ -200,11 +250,11 @@ public class TeacherService {
         if (req.brchId() != null) targetUser.setBrchId(req.brchId());
         userAdminRepo.save(targetUser);
 
-        // TEACHER_PROFILE 수정
+        // TEACHER_PROFILE 수정 (✅ profileImgUrl 반영)
         targetProfile.update(req.brchId(), req.intro(), req.profileImgUrl(), req.updUserId());
         teacherMapper.update(targetProfile);
 
-        // 하위 테이블 교체(요청이 null이면 변경 없음, 빈 리스트면 전체 삭제)
+        // 하위 테이블 교체
         if (req.sports() != null) {
             teacherMapper.deleteSportsByUserId(targetUserId);
             req.sports().stream().filter(Objects::nonNull).forEach(s -> {
@@ -259,6 +309,7 @@ public class TeacherService {
     public void retire(String requesterId, String targetUserId, TeacherDto.RetireReq req) {
         UserAdmin requester = requireRequester(requesterId);
         String role = safe(requester.getRole());
+        requireKnownRole(role);
 
         if ("TEACHER".equals(role)) throw new AccessDeniedException("TEACHER cannot retire teachers");
 
@@ -285,6 +336,7 @@ public class TeacherService {
     public void updateStatus(String requesterId, String targetUserId, TeacherStatusUpdateReq req) {
         UserAdmin requester = requireRequester(requesterId);
         String role = safe(requester.getRole());
+        requireKnownRole(role);
 
         if ("TEACHER".equals(role)) throw new AccessDeniedException("TEACHER cannot change status");
 
@@ -295,21 +347,26 @@ public class TeacherService {
         enforceAccessToTarget(role, requester, targetProfile);
 
         String newStatus = normalizeStatus(req.getSttsCd());
-        
+
         // RESIGNED는 retire API로만 가능
         if ("RESIGNED".equals(newStatus)) {
             throw new IllegalArgumentException("퇴직 상태는 /retire API로만 변경 가능합니다.");
         }
-        
+
         targetProfile.setSttsCd(newStatus);
         targetProfile.setUpdDt(LocalDateTime.now());
         teacherMapper.update(targetProfile);
     }
 
-
     // ------------------------
     // 권한/유틸
     // ------------------------
+
+    private void requireKnownRole(String role) {
+        if (!ALLOWED_ROLES.contains(role)) {
+            throw new AccessDeniedException("Unknown role: " + role);
+        }
+    }
 
     private UserAdmin requireRequester(String requesterId) {
         return userAdminRepo.findByUserId(requesterId)
@@ -317,8 +374,10 @@ public class TeacherService {
     }
 
     private void enforceAccessToTarget(String role, UserAdmin requester, TeacherProfile targetProfile) {
+        // ADMIN: 전체 접근
         if ("ADMIN".equals(role)) return;
 
+        // MANAGER: 본인 지점만
         if ("MANAGER".equals(role)) {
             if (requester.getBrchId() == null) throw new IllegalStateException("MANAGER has no brchId");
             if (!Objects.equals(requester.getBrchId(), targetProfile.getBrchId())) {
@@ -327,6 +386,7 @@ public class TeacherService {
             return;
         }
 
+        // TEACHER: 본인만
         if ("TEACHER".equals(role)) {
             if (!Objects.equals(requester.getUserId(), targetProfile.getUserId())) {
                 throw new AccessDeniedException("TEACHER can only access own profile");
@@ -426,6 +486,26 @@ public class TeacherService {
                 teacherMapper.insertCareer(career);
             });
         }
+    }
+
+    // ✅ MyClassScheduleRow -> MyClassDto.ScheduleResp (Teacher에서 재사용)
+    private MyClassDto.ScheduleResp toMyClassScheduleResp(MyClassScheduleRow r) {
+        return new MyClassDto.ScheduleResp(
+                r.getSchdId(),
+                r.getProgId(),
+                r.getProgNm(),
+                r.getTeacherId(),
+                r.getTeacherName(),
+                r.getBrchId(),
+                r.getBrchNm(),
+                r.getStrtDt(),
+                r.getStrtTm(),
+                r.getEndTm(),
+                r.getMaxNopCnt(),
+                r.getRsvCnt(),
+                r.getSttsCd(),
+                r.getDescription()
+        );
     }
 
     // ------------------------
