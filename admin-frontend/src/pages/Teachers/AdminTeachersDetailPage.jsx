@@ -86,6 +86,9 @@ export default function AdminTeachersDetailPage() {
     // 상태 변경
     const [nextStatus, setNextStatus] = useState("ACTIVE");
 
+    // ✅ 프로필 이미지 로드 실패(onError) 상태
+    const [imgLoadError, setImgLoadError] = useState(false);
+
     const loadDetailOnly = async () => {
         if (!targetUserId) return;
 
@@ -95,10 +98,8 @@ export default function AdminTeachersDetailPage() {
             const data = await getTeacherDetail(targetUserId);
             setTeacher(data || null);
 
-            // 상태 변경 select 초기값
             setNextStatus(data?.sttsCd || "ACTIVE");
 
-            // 이미 퇴사 정보가 있으면 초기값 세팅
             const serverLeaveDt = data?.leaveDt;
             const serverLeaveRsn = data?.leaveRsn;
             if (serverLeaveDt) setLeaveDt(serverLeaveDt);
@@ -130,7 +131,6 @@ export default function AdminTeachersDetailPage() {
         }
     };
 
-    // 초기: 상세 + 배정수업 같이 로드
     const loadAll = async () => {
         if (!targetUserId) return;
 
@@ -149,10 +149,8 @@ export default function AdminTeachersDetailPage() {
             setTeacher(d || null);
             setSchedules(safeArr(sch));
 
-            // 상태 변경 select 초기값
             setNextStatus(d?.sttsCd || "ACTIVE");
 
-            // 이미 퇴사 정보가 있으면 초기값 세팅
             const serverLeaveDt = d?.leaveDt;
             const serverLeaveRsn = d?.leaveRsn;
             if (serverLeaveDt) setLeaveDt(serverLeaveDt);
@@ -196,6 +194,11 @@ export default function AdminTeachersDetailPage() {
             profileImgUrl: t?.profileImgUrl ?? t?.profile_img_url ?? "",
         };
     }, [teacher]);
+
+    // ✅ URL이 바뀌면 에러 상태 리셋(새 이미지 재시도 가능)
+    useEffect(() => {
+        setImgLoadError(false);
+    }, [vm.profileImgUrl]);
 
     const isResigned = vm.sttsCd === "RESIGNED";
     const isBusy = loading || schLoading;
@@ -299,14 +302,13 @@ export default function AdminTeachersDetailPage() {
                                             background: "#f3f4f6",
                                         }}
                                     >
-                                        {vm.profileImgUrl ? (
+                                        {vm.profileImgUrl && !imgLoadError ? (
                                             <img
                                                 src={vm.profileImgUrl}
                                                 alt="profile"
                                                 style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                                                onError={(e) => {
-                                                    e.currentTarget.style.display = "none";
-                                                }}
+                                                onLoad={() => setImgLoadError(false)}
+                                                onError={() => setImgLoadError(true)}
                                             />
                                         ) : (
                                             <div
@@ -316,6 +318,8 @@ export default function AdminTeachersDetailPage() {
                                                     display: "flex",
                                                     alignItems: "center",
                                                     justifyContent: "center",
+                                                    color: "#6b7280",
+                                                    fontSize: 12,
                                                 }}
                                             >
                                                 No Image
@@ -365,6 +369,14 @@ export default function AdminTeachersDetailPage() {
                                                     {vm.profileImgUrl || "-"}
                                                 </div>
                                             </div>
+
+                                            {/* ✅ URL이 있는데 로드 실패한 경우 사용자에게 명확히 표시 */}
+                                            {vm.profileImgUrl && imgLoadError && (
+                                                <div className="hint" style={{ marginTop: 6 }}>
+                                                    프로필 이미지 로드에 실패했습니다. (URL 오류/외부 차단(CORS) 가능)
+                                                </div>
+                                            )}
+
                                             <div className="kv-row">
                                                 <div className="kv-k">한줄 소개</div>
                                                 <div className="kv-v">{vm.intro || "-"}</div>
@@ -473,7 +485,7 @@ export default function AdminTeachersDetailPage() {
                             </div>
                         </div>
 
-                        {/* ✅ 추가: 배정 수업 목록 (위 코드 기능 합침) */}
+                        {/* 배정 수업 목록 (기존 유지) */}
                         <div className="panel panel-wide">
                             <div className="panel-title">배정 수업 목록</div>
 
@@ -507,7 +519,7 @@ export default function AdminTeachersDetailPage() {
                                         <th>정원</th>
                                         <th>예약</th>
                                         <th>상태</th>
-                                        <th>액션</th>
+                                        <th>보기</th>
                                     </tr>
                                     </thead>
                                     <tbody>

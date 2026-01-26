@@ -425,3 +425,9 @@
     opacity: 0.45;
     cursor: not-allowed;
 }
+
+.upload-preview.drop-active {
+    outline: 2px dashed #9ca3af;
+    outline-offset: 4px;
+    background: #f9fafb;
+}

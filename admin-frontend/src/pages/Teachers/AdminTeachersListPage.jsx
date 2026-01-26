@@ -360,7 +360,7 @@ export default function AdminTeachersListPage() {
                             <th>주요 종목</th>
                             <th>상태</th>
                             <th>연락처</th>
-                            <th>액션</th>
+                            <th>보기</th>
                         </tr>
                         </thead>
                         <tbody>
