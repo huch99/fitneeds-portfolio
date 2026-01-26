@@ -56,6 +56,44 @@ function getCurrentUserIdFromToken() {
     }
 }
 
+// ✅ URL 표시 축약(중간 생략)
+function truncateMiddle(str, maxLen = 54) {
+    if (!str) return "";
+    const s = String(str);
+    if (s.length <= maxLen) return s;
+    const keep = maxLen - 3;
+    const head = Math.ceil(keep * 0.6);
+    const tail = Math.floor(keep * 0.4);
+    return `${s.slice(0, head)}...${s.slice(s.length - tail)}`;
+}
+
+function isHttpUrl(str) {
+    return /^https?:\/\//i.test(String(str || ""));
+}
+
+async function copyToClipboard(text) {
+    if (!text) return;
+    try {
+        await navigator.clipboard.writeText(text);
+        alert("프로필 URL이 복사되었습니다.");
+    } catch {
+        // 구형 브라우저 fallback
+        try {
+            const ta = document.createElement("textarea");
+            ta.value = text;
+            ta.style.position = "fixed";
+            ta.style.left = "-9999px";
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand("copy");
+            document.body.removeChild(ta);
+            alert("프로필 URL이 복사되었습니다.");
+        } catch {
+            alert("복사에 실패했습니다.");
+        }
+    }
+}
+
 export default function AdminTeachersDetailPage() {
     const navigate = useNavigate();
     const params = useParams();
@@ -363,6 +401,56 @@ export default function AdminTeachersDetailPage() {
                                                 <div className="kv-k">상태</div>
                                                 <div className="kv-v">{statusLabel(vm.sttsCd)}</div>
                                             </div>
+
+                                            {/* ✅ 프로필 URL: 짧게 표시 + 새탭 열기 + 복사 */}
+                                            <div className="kv-row">
+                                                <div className="kv-k">프로필 URL</div>
+                                                <div className="kv-v">
+                                                    {vm.profileImgUrl ? (
+                                                        <div style={{ display: "flex", gap: 8, alignItems: "center", minWidth: 0 }}>
+                                                            {isHttpUrl(vm.profileImgUrl) ? (
+                                                                <a
+                                                                    href={vm.profileImgUrl}
+                                                                    target="_blank"
+                                                                    rel="noreferrer"
+                                                                    title={vm.profileImgUrl}
+                                                                    style={{
+                                                                        flex: 1,
+                                                                        minWidth: 0,
+                                                                        overflow: "hidden",
+                                                                        textOverflow: "ellipsis",
+                                                                        whiteSpace: "nowrap",
+                                                                    }}
+                                                                >
+                                                                    {truncateMiddle(vm.profileImgUrl, 54)}
+                                                                </a>
+                                                            ) : (
+                                                                <span
+                                                                    title={vm.profileImgUrl}
+                                                                    style={{
+                                                                        flex: 1,
+                                                                        minWidth: 0,
+                                                                        overflow: "hidden",
+                                                                        textOverflow: "ellipsis",
+                                                                        whiteSpace: "nowrap",
+                                                                    }}
+                                                                >
+                                                                    {truncateMiddle(vm.profileImgUrl, 54)}
+                                                                </span>
+                                                            )}
+
+                                                            <button
+                                                                type="button"
+                                                                className="link-btn"
+                                                                onClick={() => copyToClipboard(vm.profileImgUrl)}
+                                                                title="URL 복사"
+                                                            >
+                                                                복사
+                                                            </button>
+                                                        </div>
+                                                    ) : (
+                                                        "-"
+                                                    )}
                                             <div className="kv-row">
                                                 <div className="kv-k">프로필 URL</div>
                                                 <div className="kv-v" style={{ wordBreak: "break-all" }}>
