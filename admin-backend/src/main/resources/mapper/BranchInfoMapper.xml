@@ -34,7 +34,7 @@
             policy_info,
             DATE_FORMAT(creat_at, '%Y-%m-%d %H:%i:%s') AS creat_at,
             DATE_FORMAT(upd_at, '%Y-%m-%d %H:%i:%s') AS upd_at
-        FROM branch_info
+        FROM BRANCH_INFO
         ORDER BY creat_at DESC
     </select>
 
@@ -55,7 +55,7 @@
             policy_info,
             DATE_FORMAT(creat_at, '%Y-%m-%d %H:%i:%s') AS creat_at,
             DATE_FORMAT(upd_at, '%Y-%m-%d %H:%i:%s') AS upd_at
-        FROM branch_info
+        FROM BRANCH_INFO
         WHERE br_info_id = #{brInfoId}
     </select>
 
@@ -66,7 +66,7 @@
             parameterType="com.project.app.branch.domain.BranchInfo"
             useGeneratedKeys="true"
             keyProperty="brInfoId">
-        INSERT INTO branch_info (
+        INSERT INTO BRANCH_INFO (
             brch_id,
             open_time,
             close_time,
@@ -94,7 +94,7 @@
     ========================= -->
     <update id="update"
             parameterType="com.project.app.branch.domain.BranchInfo">
-        UPDATE branch_info
+        UPDATE BRANCH_INFO
         SET
             brch_id = #{brchId, jdbcType=BIGINT},
             open_time = #{openTime, jdbcType=VARCHAR},
@@ -112,7 +112,7 @@
     ========================= -->
     <delete id="delete"
             parameterType="long">
-        DELETE FROM branch_info
+        DELETE FROM BRANCH_INFO
         WHERE br_info_id = #{brInfoId}
     </delete>
 
@@ -121,7 +121,7 @@
     ========================= -->
     <delete id="deleteByBrchId"
             parameterType="long">
-        DELETE FROM branch_info
+        DELETE FROM BRANCH_INFO
         WHERE brch_id = #{brchId}
     </delete>
 

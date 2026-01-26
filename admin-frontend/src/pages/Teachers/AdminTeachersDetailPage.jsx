@@ -451,6 +451,10 @@ export default function AdminTeachersDetailPage() {
                                                     ) : (
                                                         "-"
                                                     )}
+                                            <div className="kv-row">
+                                                <div className="kv-k">프로필 URL</div>
+                                                <div className="kv-v" style={{ wordBreak: "break-all" }}>
+                                                    {vm.profileImgUrl || "-"}
                                                 </div>
                                             </div>
 

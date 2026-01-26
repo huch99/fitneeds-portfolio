@@ -45,6 +45,7 @@ import AdminSportTypes from './pages/SportType/AdminSportType';
 // Myclass page
 import AdminMyClassDetailPage from "@/pages/Myclass/AdminMyClassDetailPage.jsx";
 import AdminMyClassListPage from "@/pages/Myclass/AdminMyClassClassListPage.jsx";
+import AdminScheduleRemakePage from './pages/Schedules/AdminScheduleRemakePage';
 
 function App() {
   return (
@@ -101,7 +102,8 @@ function App() {
 
 
           {/* 스케줄 관리 */}
-          <Route path="/schedules" element={<AdminSchedulePage />} />
+          {/* <Route path="/schedules" element={<AdminSchedulePage />} /> */}
+          <Route path='/schedules' element={<AdminScheduleRemakePage />} />
 
           {/* 스포츠 관리 */}
           <Route path="/sports" element={<AdminSportTypes/>} />

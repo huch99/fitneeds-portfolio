@@ -1,5 +1,6 @@
 package com.project.app.pass_trade.entity;
 
+import com.project.app.sporttype.entity.SportType;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -66,7 +67,7 @@ public class PassTradePost {
     @PrePersist
     protected void onCreate() {
         this.regDt = LocalDateTime.now();
-        this.updDt = LocalDateTime.now();
+//        this.updDt = LocalDateTime.now();
         this.deleted = false;
         this.tradeStatus = TradeStatus.SELLING;
     }
@@ -88,8 +89,29 @@ public class PassTradePost {
     @Column(name = "reg_dt")
     private LocalDateTime regDt;
 
-    @Column(name = "upd_dt")
+    @Column(
+            name = "upd_dt",
+            insertable = false,
+            updatable = false
+    )
     private LocalDateTime updDt;
+
+    /* =========================
+     * 게시글 정보
+     * ========================= */
+
+    // 종목명 (헬스 / 수영 / 요가 등)
+// 프론트 표시 + 거래 히스토리용
+
+
+    // 종목 FK
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sport_id", nullable = false)
+    private SportType sportType;
+
+
+
+
 
     /* =========================
      * LifeCycle

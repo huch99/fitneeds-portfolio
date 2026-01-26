@@ -1,7 +1,13 @@
 /* =========================
    공통 레이아웃
 ========================= */
+.community-layout {
+  display: flex;
+  min-height: calc(100vh - 80px);
+}
+
 .community-container {
+  flex: 1;
   padding: 30px;
 
   /* ✅ 리스트 width는 기존 유지 + 크기만 조절 */

@@ -1,4 +1,4 @@
-package com.project.app.pass_trade.entity;
+package com.project.app.pass_trade_transaction.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;

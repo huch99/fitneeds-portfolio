@@ -19,11 +19,10 @@ public class Program {
     private Long progId;
     private String progNm;
     private String sportId;
-    private String typeCd;
+    private Long brchId;
     private Integer useYn;
     private Integer oneTimeAmt;
-    private Integer rwdGamePoint;
     private LocalDateTime regDt;
     private LocalDateTime updDt;
-    private String detailTypeCd;
+
 }

@@ -1,39 +1,36 @@
 package com.project.app.pass_trade_transaction.service;
 
-import com.project.app.pass_trade.dto.response.PassTradeTransactionResponse;
-import com.project.app.pass_trade_transaction.repository.PassTradeTransactionQueryRepository;
+import com.project.app.pass_trade_transaction.dto.response.PassTradeTransactionListResponse;
+import com.project.app.pass_trade_transaction.repository.PassTradeTransactionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
-// 거래 내역 조회 전용 서비스 (내부 사용)
-// 외부 API로 노출되지 않음, 내부 조회(Read Model) 전용
-// 관리자 화면, 통계, 분석용으로만 사용
 @Service
 @RequiredArgsConstructor
 public class PassTradeTransactionService {
 
-    private final PassTradeTransactionQueryRepository queryRepository;
+    private final PassTradeTransactionRepository transactionRepository;
 
-    // 내부 조회용: 사용자별 전체 거래 내역
-    public List<PassTradeTransactionResponse> getAllTransactions(String userId) {
-        return queryRepository.findAllByUserId(userId);
+    /**
+     * ✅ 내가 판매한 거래 내역 조회
+     * - 판매자 기준
+     * - 게시글 제목 / 구매자 이름 / 판매자 이름 포함 DTO 반환
+     */
+    @Transactional(readOnly = true)
+    public List<PassTradeTransactionListResponse> getSellTransactions(String sellerId) {
+        return transactionRepository.findSellTransactionList(sellerId);
     }
 
-    // 내부 조회용: 거래 ID로 단건 조회
-    public Optional<PassTradeTransactionResponse> getTransaction(Long transactionId) {
-        return queryRepository.findByTransactionId(transactionId);
-    }
-
-    // 내부 조회용: 판매 거래 내역
-    public List<PassTradeTransactionResponse> getSellTransactions(String userId) {
-        return queryRepository.findSellTransactionsByUserId(userId);
-    }
-
-    // 내부 조회용: 구매 거래 내역
-    public List<PassTradeTransactionResponse> getBuyTransactions(String userId) {
-        return queryRepository.findBuyTransactionsByUserId(userId);
+    /**
+     * ✅ 내가 구매한 거래 내역 조회
+     * - 구매자 기준
+     * - 게시글 제목 / 구매자 이름 / 판매자 이름 포함 DTO 반환
+     */
+    @Transactional(readOnly = true)
+    public List<PassTradeTransactionListResponse> getBuyTransactions(String buyerId) {
+        return transactionRepository.findBuyTransactionList(buyerId);
     }
 }

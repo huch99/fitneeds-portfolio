@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom'; // 거래등록 추가
 import { getMyPasses } from '../../api/passApi';
 import { listProducts } from '../../api/productApi';
 import { purchasePass } from '../../api/purchaseApi';
@@ -8,6 +9,7 @@ import './MyPassPage.css';
 
 function MyPassPage() {
   const userId = useSelector((state) => state.auth.userId);
+  const navigate = useNavigate(); // 거래등록 추가
   const [myPasses, setMyPasses] = useState([]);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -139,16 +141,16 @@ function MyPassPage() {
 
       console.log('purchaseData', purchaseData);
       await purchasePass(purchaseData);
-      
+
       // 구매 성공 시 모달 닫기, 목록 새로고침
       setShowBuyModal(false);
       setSelectedProduct(null);
       setPaymentMethod('card');
       setAgreeTerms(false);
-      
+
       // 이용권 목록 새로고침
       await fetchMyPasses();
-      
+
       alert('구매가 완료되었습니다!');
     } catch (err) {
       console.error('Purchase failed:', err);
@@ -175,7 +177,7 @@ function MyPassPage() {
           {/* 내 이용권 현황 섹션 */}
           <div className="mypass-section">
             <h2 className="mypass-title">내 이용권 현황</h2>
-            
+
             {error && (
               <div className="mypass-error-message">{error}</div>
             )}
@@ -201,15 +203,20 @@ function MyPassPage() {
                         </div>
                       </div>
                       <div className="mypass-progress-bar">
-                        <div 
+                        <div
                           className="mypass-progress-fill"
-                          style={{ 
-                            width: `${calculateProgress(remaining, total)}%` 
+                          style={{
+                            width: `${calculateProgress(remaining, total)}%`
                           }}
                         />
                       </div>
                       <div className="mypass-card-actions">
-                        <button className="mypass-btn mypass-btn-transfer">
+                        <button className="mypass-btn mypass-btn-transfer"
+                          onClick={() => {
+                            // 거래 페이지로 이동 + 해당 이용권 자동 선택값 전달
+                            navigate('/pass-trade', { state: { userPassId: passId } });
+                          }}
+                        >
                           양도하기(거래등록)
                         </button>
                       </div>
@@ -225,7 +232,7 @@ function MyPassPage() {
 
             {/* 새 이용권 구매 카드 */}
             <div className="mypass-cards">
-              <div 
+              <div
                 className="mypass-card mypass-card-add"
                 onClick={handleBuyClick}
                 style={{ cursor: 'pointer' }}
@@ -254,7 +261,7 @@ function MyPassPage() {
                     const productName = product.prodNm || product.name;
                     const productPrice = typeof product.prodAmt === 'number' ? product.prodAmt : (product.price || 0);
                     const productDesc = product.sportNm ? `${product.sportNm} ${product.prvCnt}회` : product.description;
-                    
+
                     return (
                       <div
                         key={productId}
@@ -278,7 +285,7 @@ function MyPassPage() {
               {/* 결제 정보 섹션 */}
               <div className="mypass-modal-right">
                 <h3>주문 정보</h3>
-                
+
                 {selectedProduct ? (
                   <>
                     <div className="mypass-order-info">
@@ -289,7 +296,7 @@ function MyPassPage() {
                       <div className="mypass-order-row">
                         <span>가격</span>
                         <strong>
-                          {typeof selectedProduct.prodAmt === 'number' 
+                          {typeof selectedProduct.prodAmt === 'number'
                             ? selectedProduct.prodAmt.toLocaleString()
                             : selectedProduct.price.toLocaleString()}원
                         </strong>
@@ -333,7 +340,7 @@ function MyPassPage() {
                     <div className="mypass-total-amount">
                       <span>최종 결제 금액</span>
                       <span className="mypass-amount">
-                        {typeof selectedProduct.prodAmt === 'number' 
+                        {typeof selectedProduct.prodAmt === 'number'
                           ? selectedProduct.prodAmt.toLocaleString()
                           : selectedProduct.price.toLocaleString()}원
                       </span>

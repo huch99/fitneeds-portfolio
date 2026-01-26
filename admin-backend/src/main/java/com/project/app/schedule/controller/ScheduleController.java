@@ -2,13 +2,17 @@
 package com.project.app.schedule.controller;
 
 import com.project.app.schedule.domain.Schedule;
+import com.project.app.schedule.dto.ScheduleCalendarResponseDto;
 import com.project.app.schedule.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +37,22 @@ public class ScheduleController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(schedule);
+    }
+    
+    @GetMapping("/calendar")
+    public ResponseEntity<List<ScheduleCalendarResponseDto>> selectCalendarSchedules(
+    		@RequestParam("fromDt") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDt,
+    		@RequestParam("toDt") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDt,
+    		@RequestParam(value = "brchId", required = false) Long brchId
+    		) {
+    	return ResponseEntity.ok(scheduleService.selectCalendarSchedules(fromDt, toDt, brchId));
+    }
+    
+    @GetMapping("/{brchId}/branch")
+    public ResponseEntity<List<Schedule>> findByBrchId(@PathVariable("brchId") Long brchId) {
+    	List<Schedule> schedule = scheduleService.findByBrchId(brchId);
+    	
+    	return ResponseEntity.ok(schedule);    	
     }
     
     @PostMapping

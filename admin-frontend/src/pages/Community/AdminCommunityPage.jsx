@@ -86,23 +86,23 @@ function AdminCommunityPage() {
 
   // ROLE 권한 체크해서, 출력하는 문
   if (role === "TEACHER") {
-  return (
-    <div style={{ padding: "40px", textAlign: "center" }}>
-      <h2>권한이 없습니다.</h2>
-      <p style={{ marginTop: "10px", color: "#666" }}>
-        해당 페이지에 접근할 수 있는 권한이 없습니다.
-      </p>
-    </div>
-  );
-}
+    return (
+      <div style={{ padding: "40px", textAlign: "center" }}>
+        <h2>권한이 없습니다.</h2>
+        <p style={{ marginTop: "10px", color: "#666" }}>
+          해당 페이지에 접근할 수 있는 권한이 없습니다.
+        </p>
+      </div>
+    );
+  }
 
-  
+
   return (
     <div>
       <h1>커뮤니티 관리</h1>
 
       {/* 🔍 필터 영역 */}
-      <div style={{ marginBottom: "16px", display: "flex", gap: "8px" }}>
+      <div className="community-filter">
         <select value={category} onChange={(e) => setCategory(e.target.value)}>
           <option value="">카테고리 전체</option>
           <option value="모집">모집</option>
@@ -166,7 +166,7 @@ function AdminCommunityPage() {
                 </Link>
               </td>
 
-              <td>{p.writerId}</td>
+              <td>{p.writerEmail}</td>
               <td>{p.views}</td>
 
               <td>
@@ -216,6 +216,32 @@ function AdminCommunityPage() {
           다음
         </button>
       </div>
+      <style>{`
+  .community-filter {
+    border: 1px solid #e3e3e3;
+    background: #fafafa;
+    padding: 12px;
+    margin-bottom: 12px;
+
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .community-filter select,
+  .community-filter input {
+    height: 40px;
+    padding: 0 10px;
+    font-size: 14px;
+  }
+
+  .community-filter button {
+    height: 40px;
+    padding: 0 16px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+`}</style>
     </div>
   );
 }

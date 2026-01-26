@@ -1,6 +1,7 @@
 package com.project.app.schedule.service;
 
 import com.project.app.schedule.domain.Schedule;
+import com.project.app.schedule.dto.ScheduleCalendarResponseDto;
 import com.project.app.schedule.mapper.ScheduleMapper;
 import com.project.app.schedule.entity.ScheduleSttsCd;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,20 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
     
     @Override
+    public List<Schedule> findByBrchId(Long brchId) {
+    	return scheduleMapper.findByBrchId(brchId);
+    }
+    
+    @Override
+    public List<ScheduleCalendarResponseDto> selectCalendarSchedules(
+    		LocalDate fromDt,
+    		LocalDate toDt,
+    		Long brchId
+    		) {
+    	return scheduleMapper.selectCalendarSchedules(fromDt, toDt, brchId);
+    }
+    
+    @Override
     public Schedule findById(Long schdId) {
         return scheduleMapper.findById(schdId);
     }
@@ -36,9 +51,9 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Override
     public Schedule create(Schedule schedule) {
         // String -> LocalType 변환
-        LocalDate strtDt = LocalDate.parse(schedule.getStrtDt(), DATE_FORMATTER);
-        LocalTime strtTm = parseTime(schedule.getStrtTm());
-        LocalTime endTm = parseTime(schedule.getEndTm());
+        LocalDate strtDt = schedule.getStrtDt();
+        LocalTime strtTm = schedule.getStrtTm();
+        LocalTime endTm = schedule.getEndTm();
 
         // 중복 체크: 같은 날짜, 시간, 프로그램, 강사
         int duplicateCount = scheduleMapper.countDuplicate(
@@ -74,9 +89,9 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Override
     public Schedule update(Schedule schedule) {
         // String -> LocalType 변환
-        LocalDate strtDt = LocalDate.parse(schedule.getStrtDt(), DATE_FORMATTER);
-        LocalTime strtTm = parseTime(schedule.getStrtTm());
-        LocalTime endTm = parseTime(schedule.getEndTm());
+        LocalDate strtDt = schedule.getStrtDt();
+        LocalTime strtTm = schedule.getStrtTm();
+        LocalTime endTm = schedule.getEndTm();
 
         // 중복 체크: 같은 날짜, 시간, 프로그램, 강사 (현재 스케줄 제외)
         int duplicateCount = scheduleMapper.countDuplicate(

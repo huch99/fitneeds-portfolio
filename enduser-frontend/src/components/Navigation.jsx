@@ -17,16 +17,19 @@ function Navigation() {
   // [ADD] 이용권 드롭다운 ref
   const passDropdownRef = useRef(null);
 
+  // 드롭다운 닫기 딜레이 타이머 ref (마우스가 빠르게 이동해도 드롭다운이 바로 닫히지 않도록)
+  const passDropdownTimerRef = useRef(null);
+  const portfolioDropdownTimerRef = useRef(null);
+  const blogDropdownTimerRef = useRef(null);
+
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Close dropdowns when route changes
+  // Close dropdowns when route changes (열려 있을 때만 setState → 불필요한 리렌더/흔들림 감소)
   useEffect(() => {
-    setBlogDropdownOpen(false);
-    setPortfolioDropdownOpen(false);
-
-    // [ADD] 이용권 드롭다운 닫기
-    setPassDropdownOpen(false);
+    if (blogDropdownOpen) setBlogDropdownOpen(false);
+    if (portfolioDropdownOpen) setPortfolioDropdownOpen(false);
+    if (passDropdownOpen) setPassDropdownOpen(false);
   }, [location]);
 
   // Handle scroll to change header style - only on home page
@@ -71,6 +74,21 @@ function Navigation() {
     };
   }, []);
 
+  // 컴포넌트 언마운트 시 타이머 정리
+  useEffect(() => {
+    return () => {
+      if (passDropdownTimerRef.current) {
+        clearTimeout(passDropdownTimerRef.current);
+      }
+      if (portfolioDropdownTimerRef.current) {
+        clearTimeout(portfolioDropdownTimerRef.current);
+      }
+      if (blogDropdownTimerRef.current) {
+        clearTimeout(blogDropdownTimerRef.current);
+      }
+    };
+  }, []);
+
   return (
     <nav className={`nav-main ${isScrolled ? 'nav-scrolled' : ''}`}>
       <div className="nav-container">
@@ -102,8 +120,21 @@ function Navigation() {
             <li
               className="nav-menu-item nav-dropdown"
               ref={passDropdownRef}
-              onMouseEnter={() => setPassDropdownOpen(true)}
-              onMouseLeave={() => setPassDropdownOpen(false)}
+              onMouseEnter={() => {
+                // 타이머가 있으면 취소
+                if (passDropdownTimerRef.current) {
+                  clearTimeout(passDropdownTimerRef.current);
+                  passDropdownTimerRef.current = null;
+                }
+                setPassDropdownOpen(true);
+              }}
+              onMouseLeave={() => {
+                // 약간의 딜레이 후 닫기 (마우스가 드롭다운으로 빠르게 이동할 수 있도록)
+                passDropdownTimerRef.current = setTimeout(() => {
+                  setPassDropdownOpen(false);
+                  passDropdownTimerRef.current = null;
+                }, 150);
+              }}
             >
               <Link className="nav-menu-link nav-dropdown-toggle" to="/pass-trade">
                 이용권
@@ -127,8 +158,21 @@ function Navigation() {
             <li
               className="nav-menu-item nav-dropdown"
               ref={portfolioDropdownRef}
-              onMouseEnter={() => setPortfolioDropdownOpen(true)}
-              onMouseLeave={() => setPortfolioDropdownOpen(false)}
+              onMouseEnter={() => {
+                // 타이머가 있으면 취소
+                if (portfolioDropdownTimerRef.current) {
+                  clearTimeout(portfolioDropdownTimerRef.current);
+                  portfolioDropdownTimerRef.current = null;
+                }
+                setPortfolioDropdownOpen(true);
+              }}
+              onMouseLeave={() => {
+                // 약간의 딜레이 후 닫기 (마우스가 드롭다운으로 빠르게 이동할 수 있도록)
+                portfolioDropdownTimerRef.current = setTimeout(() => {
+                  setPortfolioDropdownOpen(false);
+                  portfolioDropdownTimerRef.current = null;
+                }, 150);
+              }}
             >
               <Link className="nav-menu-link nav-dropdown-toggle" to="/community">
                 커뮤니티

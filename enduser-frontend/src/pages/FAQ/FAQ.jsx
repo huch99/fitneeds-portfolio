@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import api from "../../api";
+import CommunitySidebar from "../Community/CommunitySidebar";
 import "./FAQ.css";
 
 function FAQ() {
@@ -42,11 +43,13 @@ function FAQ() {
         <title>FAQ - FITNEEDS</title>
       </Helmet>
 
-      <div className="faq-wrap notice-faq-only">
-        {/* =========================
-            타이틀 (공지사항과 동일)
-           ========================= */}
-        <div className="faq-page-header">
+      <div className="community-layout">
+        <CommunitySidebar />
+        <div className="faq-wrap notice-faq-only">
+          {/* =========================
+              타이틀 (공지사항과 동일)
+             ========================= */}
+          <div className="faq-page-header">
           <h1 className="page-title">FAQ</h1>
           <p className="page-subtitle">
             당신의 운동이 더 합리적일 수 있도록,
@@ -147,6 +150,7 @@ function FAQ() {
             </button>
           </div>
         </section>
+        </div>
       </div>
     </>
   );

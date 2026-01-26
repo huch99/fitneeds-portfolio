@@ -6,8 +6,9 @@ import com.project.app.pass_trade.dto.request.PassTradePostCreateRequest;
 import com.project.app.pass_trade.dto.request.PassTradePostUpdateRequest;
 
 import com.project.app.pass_trade.dto.response.PassTradePostResponse;
-import com.project.app.pass_trade.dto.response.PassTradeTransactionResponse;
 import com.project.app.pass_trade.service.PassTradeService;
+import com.project.app.pass_trade_favorite.dto.PassTradeFavoriteResponse;
+import com.project.app.pass_trade_favorite.service.PassTradeFavoriteService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -15,7 +16,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.security.core.Authentication;
 import java.util.List;
 
 @Tag(name = "이용권 거래 API", description = "이용권 거래 게시글 등록/조회/즉시 구매")
@@ -25,6 +26,7 @@ import java.util.List;
 public class PassTradeController {
 
     private final PassTradeService passTradeService;
+    private final PassTradeFavoriteService favoriteService;
 
     // 거래 게시글 등록
     @Operation(summary = "거래 게시글 등록", description = "이용권 판매를 위한 거래 게시글을 등록합니다.")
@@ -34,14 +36,18 @@ public class PassTradeController {
     })
     @PostMapping("/posts")
     public ResponseEntity<PassTradePostResponse> createTradePost(
-            @RequestParam String sellerId,
+            Authentication authentication,
             @RequestBody PassTradePostCreateRequest request) {
+
+        String sellerId = authentication.getName(); // JWT subject (userId)
 
         PassTradePostResponse response =
                 passTradeService.createTradePost(sellerId, request);
 
         return ResponseEntity.ok(response);
     }
+
+
 
     // 활성 거래 게시글 목록 조회
     @Operation(summary = "거래 게시글 목록 조회", description = "판매 중인 이용권 거래 게시글 목록을 조회합니다.")
@@ -60,15 +66,15 @@ public class PassTradeController {
             @ApiResponse(responseCode = "400", description = "잘못된 요청")
     })
     @PostMapping("/posts/{postId}/buy")
-    public ResponseEntity<PassTradeTransactionResponse> buyTrade(
+    public ResponseEntity<Void> buyTrade(
             @PathVariable Long postId,
             @RequestParam String buyerId,
             @RequestBody PassTradeBuyRequest request) {
 
-        PassTradeTransactionResponse response =
+
                 passTradeService.buyTrade(postId, buyerId, request);
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok().build();
     }
 
 
@@ -111,6 +117,39 @@ public class PassTradeController {
                 passTradeService.updateMyPost(postId, sellerId, request);
 
         return ResponseEntity.ok(response);
+    }
+
+    @Operation(
+            summary = "이용권 거래 게시물 즐겨찾기 토글",
+            description = """
+        이용권 거래 게시물의 즐겨찾기 상태를 토글한다.
+
+        - 이미 즐겨찾기된 게시물 → 즐겨찾기 해제
+        - 즐겨찾기되지 않은 게시물 → 즐겨찾기 추가
+
+        ※ 컨트롤러 분리 구조 유지:
+        외부 API는 PassTradeController에서 제공하며,
+        내부적으로 FavoriteService로 위임 처리한다.
+        """
+    )
+    @PatchMapping("/posts/{postId}/favorite")
+    public ResponseEntity<Void> toggleFavorite(
+            @PathVariable Long postId,
+            Authentication authentication
+    ) {
+        String userId = authentication.getName();
+        passTradeService.toggleFavorite(userId, postId);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/posts/favorites")
+    public ResponseEntity<List<PassTradeFavoriteResponse>> getFavoritePosts(
+            Authentication authentication
+    ) {
+        String userId = authentication.getName();
+        return ResponseEntity.ok(
+                favoriteService.getFavorites(userId)
+        );
     }
 
 

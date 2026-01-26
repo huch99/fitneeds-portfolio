@@ -144,7 +144,7 @@ function AdminCommunityDetailPage() {
 
       <div style={{ marginBottom: "20px", color: "#777" }}>
         <div>카테고리: {post.category}</div>
-        <div>작성자: {post.writerId}</div>
+        <div>작성자: {post.writerEmail}</div>
         <div>작성일: {post.createdAt}</div>
         <div>조회수: {post.views}</div>
       </div>
@@ -186,7 +186,7 @@ function AdminCommunityDetailPage() {
               {recruitUsers.map((u) => (
                 <tr key={u.joinId}>
                   <td>{u.joinId}</td>
-                  <td>{u.userId}</td>
+                  <td>{u.userEmail || u.userName || u.userId}</td>
                   <td>
                     <button
                       style={{ color: "red" }}
@@ -223,7 +223,7 @@ function AdminCommunityDetailPage() {
               style={{ opacity: c.commentVisible === 1 ? 1 : 0.4 }}
             >
               <td>{c.commentId}</td>
-              <td>{c.writerId}</td>
+              <td>{c.writerEmail || c.writerId}</td>
               <td style={{ whiteSpace: "pre-line" }}>{c.content}</td>
               <td>{c.createdAt}</td>
               <td>

@@ -15,7 +15,7 @@
         <result property="endTm" column="end_tm" />
         <result property="maxNopCnt" column="max_nop_cnt" />
         <result property="rsvCnt" column="rsv_cnt" />
-        <result property="sttsCd" column="stts_cd" javaType="com.project.app.schedule.entity.ScheduleSttsCd" jdbcType="VARCHAR" typeHandler="org.apache.ibatis.type.EnumTypeHandler" />
+        <result property="sttsCd" column="stts_cd" javaType="com.project.app.schedule.entity.ScheduleSttsCd" jdbcType="VARCHAR" />
         <result property="description" column="description" />
         <result property="regDt" column="reg_dt" />
         <result property="updDt" column="upd_dt" />
@@ -67,6 +67,63 @@
         FROM SCHEDULE
         WHERE schd_id = #{schdId}
     </select>
+    
+    <!-- =========================
+         지점 ID로 조회
+    ========================= -->
+    <select id="findByBrchId"
+    		parameterType="java.lang.Long"
+    		resultMap="ScheduleResultMap">
+    	SELECT
+    		schd_id,
+            brch_id,
+            prog_id,
+            user_id,
+            strt_dt,
+            strt_tm,
+            end_tm,
+            max_nop_cnt,
+            rsv_cnt,
+            stts_cd,
+            description,
+            reg_dt,
+            upd_dt
+        FROM SCHEDULE
+        WHERE brch_id = #{brchId}
+    </select>
+    
+    <!-- =========================
+         스케줄 캘린더용 조회
+    ========================= -->
+     <select id="selectCalendarSchedules"
+          parameterType="map"
+          resultType="com.project.app.schedule.dto.ScheduleCalendarResponseDto">
+    SELECT
+      s.schd_id     AS schdId,
+      s.brch_id     AS brchId,
+      s.prog_id     AS progId,
+      p.prog_nm     AS progNm,
+      s.user_id     AS userId,
+      s.strt_dt     AS strtDt,
+      s.strt_tm     AS strtTm,
+      s.max_nop_cnt AS maxNopCnt,
+      s.rsv_cnt     AS rsvCnt,
+      s.stts_cd     AS sttsCd
+    FROM SCHEDULE s
+    INNER JOIN PROGRAM p
+      ON p.prog_id = s.prog_id
+    WHERE 1=1
+      <if test="fromDt != null">
+        AND s.strt_dt <![CDATA[>=]]> #{fromDt}
+      </if>
+      <if test="toDt != null">
+        AND s.strt_dt <![CDATA[<=]]> #{toDt}
+      </if>
+      <if test="brchId != null">
+        AND s.brch_id = #{brchId}
+      </if>
+    ORDER BY s.strt_dt DESC, s.strt_tm ASC
+  </select>
 
     <!-- =========================
          스케줄 생성

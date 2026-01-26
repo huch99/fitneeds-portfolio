@@ -1,15 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import React from 'react';
+import { Outlet, NavLink, useLocation } from 'react-router-dom';
 import './PassTradeLayout.css';
 import './PassTradeSidebar.css';
 
 const PassTradeLayout = () => {
   const location = useLocation();
-  const navigate = useNavigate();
-
-  // ⭐ MyPage와 동일: active 메뉴를 state로 관리
-  const [activeMenu, setActiveMenu] = useState('/pass-trade');
-
+  
   const menuItems = [
     { path: '/pass-trade', label: '거래 게시글 목록' },
     { path: '/pass-trade/transactions', label: '거래 내역' },
@@ -17,35 +13,31 @@ const PassTradeLayout = () => {
     { path: '/pass-trade/favorite', label: '즐겨찾기' },
   ];
 
-  // ⭐ URL 직접 접근 / 새로고침 대응
-  useEffect(() => {
-    setActiveMenu(location.pathname);
-  }, [location.pathname]);
-
-  // ⭐ 클릭 즉시 active 변경 → 그 다음 라우팅
-  const handleMenuClick = (path) => {
-    setActiveMenu(path);   // 즉시 색 변경
-    navigate(path);        // 화면 전환
-  };
-
   return (
     <div className="pass-trade-layout">
       <aside className="pass-trade-sidebar">
         <nav>
           <ul className="sidebar-menu">
-            {menuItems.map((item) => (
-              <li key={item.path} className="sidebar-menu-item">
-                <button
-                  type="button"
-                  className={`sidebar-menu-button ${
-                    activeMenu === item.path ? 'active' : ''
-                  }`}
-                  onClick={() => handleMenuClick(item.path)}
+            {menuItems.map((item) => {
+              const isActive = item.path === '/pass-trade'
+                ? location.pathname === '/pass-trade'
+                : location.pathname.startsWith(item.path);
+              
+              return (
+                <li 
+                  key={item.path} 
+                  className={`sidebar-menu-item ${isActive ? 'active' : ''}`}
                 >
-                  {item.label}
-                </button>
-              </li>
-            ))}
+                  <NavLink
+                    to={item.path}
+                    end={item.path === '/pass-trade'}
+                    className="sidebar-menu-button"
+                  >
+                    {item.label}
+                  </NavLink>
+                </li>
+              );
+            })}
           </ul>
         </nav>
       </aside>

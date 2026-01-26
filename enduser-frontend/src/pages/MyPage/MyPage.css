@@ -24,6 +24,11 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  position: relative;
+}
+
+.mypage-main > * {
+  transition: opacity 0.15s ease-in-out;
 }
 
 .mypage-main > * {
@@ -36,8 +41,12 @@
   background-color: #fff;
   border-radius: 8px;
   padding: 2rem;
+  padding-bottom: 3rem;
   margin-bottom: 2rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  position: relative;
+  z-index: 1;
+  overflow: visible;
 }
 
 .profile-header {
@@ -113,6 +122,9 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 1.5rem;
+  margin-top: 2rem;
+  margin-bottom: 0;
+  padding-bottom: 0;
 }
 
 .quick-link-item {
@@ -126,6 +138,8 @@
   text-decoration: none;
   color: #212529;
   transition: all 0.2s ease;
+  position: relative;
+  z-index: 1;
 }
 
 .quick-link-item:hover {
@@ -133,6 +147,8 @@
   color: #212529;
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 2;
+  margin-bottom: 2px; /* hover 시 아래로 확장되는 공간 확보 */
 }
 
 .quick-link-icon {
@@ -1352,6 +1368,9 @@
 /* Attendance Section Styles */
 .attendance-section {
   padding: 2rem;
+  position: relative;
+  z-index: 0;
+  margin-top: 0;
 }
 
 .calendar-header {

@@ -1,20 +1,22 @@
 package com.project.app.pass_trade.service;
 
 import com.project.app.pass_trade.entity.PassTradePost;
-import com.project.app.pass_trade.entity.PassTradeTransaction;
 import com.project.app.pass_trade.entity.TradeStatus;
-import com.project.app.pass_trade.entity.TransactionStatus;
 import com.project.app.pass_trade.dto.request.PassTradeBuyRequest;
 import com.project.app.pass_trade.dto.request.PassTradePostCreateRequest;
-
+import com.project.app.pass_trade_transaction.entity.PassTradeTransaction;
 import com.project.app.pass_trade.dto.request.PassTradePostUpdateRequest;
 
 import com.project.app.pass_trade.dto.response.PassTradePostResponse;
-import com.project.app.pass_trade.dto.response.PassTradeTransactionResponse;
+import com.project.app.pass_trade_transaction.dto.response.PassTradeTransactionResponse;
 import com.project.app.pass_trade.repository.PassTradePostRepository;
-import com.project.app.pass_trade.repository.PassTradeTransactionRepository;
+import com.project.app.pass_trade_transaction.entity.TransactionStatus;
+import com.project.app.pass_trade_transaction.repository.PassTradeTransactionRepository;
 
+import com.project.app.pass_trade_favorite.service.PassTradeFavoriteService;
 import com.project.app.payment.service.PaymentService;
+import com.project.app.user.entity.User;
+import com.project.app.user.repository.UserRepository;
 import com.project.app.userpass.entity.PassStatusCd;
 import com.project.app.userpass.entity.UserPass;
 import com.project.app.userpass.repository.UserPassRepository;
@@ -45,10 +47,15 @@ public class PassTradeService {
     //  결제 생성용
     private final PaymentService paymentService;
 
+    private final UserRepository userRepository;
+
+    private final PassTradeFavoriteService passTradeFavoriteService;
+
     // 거래 게시글 등록
     @Transactional
     public PassTradePostResponse createTradePost(String sellerId, PassTradePostCreateRequest request) {
 
+        // 1️⃣ 판매자 이용권 조회
         UserPass sellerPass = userPassRepository
                 .findByUserPassIdAndUser_UserId(request.getUserPassId(), sellerId)
                 .orElseThrow(() -> new RuntimeException("보유하지 않은 이용권입니다."));
@@ -61,28 +68,39 @@ public class PassTradeService {
             throw new RuntimeException("판매 수량이 보유 수량을 초과합니다.");
         }
 
-        //   판매 수량 검증
         if (request.getSellCount() == null || request.getSellCount() <= 0) {
             throw new IllegalArgumentException("판매 수량은 1 이상이어야 합니다.");
         }
 
-        //   판매 금액 검증
-        if (request.getSaleAmount() == null ||  request.getSaleAmount().compareTo(BigDecimal.ZERO) <= 0) {
+        if (request.getSaleAmount() == null
+                || request.getSaleAmount().compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("판매 금액은 1원 이상이어야 합니다.");
         }
 
+        // 2️⃣ 게시글 생성 (여기서부터 post 사용)
         PassTradePost post = new PassTradePost();
+
         post.setSellerId(sellerId);
         post.setUserPassId(request.getUserPassId());
         post.setSellCount(request.getSellCount());
         post.setSaleAmount(request.getSaleAmount());
         post.setTitle(request.getTitle());
         post.setContent(request.getContent());
-        post.setTradeStatus(TradeStatus.SELLING);
 
+        // ⭐ 핵심: 상태 명시
+        post.setTradeStatus(TradeStatus.SELLING);
+        post.setDeleted(false);
+
+        // sportType 반드시 세팅
+        post.setSportType(sellerPass.getSportType());
+
+        // 3️⃣ 저장
         PassTradePost savedPost = passTradePostRepository.save(post);
+
         return convertToPostResponse(savedPost);
+
     }
+
 
 
     // 본인 게시글 삭제
@@ -132,11 +150,10 @@ public class PassTradeService {
     // 활성 거래 게시글 목록 조회
     @Transactional(readOnly = true)
     public List<PassTradePostResponse> getActiveTradePosts() {
+
+
         return passTradePostRepository
-
-
-                .findByTradeStatusAndDeletedFalseOrderByRegDtDesc(TradeStatus.SELLING)
-
+                .findActiveWithSport(TradeStatus.SELLING)
                 .stream()
                 .map(this::convertToPostResponse)
                 .collect(Collectors.toList());
@@ -242,7 +259,20 @@ public class PassTradeService {
         response.setContent(post.getContent());
         response.setTradeStatus(post.getTradeStatus());
         response.setRegDt(post.getRegDt());
-        response.setUpdDt(post.getUpdDt());
+
+
+
+        // ✅ 종목명
+        response.setSportNm(
+                post.getSportType().getSportNm()
+        );
+
+        // ✅ 판매자 닉네임 (이게 핵심)
+        User seller = userRepository.findByUserId(post.getSellerId())
+                .orElseThrow(() -> new RuntimeException("판매자 정보 없음"));
+
+        response.setSellerName(seller.getUserName());
+
         return response;
     }
 
@@ -259,5 +289,21 @@ public class PassTradeService {
         response.setRegDt(transaction.getRegDt());
 //        response.setUpdDt(transaction.getUpdDt());
         return response;
+    }
+
+    // 즐겨찾기 토글
+    @Transactional
+    public void toggleFavorite(String userId, Long postId) {
+
+        // 이미 즐겨찾기 되어 있는지 확인
+        boolean isFavorite = passTradeFavoriteService.isFavorite(userId, postId);
+
+        if (isFavorite) {
+            // 이미 즐겨찾기 상태 → 제거
+            passTradeFavoriteService.removeFavorite(userId, postId);
+        } else {
+            // 즐겨찾기 안 된 상태 → 추가
+            passTradeFavoriteService.addFavorite(userId, postId);
+        }
     }
 }

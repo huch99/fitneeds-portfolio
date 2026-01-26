@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api';          // 🔥 axios → api
+import CommunitySidebar from './CommunitySidebar';
 import './Community.css';
 
 function CommunityUser() {
@@ -99,8 +100,10 @@ function CommunityUser() {
   }
 
   return (
-    <div className="community-container">
-      <h2 className="community-title">FITNEEDS 커뮤니티</h2>
+    <div className="community-layout">
+      <CommunitySidebar />
+      <div className="community-container">
+        <h2 className="community-title">FITNEEDS 커뮤니티</h2>
       <p className="community-subtitle">
         정보 공유 / 팀원 모집 커뮤니티
       </p>
@@ -213,6 +216,7 @@ function CommunityUser() {
         >
           글쓰기
         </button>
+      </div>
       </div>
     </div>
   );
