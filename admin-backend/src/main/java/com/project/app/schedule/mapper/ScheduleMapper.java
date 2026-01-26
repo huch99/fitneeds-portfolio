@@ -1,6 +1,7 @@
 package com.project.app.schedule.mapper;
 
 import com.project.app.schedule.domain.Schedule;
+import com.project.app.schedule.dto.ScheduleCalendarResponseDto;
 import com.project.app.schedule.dto.ScheduleResponse;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -12,6 +13,12 @@ import java.util.List;
 @Mapper
 public interface ScheduleMapper {
     List<Schedule> findAll();
+    List<Schedule> findByBrchId(@Param("brchId") Long brchId);
+    List<ScheduleCalendarResponseDto> selectCalendarSchedules(
+    		@Param("fromDt") LocalDate fromDt,
+    		@Param("toDt") LocalDate toDt,
+    		@Param("brchId") Long brchId
+    		);
     Schedule findById(@Param("schdId") Long schdId);
     int insert(Schedule schedule);
     int update(Schedule schedule);

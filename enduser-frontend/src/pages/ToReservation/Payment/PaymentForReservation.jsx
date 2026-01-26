@@ -265,7 +265,7 @@ const PaymentForReservation = () => {
                                 <option value="" disabled>--- 이용권 선택 ---</option>
                                 {userPasses.map(pass => (
                                     <option key={pass.userPassId} value={pass.userPassId}>
-                                        {pass.passName} ({pass.rmnCnt}회 남음{pass.expiryDate ? `, ~${pass.expiryDate}` : ''})
+                                        {pass.sportNm} ({pass.rmnCnt}회 남음{pass.expiryDate ? `, ~${pass.expiryDate}` : ''})
                                     </option>
                                 ))}
                             </select>

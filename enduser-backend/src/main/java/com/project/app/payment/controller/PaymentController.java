@@ -54,7 +54,7 @@ public class PaymentController {
         	log.error("결제 처리 중 서버 오류 발생 - 사용자: {}, 스케줄ID: {}", 
                     requestDto.getUserId(), requestDto.getSchdId(), e);
           return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                  .body(ApiResponse.error("결제 처리 중 예기치 못한 오류가 발생했습니다."));
+                  .body(ApiResponse.error(e.getMessage()));
 		}
      }
     
