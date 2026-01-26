@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface PassFaqRepository extends JpaRepository<PassFaq, Long> {
 
-    List<PassFaq> findByCategoryOrderByRegDtDesc(String category);
+    List<PassFaq> findByCategory(String category);
 }

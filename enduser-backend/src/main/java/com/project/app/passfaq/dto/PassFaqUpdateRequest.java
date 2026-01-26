@@ -1,9 +1,11 @@
 package com.project.app.passfaq.dto;
 
-import lombok.Data;
 
-@Data
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@NoArgsConstructor
 public class PassFaqUpdateRequest {
-    private String title;
-    private String content;
+    private String question;
 }

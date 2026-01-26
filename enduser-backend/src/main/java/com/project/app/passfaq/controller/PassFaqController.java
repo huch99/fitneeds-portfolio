@@ -3,16 +3,21 @@ package com.project.app.passfaq.controller;
 import com.project.app.passfaq.dto.PassFaqCreateRequest;
 import com.project.app.passfaq.dto.PassFaqResponse;
 import com.project.app.passfaq.dto.PassFaqUpdateRequest;
+
 import com.project.app.passfaq.service.PassFaqService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import com.project.app.passfaq.dto.PassFaqAnswerRequest;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 이용권 FAQ (Q&A) 사용자용 컨트롤러
@@ -21,8 +26,7 @@ import java.util.List;
  * - 사용자의 질문(Q) CRUD 처리
  * - 관리자가 등록한 답변(A) 조회
  *
- * 비고:
- * - 관리자 답변 등록/수정은 별도 관리자 프로젝트에서 처리
+
  */
 @Tag(name = "이용권 FAQ", description = "이용권 Q&A (사용자 질문 / 관리자 답변 조회 API)")
 @RestController
@@ -87,9 +91,12 @@ public class PassFaqController {
     })
     @PostMapping
     public ResponseEntity<Void> createFaq(
-            @RequestBody PassFaqCreateRequest request
+            @RequestBody PassFaqCreateRequest request,
+            Authentication authentication
     ) {
-        passFaqService.createFaq(request);
+        // 🔥 로그인한 사용자 ID (JWT 기준)
+        String userId = authentication.getName();
+        passFaqService.createFaq(request, userId);
         return ResponseEntity.ok().build();
     }
 
@@ -129,10 +136,38 @@ public class PassFaqController {
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @DeleteMapping("/{faqId}")
-    public ResponseEntity<Void> deleteFaq(
-            @PathVariable Long faqId
+    public ResponseEntity<?> deleteFaq(
+            @PathVariable Long faqId,
+            Authentication authentication
     ) {
-        passFaqService.deleteFaq(faqId);
+        passFaqService.deleteFaq(faqId, authentication.getName());
+        return ResponseEntity.ok(Map.of("success", true));
+    }
+
+    /**
+     * FAQ(Q&A) 답변 등록
+     * - 관리자 프로젝트 없이 사용자 답변 구조
+     */
+    @Operation(
+            summary = "FAQ 답변 등록",
+            description = "특정 FAQ(Q&A)에 답변을 등록합니다."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "답변 등록 성공"),
+            @ApiResponse(responseCode = "404", description = "FAQ 없음"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청"),
+            @ApiResponse(responseCode = "500", description = "서버 오류")
+    })
+    @PostMapping("/{faqId}/answer")
+    public ResponseEntity<Void> answerFaq(
+            @PathVariable Long faqId,
+            @RequestBody PassFaqAnswerRequest request,
+            Authentication authentication
+    ) {
+        String userId = authentication.getName();
+        passFaqService.answerFaq(faqId, request.getAnswer(), userId);
         return ResponseEntity.ok().build();
     }
+
+
 }

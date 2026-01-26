@@ -327,7 +327,7 @@ const PassTradeFavorite = () => {
                 className="pass-image"
               />
 
-              <h3>{post.title}</h3>
+              <h3>{post.sportNm} 이용권</h3>
               <p>판매자: {post.sellerName}</p>
               <p>판매 수량: {post.sellCount}</p>
               <p>총 금액: {post.saleAmount}원</p>

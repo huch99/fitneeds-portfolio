@@ -26,3 +26,7 @@ export const mockFaqs = [
     answer: '고객센터 또는 FAQ를 통해 확인하실 수 있습니다.'
   }
 ];
+
+
+
+

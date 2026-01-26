@@ -1,7 +1,7 @@
 // PassTradePost.jsx
 import { useState, useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { useLocation } from 'react-router-dom'; // 거래등록연결 추가
+import { useNavigate, useLocation } from 'react-router-dom'; // 거래등록연결 추가
 import api from '../../api';
 
 import PassTradeDetail from './PassTradeDetail';
@@ -17,8 +17,10 @@ import jujitsuPass from '../../assets/passes/pass-jujitsu.png';
 import BookmarkButton from '../../components/BookmarkButton';
 
 const PassTradePost = () => {
-  const location = useLocation(); // 거래등록연결 추가
 
+  const navigate = useNavigate();
+  const location = useLocation(); // 거래등록연결 추가
+  
   const passImageMap = {
     헬스: fitnessPass,
     수영: swimPass,
@@ -121,6 +123,8 @@ const PassTradePost = () => {
     setActiveModal(null);
     setSelectedPost(null);
     setPrefillUserPassId(null); // [추가] 모달 닫을 때 초기화 → 다음에 일반 등록 버튼 눌렀을 때 자동 선택 안 되는 것 보장
+    // 🔥 location.state 초기화
+  navigate(location.pathname, { replace: true });
   };
 
 
@@ -141,6 +145,7 @@ const PassTradePost = () => {
       console.log('🔥 axios 이후');
 
       alert('구매가 완료되었습니다.');
+       await reloadPosts(); // 거래 후 게시글 재조회
       closeModal();
     } catch (e) {
       console.error('거래 완료 실패', e);
@@ -392,7 +397,7 @@ const PassTradePost = () => {
               className="pass-image"
             />
 
-            <h3>{post.sportNm}</h3>
+            <h3>{post.sportNm} 이용권</h3>
             <p>판매자: {post.sellerName}</p>
             <p>판매 수량: {post.sellCount}</p>
             <p>총 금액: {post.saleAmount}원</p>
