@@ -91,11 +91,19 @@ function AdminFaqPage() {
      노출 / 숨김
   ========================= */
   const toggleVisible = async (f) => {
+    const message = f.isVisible
+      ? "게시글을 숨김 처리하시겠습니까?"
+      : "게시글을 다시 노출하시겠습니까?";
+
+    if (!window.confirm(message)) return;
+
     await api.put(`/admin/faq/${f.postId}/visible`, null, {
       params: { visible: !f.isVisible }
     });
+
     fetchFaqs();
   };
+
 
   const toggleOpen = (id) => {
     setOpenId(openId === id ? null : id);
@@ -132,7 +140,7 @@ function AdminFaqPage() {
         <tbody>
           {faqs.map((f) => (
             <React.Fragment key={f.postId}>
-              <tr>
+              <tr style={{ opacity: f.isVisible ? 1 : 0.4 }}>
                 <td>{f.postId}</td>
                 <td>{f.category}</td>
                 <td

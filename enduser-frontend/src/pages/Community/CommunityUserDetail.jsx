@@ -186,7 +186,10 @@ function CommunityUserDetail() {
   const isRecruitClosed = post.recruitStatus === "모집종료";
 
   return (
-    <div className="community-detail-page">
+    <div className="community-detail-page" style={{
+      marginLeft: "auto",
+      marginRight: "auto",
+    }}>
       <button
         className="community-action-btn"
         onClick={() => navigate(-1)}
@@ -197,7 +200,7 @@ function CommunityUserDetail() {
       {/* =========================
           게시글 카드
       ========================= */}
-      <div className="community-card post-card">
+      <div className="community-card">
         <div className="post-header">
           <h2 className="post-title">{post.title}</h2>
 

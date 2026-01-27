@@ -89,9 +89,8 @@ function CommunityMyPostList() {
 
     return (
       <span
-        className={`recruit-status-badge ${
-          isClosed ? 'recruit-closed' : 'recruit-open'
-        }`}
+        className={`recruit-status-badge ${isClosed ? 'recruit-closed' : 'recruit-open'
+          }`}
       >
         {post.recruitStatus}
       </span>
@@ -103,7 +102,10 @@ function CommunityMyPostList() {
   }
 
   return (
-    <div className="community-container">
+    <div className="community-container" style={{
+      marginLeft: "auto",
+      marginRight: "auto",
+    }} >
       <h2 className="community-title">내가 쓴 글</h2>
       <p className="community-subtitle">
         내가 작성한 커뮤니티 글 목록입니다

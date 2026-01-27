@@ -41,26 +41,47 @@ function CommunityUser() {
     fetchPosts(1);
   }, []);
 
-  /* =========================
-     검색 / 필터 적용
-  ========================= */
-  const handleSearch = () => {
+  // 🔥 실시간 검색 / 필터 반영
+  useEffect(() => {
     let result = [...posts];
 
     if (category !== '전체') {
-      result = result.filter((post) => post.category === category);
+      result = result.filter(post => post.category === category);
     }
 
     if (keyword.trim()) {
       const lowerKeyword = keyword.toLowerCase();
       result = result.filter(
-        (post) =>
+        post =>
           post.title?.toLowerCase().includes(lowerKeyword) ||
           post.content?.toLowerCase().includes(lowerKeyword)
       );
     }
 
     setFilteredPosts(result);
+  }, [category, keyword, posts]);
+
+  /* =========================
+     검색 / 필터 적용
+  ========================= */
+  const handleSearch = () => {
+    setPage(1);
+    //   let result = [...posts];
+
+    //   if (category !== '전체') {
+    //     result = result.filter((post) => post.category === category);
+    //   }
+
+    //   if (keyword.trim()) {
+    //     const lowerKeyword = keyword.toLowerCase();
+    //     result = result.filter(
+    //       (post) =>
+    //         post.title?.toLowerCase().includes(lowerKeyword) ||
+    //         post.content?.toLowerCase().includes(lowerKeyword)
+    //     );
+    //   }
+
+    //   setFilteredPosts(result);
   };
 
   const getCategoryClass = (category) => {
@@ -86,9 +107,8 @@ function CommunityUser() {
 
     return (
       <span
-        className={`recruit-status-badge ${
-          isClosed ? 'recruit-closed' : 'recruit-open'
-        }`}
+        className={`recruit-status-badge ${isClosed ? 'recruit-closed' : 'recruit-open'
+          }`}
       >
         {post.recruitStatus}
       </span>
@@ -104,119 +124,119 @@ function CommunityUser() {
       <CommunitySidebar />
       <div className="community-container">
         <h2 className="community-title">FITNEEDS 커뮤니티</h2>
-      <p className="community-subtitle">
-        정보 공유 / 팀원 모집 커뮤니티
-      </p>
+        <p className="community-subtitle">
+          정보 공유 / 팀원 모집 커뮤니티
+        </p>
 
-      <div className="community-top-buttons">
-        <button onClick={() => fetchPosts(1)}>전체 목록</button>
+        <div className="community-top-buttons">
+          <button onClick={() => fetchPosts(1)}>전체 목록</button>
 
-        <button onClick={() => navigate('/community/my-posts')}>
-          내가 쓴 글
-        </button>
+          <button onClick={() => navigate('/community/my-posts')}>
+            내가 쓴 글
+          </button>
 
-        <button onClick={() => navigate('/community/my-recruits')}>
-          내가 참여한 모집
-        </button>
-      </div>
+          <button onClick={() => navigate('/community/my-recruits')}>
+            내가 참여한 모집
+          </button>
+        </div>
 
-      <div className="community-filter">
-        <select
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-        >
-          <option value="전체">전체</option>
-          <option value="모집">모집</option>
-          <option value="정보공유">정보공유</option>
-          <option value="후기">후기</option>
-          <option value="자유">자유</option>
-        </select>
+        <div className="community-filter">
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+          >
+            <option value="전체">전체</option>
+            <option value="모집">모집</option>
+            <option value="정보공유">정보공유</option>
+            <option value="후기">후기</option>
+            <option value="자유">자유</option>
+          </select>
 
-        <input
-          type="text"
-          placeholder="제목, 내용 검색"
-          value={keyword}
-          onChange={(e) => setKeyword(e.target.value)}
-        />
+          <input
+            type="text"
+            placeholder="제목, 내용 검색"
+            value={keyword}
+            onChange={(e) => setKeyword(e.target.value)}
+          />
 
-        <button onClick={handleSearch}>검색</button>
-      </div>
+          <button onClick={handleSearch}>검색</button>
+        </div>
 
-      <table className="community-table">
-        <thead>
-          <tr>
-            <th>번호</th>
-            <th>카테고리</th>
-            <th>제목</th>
-            <th>작성자</th>
-            <th>작성일</th>
-            <th>조회</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredPosts.map((post) => (
-            <tr key={post.postId}>
-              <td>{post.postId}</td>
-              <td>
-                <span className={getCategoryClass(post.category)}>
-                  {post.category || '-'}
-                </span>
-              </td>
-              <td
-                className="community-title-link"
-                onClick={() => navigate(`/community/${post.postId}`)}
-              >
-                {post.title}
-                {getRecruitStatusBadge(post)}
-              </td>
-              <td>{post.writerName || post.writerId || '-'}</td>
-              <td>{post.createdAt?.substring(0, 10)}</td>
-              <td>{post.views}</td>
+        <table className="community-table">
+          <thead>
+            <tr>
+              <th>번호</th>
+              <th>카테고리</th>
+              <th>제목</th>
+              <th>작성자</th>
+              <th>작성일</th>
+              <th>조회</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {filteredPosts.map((post) => (
+              <tr key={post.postId}>
+                <td>{post.postId}</td>
+                <td>
+                  <span className={getCategoryClass(post.category)}>
+                    {post.category || '-'}
+                  </span>
+                </td>
+                <td
+                  className="community-title-link"
+                  onClick={() => navigate(`/community/${post.postId}`)}
+                >
+                  {post.title}
+                  {getRecruitStatusBadge(post)}
+                </td>
+                <td>{post.writerName || post.writerId || '-'}</td>
+                <td>{post.createdAt?.substring(0, 10)}</td>
+                <td>{post.views}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
 
-      <div className="community-bottom">
-        <div className="community-count">
-          총 {filteredPosts.length}건
-        </div>
+        <div className="community-bottom">
+          <div className="community-count">
+            총 {filteredPosts.length}건
+          </div>
 
-        <div className="community-pagination">
+          <div className="community-pagination">
+            <button
+              disabled={page === 1}
+              onClick={() => fetchPosts(page - 1)}
+            >
+              {'<'}
+            </button>
+
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+              (p) => (
+                <button
+                  key={p}
+                  className={p === page ? 'active' : ''}
+                  onClick={() => fetchPosts(p)}
+                >
+                  {p}
+                </button>
+              )
+            )}
+
+            <button
+              disabled={page === totalPages}
+              onClick={() => fetchPosts(page + 1)}
+            >
+              {'>'}
+            </button>
+          </div>
+
           <button
-            disabled={page === 1}
-            onClick={() => fetchPosts(page - 1)}
+            className="community-write-btn"
+            onClick={() => navigate('/community/write')}
           >
-            {'<'}
-          </button>
-
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-            (p) => (
-              <button
-                key={p}
-                className={p === page ? 'active' : ''}
-                onClick={() => fetchPosts(p)}
-              >
-                {p}
-              </button>
-            )
-          )}
-
-          <button
-            disabled={page === totalPages}
-            onClick={() => fetchPosts(page + 1)}
-          >
-            {'>'}
+            글쓰기
           </button>
         </div>
-
-        <button
-          className="community-write-btn"
-          onClick={() => navigate('/community/write')}
-        >
-          글쓰기
-        </button>
-      </div>
       </div>
     </div>
   );
