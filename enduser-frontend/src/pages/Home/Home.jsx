@@ -11,6 +11,7 @@ function Home() {
     solutionTitle: false,
     newsTitle: false
   });
+  const [selectedLocation, setSelectedLocation] = useState(null);
 
   const testimonialItems = [
     {
@@ -710,25 +711,33 @@ function Home() {
               <div className="location-count">30개의 지점 검색</div>
               
               <div className="location-list">
-                <div className="location-item">
+                <div 
+                  className={`location-item ${selectedLocation === 'suwon-main' ? 'active' : ''}`}
+                  onClick={() => setSelectedLocation('suwon-main')}
+                  style={{ cursor: 'pointer' }}
+                >
                   <div className="location-item-header">
-                    <div className="location-name">군포역점</div>
-                    <div className="location-distance">3 Km</div>
+                    <div className="location-name">수원본점</div>
+                    <div className="location-distance">2 Km</div>
                   </div>
-                  <div className="location-address">경기 군포시 군포로 545 5</div>
-                  <div className="location-phone">0507-1395-5708</div>
+                  <div className="location-address">경기도 수원시 영통구 월드컵로 206</div>
+                  <div className="location-phone">031-123-4567</div>
                   <div className="location-buttons">
                     <button className="location-btn location-btn-tour">지점투어</button>
                     <button className="location-btn location-btn-consult">상담</button>
                   </div>
                 </div>
-                <div className="location-item">
+                <div 
+                  className={`location-item ${selectedLocation === 'yeongtong' ? 'active' : ''}`}
+                  onClick={() => setSelectedLocation('yeongtong')}
+                  style={{ cursor: 'pointer' }}
+                >
                   <div className="location-item-header">
-                    <div className="location-name">산본점</div>
-                    <div className="location-distance">4 Km</div>
+                    <div className="location-name">영통점</div>
+                    <div className="location-distance">5 Km</div>
                   </div>
-                  <div className="location-address">경기 군포시 산본로323번길 15 동산프라자 8층</div>
-                  <div className="location-phone">031-395-0061</div>
+                  <div className="location-address">경기도 수원시 영통구 광교로 107</div>
+                  <div className="location-phone">031-234-5678</div>
                   <div className="location-buttons">
                     <button className="location-btn location-btn-tour">지점투어</button>
                     <button className="location-btn location-btn-consult">상담</button>
@@ -738,10 +747,23 @@ function Home() {
             </div>
             
             <div className="location-map">
-              <div className="map-placeholder">
-                <i className="bi bi-geo-alt-fill"></i>
-                <p>지도 영역</p>
-              </div>
+              <iframe
+                src={
+                  selectedLocation === 'suwon-main'
+                    ? `https://maps.google.com/maps?q=경기도+수원시+영통구+월드컵로+206&hl=ko&z=15&output=embed`
+                    : selectedLocation === 'yeongtong'
+                    ? `https://maps.google.com/maps?q=경기도+수원시+영통구+광교로+107&hl=ko&z=15&output=embed`
+                    : `https://maps.google.com/maps?q=경기도+수원시+영통구&hl=ko&z=13&output=embed`
+                }
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen=""
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="수원 지도"
+                key={selectedLocation || 'default'}
+              ></iframe>
             </div>
           </div>
         </div>
