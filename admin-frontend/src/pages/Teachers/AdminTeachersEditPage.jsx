@@ -323,7 +323,7 @@ export default function AdminTeachersEditPage() {
                 phoneNumber: phoneNumber?.trim() ? phoneNumber.trim() : null,
                 brchId: Number(brchId),
                 intro: intro?.trim() ? intro.trim() : null,
-                profileImgUrl: profileImgUrl?.trim() ? profileImgUrl.trim() : null,
+                profileImgUrl: profileImgUrl?.trim() ? profileImgUrl.trim() : "",
                 sports,
 
                 certificates: certificates
