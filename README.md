@@ -1,4 +1,4 @@
-# Fitneeds - 종합 운동 예약 프로그램 Fitneeds - 종합 운동 예약 프로그램
+# Fitneeds - 종합 운동 예약 프로그램
 
 프로그램명 - Fitneeds (fitness + need)
 Fitneeds는 **예약 관리** 에 중점을 둔 팀 프로젝트 입니다.
