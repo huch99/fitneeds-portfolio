@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../../api";            // 🔥 axios → api
 
 function CommunityUserDetail() {
   const { postId } = useParams();
@@ -26,7 +26,7 @@ function CommunityUserDetail() {
      게시글 상세 조회
   ========================= */
   const fetchPostDetail = async () => {
-    const res = await axios.get(`/api/user/community/${postId}`);
+    const res = await api.get(`/user/community/${postId}`);    // 🔥 변경
     setPost(res.data);
     setLoading(false);
   };
@@ -35,7 +35,7 @@ function CommunityUserDetail() {
      댓글 목록 조회
   ========================= */
   const fetchComments = async () => {
-    const res = await axios.get(`/api/user/community/${postId}/comments`);
+    const res = await api.get(`/user/community/${postId}/comments`); // 🔥 변경
     setComments(res.data);
   };
 
@@ -45,16 +45,16 @@ function CommunityUserDetail() {
   const checkJoined = async () => {
     if (!loginUserId) return;
 
-    const res = await axios.get(
-      `/api/user/community/${postId}/join/check`,
+    const res = await api.get(                             // 🔥 변경
+      `/user/community/${postId}/join/check`,
       { params: { userId: loginUserId } }
     );
     setAlreadyJoined(res.data.joined === true);
   };
 
   const fetchJoinUsers = async () => {
-    const res = await axios.get(
-      `/api/user/community/${postId}/join/users`
+    const res = await api.get(                             // 🔥 변경
+      `/user/community/${postId}/join/users`
     );
     setJoinUsers(res.data);
   };
@@ -66,7 +66,7 @@ function CommunityUserDetail() {
     if (!commentContent.trim()) return alert("댓글 내용을 입력해주세요.");
     if (!loginUserId) return alert("로그인이 필요합니다.");
 
-    await axios.post(`/api/user/community/${postId}/comments`, {
+    await api.post(`/user/community/${postId}/comments`, {   // 🔥 변경
       content: commentContent,
       writerId: loginUserId,
     });
@@ -91,7 +91,7 @@ function CommunityUserDetail() {
   const saveEditComment = async (commentId) => {
     if (!editingContent.trim()) return;
 
-    await axios.put(`/api/community/comments/${commentId}`, {
+    await api.put(`/community/comments/${commentId}`, {      // 🔥 변경
       userId: loginUserId,
       content: editingContent,
     });
@@ -103,7 +103,7 @@ function CommunityUserDetail() {
   const deleteComment = async (commentId) => {
     if (!window.confirm("댓글을 삭제하시겠습니까?")) return;
 
-    await axios.delete(`/api/community/comments/${commentId}`, {
+    await api.delete(`/community/comments/${commentId}`, {   // 🔥 변경
       data: { userId: loginUserId },
     });
 
@@ -118,7 +118,7 @@ function CommunityUserDetail() {
     if (String(post.writerId) === String(loginUserId))
       return alert("작성자는 참여할 수 없습니다.");
 
-    await axios.post(`/api/user/community/${postId}/join`, {
+    await api.post(`/user/community/${postId}/join`, {       // 🔥 변경
       userId: loginUserId,
     });
 
@@ -130,7 +130,7 @@ function CommunityUserDetail() {
   const handleCancelRecruit = async () => {
     if (!window.confirm("참여 신청을 취소하시겠습니까?")) return;
 
-    await axios.delete(`/api/user/community/${postId}/join`, {
+    await api.delete(`/user/community/${postId}/join`, {     // 🔥 변경
       data: { userId: loginUserId },
     });
 
@@ -149,9 +149,9 @@ function CommunityUserDetail() {
   const handleDeletePost = async () => {
     if (!window.confirm("게시글을 삭제하시겠습니까?")) return;
 
-    await axios.delete(`/api/user/community/${post.postId}`, {
-  params: { userId: loginUserId }
-});
+    await api.delete(`/user/community/${post.postId}`, {    // 🔥 변경
+      params: { userId: loginUserId },
+    });
 
     navigate("/community");
   };
@@ -186,7 +186,10 @@ function CommunityUserDetail() {
   const isRecruitClosed = post.recruitStatus === "모집종료";
 
   return (
-    <div style={{ padding: "20px", maxWidth: "900px", margin: "0 auto" }}>
+    <div className="community-detail-page" style={{
+      marginLeft: "auto",
+      marginRight: "auto",
+    }}>
       <button
         className="community-action-btn"
         onClick={() => navigate(-1)}
@@ -194,23 +197,69 @@ function CommunityUserDetail() {
         ← 목록으로
       </button>
 
+      {/* =========================
+          게시글 카드
+      ========================= */}
+      <div className="community-card">
+        <div className="post-header">
+          <h2 className="post-title">{post.title}</h2>
 
       <h2>{post.title}</h2>
 
-      <div style={{ fontSize: "13px", color: "#666" }}>
-        작성자 {post.writerId} · {post.createdAt?.substring(0, 10)}
-        {isWriter && (
-          <>
-            <button className="community-action-btn" onClick={handleEditPost}>
-              수정
-            </button>
-            <button
-              className="community-action-btn delete"
-              onClick={handleDeletePost}
-            >
-              삭제
-            </button>
-          </>
+            {isWriter && (
+              <div>
+                <button
+                  className="community-action-btn"
+                  onClick={handleEditPost}
+                >
+                  수정
+                </button>
+                <button
+                  className="community-action-btn delete"
+                  onClick={handleDeletePost}
+                >
+                  삭제
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="post-body">
+          <div className="post-content">{post.content}</div>
+        </div>
+
+        {/* 모집 영역 */}
+        {isRecruitPost && (
+          <div style={{ marginTop: 20 }}>
+            <p>모집 인원: {post.recruitMax}</p>
+
+            {!isWriter && !isRecruitClosed && (
+              <>
+                {!alreadyJoined ? (
+                  <button
+                    className="recruit-apply-btn"
+                    onClick={handleApplyRecruit}
+                  >
+                    참여 신청하기
+                  </button>
+                ) : (
+                  <button
+                    className="recruit-cancel-btn"
+                    onClick={handleCancelRecruit}
+                  >
+                    참여 취소
+                  </button>
+                )}
+              </>
+            )}
+
+            {isRecruitClosed && (
+              <span className="recruit-status-badge recruit-closed">
+                모집 종료
+              </span>
+            )}
+          </div>
         )}
       </div>
 
@@ -294,49 +343,23 @@ function CommunityUserDetail() {
           <div key={c.commentId} style={{ borderBottom: "1px solid #ddd" }}>
             <strong>{c.writerId}</strong>
 
-            {isMy && !editing && (
-              <>
-                <button
-                  className="community-action-btn"
-                  onClick={() => startEditComment(c)}
-                >
-                  수정
-                </button>
-                <button
-                  className="community-action-btn delete"
-                  onClick={() => deleteComment(c.commentId)}
-                >
-                  삭제
-                </button>
-              </>
-            )}
-
-            {editing ? (
-              <>
-                <textarea
-                  className="comment-textarea"
-                  value={editingContent}
-                  onChange={(e) => setEditingContent(e.target.value)}
-                />
-                <button
-                  className="community-action-btn"
-                  onClick={() => saveEditComment(c.commentId)}
-                >
-                  저장
-                </button>
-                <button
-                  className="community-action-btn delete"
-                  onClick={cancelEditComment}
-                >
-                  취소
-                </button>
-              </>
-            ) : (
-              <p className="community-post-content">{c.content}</p>
-            )}
-          </div>
-        );
-      })}
+                {isMy && !editing && (
+                  <>
+                    <button
+                      className="community-action-btn"
+                      onClick={() => startEditComment(c)}
+                    >
+                      수정
+                    </button>
+                    <button
+                      className="community-action-btn delete"
+                      onClick={() => deleteComment(c.commentId)}
+                    >
+                      삭제
+                    </button>
+                  </>
+                )}
+              </div>
 
       <div className="comment-write-box">
         <textarea

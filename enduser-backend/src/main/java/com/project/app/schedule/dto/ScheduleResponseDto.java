@@ -1,5 +1,6 @@
 package com.project.app.schedule.dto;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -27,7 +28,7 @@ public class ScheduleResponseDto {
     private Long progId;
     private String progNm;
     private boolean progUseYn;
-    private Integer oneTimeAmt;
+    private BigDecimal oneTimeAmt;
     private Integer rwdGamePnt;
 
     private Long sportId;
@@ -60,7 +61,7 @@ public class ScheduleResponseDto {
                 .progNm(schedule.getProgram().getProgNm())
                 .progUseYn(schedule.getProgram().isUseYn())
                 .oneTimeAmt(schedule.getProgram().getOneTimeAmt())
-                .rwdGamePnt(schedule.getProgram().getRwdGamePnt())
+//                .rwdGamePnt(schedule.getProgram().getRwdGamePnt())
                 .sportId(schedule.getProgram().getSportType().getSportId())
                 .sportNm(schedule.getProgram().getSportType().getSportNm())
                 .sportMemo(schedule.getProgram().getSportType().getSportMemo())

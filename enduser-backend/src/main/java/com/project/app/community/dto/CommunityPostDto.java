@@ -39,7 +39,6 @@ public class CommunityPostDto {
     private Date displayEnd;
     private Boolean postVisible;
     private Boolean isVisible;
-    private String attachmentPath;
 
     /** 로그인 사용자 기준 작성자 여부 */
     private Boolean isWriter;

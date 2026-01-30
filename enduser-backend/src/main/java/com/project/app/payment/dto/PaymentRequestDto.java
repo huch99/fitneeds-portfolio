@@ -9,6 +9,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,7 +21,7 @@ public class PaymentRequestDto {
 
     @NotNull(message = "결제 금액은 필수입니다.")
     @Min(value = 1, message = "결제 금액은 1원 이상이어야 합니다.")
-    private Integer amount; // 결제 금액
+    private BigDecimal amount; // 결제 금액
 
     @NotNull(message = "결제 수단은 필수입니다.")
     private PaymentPayMethod payMethod; // 결제 수단 (예: PASS, CARD, REMITTANCE, POINT)

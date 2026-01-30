@@ -1,127 +1,156 @@
-import React, { useState } from 'react';
-import { Helmet } from 'react-helmet-async';
-import './FAQ.css';
+import React, { useEffect, useState } from "react";
+import { Helmet } from "react-helmet-async";
+import api from "../../api";
+import CommunitySidebar from "../Community/CommunitySidebar";
+import "./FAQ.css";
 
 function FAQ() {
   const [expandedItems, setExpandedItems] = useState({});
 
-  const toggleItem = (id) => {
-    setExpandedItems(prev => ({
+  const [page, setPage] = useState(1);
+  const PAGE_SIZE = 10;
+
+  const toggleItem = (postId) => {
+    setExpandedItems((prev) => ({
       ...prev,
       [id]: !prev[id]
     }));
   };
 
-  const faqData = [
-    {
-      id: 1,
-      category: 'Account & Billing',
-      title: 'How do I create an account?',
-      content: 'You can create an account by clicking on the "Sign Up" button in the top right corner of the page. Fill in your email address, password, and other required information, then click "Create Account".',
-      date: '2024-01-15',
-      views: 1234
-    },
-    {
-      id: 2,
-      category: 'Account & Billing',
-      title: 'How do I update my billing information?',
-      content: 'To update your billing information, go to your account settings and click on "Billing". From there, you can update your credit card information, billing address, and payment method.',
-      date: '2024-01-14',
-      views: 892
-    },
-    {
-      id: 3,
-      category: 'Account & Billing',
-      title: 'What payment methods do you accept?',
-      content: 'We accept all major credit cards (Visa, MasterCard, American Express), PayPal, and bank transfers. All payments are processed securely through our payment gateway.',
-      date: '2024-01-13',
-      views: 567
-    },
-    {
-      id: 4,
-      category: 'Website Issues',
-      title: 'The website is not loading properly',
-      content: 'If you are experiencing issues with the website not loading, please try clearing your browser cache and cookies. You can also try using a different browser or device. If the problem persists, please contact our support team.',
-      date: '2024-01-12',
-      views: 2341
-    },
-    {
-      id: 5,
-      category: 'Website Issues',
-      title: 'How do I reset my password?',
-      content: 'To reset your password, click on "Forgot Password" on the login page. Enter your email address and you will receive a password reset link. Click the link in the email to create a new password.',
-      date: '2024-01-11',
-      views: 1456
-    },
-    {
-      id: 6,
-      category: 'Website Issues',
-      title: 'Why am I seeing error messages?',
-      content: 'Error messages can occur for various reasons. Common causes include network connectivity issues, browser compatibility problems, or temporary server maintenance. Please check your internet connection and try again. If the error persists, contact support with the specific error message you are seeing.',
-      date: '2024-01-10',
-      views: 789
-    }
-  ];
+  useEffect(() => {
+    const fetchFaq = async () => {
+      try {
+        const res = await api.get("/user/faq");
+        setFaqList(res.data || []);
+        setPage(1);
+      } catch {
+        setFaqList([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchFaq();
+  }, []);
 
-  const categories = [...new Set(faqData.map(item => item.category))];
+  const totalPages = Math.ceil(faqList.length / PAGE_SIZE);
+  const pagedFaqs = faqList.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   return (
     <>
       <Helmet>
         <title>FAQ - FITNEEDS</title>
-        <meta name="description" content="Frequently asked questions" />
       </Helmet>
-      {/* Header*/}
-        <header className="section-padding">
-          <div className="section-container">
-            <div className="section-row">
-              <div className="section-col section-col-header">
-                <div className="page-header">
-                  <h1 className="page-title">Frequently Asked Questions</h1>
-                  <p className="page-subtitle">How can we help you?</p>
-                </div>
+
+      <div className="community-layout">
+        <CommunitySidebar />
+        <div className="faq-wrap notice-faq-only">
+          {/* =========================
+              타이틀 (공지사항과 동일)
+             ========================= */}
+
+
+          {/* =========================
+            FAQ 리스트 (Grid 유지)
+           ========================= */}
+          <section className="faq-list-section">
+            <div className="section-container">
+              <div className="faq-page-header">
+                <h1 className="page-title">FAQ</h1>
+                <p className="page-subtitle">
+                  당신의 운동이 더 합리적일 수 있도록,
+                  <span className="brand-highlight"> FITNEEDS</span>가
+                  자주 묻는 질문에 답합니다.
+                </p>
               </div>
-            </div>
-          </div>
-        </header>
-        {/* FAQ Content*/}
-        <section className="section-padding section-light">
-          <div className="section-container">
-            <div className="section-row">
-              <div className="section-col section-col-text">
-                {/* Board Header */}
-                <div className="board-header">
-                  <div className="board-header-item board-number">번호</div>
-                  <div className="board-header-item board-category">카테고리</div>
-                  <div className="board-header-item board-title">제목</div>
-                  <div className="board-header-item board-date">작성일</div>
-                  <div className="board-header-item board-views">조회</div>
+              <div className="faq-board">
+                <div className="faq-header">
+                  <span>번호</span>
+                  <span>카테고리</span>
+                  <span>질문</span>
+                  <span>작성일</span>
                 </div>
-                {/* Board List */}
-                <div className="board-list">
-                  {faqData.map((item, index) => (
-                    <div key={item.id} className="board-item">
-                      <div className="board-item-row" onClick={() => toggleItem(item.id)}>
-                        <div className="board-item-cell board-number">{faqData.length - index}</div>
-                        <div className="board-item-cell board-category">
-                          <span className="category-badge">{item.category}</span>
+
+                {loading && <div className="faq-empty">로딩 중...</div>}
+
+                {!loading && pagedFaqs.length === 0 && (
+                  <div className="faq-empty">등록된 FAQ가 없습니다.</div>
+                )}
+
+                {!loading &&
+                  pagedFaqs.map((item, index) => {
+                    const isOpen = expandedItems[item.postId];
+                    const number =
+                      faqList.length - ((page - 1) * PAGE_SIZE + index);
+
+                    return (
+                      <div
+                        key={item.postId}
+                        className={`faq-item ${isOpen ? "open" : ""}`}
+                      >
+                        <div
+                          className="faq-question"
+                          onClick={() => toggleItem(item.postId)}
+                        >
+                          <div className="faq-number">{number}</div>
+
+                          <div className="faq-category">
+                            <span className="category-badge">
+                              {item.category}
+                            </span>
+                          </div>
+
+                          <div className="faq-title">
+                            <strong>Q.</strong> {item.title}
+                          </div>
+
+                          <div className="faq-date">
+                            {item.createdAt?.substring(0, 10)}
+                          </div>
                         </div>
-                        <div className="board-item-cell board-title">{item.title}</div>
-                        <div className="board-item-cell board-date">{item.date}</div>
-                        <div className="board-item-cell board-views">{item.views.toLocaleString()}</div>
+
+                        {isOpen && (
+                          <div className="faq-answer">
+                            <strong>A.</strong>
+                            <p>{item.content}</p>
+                          </div>
+                        )}
                       </div>
-                      {expandedItems[item.id] && (
-                        <div className="board-item-content">
-                          <div className="board-content-text">{item.content}</div>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
+                    );
+                  })}
               </div>
             </div>
-          </div>
-        </section>
+
+            {/* =========================
+              페이징 (공지와 동일)
+             ========================= */}
+            <div className="community-pagination">
+              <button disabled={page === 1} onClick={() => setPage(page - 1)}>
+                이전
+              </button>
+
+              {Array.from({ length: totalPages }, (_, i) => {
+                const p = i + 1;
+                return (
+                  <button
+                    key={p}
+                    className={p === page ? "active" : ""}
+                    onClick={() => setPage(p)}
+                  >
+                    {p}
+                  </button>
+                );
+              })}
+
+              <button
+                disabled={page === totalPages || totalPages === 0}
+                onClick={() => setPage(page + 1)}
+              >
+                다음
+              </button>
+            </div>
+          </section>
+        </div>
+      </div>
     </>
   );
 }

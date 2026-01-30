@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { format, startOfWeek, endOfWeek, addDays, addWeeks, subWeeks, startOfMonth, endOfMonth, isSameMonth, isSameDay } from 'date-fns'
 import { ko } from 'date-fns/locale'
-import { scheduleApi, programApi, branchApi, teacherApi } from '../api'
+import api, { scheduleApi, programApi, branchApi, teacherApi } from '../api'
 
 function AdminSchedulePage() {
   const [branches, setBranches] = useState([])
@@ -617,9 +617,8 @@ function AdminSchedulePage() {
 
   const getStatusLabel = (sttsCd) => {
     switch (sttsCd) {
-      case 'OPEN': return '예약가능'
+      case 'OPEN' || 'AVAILABLE': return '예약가능'
       case 'CLOSED': return '마감'
-      case 'UNAVAILABLE': return '예약불가'
       default: return sttsCd
     }
   }

@@ -133,7 +133,7 @@ export const userApi = {
 export const teacherApi = {
     getAll: () => api.get('/user/teachers').then(res => res.data), // user_admin 조회
     getById: (teacherId) => api.get(`/user/userinfo/${teacherId}`).then(res => res.data),
-    getByBranch: (brchId) => api.get('/user/teachers').then(res => res.data), // user_admin 조회
+    getByBranch: (brchId) => api.get(`/user/teachers/${brchId}`).then(res => res.data), // user_admin 조회
     create: (data) => api.post('/user/register', data).then(res => res.data),
     update: (teacherId, data) => api.put(`/user/${teacherId}`, data).then(res => res.data),
     delete: (teacherId) => api.delete(`/user/${teacherId}`).then(res => res.data),

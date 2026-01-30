@@ -47,8 +47,8 @@ public class TeacherCertificate extends BaseTimeEntity {
 	@Column(name = "ISSUER", length = 255)
     private String issuer;			// 발급 기관
 	
-	@Column(name = "ISSUE_DT")
-    private LocalDate issueDt;		// 발급일
+	@Column(name = "acq_dt")
+    private LocalDate acqDt;		// 발급일
 	
 	@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "UPD_USER_ID")

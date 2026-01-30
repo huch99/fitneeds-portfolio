@@ -1,5 +1,7 @@
 package com.project.app.user.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,12 +17,10 @@ public class UserRequestDto {
 	private String userName;
 	private String password;
 	private String role;
-	private String cash_point;
-	private String grade_point;
-	private String is_active;
-	private String agree_at;
-	private String phone_number;
-	private String user_id;
+	@JsonProperty("isActive")
+	private boolean isActive;
+	private String agreeAt;
+	private String phoneNumber;
 	private boolean success;
 	private String message;
 }

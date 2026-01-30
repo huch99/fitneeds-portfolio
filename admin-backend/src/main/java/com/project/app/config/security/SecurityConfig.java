@@ -2,6 +2,7 @@ package com.project.app.config.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -9,6 +10,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 /**
  * Spring Security 보안 설정 클래스 애플리케이션의 인증(로그인)과 인가(권한) 처리를 담당합니다
@@ -26,7 +32,7 @@ public class SecurityConfig {
 		http
 			// CSRF 보호 비활성화 (REST API에서는 일반적으로 비활성화)
 			.csrf(csrf -> csrf.disable())
-
+				.cors(Customizer.withDefaults())
 			// URL별 접근 권한 설정
 			.authorizeHttpRequests(auth -> auth
 				// 아래 URL들은 로그인 없이 누구나 접근 가능
@@ -69,6 +75,26 @@ public class SecurityConfig {
 		http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
 		return http.build();
+	}
+
+	@Bean
+	public CorsConfigurationSource corsConfigurationSource() {
+		CorsConfiguration config = new CorsConfiguration();
+
+		// ✅ 프론트 개발 서버 Origin 허용
+		config.setAllowedOrigins(List.of("http://localhost:5174"));
+
+		// 또는 포트가 바뀔 수 있으면 아래 패턴 사용(개발용)
+		// config.setAllowedOriginPatterns(List.of("http://localhost:*"));
+
+		config.setAllowedMethods(List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
+		config.setAllowedHeaders(List.of("Authorization","Content-Type"));
+		config.setExposedHeaders(List.of("Authorization"));
+		config.setAllowCredentials(true);
+
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", config); // 또는 "/api/**"
+		return source;
 	}
 
 	/**

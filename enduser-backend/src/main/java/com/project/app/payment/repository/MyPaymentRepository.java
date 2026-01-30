@@ -5,30 +5,26 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
 
 import com.project.app.payment.entity.Payment;
 
-@Repository
 public interface MyPaymentRepository extends JpaRepository<Payment, Long> {
 
-    /**
-     * 사용자 ID로 결제 목록을 조회합니다.
-     * Reservation, Schedule, Program을 조인하여 프로그램 정보를 함께 가져옵니다.
-     */
+    // (기존 쿼리: findByUserId)
+    // 이 쿼리는 이제 p.user 필드가 있으므로 정상 작동해야 합니다.
     @Query("SELECT p FROM Payment p " +
-            "LEFT JOIN Reservation r ON p.refId = r.rsvId " +
-            "LEFT JOIN r.schedule s " +
-            "LEFT JOIN s.program prg " +
-            "WHERE p.user.userId = :userId " +
-            "ORDER BY p.regDt DESC")
-    List<Payment> findByUserIdWithDetails(@Param("userId") String userId);
-
-    /**
-     * 사용자 ID로 결제 목록을 조회합니다 (간단한 버전).
-     */
-    @Query("SELECT p FROM Payment p " +
-            "WHERE p.user.userId = :userId " +
-            "ORDER BY p.regDt DESC")
+           "WHERE p.user.userId = :userId " +
+           "ORDER BY p.regDt DESC")
     List<Payment> findByUserId(@Param("userId") String userId);
+
+
+    // --- findByUserIdWithDetails 쿼리 수정 ---
+    // p.refId = r.rsvId 대신 p.reservation.rsvId 또는 p.reservation 필드 자체를 사용
+    @Query(value = "SELECT p.* FROM PAYMENT p " +
+            "LEFT JOIN RESERVATION r ON r.rsv_id = p.target_id " +
+            "LEFT JOIN SCHEDULE s ON s.schd_id = r.schd_id " +
+            "LEFT JOIN PROGRAM prg ON prg.prog_id = s.prog_id " +
+            "WHERE p.user_id = :userId " +
+            "ORDER BY p.REG_DT DESC", nativeQuery = true)
+    List<Payment> findByUserIdWithDetails(@Param("userId") String userId);
 }

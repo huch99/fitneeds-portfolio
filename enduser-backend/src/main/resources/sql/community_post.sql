@@ -1,6 +1,6 @@
 =====	커뮤니티/FAQ/공지사항 통합 테이블	========================================
 
-CREATE TABLE community_post (
+CREATE TABLE COMMUNITY_POST (
 post_id BIGINT(20) NOT NULL AUTO_INCREMENT,   -- 게시글 고유 ID (PK)
 
 post_type VARCHAR(20) NOT NULL,               -- 게시글 유형 (NOTICE / FAQ / COMMUNITY / RECRUIT)
@@ -27,7 +27,7 @@ display_start DATETIME,                        -- 게시글 노출 시작일
 display_end DATETIME,                          -- 게시글 노출 종료일
 
 is_visible TINYINT(1) NOT NULL DEFAULT 1,       -- 공지사항 노출 여부 (1: 노출, 0: 숨김)
-attachment_path VARCHAR(255),                  -- 첨부파일 경로
+is_pinned  TINYINT(1) NOT NULL DEFAULT 0, 	   -- 공지사항 상단 고정
 
 post_visible TINYINT(1) NOT NULL DEFAULT 1,    -- 커뮤니티/모집 글 노출 여부
 
@@ -35,13 +35,13 @@ PRIMARY KEY (post_id)                          -- 기본 키
 );
 
 ---------- community_post (커뮤니티 글) ----------
-INSERT INTO community_post (post_type, category, title, content, writer_id, writer_type, branch_id, views, sport_type, recruit_max, recruit_datetime, recruit_end_date, is_visible, post_visible)
+INSERT INTO COMMUNITY_POST (post_type, category, title, content, writer_id, writer_type, branch_id, views, sport_type, recruit_max, recruit_datetime, recruit_end_date, is_visible, post_visible)
 VALUES ('COMMUNITY', '모집', '같이 운동하실 분 모집합니다', '주말에 헬스장에서 같이 운동하실 분 모집합니다.', 'user1', 'USER', 1, 0, '헬스', 5, '2026-01-10 10:00:00', '2026-01-15 23:59:59', 1, 1);
 
----------- community_post (공지사항) ----------
-INSERT INTO community_post (post_type, title, content, writer_id, writer_type, branch_id, views, display_start, display_end, is_visible, post_visible)
+---------- COMMUNITY_POST (공지사항) ----------
+INSERT INTO COMMUNITY_POST (post_type, title, content, writer_id, writer_type, branch_id, views, display_start, display_end, is_visible, post_visible)
 VALUES ('NOTICE', '체육센터 설 연휴 휴관 안내', '설 연휴 기간 동안 체육센터가 휴관합니다.', 'admin1', 'ADMIN', 1, 0, '2026-01-20 00:00:00', '2026-01-31 23:59:59', 1, 1);
 
 ---------- community_post (FAQ) ----------
-INSERT INTO community_post (post_type, category, title, content, writer_id, writer_type, views, is_visible, post_visible)
+INSERT INTO COMMUNITY_POST (post_type, category, title, content, writer_id, writer_type, views, is_visible, post_visible)
 VALUES ('FAQ', '이용안내', '회원권 환불은 어떻게 하나요?', '회원권 환불은 프론트 데스크를 통해 문의해 주세요.', 'admin1', 'ADMIN', 0, 1, 1);

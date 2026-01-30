@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import SideBar from "./SideBar";
-import '../../components/auth/modalStyles.css';
+import '../../components/auth/AuthModalStyles.css';
 import './MyPage.css';
 
 /* =========================
@@ -36,29 +35,31 @@ function useLocalStorage(key, initialValue) {
 import UsageHistorySection from './UsageHistorySection';
 import ReviewWriteSection from './ReviewWriteSection';
 import PaymentHistorySection from './PaymentHistorySection';
-import InquirySection from './InquirySection';
-import SearchSection from './SearchSection';
+import AttendanceSection from './AttendanceSection';
 import ProfileSection from './ProfileSection';
+import SideBar from './SideBar';
 
 function MyPage() {
   const location = useLocation();
-  
+
   // activeMenu는 세션 상태로 관리 (페이지 새로고침 시 메인 페이지로 초기화)
-  const [activeMenu, setActiveMenu] = useState(null);
-  // recentSearches는 localStorage에 저장 (사용자 경험 향상)
-  const [recentSearches, setRecentSearches] = useLocalStorage('recentSearches', []);
+  // 초기값을 location.state?.menu로 설정하여 깜박임 방지
+  const [activeMenu, setActiveMenu] = useState(() => {
+    // 초기 마운트 시에만 location.state에서 menu를 가져옴
+    return location.pathname === '/mypage' ? (location.state?.menu ?? null) : null;
+  });
 
   // location.state에서 메뉴 정보를 받아서 activeMenu 설정
   useEffect(() => {
     if (location.pathname === '/mypage') {
+      // location.state?.menu가 명시적으로 전달된 경우에만 업데이트
       if (location.state?.menu !== undefined) {
         setActiveMenu(location.state.menu);
         // state를 사용한 후 제거하여 뒤로가기 시 문제가 없도록 함
         window.history.replaceState({}, document.title);
-      } else {
-        // state가 없으면 메인 페이지(검색 페이지)로 초기화
-        setActiveMenu(null);
       }
+      // location.state?.menu가 undefined이고 location.state 자체도 없는 경우는
+      // 이전 상태를 유지하여 깜박임 방지 (다른 페이지에서 navigate로 이동한 경우)
     }
   }, [location.state, location.pathname]);
 
@@ -104,9 +105,6 @@ function MyPage() {
             setReviewTab={setReviewTab}
           />
         );
-
-      case 'inquiry':
-        return <InquirySection />;
 
       case 'payment-history':
         return <PaymentHistorySection />;

@@ -4,7 +4,7 @@ import api from '../../../api';
 import CalendarModal from '../CalendarModal/CalendarModal';
 import './ProgramDetailPage.css';
 import LoginModal from '../../../components/auth/LoginModal';
-import '../../../components/auth/modalStyles.css';
+import '../../../components/auth/AuthModalStyles.css';
 import { useSelector } from 'react-redux';
 
 const ProgramDetailPage = () => {

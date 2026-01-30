@@ -3,7 +3,7 @@ CREATE TABLE `PAYMENT` (
     `ord_no`       VARCHAR(100)    NOT NULL COMMENT '주문번호',
     `user_id`      VARCHAR(50)     NOT NULL COMMENT '사용자 ID',
     `pay_type_cd`  VARCHAR(20)     NOT NULL COMMENT '결제 유형',
-    `ref_id`       BIGINT          NULL     COMMENT '참조 ID',
+    `target_id`       BIGINT          NULL     COMMENT '참조 ID',
     `pay_amt`      DECIMAL(19,4)   NOT NULL COMMENT '결제 금액',
     `pay_method`   VARCHAR(20)     NOT NULL COMMENT '결제 수단',
     `stts_cd`      VARCHAR(20)     NOT NULL COMMENT '결제 상태',
@@ -15,5 +15,5 @@ CREATE TABLE `PAYMENT` (
     
     -- 인덱스 추가
     INDEX `idx_payment_user_stts` (`user_id`, `stts_cd`),
-    INDEX `idx_payment_ref_lookup` (`pay_type_cd`, `ref_id`)
+    INDEX `idx_payment_ref_lookup` (`pay_type_cd`, `target_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

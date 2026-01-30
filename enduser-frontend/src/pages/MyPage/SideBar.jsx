@@ -11,6 +11,7 @@ function SideBar({ activeMenu, onMenuClick }) {
   // 현재 경로에 따라 active 상태 결정
   const isReservationListActive = location.pathname === '/mypage/reservations';
   const isMyPageActive = location.pathname === '/mypage';
+  const isMyPassActive = location.pathname === '/mypage/my-pass';
 
   // /mypage/reservations일 때 예약목록 섹션 열기
   useEffect(() => {
@@ -21,11 +22,11 @@ function SideBar({ activeMenu, onMenuClick }) {
 
   // 메뉴 클릭 핸들러
   const handleMenuClick = (menuId) => {
-    // 현재 페이지가 /mypage/reservations인 경우 /mypage로 이동
-    if (location.pathname === '/mypage/reservations') {
+    // /mypage/reservations 또는 /mypage/my-pass(내 이용권)에 있을 때는 onMenuClick 없음.
+    // 이용내역·리뷰쓰기·결제내역 클릭 시 /mypage로 이동 후 해당 메뉴 표시
+    if (location.pathname === '/mypage/reservations' || location.pathname === '/mypage/my-pass') {
       navigate('/mypage', { state: { menu: menuId } });
     } else if (onMenuClick) {
-      // MyPage 내부에서 메뉴 변경
       onMenuClick(menuId);
     }
   };
@@ -47,6 +48,36 @@ function SideBar({ activeMenu, onMenuClick }) {
             {isMyExerciseOpen && (
               <ul className="sidebar-submenu">
                 <li 
+                  className={`sidebar-submenu-item ${isMyPageActive && !activeMenu ? 'active' : ''}`}
+                >
+                  <Link 
+                    to="/mypage" 
+                    style={{ textDecoration: 'none', color: 'inherit', display: 'block', width: '100%' }}
+                    onClick={(e) => {
+                      // 대시보드로 이동할 때 activeMenu를 null로 설정
+                      if (onMenuClick) {
+                        onMenuClick(null);
+                      }
+                      // 이미 /mypage에 있으면 새로고침 방지
+                      if (location.pathname === '/mypage') {
+                        e.preventDefault();
+                      }
+                    }}
+                  >
+                    대시보드
+                  </Link>
+                </li>
+                <li 
+                  className={`sidebar-submenu-item ${isMyPassActive ? 'active' : ''}`}
+                >
+                  <Link 
+                    to="/mypage/my-pass" 
+                    style={{ textDecoration: 'none', color: 'inherit', display: 'block', width: '100%' }}
+                  >
+                    내 이용권
+                  </Link>
+                </li>
+                <li 
                   className={`sidebar-submenu-item ${isMyPageActive && activeMenu === 'usage-history' ? 'active' : ''}`}
                   onClick={() => handleMenuClick('usage-history')}
                   style={{ cursor: 'pointer' }}
@@ -59,13 +90,6 @@ function SideBar({ activeMenu, onMenuClick }) {
                   style={{ cursor: 'pointer' }}
                 >
                   리뷰쓰기
-                </li>
-                <li 
-                  className={`sidebar-submenu-item ${isMyPageActive && activeMenu === 'inquiry' ? 'active' : ''}`}
-                  onClick={() => handleMenuClick('inquiry')}
-                  style={{ cursor: 'pointer' }}
-                >
-                  이용권 거래
                 </li>
               </ul>
             )}

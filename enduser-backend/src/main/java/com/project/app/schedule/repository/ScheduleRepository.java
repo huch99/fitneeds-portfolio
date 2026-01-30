@@ -23,7 +23,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
             "JOIN s.userAdmin ua " +
             "JOIN ua.branch b " +
             "WHERE st.sportId = :sportId " +
-            "AND s.sttsCd = :scheduleStatus " +
+            "AND s.sttsCd IN :scheduleStatus " +
             "AND (" +
             "    s.strtDt > :currentDate OR " +
             "    (s.strtDt = :currentDate AND s.strtTm > :currentTime)" +
@@ -43,7 +43,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
             @Param("currentTime") LocalTime currentTime,
             @Param("selectedDate") LocalDate selectedDate,
             @Param("searchKeyword") String searchKeyword,
-            @Param("scheduleStatus") ScheduleSttsCd scheduleStatus
+            @Param("scheduleStatus") List<ScheduleSttsCd> scheduleStatus
     );
 
     // --- 지점 ID를 통한 스케줄 조회 (날짜/시간 필터링, 검색어 필터링 포함) ---
@@ -51,8 +51,8 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
             "JOIN s.program p " +
             "JOIN s.userAdmin ua " +
             "JOIN ua.branch b " +
-            "WHERE b.brchId = :brchId " + // sportId 조건이 있다면 제거하세요!
-            "AND s.sttsCd = :scheduleStatus " +
+            "WHERE b.brchId = :brchId " + 
+            "AND s.sttsCd IN :scheduleStatus " +
             "AND (" +
             "    s.strtDt > :currentDate OR " +
             "    (s.strtDt = :currentDate AND s.strtTm > :currentTime)" +
@@ -71,7 +71,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
             @Param("currentTime") LocalTime currentTime,
             @Param("selectedDate") LocalDate selectedDate,
             @Param("searchKeyword") String searchKeyword,
-            @Param("scheduleStatus") ScheduleSttsCd scheduleStatus
+            @Param("scheduleStatus") List<ScheduleSttsCd> scheduleStatus
     );
 
     List<Schedule> findByStrtDtBeforeAndSttsCdIn(LocalDate strtDt, Collection<ScheduleSttsCd> sttsCds);

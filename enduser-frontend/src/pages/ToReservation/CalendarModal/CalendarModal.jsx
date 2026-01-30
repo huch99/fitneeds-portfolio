@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import './CalendarModal.css';
-import api from '../../../api';
 
 const CalendarModal = ({ sessions: rawSessions = [], isOpen, onClose, strtDt, endDt, onSelectDate, selectedDate, onProceedToPayment }) => {
+    // 캘린더에 표시될 날짜 (prop selectedDate와 별개로, 캘린더 내부 상태)
+    const [calendarValue, setCalendarValue] = useState(selectedDate || new Date());
+
     if (!isOpen) return null;
 
     const sessions = Array.isArray(rawSessions) 
@@ -15,9 +17,6 @@ const CalendarModal = ({ sessions: rawSessions = [], isOpen, onClose, strtDt, en
     if (sessions.length === 0) {
         console.log("전달받은 데이터:", rawSessions); // 디버깅용
     }
-
-    // 캘린더에 표시될 날짜 (prop selectedDate와 별개로, 캘린더 내부 상태)
-    const [calendarValue, setCalendarValue] = useState(selectedDate || new Date());
 
     const activeDates = new Set(sessions.map(s => s.date));
 

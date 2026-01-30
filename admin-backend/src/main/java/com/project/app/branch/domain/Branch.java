@@ -18,8 +18,7 @@ public class Branch {
     private String brchNm;
     private String addr;
     private String phone;
-    private Integer operYn;
-    
+    private Integer operYn;    
     private String regDt;
     private String updDt;
 }

@@ -10,25 +10,34 @@
          - 숨김 제외
          - 종료된 공지 제외
          - 상시 공지는 유지
+         - 지점명(branchName) JOIN
+         - 🔥 상단 고정(is_pinned) 우선 정렬
     ========================= -->
     <select id="selectNoticeList"
             resultType="com.project.app.notice.dto.NoticeDto">
 
         SELECT
-            post_id     AS postId,
-            title       AS title,
-            content     AS content,
-            views       AS views,
-            display_end AS displayEnd,   <!-- 🔥 추가 -->
-            created_at  AS createdAt
-        FROM community_post
-        WHERE post_type = 'NOTICE'
-          AND is_visible = 1
+            cp.post_id      AS postId,
+            cp.title        AS title,
+            cp.content      AS content,
+            cp.views        AS views,
+            cp.display_end  AS displayEnd,
+            cp.created_at   AS createdAt,
+            cp.branch_id    AS branchId,
+            cp.is_pinned    AS isPinned,
+            b.brch_nm       AS branchName
+        FROM COMMUNITY_POST cp
+        LEFT JOIN BRANCH b
+            ON cp.branch_id = b.brch_id
+        WHERE cp.post_type = 'NOTICE'
+          AND cp.is_visible = 1
           AND (
                 display_end IS NULL
                 OR display_end >= NOW()
           )
-        ORDER BY created_at DESC
+        ORDER BY
+            cp.is_pinned DESC,     <!-- 🔥 상단 고정 먼저 -->
+            cp.created_at DESC    <!-- 그 다음 최신순 -->
 
     </select>
 
@@ -42,16 +51,20 @@
             resultType="com.project.app.notice.dto.NoticeDto">
 
         SELECT
-            post_id     AS postId,
-            title       AS title,
-            content     AS content,
-            views       AS views,
-            display_end AS displayEnd,   <!-- 🔥 추가 -->
-            created_at  AS createdAt
-        FROM community_post
-        WHERE post_id = #{postId}
-          AND post_type = 'NOTICE'
-          AND is_visible = 1
+            cp.post_id      AS postId,
+            cp.title        AS title,
+            cp.content      AS content,
+            cp.views        AS views,
+            cp.display_end  AS displayEnd,
+            cp.created_at   AS createdAt,
+            cp.branch_id    AS branchId, 
+            b.brch_nm       AS branchName
+        FROM COMMUNITY_POST cp
+        LEFT JOIN BRANCH b
+            ON cp.branch_id = b.brch_id
+        WHERE cp.post_id = #{postId}
+          AND cp.post_type = 'NOTICE'
+          AND cp.is_visible = 1
           AND (
                 display_end IS NULL
                 OR display_end >= NOW()
@@ -65,7 +78,7 @@
     ========================= -->
     <update id="increaseViews" parameterType="long">
 
-        UPDATE community_post
+        UPDATE COMMUNITY_POST
         SET views = IFNULL(views, 0) + 1,
             updated_at = NOW()
         WHERE post_id = #{postId}

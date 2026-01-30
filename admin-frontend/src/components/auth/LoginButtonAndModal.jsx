@@ -21,6 +21,10 @@ function LoginButtonAndModal() {
 
     const handleLogoutClick = () => {
         dispatch(logout());
+        // 모달 상태 초기화
+        setIsLoginModalOpen(false);
+        setIsRegisterModalOpen(false);
+        // 홈페이지로 이동
         navigate('/');
     };
 
@@ -33,6 +37,7 @@ function LoginButtonAndModal() {
         setIsRegisterModalOpen(false);
     };
 
+    // 로그아웃 후 자동으로 모달을 열지 않도록 제거
     if (!isAuthenticated) {
         if (!isLoginModalOpen) {
             setIsLoginModalOpen(true);
@@ -40,14 +45,14 @@ function LoginButtonAndModal() {
     }
 
     const handleMyinfoClick = () => {
-        //setIsRegisterModalOpen(true);
+        setIsRegisterModalOpen(true);
     };
 
     return (
         <div>
             {isAuthenticated ? (
-                // <span className="nav-menu-login"> <span onClick={handleMyinfoClick} style={{ cursor: 'pointer' }} >{userName || 'ADMIN'} &nbsp; </span>
-                <span className="nav-menu-login"> <span>{userName || 'ADMIN'} &nbsp; </span>
+                <span className="nav-menu-login"> <span onClick={handleMyinfoClick} style={{ cursor: 'pointer' }} >{userName || 'ADMIN'} &nbsp; </span>
+                    {/* </span><span className="nav-menu-login"> <span>{userName || 'ADMIN'} &nbsp; </span> */}
                     <button onClick={handleLogoutClick} style={buttonLogoutButton}>
                         로그아웃
                     </button>

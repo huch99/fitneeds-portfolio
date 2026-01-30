@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import './styles/common.css';
+// import './styles/common.css';
 
 
 // Components
@@ -11,17 +11,10 @@ import Layout from './components/Layout';
 
 // Pages
 import Home from './pages/Home/Home';
-import About from './pages/About/About';
-import Contact from './pages/Contact/Contact';
-import Pricing from './pages/Pricing/Pricing';
 import FAQ from './pages/FAQ/FAQ';
-import BlogHome from './pages/BlogHome/BlogHome';
-import BlogPost from './pages/BlogPost/BlogPost';
-import PortfolioOverview from './pages/PortfolioOverview/PortfolioOverview';
-import PortfolioItem from './pages/PortfolioItem/PortfolioItem';
 import MyPage from './pages/MyPage/MyPage';
 import MyReservationList from './pages/MyPage/MyReservationList';
-import UsageStatus from './pages/UsageStatus/UsageStatus';
+import MyPassPage from './pages/MyPage/MyPassPage';
 import CommunityUser from './pages/Community/CommunityUser';
 import CommunityUserDetail from './pages/Community/CommunityUserDetail';
 import CommunityUserWrite from './pages/Community/CommunityUserWrite';
@@ -62,33 +55,26 @@ function App() {
         <Layout>
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/pricing" element={<Pricing />} />
             <Route path="/faq" element={<FAQ />} />
-            <Route path="/blog" element={<BlogHome />} />
-            <Route path="/blog/post" element={<BlogPost />} />
-            <Route path="/portfolio" element={<PortfolioOverview />} />
-            <Route path="/portfolio/item" element={<PortfolioItem />} />
             <Route path="/mypage" element={<MyPage />} />
             <Route path="/mypage/reservations" element={<MyReservationList />} />
-            <Route path="/mypage/usage-status" element={<UsageStatus />} />
+            <Route path="/mypage/my-pass" element={<MyPassPage />} />
             <Route path="*" element={<div>404 Not Found</div>} />
 
             <Route path="/community" element={<CommunityUser />} />
             <Route path="/community/:postId" element={<CommunityUserDetail />} />
             <Route path="/community/write" element={<CommunityUserWrite />} />
-            <Route path="/community/my-recruits" element={<CommunityMyRecruitList />}/>
+            <Route path="/community/my-recruits" element={<CommunityMyRecruitList />} />
             <Route path="/community/my-posts" element={<CommunityMyPostList />} />
 
             <Route path="/notice" element={<NoticeUserPage />} />
 
-             {/* 예약하기 */}
+            {/* 예약하기 */}
             <Route path="/type-select" element={<TypeSelect />} />
             <Route path="/schedule-list" element={<ScheduleListPage />} />
-            <Route path="/program-detail" element={<ProgramDetailPage/>} />
-            <Route path="/payment-reservation" element={<PaymentForReservation/>} />
-            <Route path="/reservation-complete" element={<ReservationComplete/>} />
+            <Route path="/program-detail" element={<ProgramDetailPage />} />
+            <Route path="/payment-reservation" element={<PaymentForReservation />} />
+            <Route path="/reservation-complete" element={<ReservationComplete />} />
 
             {/* PassTrade */}
             <Route path="/pass-trade" element={<PassTradeLayout />}>

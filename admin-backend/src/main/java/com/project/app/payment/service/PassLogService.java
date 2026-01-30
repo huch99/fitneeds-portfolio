@@ -1,6 +1,6 @@
 package com.project.app.payment.service;
 
-import com.project.app.payment.domain.PassLog;
+import com.project.app.ticket.domain.PassLog;
 import java.util.List;
 
 public interface PassLogService {
@@ -10,4 +10,3 @@ public interface PassLogService {
     PassLog update(PassLog passlog);
     void delete(Long passLogId);
 }
-

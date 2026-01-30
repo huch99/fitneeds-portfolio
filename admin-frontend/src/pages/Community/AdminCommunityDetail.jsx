@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import api from "../../api";
 
 function AdminCommunityDetailPage() {
-  const { id } = useParams(); // postId
+  const { id } = useParams();
   const navigate = useNavigate();
 
   // 게시글
@@ -26,7 +26,7 @@ function AdminCommunityDetailPage() {
   useEffect(() => {
     const fetchPostDetail = async () => {
       try {
-        const response = await axios.get(`/api/admin/community/${id}`);
+        const response = await api.get(`/admin/community/${id}`);
         setPost(response.data);
       } catch (err) {
         console.error(err);
@@ -44,15 +44,16 @@ function AdminCommunityDetailPage() {
   ========================= */
   const fetchComments = async (page = 1) => {
     try {
-      const response = await axios.get(
-        `/api/admin/community/comments/${id}?page=${page}`
+      const response = await api.get(
+        `/admin/community/comments/${id}`,
+        { params: { page } }
       );
 
       setComments(response.data.list);
       setTotalCount(response.data.totalCount);
       setCurrentPage(page);
     } catch (err) {
-      console.error('댓글 조회 실패', err);
+      console.error("댓글 조회 실패", err);
     }
   };
 
@@ -65,18 +66,15 @@ function AdminCommunityDetailPage() {
   ========================= */
   const fetchRecruitUsers = async () => {
     try {
-      const res = await axios.get(
-        `/api/admin/community/${id}/recruit-users`
-      );
+      const res = await api.get(`/admin/community/${id}/recruit-users`);
       setRecruitUsers(res.data || []);
     } catch (err) {
-      console.error('모집 참여자 조회 실패', err);
+      console.error("모집 참여자 조회 실패", err);
     }
   };
 
-  // ✅ 모집 글일 때만 참여자 조회 (기준 통일)
   useEffect(() => {
-    if (post?.category === '모집') {
+    if (post?.category === "모집") {
       fetchRecruitUsers();
     }
   }, [post]);
@@ -88,14 +86,14 @@ function AdminCommunityDetailPage() {
     const nextVisible = currentVisible === 1 ? 0 : 1;
 
     try {
-      await axios.put(
-        `/api/admin/community/comments/${commentId}/visible`,
+      await api.put(
+        `/admin/community/comments/${commentId}/visible`,
         null,
         { params: { commentVisible: nextVisible } }
       );
       fetchComments(currentPage);
     } catch (err) {
-      console.error('댓글 숨김/보이기 실패', err);
+      console.error("댓글 숨김/보이기 실패", err);
     }
   };
 
@@ -103,13 +101,13 @@ function AdminCommunityDetailPage() {
      댓글 삭제
   ========================= */
   const deleteComment = async (commentId) => {
-    if (!window.confirm('정말 삭제하시겠습니까?')) return;
+    if (!window.confirm("정말 삭제하시겠습니까?")) return;
 
     try {
-      await axios.delete(`/api/admin/community/comments/${commentId}`);
+      await api.delete(`/admin/community/comments/${commentId}`);
       fetchComments(currentPage);
     } catch (err) {
-      console.error('댓글 삭제 실패', err);
+      console.error("댓글 삭제 실패", err);
     }
   };
 
@@ -117,19 +115,14 @@ function AdminCommunityDetailPage() {
      모집 참여자 삭제
   ========================= */
   const deleteRecruitUser = async (joinId) => {
-    if (!window.confirm('해당 참여자를 삭제하시겠습니까?')) return;
+    if (!window.confirm("해당 참여자를 삭제하시겠습니까?")) return;
 
     try {
-      await axios.delete(
-        `/api/admin/community/recruit-users/${joinId}`
-      );
-
-      // 🔥 상태 동기화 보장
+      await api.delete(`/admin/community/recruit-users/${joinId}`);
       await fetchRecruitUsers();
-
-      alert('모집 참여자가 삭제되었습니다.');
+      alert("모집 참여자가 삭제되었습니다.");
     } catch (err) {
-      console.error('모집 참여자 삭제 실패', err);
+      console.error("모집 참여자 삭제 실패", err);
     }
   };
 
@@ -143,39 +136,37 @@ function AdminCommunityDetailPage() {
 
   return (
     <>
-      <button onClick={() => navigate(-1)} style={{ marginBottom: '15px' }}>
+      <button onClick={() => navigate(-1)} style={{ marginBottom: "15px" }}>
         ← 목록으로
       </button>
 
       <h2>{post.title}</h2>
 
-      <div style={{ marginBottom: '20px', color: '#777' }}>
+      <div style={{ marginBottom: "20px", color: "#777" }}>
         <div>카테고리: {post.category}</div>
-        <div>작성자: {post.writerId}</div>
+        <div>작성자: {post.writerEmail}</div>
         <div>작성일: {post.createdAt}</div>
         <div>조회수: {post.views}</div>
       </div>
 
       <div
         style={{
-          padding: '15px',
-          background: '#f8f8f8',
-          marginBottom: '30px',
-          whiteSpace: 'pre-line',
+          padding: "15px",
+          background: "#f8f8f8",
+          marginBottom: "30px",
+          whiteSpace: "pre-line",
           lineHeight: 1.6
         }}
       >
         {post.content}
       </div>
 
-      {/* =========================
-          모집 참여자 목록
-      ========================= */}
-      {post.category === '모집' && (
+      {/* 모집 참여자 */}
+      {post.category === "모집" && (
         <>
           <h3>모집 참여자 ({recruitUsers.length})</h3>
 
-          <table className="admin-table" style={{ marginBottom: '40px' }}>
+          <table className="admin-table" style={{ marginBottom: "40px" }}>
             <thead>
               <tr>
                 <th>ID</th>
@@ -186,7 +177,7 @@ function AdminCommunityDetailPage() {
             <tbody>
               {recruitUsers.length === 0 && (
                 <tr>
-                  <td colSpan="3" style={{ textAlign: 'center' }}>
+                  <td colSpan="3" style={{ textAlign: "center" }}>
                     참여자가 없습니다.
                   </td>
                 </tr>
@@ -195,10 +186,10 @@ function AdminCommunityDetailPage() {
               {recruitUsers.map((u) => (
                 <tr key={u.joinId}>
                   <td>{u.joinId}</td>
-                  <td>{u.userId}</td>
+                  <td>{u.userEmail || u.userName || u.userId}</td>
                   <td>
                     <button
-                      style={{ color: 'red' }}
+                      style={{ color: "red" }}
                       onClick={() => deleteRecruitUser(u.joinId)}
                     >
                       삭제
@@ -211,9 +202,7 @@ function AdminCommunityDetailPage() {
         </>
       )}
 
-      {/* =========================
-          댓글 영역
-      ========================= */}
+      {/* 댓글 */}
       <h3>댓글 ({totalCount})</h3>
 
       <table className="admin-table">
@@ -234,19 +223,19 @@ function AdminCommunityDetailPage() {
               style={{ opacity: c.commentVisible === 1 ? 1 : 0.4 }}
             >
               <td>{c.commentId}</td>
-              <td>{c.writerId}</td>
-              <td style={{ whiteSpace: 'pre-line' }}>{c.content}</td>
+              <td>{c.writerEmail || c.writerId}</td>
+              <td style={{ whiteSpace: "pre-line" }}>{c.content}</td>
               <td>{c.createdAt}</td>
               <td>
                 <button
                   onClick={() => toggleVisible(c.commentId, c.commentVisible)}
                 >
-                  {c.commentVisible === 1 ? '숨김' : '보이기'}
+                  {c.commentVisible === 1 ? "숨김" : "보이기"}
                 </button>
               </td>
               <td>
                 <button
-                  style={{ color: 'red' }}
+                  style={{ color: "red" }}
                   onClick={() => deleteComment(c.commentId)}
                 >
                   삭제
@@ -258,14 +247,14 @@ function AdminCommunityDetailPage() {
       </table>
 
       {/* 댓글 페이징 */}
-      <div style={{ marginTop: '20px', textAlign: 'center' }}>
+      <div style={{ marginTop: "20px", textAlign: "center" }}>
         {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
           <button
             key={page}
             onClick={() => fetchComments(page)}
             style={{
-              margin: '0 5px',
-              fontWeight: page === currentPage ? 'bold' : 'normal'
+              margin: "0 5px",
+              fontWeight: page === currentPage ? "bold" : "normal"
             }}
           >
             {page}

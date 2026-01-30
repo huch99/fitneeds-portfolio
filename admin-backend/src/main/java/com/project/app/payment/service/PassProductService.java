@@ -1,6 +1,6 @@
 package com.project.app.payment.service;
 
-import com.project.app.payment.domain.PassProduct;
+import com.project.app.product.domain.PassProduct;
 import java.util.List;
 
 public interface PassProductService {
@@ -10,4 +10,3 @@ public interface PassProductService {
     PassProduct update(PassProduct passproduct);
     void delete(Long prodId);
 }
-

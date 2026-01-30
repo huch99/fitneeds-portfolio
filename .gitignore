@@ -2,3 +2,58 @@
 sqldeveloper - 바로 가기.lnk
 SpringToolSuite4 - 바로 가기.lnk
 admin-frontend/.env.development
+
+# 스프링 로컬 개발 환경 설정 제외
+/src/main/resources/application-dev.properties
+**/application-dev.properties
+**/application-local.properties
+**/application.properties
+
+# Properties 파일
+*.properties
+
+# 환경 설정 파일
+.env
+.env.local
+.env.development
+.env.production
+**/.env
+**/.env.local
+
+# IDE 설정
+.vscode/
+.idea/
+*.iml
+*.iws
+*.ipr
+.DS_Store
+.project
+.classpath
+.settings/
+
+# 빌드 결과물
+**/target/
+**/build/
+**/dist/
+**/out/
+
+# 로그 파일
+*.log
+**/logs/
+
+# 임시 파일
+*.tmp
+*.swp
+*~
+
+# Node modules
+**/node_modules/
+
+# 데이터베이스
+*.db
+*.sqlite
+*.sqlite3
+
+# OS 파일
+Thumbs.db
+Desktop.ini

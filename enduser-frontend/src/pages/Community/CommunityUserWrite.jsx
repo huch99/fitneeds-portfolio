@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import axios from "axios";
+import api from "../../api";              // 🔥 axios → api
 import "./CommunityWrite.css";
 
 function CommunityUserWrite() {
@@ -35,7 +35,7 @@ function CommunityUserWrite() {
 
     const fetchPost = async () => {
       try {
-        const res = await axios.get(`/api/user/community/${editPostId}`);
+        const res = await api.get(`/user/community/${editPostId}`);   // 🔥 변경
         const post = res.data;
 
         setCategory(post.category);
@@ -86,15 +86,15 @@ function CommunityUserWrite() {
     try {
       if (editPostId) {
         // ✏️ 수정
-        await axios.put(
-          `/api/user/community/${editPostId}?userId=${loginUserId}`,
+        await api.put(                                      // 🔥 변경
+          `/user/community/${editPostId}?userId=${loginUserId}`,
           payload
         );
         alert("수정되었습니다.");
         navigate(`/community/${editPostId}`);
       } else {
         // 🆕 신규 등록
-        await axios.post("/api/user/community", payload);
+        await api.post("/user/community", payload);         // 🔥 변경
         alert("등록되었습니다.");
         navigate("/community");
       }

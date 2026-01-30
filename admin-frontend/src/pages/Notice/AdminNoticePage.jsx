@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
+import api from "../../api";
 
 function AdminNoticePage() {
   const [notices, setNotices] = useState([]);
@@ -10,20 +10,20 @@ function AdminNoticePage() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
 
-  // 🔥 종료 날짜 / 상시 게시
   const [displayEnd, setDisplayEnd] = useState("");
   const [alwaysDisplay, setAlwaysDisplay] = useState(true);
 
-  /* =========================
-     지점명 매핑 (Mock)
-  ========================= */
-  const branchName = (id) => {
-    if (id === null) return "전체";
-    if (id === 1) return "강남점";
-    if (id === 2) return "부산점";
-    if (id === 3) return "평택점";
-    return `지점#${id}`;
-  };
+  // localstraoge에서, role 확인
+  const role = localStorage.getItem("role"); // ADMIN | MANAGER | TEACHER
+  const rawBranchId = localStorage.getItem("brchId");
+
+  const myBranchId =
+    role === "ADMIN" ? null : Number(rawBranchId);
+
+
+
+
+  const [editingBranchId, setEditingBranchId] = useState(null);
 
   /* =========================
      공지 목록 조회
@@ -33,19 +33,18 @@ function AdminNoticePage() {
   }, []);
 
   const fetchNotices = async () => {
-    const res = await axios.get("/api/admin/notice");
+    const res = await api.get("/admin/notice");
 
     const converted = res.data.map((n) => ({
       id: n.postId,
       title: n.title,
       content: n.content,
       visible: n.isVisible,
-      pinned: false,
-      endDate: n.displayEnd
-        ? n.displayEnd.split("T")[0]
-        : "상시",
+      pinned: n.isPinned,
+      endDate: n.displayEnd ? n.displayEnd.split("T")[0] : "상시",
       createdAt: n.createdAt?.split("T")[0],
-      branch_id: n.branchId,
+      branchId: n.branchId,
+      branchName: n.branchName,
       rawDisplayEnd: n.displayEnd,
     }));
 
@@ -60,9 +59,19 @@ function AdminNoticePage() {
   };
 
   const editNotice = (n) => {
+    if (
+      role === "MANAGER" &&
+      (n.branchId === null || n.branchId !== myBranchId)
+    ) {
+      alert("본인 지점 공지만 수정할 수 있습니다.");
+      return;
+    }
+
     setEditingId(n.id);
+    setEditingBranchId(n.branchId); // ✅ 여기: 절대 null 아님
     setTitle(n.title);
     setContent(n.content);
+
 
     if (n.rawDisplayEnd) {
       setAlwaysDisplay(false);
@@ -73,31 +82,36 @@ function AdminNoticePage() {
     }
   };
 
+
   /* =========================
      등록 / 수정
   ========================= */
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const payload = {
-      title,
-      content,
-      branchId: null,
-      displayEnd: alwaysDisplay ? null : `${displayEnd}T23:59:59`,
-    };
-
     if (!alwaysDisplay && !displayEnd) {
       alert("종료 날짜를 선택하세요.");
       return;
     }
 
+    const payload = {
+      title,
+      content,
+      branchId: editingId
+        ? editingBranchId     // 수정 시 기존 지점 유지
+        : myBranchId,         // ✅ 등록 시도 동일 기준 사용
+      displayEnd: alwaysDisplay ? null : `${displayEnd}T23:59:59`,
+    };
+
+
     if (editingId) {
-      await axios.put(`/api/admin/notice/${editingId}`, payload);
+      await api.put(`/admin/notice/${editingId}`, payload);
     } else {
-      await axios.post("/api/admin/notice", payload);
+      await api.post("/admin/notice", payload);
     }
 
     setEditingId(null);
+    setEditingBranchId(null); // ✅ 이거 꼭 같이 초기화
     setTitle("");
     setContent("");
     setDisplayEnd("");
@@ -106,12 +120,13 @@ function AdminNoticePage() {
     fetchNotices();
   };
 
+
   /* =========================
      삭제
   ========================= */
   const deleteNotice = async (id) => {
     if (!window.confirm("공지사항을 삭제하시겠습니까?")) return;
-    await axios.delete(`/api/admin/notice/${id}`);
+    await api.delete(`/admin/notice/${id}`);
     fetchNotices();
   };
 
@@ -121,12 +136,20 @@ function AdminNoticePage() {
   const toggleVisible = async (n) => {
     if (!window.confirm("노출 상태를 변경하시겠습니까?")) return;
 
-    await axios.put(
-      `/api/admin/notice/${n.id}/visible`,
-      null,
-      { params: { visible: !n.visible } }
-    );
+    await api.put(`/admin/notice/${n.id}/visible`, null, {
+      params: { visible: !n.visible },
+    });
 
+    fetchNotices();
+  };
+
+  /* =========================
+     📌 상단 고정
+  ========================= */
+  const togglePinned = async (n) => {
+    await api.put(`/admin/notice/${n.id}/pin`, null, {
+      params: { pinned: !n.pinned },
+    });
     fetchNotices();
   };
 
@@ -137,7 +160,34 @@ function AdminNoticePage() {
     n.title.includes(searchKeyword)
   );
 
-  const sortedNotices = [...filteredNotices].sort((a, b) => b.id - a.id);
+  // DB에서도 정렬되지만, UI에서도 한 번 더 안전하게 처리
+  const visibleNotices = filteredNotices.filter((n) => {
+    if (role === "ADMIN") return true;
+
+    if (role === "MANAGER") {
+      return n.branchId === myBranchId || n.branchId === null;
+    }
+
+    return false;
+  });
+
+  const sortedNotices = [...visibleNotices].sort((a, b) => {
+    if (a.pinned !== b.pinned) return b.pinned - a.pinned;
+    return b.id - a.id;
+  });
+
+
+  // ROLE 권한 체크해서, 출력하는 문
+  if (role === "TEACHER") {
+    return (
+      <div style={{ padding: "40px", textAlign: "center" }}>
+        <h2>권한이 없습니다.</h2>
+        <p style={{ marginTop: "10px", color: "#666" }}>
+          해당 페이지에 접근할 수 있는 권한이 없습니다.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -163,39 +213,70 @@ function AdminNoticePage() {
           </tr>
         </thead>
         <tbody>
-          {sortedNotices.map((n) => (
-            <React.Fragment key={n.id}>
-              <tr style={{
-                background: !n.visible ? "#f1f1f1" : "white",
-                color: !n.visible ? "#999" : "#000",
-                opacity: !n.visible ? 0.5 : 1,
-              }}>
+          {sortedNotices.flatMap((n) => {
+            const rows = [];
+
+            rows.push(
+              <tr
+                key={n.id}
+                style={{
+                  background: n.pinned
+                    ? "#fff9e6"
+                    : !n.visible
+                      ? "#f1f1f1"
+                      : "white",
+                  color: !n.visible ? "#999" : "#000",
+                  opacity: !n.visible ? 0.5 : 1,
+                }}
+              >
                 <td>{n.id}</td>
-                <td>{branchName(n.branch_id)}</td>
+                <td>{n.branchName ?? "전체 공지"}</td>
                 <td
                   onClick={() => n.visible && toggleOpen(n.id)}
                   style={{ cursor: "pointer", fontWeight: "600" }}
                 >
+                  {n.pinned && "📌 "}
                   {n.title}
                 </td>
                 <td>{n.endDate}</td>
                 <td>{n.visible ? "노출" : "숨김"}</td>
                 <td>
-                  <button onClick={() => editNotice(n)}>수정</button>
-                  <button onClick={() => toggleVisible(n)}>
-                    {n.visible ? "숨기기" : "보이기"}
-                  </button>
-                  <button
-                    onClick={() => deleteNotice(n.id)}
-                    style={{ color: "red" }}
-                  >
-                    삭제
-                  </button>
-                </td>
-              </tr>
+                  <span style={{ display: "inline-flex", gap: "6px" }}>
+                    {(role === "ADMIN" ||
+                      (role === "MANAGER" && n.branchId === myBranchId)) && (
+                        <>
+                          <button onClick={() => editNotice(n)}>수정</button>
 
-              {openId === n.id && (
-                <tr>
+                          <button onClick={() => toggleVisible(n)}>
+                            {n.visible ? "숨기기" : "보이기"}
+                          </button>
+                        </>
+                      )}
+
+                    {role === "ADMIN" && (
+                      <button onClick={() => togglePinned(n)}>
+                        {n.pinned ? "고정해제" : "상단고정"}
+                      </button>
+                    )}
+
+                    {(role === "ADMIN" ||
+                      (role === "MANAGER" && n.branchId === myBranchId)) && (
+                        <button
+                          onClick={() => deleteNotice(n.id)}
+                          style={{ color: "red" }}
+                        >
+                          삭제
+                        </button>
+                      )}
+                  </span>
+                </td>
+
+              </tr>
+            );
+
+            if (openId === n.id) {
+              rows.push(
+                <tr key={`detail-${n.id}`}>
                   <td colSpan="6" style={{ background: "#fafafa", padding: "15px" }}>
                     <strong>내용</strong>
                     <div style={{ marginTop: "10px", whiteSpace: "pre-line" }}>
@@ -206,9 +287,11 @@ function AdminNoticePage() {
                     </div>
                   </td>
                 </tr>
-              )}
-            </React.Fragment>
-          ))}
+              );
+            }
+
+            return rows;
+          })}
         </tbody>
       </table>
 
@@ -216,41 +299,45 @@ function AdminNoticePage() {
         {editingId ? "공지 수정" : "공지 등록"}
       </h2>
 
-      <form onSubmit={handleSubmit} style={{ marginTop: "20px" }}>
-        <div>
-          <label>제목</label><br />
+      <form onSubmit={handleSubmit} className="notice-form">
+        <div className="form-row">
+          <label style={{ fontSize: "25px", fontWeight: "600" }}>제목</label>
+          <br />
           <input
             type="text"
             required
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            style={{ width: "500px" }}
           />
         </div>
 
-        <div>
-          <label>내용</label><br />
+        <div className="form-row">
+          <label style={{ fontSize: "25px", fontWeight: "600" }}>내용</label><br />
           <textarea
             required
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            style={{ width: "500px", height: "150px" }}
           />
         </div>
 
-        <div style={{ marginTop: "10px" }}>
-          <label>
-            <input
-              type="checkbox"
-              checked={alwaysDisplay}
-              onChange={(e) => setAlwaysDisplay(e.target.checked)}
-            />{" "}
-            상시 게시
+        <div className="form-row">
+          <label className="always-display-label">
+            <span className="always-display-box">
+              <input
+                type="checkbox"
+                checked={alwaysDisplay}
+                onChange={(e) => setAlwaysDisplay(e.target.checked)}
+              />
+            </span>
+
+            <span className="always-display-text">상시 게시</span>
           </label>
         </div>
 
-        <div style={{ marginTop: "10px" }}>
-          <label>종료 날짜</label><br />
+
+
+        <div className="form-row">
+          <label style={{ fontSize: "20px", fontWeight: "600" }}>종료 날짜</label><br />
           <input
             type="date"
             disabled={alwaysDisplay}
@@ -259,10 +346,89 @@ function AdminNoticePage() {
           />
         </div>
 
-        <button type="submit" style={{ marginTop: "15px" }}>
+        <button type="submit">
           {editingId ? "수정 완료" : "등록"}
         </button>
+
+        {/* ✅ 스타일 한 번에 */}
+        <style>{`
+    .notice-form {
+      margin-top: 20px;
+    }
+
+    .notice-form .form-row {
+      margin-bottom: 20px;
+    }
+
+    .notice-form label {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .notice-form input[type="text"],
+    .notice-form input[type="date"],
+    .notice-form textarea {
+      width: 600px;
+      font-size: 14px;
+      padding: 10px 12px;
+      margin-top: 6px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+
+    .notice-form input[type="text"],
+    .notice-form input[type="date"] {
+      height: 42px;
+    }
+
+    .notice-form textarea {
+      height: 200px;
+      resize: vertical;
+    }
+
+    .notice-form button {
+      padding: 10px 22px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+     .always-display-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+  }
+
+  .always-display-box {
+    width: 22px;
+    height: 22px;
+    border: 2px solid #555;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+  }
+
+  .always-display-box input {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+  }
+
+  /* 체크된 상태 강조 */
+  .always-display-box input:checked {
+    accent-color: #5c6ac4;
+  }
+
+  .always-display-text {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1;
+  }  
+  `}</style>
       </form>
+
     </>
   );
 }

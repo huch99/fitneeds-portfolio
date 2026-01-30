@@ -3,9 +3,10 @@ package com.project.app.userpass.repository;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.ibatis.annotations.Param;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.project.app.userpass.entity.UserPass;
@@ -31,6 +32,6 @@ public interface UserPassRepository extends JpaRepository<UserPass, Long> {
     """)
     List<UserPass> findUserPassesWithUserAndSport(@Param("userId") String userId);
 
-    @Query(value = "select count(*) from user_pass", nativeQuery = true)
+    @Query(value = "select count(*) from USER_PASS", nativeQuery = true)
     long countUserPass();
 }

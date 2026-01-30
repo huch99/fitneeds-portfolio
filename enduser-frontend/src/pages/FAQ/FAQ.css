@@ -1,146 +1,145 @@
-/* FAQ page specific styles */
-
-.section-container {
-  max-width: 1320px;
-  margin: 0 auto;
-  padding: 0 3rem;
-}
-
-.section-row {
+/* ===================== 전체 프레임 (Notice와 동일) ===================== */
+.community-layout {
   display: flex;
-  flex-wrap: wrap;
-  margin: 0 -0.75rem;
-  align-items: center;
-  justify-content: center;
+  min-height: calc(100vh - 80px);
 }
 
-.section-col {
-  flex: 1 0 0%;
-  padding: 0 0.75rem;
-}
-
-.section-col-header {
-  flex: 0 0 auto;
+.faq-wrap {
+  flex: 1;
   width: 100%;
+  padding: 30px;
+  min-height: calc(100vh - 120px);
+  background: #f9fafb;
 }
 
-@media (min-width: 992px) {
-  .section-col-header {
-    width: 66.66666667%;
-  }
+.faq-wrap .section-container {
+  max-width: 1100px;
+  margin-left: 110px;
+  padding: 0 1.5rem;
 }
 
-@media (min-width: 1400px) {
-  .section-col-header {
-    width: 50%;
-  }
-}
-
-.page-header {
+/* ===================== 타이틀 ===================== */
+.faq-page-header {
   text-align: center;
-  margin: 3rem 0;
+  margin-bottom: 36px;
+  max-width: 1200px;
+  /* ✅ section-container와 동일 */
+  padding: 0 1.5rem;
+  /* ✅ section-container와 동일 */
 }
 
-.page-title {
-  font-weight: 700;
-  margin-bottom: 0.75rem;
-}
-
-.page-subtitle {
-  font-size: 1.25rem;
-  font-weight: 400;
-  color: #6c757d;
-  margin-bottom: 1rem;
-}
-
-.section-col-text {
-  flex: 0 0 auto;
-  width: 100%;
-}
-
-@media (min-width: 992px) {
-  .section-col-text {
-    width: 66.66666667%;
-  }
-}
-
-@media (min-width: 1400px) {
-  .section-col-text {
-    width: 50%;
-  }
-}
-
-/* Board Styles */
-.board-header {
-  display: grid;
-  grid-template-columns: 60px 120px 1fr 100px 80px;
-  gap: 1rem;
-  padding: 1rem 1.5rem;
-  background-color: #212529;
-  color: #fff;
-  font-weight: 700;
-  border-radius: 0.25rem 0.25rem 0 0;
-  align-items: center;
-}
-
-.board-header-item {
-  text-align: center;
-  font-size: 0.875rem;
-}
-
-.board-header-item.board-title {
-  text-align: left;
-}
-
-@media (max-width: 768px) {
-  .board-header {
-    grid-template-columns: 50px 100px 1fr;
-    gap: 0.5rem;
-    padding: 0.75rem 1rem;
-  }
-  
-  .board-header-item.board-date,
-  .board-header-item.board-views {
-    display: none;
-  }
-}
-
-.board-list {
-  background-color: #fff;
-  border: 1px solid #dee2e6;
-  border-top: none;
-  border-radius: 0 0 0.25rem 0.25rem;
-}
-
-.board-item {
-  border-bottom: 1px solid #dee2e6;
-}
-
-.board-item:last-child {
-  border-bottom: none;
-}
-
-.board-item-row {
-  display: grid;
-  grid-template-columns: 60px 120px 1fr 100px 80px;
-  gap: 1rem;
-  padding: 1rem 1.5rem;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  align-items: center;
-}
-
-.board-item-row:hover {
-  background-color: #f8f9fa;
-}
-
-.board-item-cell {
-  text-align: center;
-  font-size: 0.875rem;
+.faq-page-header .page-title {
+  font-size: 32px;
+  font-weight: 800;
   color: #212529;
 }
 
-.board-item-cell.board-title {
+.faq-page-header .page-subtitle {
+  font-size: 17px;
+  line-height: 1.75;
+  color: #555;
+}
+
+.faq-page-header .brand-highlight {
+  font-weight: 800;
+  color: #f0c84b;
+  margin: 0 2px;
+}
+
+/* ===================== FAQ GRID ===================== */
+.faq-board {
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.faq-header,
+.faq-question {
+  display: grid;
+  grid-template-columns: 60px 140px 1fr 120px;
+  padding: 14px 10px;
+  align-items: center;
+}
+
+.faq-header {
+  background: #212529;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.faq-question {
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+}
+
+.faq-question:hover {
+  background: #f8f9fa;
+}
+
+.faq-header span:nth-child(3),
+.faq-title {
+  text-align: left;
+}
+
+/* ===================== 배지 ===================== */
+.category-badge {
+  padding: 0.3em 0.7em;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 999px;
+  background: #ffc107;
+}
+
+/* ===================== 답변 ===================== */
+.faq-answer {
+  background: #fffdf2;
+  border-left: 4px solid #f0c84b;
+  padding: 16px 24px;
+  line-height: 1.7;
+}
+
+/* ===================== 페이징 (Notice와 동일) ===================== */
+.community-pagination {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 30px;
+}
+
+.community-pagination button {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  background: #fff;
+}
+
+.community-pagination button.active {
+  background: #ffd84d;
+  border: none;
+  font-weight: 700;
+}
+
+/* =========================
+   FAQ th/td 느낌으로 컬럼 정렬 강제
+   - 전체 가운데
+   - 3번째(질문/제목)만 왼쪽
+========================= */
+
+/* 헤더(=th 역할) */
+.faq-header span {
+  text-align: center;
+}
+
+/* 바디 한 줄(=td 역할) */
+.faq-question>div {
+  text-align: center;
+}
+
+/* 제목(질문) 컬럼만 왼쪽 정렬 (3번째 컬럼) */
+.faq-header span:nth-child(3) {
   text-align: left;
   font-weight: 500;
   color: #212529;
@@ -149,68 +148,11 @@
   white-space: nowrap;
 }
 
-.board-item-cell.board-number {
-  color: #6c757d;
+.faq-question>div:nth-child(3) {
+  text-align: left;
 }
 
-.board-item-cell.board-date {
-  color: #6c757d;
-  font-size: 0.8125rem;
-}
-
-.board-item-cell.board-views {
-  color: #6c757d;
-  font-size: 0.8125rem;
-}
-
-.category-badge {
-  display: inline-block;
-  padding: 0.25em 0.65em;
-  font-size: 0.75em;
-  font-weight: 600;
-  border-radius: 0.25rem;
-  background-color: #FFC107;
-  color: #212529;
-}
-
-@media (max-width: 768px) {
-  .board-item-row {
-    grid-template-columns: 50px 100px 1fr;
-    gap: 0.5rem;
-    padding: 0.75rem 1rem;
-  }
-  
-  .board-item-cell.board-date,
-  .board-item-cell.board-views {
-    display: none;
-  }
-  
-  .board-item-cell.board-title {
-    font-size: 0.875rem;
-  }
-}
-
-.board-item-content {
-  padding: 1.5rem;
-  background-color: #f8f9fa;
-  border-top: 1px solid #dee2e6;
-  animation: slideDown 0.3s ease;
-}
-
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    max-height: 0;
-  }
-  to {
-    opacity: 1;
-    max-height: 500px;
-  }
-}
-
-.board-content-text {
-  font-size: 1rem;
-  line-height: 1.6;
-  color: #212529;
-  white-space: pre-wrap;
+/* 제목 영역 안의 텍스트까지 확실히 왼쪽 기준으로 */
+.faq-title {
+  text-align: left;
 }

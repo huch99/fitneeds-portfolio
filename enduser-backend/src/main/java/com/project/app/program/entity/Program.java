@@ -1,5 +1,7 @@
 package com.project.app.program.entity;
 
+import java.math.BigDecimal;
+
 import org.hibernate.annotations.ColumnDefault;
 
 import com.project.app.aspect.BaseTimeEntity;
@@ -53,12 +55,13 @@ public class Program extends BaseTimeEntity {
 	@Column(name = "one_time_amt", nullable = false)
     @ColumnDefault("0")
     @Builder.Default
-    private Integer oneTimeAmt = 0;		// 단건 결제 금액
+    private BigDecimal oneTimeAmt = BigDecimal.ZERO; // 단건 결제 금액
+//    private BigDecimal oneTimeAmt = 0;		
 	
-	@Column(name = "rwd_game_pnt", nullable = false)
-    @ColumnDefault("0")
-    @Builder.Default
-    private Integer rwdGamePnt = 0;		//게이미케이션 포인트
+//	@Column(name = "rwd_game_pnt", nullable = false)
+//    @ColumnDefault("0")
+//    @Builder.Default
+//    private Integer rwdGamePnt = 0;		//게이미케이션 포인트
 	
 	
 }

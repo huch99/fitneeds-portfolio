@@ -1,11 +1,23 @@
 /* Layout component specific styles */
 
+/* 스크롤바 등장/사라짐 시 레이아웃 시프트 방지 (거래 메뉴 전환 시 네비 흔들림 해소) */
+html {
+  scrollbar-gutter: stable;
+}
+
+/* .layout-wrapper {
+  display: block;
+  min-height: 100vh;
+  overflow-x: hidden;
+} */
+
 .layout-wrapper {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
   overflow-x: hidden;
 }
+
 
 /* Ensure Navigation is always on top and consistent across all pages */
 .layout-wrapper > nav {
@@ -20,7 +32,7 @@
 .layout-main {
   padding-top: 80px; /* Add padding to prevent content from being hidden under fixed header */
   overflow-x: hidden;
-  flex: 1;
+   flex: 1;  
 }
 
 /* Home page doesn't need padding-top as header is transparent initially */
@@ -29,10 +41,5 @@
   overflow-x: hidden;
   overflow-y: auto;
   height: auto;
-}
-
-.layout-header {
-  height: 80px; /* 지금 padding-top이랑 동일한 값 */
-  flex-shrink: 0;
 }
 

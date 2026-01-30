@@ -11,7 +11,7 @@
   ========================= -->
   <select id="countByPostIdAndUserId" resultType="int">
     SELECT COUNT(*)
-    FROM community_recruit_join
+    FROM COMMUNITY_RECRUIT_JOIN
     WHERE post_id = #{postId}
       AND user_id = #{userId}
   </select>
@@ -21,7 +21,7 @@
   ========================= -->
   <select id="countByPostId" resultType="int">
     SELECT COUNT(*)
-    FROM community_recruit_join
+    FROM COMMUNITY_RECRUIT_JOIN
     WHERE post_id = #{postId}
   </select>
 
@@ -29,7 +29,7 @@
        참여 신청 INSERT
   ========================= -->
   <insert id="insertRecruitJoin">
-    INSERT INTO community_recruit_join (
+    INSERT INTO COMMUNITY_RECRUIT_JOIN (
       post_id,
       user_id,
       join_type
@@ -45,7 +45,7 @@
   ========================= -->
   <delete id="deleteRecruitJoin">
     DELETE
-    FROM community_recruit_join
+    FROM COMMUNITY_RECRUIT_JOIN
     WHERE post_id = #{postId}
       AND user_id = #{userId}
   </delete>
@@ -55,10 +55,12 @@
        (작성자용)
   ========================= -->
   <select id="selectJoinUsersByPostId" resultType="string">
-    SELECT user_id
-    FROM community_recruit_join
-    WHERE post_id = #{postId}
-    ORDER BY join_id ASC
+    SELECT COALESCE(u.user_name, '탈퇴한 회원')
+    FROM COMMUNITY_RECRUIT_JOIN j
+    LEFT JOIN USERS u
+           ON u.user_id = j.user_id
+    WHERE j.post_id = #{postId}
+    ORDER BY j.join_id ASC
   </select>
 
   <!-- =========================
@@ -82,10 +84,10 @@
       /* 🔥 현재 참여 인원 수 */
       COUNT(crj.join_id)   AS recruitCount
 
-    FROM community_recruit_join j
-    JOIN community_post p
+    FROM COMMUNITY_RECRUIT_JOIN j
+    JOIN COMMUNITY_POST p
       ON j.post_id = p.post_id
-    LEFT JOIN community_recruit_join crj
+    LEFT JOIN COMMUNITY_RECRUIT_JOIN crj
       ON crj.post_id = p.post_id
 
     WHERE j.user_id = #{userId}

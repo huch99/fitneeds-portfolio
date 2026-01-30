@@ -2,7 +2,7 @@
 import axios from 'axios';
 import { ACCESS_TOKEN_KEY } from '../store/authSlice';
 
-// import store from '../store'; // Redux Store를 import하여 로그아웃 액션 디스패치
+import store from '../store'; // Redux Store를 import하여 로그아웃 액션 디스패치
 
 const api = axios.create({
     baseURL: import.meta.env.VITE_API_BASE_URL,

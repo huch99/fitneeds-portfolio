@@ -1,5 +1,42 @@
 SET FOREIGN_KEY_CHECKS = 0;
 
+SELECT user_pass_id, user_id
+FROM user_pass
+WHERE user_id = '지금 로그인한 userId';
+
+SHOW TABLES;
+SELECT COUNT(*) FROM USER_PASS;
+
+SHOW CREATE TABLE PASS_TRADE_TRANSACTION;
+
+SELECT * FROM PAYMENT ORDER BY REG_DT DESC;
+
+SELECT post_id, stts_cd, del_yn
+FROM PASS_TRADE_POST
+ORDER BY post_id DESC;
+
+SELECT *
+FROM PASS_TRADE_TRANSACTION
+ORDER BY reg_dt DESC;
+
+SELECT trade_id, buyer_user_id
+FROM PASS_TRADE_TRANSACTION;
+
+SELECT *
+FROM PASS_TRADE_TRANSACTION
+WHERE buyer_user_id = 'user7'
+ORDER BY reg_dt DESC;
+
+SELECT * FROM PASS_TRADE_TRANSACTION;
+
+SELECT *
+FROM FAVORITE
+WHERE user_id = 'dcb5c11e5ecf440d9ac3f9710bf5c0c4';
+
+SELECT *
+FROM FAVORITE
+ORDER BY user_id, post_id;
+
 -- DROP 순서: FK 걸린 테이블부터 역순 삭제
 DROP TABLE IF EXISTS favorite;
 DROP TABLE IF EXISTS faq;
@@ -18,7 +55,7 @@ SET FOREIGN_KEY_CHECKS = 1;
 -- ======================================================
 -- 1) USERS (사용자)
 -- ======================================================
-CREATE TABLE users (
+CREATE TABLE USERS (
   user_id      VARCHAR(255) NOT NULL COMMENT 'PK, 사용자 고유 ID (UUID 등)',
   user_name    VARCHAR(100) NOT NULL COMMENT '사용자 이름',
   email        VARCHAR(255) NOT NULL COMMENT '사용자 이메일 (UNIQUE)',
@@ -39,7 +76,7 @@ COMMENT='사용자';
 -- ======================================================
 -- 2) SPORT_TYPE (운동 종목)
 -- ======================================================
-CREATE TABLE sport_type (
+CREATE TABLE SPORT_TYPE (
   sport_id   BIGINT       NOT NULL AUTO_INCREMENT COMMENT 'PK, 스포츠 종목 ID',
   sport_nm   VARCHAR(100) NOT NULL COMMENT '스포츠 종목 이름(헬스, 요가 등)',
   sport_memo VARCHAR(500) NULL     COMMENT '메모',
@@ -58,7 +95,7 @@ COMMENT='운동 종목';
 -- ======================================================
 -- 3) BRANCH (지점)
 -- ======================================================
-CREATE TABLE branch (
+CREATE TABLE BRANCH (
   brch_id BIGINT       NOT NULL AUTO_INCREMENT COMMENT 'PK, 지점ID',
   brch_nm VARCHAR(50)  NOT NULL COMMENT '지점명',
   addr    VARCHAR(255) NOT NULL COMMENT '주소',
@@ -75,7 +112,7 @@ COMMENT='지점';
 -- ======================================================
 -- 4) TICKET_PRODUCT (이용권 상품)
 -- ======================================================
-CREATE TABLE ticket_product (
+CREATE TABLE TICKET_PRODUCT (
   prod_id  BIGINT         NOT NULL AUTO_INCREMENT COMMENT 'PK, 상품ID',
   sport_id BIGINT         NOT NULL COMMENT 'FK, 스포츠ID',
   prod_nm  VARCHAR(100)   NOT NULL COMMENT '상품명',
@@ -97,7 +134,7 @@ COMMENT='이용권 상품';
 -- 5) USER_PASS (보유 이용권)
 --   - users 테이블(user_id) 참조
 -- ======================================================
-CREATE TABLE user_pass (
+CREATE TABLE USER_PASS (
   user_pass_id    BIGINT       NOT NULL AUTO_INCREMENT COMMENT 'PK, 보유이용권ID',
   user_id         VARCHAR(255) NOT NULL COMMENT 'FK, 사용자ID',
   sport_id        BIGINT       NOT NULL COMMENT 'FK, 스포츠ID',
@@ -123,7 +160,7 @@ COMMENT='보유 이용권';
 -- ======================================================
 -- 6) PASS_LOG (이용권 로그)
 -- ======================================================
-CREATE TABLE pass_log (
+CREATE TABLE PASS_LOG (
   pass_log_id  BIGINT       NOT NULL AUTO_INCREMENT COMMENT 'PK, 이력ID',
   user_pass_id BIGINT       NOT NULL COMMENT 'FK, 보유이용권ID',
   chg_type_cd  VARCHAR(30)  NOT NULL COMMENT '변경유형(사용/구매/예약취소 등)',
@@ -144,7 +181,7 @@ COMMENT='이용권 로그';
 -- 7) PAYMENT (결제)
 --   - users(user_id) 참조
 -- ======================================================
-CREATE TABLE payment (
+CREATE TABLE PAYMENT (
   pay_id      BIGINT        NOT NULL AUTO_INCREMENT COMMENT 'PK, 결제ID',
   ord_no      VARCHAR(100)  NOT NULL COMMENT '주문번호(UNIQUE)',
   usr_id      VARCHAR(255)  NOT NULL COMMENT 'FK, 결제자 user_id',
@@ -170,7 +207,7 @@ COMMENT='결제';
 -- ======================================================
 -- 8) PASS_TRADE_POST (이용권 거래 게시글)
 -- ======================================================
-CREATE TABLE pass_trade_post (
+CREATE TABLE PASS_TRADE_POST (
   post_id      BIGINT        NOT NULL AUTO_INCREMENT COMMENT 'PK, 게시글ID',
   seller_id    VARCHAR(255)  NOT NULL COMMENT 'FK, 판매자 users.user_id',
   user_pass_id BIGINT        NOT NULL COMMENT 'FK, 판매대상 user_pass.user_pass_id',
@@ -194,10 +231,21 @@ DEFAULT CHARSET=utf8mb4
 COLLATE=utf8mb4_general_ci
 COMMENT='이용권 거래 게시글';
 
+ALTER TABLE PASS_TRADE_POST
+MODIFY upd_dt DATETIME
+NOT NULL
+DEFAULT CURRENT_TIMESTAMP
+ON UPDATE CURRENT_TIMESTAMP;
+
+SELECT post_id, stts_cd, del_yn
+FROM PASS_TRADE_POST
+ORDER BY post_id DESC;
+
+
 -- ======================================================
 -- 9) PASS_TRADE_TRANSACTION (이용권 거래 내역)
 -- ======================================================
-CREATE TABLE pass_trade_transaction (
+CREATE TABLE PASS_TRADE_TRANSACTION (
   trade_id     BIGINT        NOT NULL AUTO_INCREMENT COMMENT 'PK, 거래ID',
   post_id      BIGINT        NOT NULL COMMENT 'FK, 게시글ID',
   buyer_usr_id VARCHAR(255)  NOT NULL COMMENT 'FK, 구매자 users.user_id',
@@ -224,7 +272,7 @@ COMMENT='이용권 거래 내역';
 -- ======================================================
 -- 10) FAQ
 -- ======================================================
-CREATE TABLE faq (
+CREATE TABLE FAQ (
   faq_id    BIGINT       NOT NULL AUTO_INCREMENT COMMENT 'PK, FAQ 식별자',
   title     VARCHAR(255) NOT NULL COMMENT 'FAQ 제목',
   content   TEXT         NOT NULL COMMENT 'FAQ 내용',
@@ -242,10 +290,33 @@ DEFAULT CHARSET=utf8mb4
 COLLATE=utf8mb4_general_ci
 COMMENT='이용권 FAQ';
 
+ALTER TABLE FAQ
+ADD COLUMN ans_at DATETIME NULL COMMENT '답변일시';
+ALTER TABLE FAQ
+ADD COLUMN ans_by VARCHAR(255) NULL COMMENT '답변자';
+ALTER TABLE FAQ
+ADD COLUMN ans_stat VARCHAR(20) NOT NULL COMMENT '답변 상태 (WAIT / DONE)';
+ALTER TABLE FAQ
+ADD COLUMN content TEXT NOT NULL COMMENT '문의 내용';
+ALTER TABLE FAQ
+ADD COLUMN reg_dt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시';
+ALTER TABLE FAQ
+-- 제목
+ADD COLUMN title VARCHAR(255) NOT NULL COMMENT '질문 제목',
+
+
+-- 조회수
+ADD COLUMN view_cnt INT NOT NULL DEFAULT 0 COMMENT '조회수',
+
+-- 수정일
+ADD COLUMN upd_dt DATETIME NULL COMMENT '수정일시';
+
+
+
 -- ======================================================
 -- 11) FAVORITE (즐겨찾기)
 -- ======================================================
-CREATE TABLE favorite (
+CREATE TABLE FAVORITE (
   favorite_id BIGINT       NOT NULL AUTO_INCREMENT COMMENT 'PK, 즐겨찾기ID',
   user_id     VARCHAR(255) NOT NULL COMMENT 'FK, users.user_id',
   post_id     BIGINT       NOT NULL COMMENT 'FK, pass_trade_post.post_id',

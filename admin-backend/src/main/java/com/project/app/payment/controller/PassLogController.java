@@ -1,7 +1,7 @@
 // Fixed @PathVariable name issue
 package com.project.app.payment.controller;
 
-import com.project.app.payment.domain.PassLog;
+import com.project.app.ticket.domain.PassLog;
 import com.project.app.payment.service.PassLogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
